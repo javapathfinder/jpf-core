@@ -1,0 +1,7 @@
+target = TestExample
+
+listener=.listener.CoverageAnalyzer
+
+coverage.include = T1,T2
+coverage.show_methods = true
+#coverage.show_bodies = true

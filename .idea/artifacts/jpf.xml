@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="jpf">
+    <output-path>$PROJECT_DIR$/build</output-path>
+    <root id="archive" name="jpf.jar">
+      <element id="module-output" name="main" />
+      <element id="module-output" name="peers" />
+      <element id="module-output" name="annotations" />
+      <element id="directory" name="org">
+        <element id="directory" name="junit">
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/After.class" />
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/AfterClass.class" />
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/Before.class" />
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/BeforeClass.class" />
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/Ignore.class" />
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/Test$None.class" />
+          <element id="file-copy" path="$PROJECT_DIR$/build/classes/org/junit/Test.class" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

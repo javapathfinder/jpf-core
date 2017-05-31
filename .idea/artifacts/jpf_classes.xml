@@ -1,0 +1,25 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="jpf-classes">
+    <output-path>$PROJECT_DIR$/build</output-path>
+    <root id="archive" name="jpf-classes.jar">
+      <element id="module-output" name="classes" />
+      <element id="module-output" name="annotations" />
+      <element id="directory" name="gov">
+        <element id="directory" name="nasa">
+          <element id="directory" name="jpf">
+            <element id="directory" name="vm">
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/vm/Verify.class" />
+            </element>
+            <element id="directory" name="util">
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/TypeRef.class" />
+              <element id="directory" name="test">
+                <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/test/TestJPF.class" />
+                <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/test/TestMultiProcessJPF.class" />
+              </element>
+            </element>
+          </element>
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

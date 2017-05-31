@@ -1,0 +1,33 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="RunJPF">
+    <output-path>$PROJECT_DIR$/build</output-path>
+    <root id="archive" name="RunJPF.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/RunJPF/MANIFEST.MF" />
+      </element>
+      <element id="directory" name="gov">
+        <element id="directory" name="nasa">
+          <element id="directory" name="jpf">
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/Config.class" />
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/Config$MissingRequiredKeyException.class" />
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/JPFClassLoader.class" />
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/JPFConfigException.class" />
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/JPFShell.class" />
+            <element id="directory" name="tool">
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/tool/Run.class" />
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/tool/RunJPF.class" />
+            </element>
+            <element id="directory" name="util">
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/JPFSiteUtils.class" />
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/FileUtils.class" />
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/StringMatcher.class" />
+              <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/util/Pair.class" />
+            </element>
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/JPFException.class" />
+            <element id="file-copy" path="$PROJECT_DIR$/build/main/gov/nasa/jpf/ConfigChangeListener.class" />
+          </element>
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,5 @@
+# JPF properties to run the oldclassic example with DeadlockAnalyzer report
+
+target=oldclassic
+
+report.console.property_violation=error,snapshot,trace

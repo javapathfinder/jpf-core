@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." name="jpf-core-IDE">
+
+    <path id="base.path">
+        <pathelement location="build/main"/>
+        <pathelement location="build/peers"/>
+        <pathelement location="build/annotations"/>
+        <pathelement location="build/tests"/>
+        <fileset dir=".">
+            <include name="lib/*.jar"/>
+        </fileset>
+    </path>
+
+    <sourcepath id="source.path">
+      <pathelement location="src/main"/>
+      <pathelement location="src/peers"/>
+    </sourcepath>
+
+<!--
+    <property name="testrunner" value="gov.nasa.jpf.util.test.TestJPF"/>
+-->
+    <property name="testrunner" value="gov.nasa.jpf.tool.RunTest"/>
+    
+
+    <!-- TODO: do we really have to duplicate this for each container dir? -->
+    <!-- TODO: !!! automatic recompile doesn't work, this is a NetBeans/Ant problem !!! -->
+
+    <!-- (more info: http://www.netbeans.org/kb/articles/freeform-config.html#runsingle) -->
+
+    <target name="test-project">
+        <!-- we need to set the formatter 'usefile' attribute
+             or the NB test runner will not show any tests -->
+        <property name="junit.usefile" value="false"/>
+        <ant antfile="build.xml" inheritall="true" target="test"/>
+    </target>
+
+
+    <!-- 'main' targets -->
+    <target name="run-selected-main">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+        <input message="please enter arguments" addproperty="arg.input"/>
+        <java classname="${run.class}" failonerror="true" fork="true">
+            <classpath>
+                <path refid="base.path"/>
+            </classpath>
+            <jvmarg value="-ea"/>
+            <arg line="${arg.input}"/>
+        </java>
+    </target>
+
+    <target name="debug-selected-main">
+        <fail unless="debug.class">Must set property 'debug.class'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+
+        <path id="cp.main">
+           <path refid="base.path"/>
+        </path>
+        <sourcepath id="sp.main">
+           <path refid="source.path"/>
+        </sourcepath>
+
+
+        <nbjpdastart addressproperty="jpda.address" name="${debug.class}" transport="dt_socket">
+            <classpath refid="cp.main"/>
+            <sourcepath refid="sp.main"/>
+        </nbjpdastart>
+
+        <input message="please enter arguments" addproperty="arg.input"/>
+
+        <java classname="${debug.class}" fork="true" >
+            <classpath refid="cp.main"/>
+            <jvmarg value="-ea"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <arg line="${arg.input}"/>
+        </java>
+    </target>
+
+
+    <!-- 'example' targets -->
+    <target name="run-selected-example">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+        <input message="please enter arguments" addproperty="arg.input"/>
+        <java classname="${run.class}" failonerror="true" fork="true">
+            <classpath>
+                <pathelement location="build/examples"/>
+                <path refid="base.path"/>
+            </classpath>
+            <jvmarg value="-ea"/>
+            <arg line="${arg.input}"/>
+        </java>
+    </target>
+
+    <target name="debug-selected-example">
+        <fail unless="debug.class">Must set property 'debug.class'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+
+        <path id="cp.examples">
+           <pathelement location="build/examples"/>
+           <path refid="base.path"/>
+        </path>
+        <sourcepath id="sp.examples">
+           <pathelement location="src/examples"/>
+           <path refid="source.path"/>
+        </sourcepath>
+
+
+        <nbjpdastart addressproperty="jpda.address" name="${debug.class}" transport="dt_socket">
+            <classpath refid="cp.examples"/>
+            <sourcepath refid="sp.examples"/>
+        </nbjpdastart>
+
+        <input message="please enter arguments" addproperty="arg.input"/>
+
+        <java classname="${debug.class}" fork="true" >
+            <classpath refid="cp.examples"/>
+            <jvmarg value="-ea"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <arg line="${arg.input}"/>
+        </java>
+    </target>
+
+    <target name="run-selected-example-jpf">
+        <fail unless="jpf.config">Must set property 'jpf.config'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+        <!-- -->
+        <java classname="gov.nasa.jpf.JPF" failonerror="true" fork="true">
+            <arg value="${jpf.config}"/>
+            <classpath>
+                <pathelement location="build/examples"/>
+                <path refid="base.path"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="debug-selected-example-jpf">
+        <fail unless="jpf.config">Must set property 'jpf.config'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+
+        <path id="cp.examples">
+           <pathelement location="build/examples"/>
+           <path refid="base.path"/>
+        </path>
+        <sourcepath id="sp.examples">
+           <pathelement location="src/examples"/>
+           <path refid="source.path"/>
+        </sourcepath>
+
+        <nbjpdastart addressproperty="jpda.address" name="${jpf.config}" transport="dt_socket">
+            <classpath refid="cp.examples"/>
+            <sourcepath refid="sp.examples"/>
+        </nbjpdastart>
+
+        <java classname="gov.nasa.jpf.JPF" fork="true">
+            <classpath refid="cp.examples"/>
+            <jvmarg value="-ea"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <arg value="-c"/>
+            <arg value="${jpf.config}"/>
+        </java>
+    </target>
+
+
+    <!-- 'test' targets -->
+    <target name="run-selected-test">
+        <fail unless="run.class">Must set property 'run.class'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+        <input message="please enter arguments" addproperty="arg.input"/>
+        <java classname="${testrunner}" failonerror="true" fork="true">
+            <classpath>
+                <pathelement location="build/tests"/>
+                <path refid="base.path"/>
+            </classpath>
+            <jvmarg value="-ea"/>
+            <arg value="${run.class}"/>
+            <arg line="${arg.input}"/>
+        </java>
+    </target>
+
+    <target name="debug-selected-test">
+        <fail unless="debug.class">Must set property 'debug.class'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+
+        <path id="cp.tests">
+          <pathelement location="build/tests"/>
+          <path refid="base.path"/>
+        </path>
+        <sourcepath id="sp.tests">
+          <pathelement location="src/tests"/>
+          <path refid="source.path"/>
+        </sourcepath>
+
+        <nbjpdastart addressproperty="jpda.address" name="${debug.class}" transport="dt_socket">
+            <classpath refid="cp.tests"/>
+            <sourcepath refid="sp.tests"/>
+        </nbjpdastart>
+
+        <input message="please enter arguments" addproperty="arg.input"/>
+
+        <java classname="${testrunner}" fork="true">
+            <classpath refid="cp.tests"/>
+            <jvmarg value="-ea"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <arg value="${debug.class}"/>
+            <arg line="${arg.input}"/>
+        </java>
+    </target>
+
+    <target name="run-selected-test-jpf">
+        <fail unless="jpf.config">Must set property 'jpf.config'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+        <java classname="gov.nasa.jpf.JPF" failonerror="true" fork="true">
+            <jvmarg value="-ea"/>
+            <arg value="${jpf.config}"/>
+            <classpath>
+                <pathelement location="build/tests"/>
+                <path refid="base.path"/>
+            </classpath>
+        </java>
+    </target>
+
+    <target  name="debug-selected-test-jpf">
+        <fail unless="jpf.config">Must set property 'jpf.config'</fail>
+        <ant antfile="build.xml" inheritall="false" target="compile"/>
+
+        <path id="cp.tests">
+          <pathelement location="build/tests"/>
+          <path refid="base.path"/>
+        </path>
+        <sourcepath id="sp.tests">
+          <pathelement location="src/tests"/>
+          <path refid="source.path"/>
+        </sourcepath>
+
+        <nbjpdastart addressproperty="jpda.address" name="${jpf.config}" transport="dt_socket">
+            <classpath refid="cp.tests"/>
+            <sourcepath refid="sp.tests"/>
+        </nbjpdastart>
+
+        <java classname="gov.nasa.jpf.JPF" fork="true">
+            <classpath refid="cp.tests"/>
+            <jvmarg value="-ea"/>
+            <jvmarg value="-Xdebug"/>
+            <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
+            <arg value="-c"/>
+            <arg value="${jpf.config}"/>
+        </java>
+    </target>
+
+</project>

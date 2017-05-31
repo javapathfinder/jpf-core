@@ -1,0 +1,10 @@
+# JPF properties to run the oldclassic example with DeadlockAnalyzer report
+
+target=oldclassic
+
+# turn off instruction trace
+report.console.property_violation=error,snapshot
+
+# deadlock analyzer is a property-specific trace report generator
+listener=.listener.DeadlockAnalyzer
+deadlock.format=essential

@@ -1,0 +1,10 @@
+target = RobotManager
+
+listener=.listener.ChoiceSelector,.listener.ObjectTracker
+
+choice.use_trace=trace
+
+ot.refs = 0x160,0x185
+ot.log_fields = false
+
+cg.enumerate_random=true

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+JPF_HOME=`dirname "$0"`/..
+
+java -classpath "$JPF_HOME/build/jpf.jar" gov.nasa.jpf.tool.PrintEvents "$@"

@@ -1,0 +1,10 @@
+target = NumericValueCheck
+
+listener = .listener.NumericValueChecker
+
+# NumericValueChecker configuration
+range.vars = 1
+range.1.var = NumericValueCheck.main(java.lang.String[]):someVariable
+range.1.min = 0
+range.1.max = 42
+ 

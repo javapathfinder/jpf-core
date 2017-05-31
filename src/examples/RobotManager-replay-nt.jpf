@@ -1,0 +1,7 @@
+target = RobotManager
+
+listener=.listener.ChoiceSelector,.listener.NullTracker
+
+choice.use_trace=trace
+
+cg.enumerate_random=true

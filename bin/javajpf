@@ -1,0 +1,10 @@
+# shell script to start arbitrary classes through a JPFClassLoader
+
+JPF_HOME=`dirname "$0"`/..
+
+if test -z "$JVM_FLAGS"; then
+  JVM_FLAGS="-Xmx1024m -ea"
+fi
+
+
+java -ea -cp "$JPF_HOME/build/main:$JPF_HOME/build/peers:$JPF_HOME/build/annotations:$JPF_HOME/build/tests:$JPF_HOME/lib/bcel.jar:$JPF_HOME/lib/junit-4.10.jar" gov.nasa.jpf.Main -a "$@"

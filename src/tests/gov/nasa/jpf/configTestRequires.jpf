@@ -1,0 +1,7 @@
+# property file that requires previous property settings
+
+#pseudo property that causes exception if the provided value is not a defined key
+@requires = jpf.core
+
+# just to check if we got loaded
+whoa = boa

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" output="build/main" path="src/main"/>
+	<classpathentry kind="src" output="build/peers" path="src/peers"/>
+	<classpathentry kind="src" output="build/classes" path="src/classes"/>
+	<classpathentry kind="src" output="build/annotations" path="src/annotations"/>
+	<classpathentry kind="src" output="build/examples" path="src/examples"/>
+	<classpathentry kind="src" output="build/tests" path="src/tests"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="build"/>
+</classpath>

@@ -1,0 +1,1 @@
+This is the target location for the eclipse-jpf update site.

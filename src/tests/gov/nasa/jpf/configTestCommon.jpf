@@ -1,0 +1,4 @@
+# this represents properties that are used from a set of app property files,
+# but cannot put into project props because of breaking other extensions
+
+my.common = whatever

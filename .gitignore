@@ -1,0 +1,17 @@
+.hg
+.hgignore
+local.properties
+.version
+.idea/workspace.xml
+.idea/fileColors.xml
+.idea/uiDesigner.xml
+nbproject/private/*
+build/*
+dist/*
+tmp/*
+trace
+activity*.png
+*.class
+*.orig
+*~
+*.DS_Store

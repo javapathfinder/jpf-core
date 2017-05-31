@@ -1,0 +1,4 @@
+# test @include pseudo property
+
+# normally, this would probably be in a project dir, like ${jpf-symbc}
+@include = ${config_path}/configTestCommon.jpf
