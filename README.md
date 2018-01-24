@@ -6,15 +6,14 @@
 All the latest developments, changes, documentation can
 be found at: 
 
-http://babelfish.arc.nasa.gov/trac/jpf/wiki
-
+https://github.com/javapathfinder/jpf-core/wiki
 
 ========Building and Installing =========================
 
 If you are having problems installing and running JPF
 please look at the documentation on the wiki at:
 
-http://babelfish.arc.nasa.gov/trac/jpf/wiki/install/start
+https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF
 
 A lot of the commonly problems during the install and build
 process have been documented on the wiki. Please make sure
