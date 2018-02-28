@@ -1,35 +1,33 @@
-                          Java PathFinder README
-                          ======================
+# Java PathFinder
 
-========General Information about JPF ===================
+> An extensible software model checking framework for Java bytecode programs
 
-All the latest developments, changes, documentation can
-be found at: 
+## General Information about JPF
 
-https://github.com/javapathfinder/jpf-core/wiki
+All the latest developments, changes, documentation can be found on our
+[wiki](https://github.com/javapathfinder/jpf-core/wiki) page.
 
-========Building and Installing =========================
+## Building and Installing
 
-If you are having problems installing and running JPF
-please look at the documentation on the wiki at:
-
-https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF
-
-A lot of the commonly problems during the install and build
-process have been documented on the wiki. Please make sure
-that the the issue you are running into is not addressed
-there; if is not then feel free to contact us at
-java-pathfinder@googlegroups.com
+If you are having problems installing and running JPF, please look at the [How
+to install
+JPF](https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF) guide.
 
 
-======Documentation======================================
+We have documented on the wiki a lot of common problems during the install and
+build processes reported by users.  If you are facing any issue, please, make
+sure that we have not addressed it in documentation. Otherwise, feel free to
+contact us at java-pathfinder@googlegroups.com or open an issue on the Issue
+Tracker.
 
-There is a constant effort to update and add JPF
-documentation on the wiki. If you would like to contribute
-in that, please contact us at
-java-pathfinder@googlegroups.com
+## Documentation
 
+There is a constant effort to update and add JPF documentation on the wiki.
+If you would like to contribute in that, please, contact us at
+java-pathfinder@googlegroups.com.
 
+Contributions are welcomed and we encourage you to get involved with the
+community.
 
 Happy Verification
--- the Java PathFinder team
+*-- the Java PathFinder team*
