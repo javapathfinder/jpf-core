@@ -17,7 +17,6 @@
  */
 package gov.nasa.jpf.vm;
 
-import com.sun.org.apache.bcel.internal.generic.InstructionConstants;
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.JPFException;
