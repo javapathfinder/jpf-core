@@ -34,6 +34,7 @@ public class GenPeer {
   static final String SYS_PKG = "gov.nasa.jpf.vm";
   static final String MJI_ENV = "gov.nasa.jpf.vm.MJIEnv";
   static final String NATIVEPEER = "gov.nasa.jpf.vm.NativePeer";
+  static final String MJI_ANNOTATION = "gov.nasa.jpf.annotation.MJI";
   static final String INDENT = "  ";
   static final String SUPERCLASS = "NativePeer";
   static final String MJI_ANN = "@MJI";
@@ -147,6 +148,9 @@ public class GenPeer {
     pw.println(";");
     pw.print("import ");
     pw.print(NATIVEPEER);
+    pw.println(";");
+    pw.print("import ");
+    pw.print(MJI_ANNOTATION);
     pw.println(";");
     pw.println();
 
