@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package sun.misc;
+package jdk.internal.misc;
 
 import java.net.URLClassLoader;
 
