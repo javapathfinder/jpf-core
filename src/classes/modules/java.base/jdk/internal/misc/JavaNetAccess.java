@@ -19,6 +19,7 @@
 package jdk.internal.misc;
 
 import java.net.URLClassLoader;
+import jdk.internal.loader.URLClassPath;
 
 /**
  * this is a placeholder for a Java 6 class, which we only have here to
