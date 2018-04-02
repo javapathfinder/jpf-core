@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package sun.reflect;
+package jdk.internal.reflect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
