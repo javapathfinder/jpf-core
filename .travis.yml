@@ -1,11 +1,17 @@
 language: java
 before_install:
-  - sudo apt-get install junit4
   - mkdir ~/junit
   - ln -s /usr/share/java/junit4.jar ~/junit
   - ln -s /usr/share/java/hamcrest-core.jar ~/junit
   - export JUNIT_HOME=~/junit
+
 install: ant test
+
 jdk:
   - oraclejdk8
-  - openjdk8
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+      - junit4
