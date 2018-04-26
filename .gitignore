@@ -1,17 +1,62 @@
-.hg
-.hgignore
 local.properties
 .version
-.idea/workspace.xml
-.idea/fileColors.xml
-.idea/uiDesigner.xml
-nbproject/private/*
-build/*
-dist/*
-tmp/*
+
+####### General #######
 trace
 activity*.png
 *.class
 *.orig
 *~
 *.DS_Store
+
+####### Ant #######
+build/
+
+####### Covers NetBeans IDE #######
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+####### Covers Eclipse IDE #######
+.metadata
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+.settings/
+.loadpath
+.recommenders
+
+####### Covers JetBrains IDE: IntelliJ #######
+
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+.idea/ant.xml
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+# Gradle:
+.idea/**/gradle.xml
+.idea/**/libraries
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+out/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
