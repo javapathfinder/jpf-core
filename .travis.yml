@@ -1,17 +1,26 @@
 language: java
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:linuxuprising/java'
+    packages:
+      - oracle-java10-installer
+      - oracle-java10-set-default
+      - junit4
+
 before_install:
   - mkdir ~/junit
   - ln -s /usr/share/java/junit4.jar ~/junit
   - ln -s /usr/share/java/hamcrest-core.jar ~/junit
   - export JUNIT_HOME=~/junit
 
+  - wget --no-check-certificate https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.3-bin.tar.gz
+  - tar -xzvf apache-ant-1.10.3-bin.tar.gz  -C ~
+  - PATH=~/apache-ant-1.10.3/bin:$PATH
+
+env:
+  global:
+    - JAVA_HOME=/usr/lib/jvm/java-10-oracle
+
 install: ant test
-
-jdk:
-  - oraclejdk8
-
-addons:
-  apt:
-    packages:
-      - oracle-java8-installer
-      - junit4
