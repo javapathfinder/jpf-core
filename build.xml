@@ -106,8 +106,7 @@
     <mkdir dir="build/peers"/>
     <javac srcdir="src/peers" destdir="build/peers" includeantruntime="false"
            debug="${debug}" deprecation="${deprecation}" classpathref="lib.path">
-    	<compilerarg value="-XDenableSunApiLintControl"/>
-    	<compilerarg value="-Xlint:all,-sunapi,-serial"/>    	
+      <compilerarg value="-Xlint:all,-serial"/>
      </javac>
   </target>
   
@@ -115,8 +114,7 @@
     <mkdir dir="build/classes"/>
     <javac srcdir="src/classes" destdir="build/classes" includeantruntime="false"
            debug="${debug}" deprecation="${deprecation}">
-      <compilerarg value="-XDenableSunApiLintControl"/>
-      <compilerarg value="-Xlint:all,-sunapi"/>   
+      <compilerarg value="-Xlint:all"/>
       <classpath>
         <path refid="lib.path"/>
         <pathelement location="build/annotations"/>
@@ -130,8 +128,7 @@
     <javac sourcepath="" srcdir="src/tests" destdir="build/tests" includeantruntime="false"
            debug="${debug}" deprecation="${deprecation}"
            includes="*,gov/nasa/jpf/**,classloader_specific_tests/**">
-      <compilerarg value="-XDenableSunApiLintControl"/>
-      <compilerarg value="-Xlint:all,-sunapi,-serial,-rawtypes,-unchecked"/>
+      <compilerarg value="-Xlint:all,-serial,-rawtypes,-unchecked"/>
 
       <include name="*gov/nasa/jpf/**"/>
       <include name="classloader_specific_tests/**"/>
