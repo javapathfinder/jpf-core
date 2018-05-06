@@ -18,10 +18,13 @@
 package gov.nasa.jpf.vm;
 
 // see mixinJPFStack() comments
-import sun.misc.SharedSecrets;
-import sun.misc.JavaLangAccess;
 
 import gov.nasa.jpf.Config;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static gov.nasa.jpf.util.OATHash.*;
 
 /**
@@ -82,7 +85,6 @@ public class HashedAllocationContext implements AllocationContext {
    *   if (e.getClassName().equals("gov.nasa.jpf.vm.MJIEnv") && e.getMethodName().startsWith("new")){ ..
    */ 
   
-   static final JavaLangAccess JLA = SharedSecrets.getJavaLangAccess();
    static final String ENV_CLSNAME = MJIEnv.class.getName();
   
   // <2do> this method is problematic - we should not assume a fixed stack position
@@ -92,8 +94,10 @@ public class HashedAllocationContext implements AllocationContext {
   // those are convenience methods used from a gazillion of places that might share
    // the same SUT state
   static int mixinJPFStack (int h) {
-    throwable.fillInStackTrace();
-    
+    StackWalker stackWalker = StackWalker.getInstance(Collections.emptySet(),5);
+    List<StackWalker.StackFrame> frames;
+    frames = stackWalker.walk(frames_ -> frames_.collect(Collectors.toList()));
+
     // we know the callstack is at least 4 levels deep:
     //   0: mixinJPFStack
     //   1: getXAllocationContext
@@ -105,14 +109,14 @@ public class HashedAllocationContext implements AllocationContext {
     // note that it is not advisable to mixin more than the immediate newX() caller since
     // this would create state leaks for allocations that are triggered by SUT threads and
     // have different native paths (e.g. Class object creation caused by different SUT thread context)
-    
-    StackTraceElement e = JLA.getStackTraceElement(throwable, 4); // see note below regarding fixed call depth fragility
-    // <2do> this sucks - MJIEnv.newObject/newArray/newString are used from a gazillion of places that might not differ in SUT state
-    if (e.getClassName() == ENV_CLSNAME && e.getMethodName().startsWith("new")){
+
+    StackWalker.StackFrame stackFrame = frames.get(4); // see note below regarding fixed call depth fragility
+    // TODO: this sucks - MJIEnv.newObject/newArray/newString are used from a gazillion of places that might not differ in SUT state
+    if (stackFrame.getClassName() == ENV_CLSNAME && stackFrame.getMethodName().startsWith("new")) {
       // there is not much use to loop, since we don't have a good end condition
-      e = JLA.getStackTraceElement(throwable, 5);
+      stackFrame = frames.get(5);
     }
-          
+
     // NOTE - this is fragile since it is implementation dependent and differs
     // between JPF runs
     // the names are interned string from the class object
@@ -120,9 +124,9 @@ public class HashedAllocationContext implements AllocationContext {
     // h = hashMixin( h, System.identityHashCode(e.getMethodName()));
 
     // this should be reproducible, but the string hash is bad
-    h = hashMixin(h, e.getClassName().hashCode());
-    h = hashMixin(h, e.getMethodName().hashCode());
-    h = hashMixin(h, e.getLineNumber());
+    h = hashMixin(h, stackFrame.getClassName().hashCode());
+    h = hashMixin(h, stackFrame.getMethodName().hashCode());
+    h = hashMixin(h, stackFrame.getLineNumber());
     
     return h;
   }
