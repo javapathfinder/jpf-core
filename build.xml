@@ -112,13 +112,35 @@
   
   <target name="-compile-classes" if="have_classes" depends="-compile-annotations,-compile-main" >
     <mkdir dir="build/classes"/>
-    <javac srcdir="src/classes" destdir="build/classes" includeantruntime="false"
-           debug="${debug}" deprecation="${deprecation}">
+
+    <!-- compile non-module classes -->
+    <javac srcdir="src/classes/gov:src/classes/org" destdir="build/classes" includeantruntime="false"
+           debug="${debug}" deprecation="${deprecation}" classpathref="lib.path">
       <compilerarg value="-Xlint:all"/>
-      <classpath>
-        <path refid="lib.path"/>
-        <pathelement location="build/annotations"/>
-      </classpath>
+
+      <compilerarg value="--patch-module"/>
+      <compilerarg value="java.base=src/classes/modules/java.base"/>
+
+      <compilerarg value="--patch-module"/>
+      <compilerarg value="java.logging=src/classes/modules/java.logging"/>
+
+      <compilerarg value="--add-exports"/>
+      <compilerarg value="java.base/sun.net.www.protocol.http=ALL-UNNAMED"/>
+
+      <compilerarg value="--add-reads"/>
+      <compilerarg value="java.base=ALL-UNNAMED"/>
+    </javac>
+
+    <!-- patch model classes -->
+    <javac modulesourcepath="src/classes/modules" destdir="build/classes" includeantruntime="false"
+           debug="${debug}" deprecation="${deprecation}" classpathref="lib.path">
+      <compilerarg value="-Xlint:all"/>
+
+      <compilerarg value="--patch-module"/>
+      <compilerarg value="java.base=src/classes/modules/java.base"/>
+
+      <compilerarg value="--patch-module"/>
+      <compilerarg value="java.logging=src/classes/modules/java.logging"/>
     </javac>
   </target>
   

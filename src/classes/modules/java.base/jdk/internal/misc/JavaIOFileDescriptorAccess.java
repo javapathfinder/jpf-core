@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package sun.misc;
+package jdk.internal.misc;
 
-import java.net.URLClassLoader;
+import java.io.FileDescriptor;
 
 /**
  * this is a placeholder for a Java 6 class, which we only have here to
@@ -28,6 +28,10 @@ import java.net.URLClassLoader;
  *
  * <2do> THIS IS GOING AWAY AS SOON AS WE OFFICIALLY SWITCH TO JAVA 6
  */
-public interface JavaNetAccess {
-    URLClassPath getURLClassPath (URLClassLoader ucl);
+
+public interface JavaIOFileDescriptorAccess {
+    public void set(FileDescriptor fdObj, int fd);
+    public int get(FileDescriptor fdObj);
+    public void setHandle(FileDescriptor fdObj, long h);
+    public long getHandle(FileDescriptor fdObj);
 }

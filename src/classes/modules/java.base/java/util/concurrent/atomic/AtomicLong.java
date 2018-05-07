@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package sun.misc;
+package java.util.concurrent.atomic;
 
 /**
  * MJI model class for sun.misc.AtomicLong library abstraction
