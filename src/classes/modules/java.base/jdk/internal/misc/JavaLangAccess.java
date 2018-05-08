@@ -19,7 +19,7 @@
 package jdk.internal.misc;
 
 import sun.nio.ch.Interruptible;
-import sun.reflect.ConstantPool;
+import jdk.internal.reflect.ConstantPool;
 import sun.reflect.annotation.AnnotationType;
 
 /**
