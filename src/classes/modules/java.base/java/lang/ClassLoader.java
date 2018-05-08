@@ -26,8 +26,6 @@ import java.security.ProtectionDomain;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import sun.misc.CompoundEnumeration;
-
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  * 
