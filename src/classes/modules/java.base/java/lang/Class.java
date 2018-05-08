@@ -32,7 +32,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import sun.reflect.ConstantPool;
+import jdk.internal.reflect.ConstantPool;
 import sun.reflect.annotation.AnnotationType;
 
 /**
