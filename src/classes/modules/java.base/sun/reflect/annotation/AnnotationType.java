@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import sun.misc.SharedSecrets;
+import jdk.internal.misc.SharedSecrets;
 
 /**
  * this is a placeholder for a Java 6 class, which we only have here to

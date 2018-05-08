@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import sun.misc.JavaLangAccess;
-import sun.misc.SharedSecrets;
+import jdk.internal.misc.SharedSecrets;
 import sun.nio.ch.Interruptible;
 import jdk.internal.reflect.ConstantPool;
 import sun.reflect.annotation.AnnotationType;
