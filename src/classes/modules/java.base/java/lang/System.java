@@ -23,7 +23,7 @@ import java.nio.channels.Channel;
 import java.util.Map;
 import java.util.Properties;
 
-import sun.misc.JavaLangAccess;
+import jdk.internal.misc.JavaLangAccess;
 import jdk.internal.misc.SharedSecrets;
 import sun.nio.ch.Interruptible;
 import jdk.internal.reflect.ConstantPool;
