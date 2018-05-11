@@ -45,7 +45,18 @@ public final class String
 implements java.io.Serializable, Comparable<String>, CharSequence {
 
 	/** The value is used for character storage. */
-	private final char value[];
+	private final byte value[];
+
+	/**
+	 * The identifier of the encoding used to encode the bytes in
+	 * The supported values in this implementation are:
+	 * LATIN1
+	 * UTF16
+	 */
+	private final byte coder;
+
+	static final byte LATIN1 = 0;
+	static final byte UTF16 = 1;
 
 	/** Cache the hash code for the string */
 	private int hash; // Default to 0
@@ -57,25 +68,28 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 			new ObjectStreamField[0];
 
 	public String() {
-		this.value = new char[0];
+		this.value = "".value;
+		this.coder = "".coder;
 	}
 
 	public String(String original) {
 		this.value = original.value;
+		this.coder = original.coder;
 		this.hash = original.hash;
 	}
 
 	public String(char value[]) {
-		this.value = Arrays.copyOf(value, value.length);
+		this(value, 0, value.length, null);
 	}
 
 	public String(char value[], boolean share) {
-		this.value = Arrays.copyOf(value, value.length);
+		this(value, 0, value.length, null);
 	}
 	
 	public String(char value[], int offset, int count) {
 		String proxy=init(value,offset,count);
 		this.value=proxy.value;
+		this.coder=proxy.coder;
 		this.hash=proxy.hash;
 	}
 
@@ -84,6 +98,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	public String(int[] codePoints, int offset, int count) {
 		String proxy=init(codePoints,offset,count);
 		this.value=proxy.value;
+		this.coder=proxy.coder;
 		this.hash=proxy.hash;
 	}
 
@@ -93,6 +108,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	public String(byte ascii[], int hibyte, int offset, int count) {
 		String proxy=init(ascii,hibyte,offset,count);
 		this.value=proxy.value;
+		this.coder=proxy.coder;
 		this.hash=proxy.hash;
 	}
 
@@ -108,6 +124,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	public String(byte bytes[], int offset, int length, String charsetName){
 		String proxy=init(bytes,offset,length,charsetName);
 		this.value=proxy.value;
+		this.coder=proxy.coder;
 		this.hash=proxy.hash;
 	}
 
@@ -129,7 +146,9 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 			throw new StringIndexOutOfBoundsException(offset + length);
 		}
 
-		this.value =  StringCoding.decode(cset, x, offset, length);
+		StringCoding.Result result =  StringCoding.decode(cset, x, offset, length);
+		this.value = result.value;
+		this.coder = result.coder;
 	}
 
 	public String(byte bytes[], String charsetName)
@@ -144,6 +163,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	public String(byte bytes[], int offset, int length) {
 		String proxy=init(bytes,offset,length);
 		this.value=proxy.value;
+		this.coder=proxy.coder;
 		this.hash=proxy.hash;
 	}
 
@@ -156,14 +176,30 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 
 
 	public String(StringBuffer x) {
-		synchronized(x) {
-			this.value = Arrays.copyOf(x.getValue(), x.length());
-		}
+		this(x.toString());
 	}
 
 
 	public String(StringBuilder x) {
 		this.value = Arrays.copyOf(x.getValue(), x.length());
+		this.coder = x.coder;
+	}
+
+	String(char[] value, int off, int len, Void sig) {
+		if (len == 0) {
+			this.value = "".value;
+			this.coder = "".coder;
+		} else {
+			byte[] val = StringUTF16.compress(value, off, len);
+			if (val != null) {
+				this.value = val;
+				this.coder = LATIN1;
+				return;
+			}
+
+			this.coder = UTF16;
+			this.value = StringUTF16.toBytes(value, off, len);
+		}
 	}
 
 	@Deprecated
@@ -182,7 +218,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		if ((index < 0) || (index >= value.length)) {
 			throw new StringIndexOutOfBoundsException(index);
 		}
-		return value[index];
+		return this.isLatin1() ? StringLatin1.charAt(this.value, index) : StringUTF16.charAt(this.value, index);
 	}
 
 	native public int codePointAt(int index);
@@ -202,7 +238,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		if (x == null){
 			throw new NullPointerException();
 		}
-		return StringCoding.encode(x, value, 0, value.length);
+		return StringCoding.encode(x, this.coder, this.value);
 	}
 
 	native public byte[] getBytes();
@@ -224,25 +260,34 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	public boolean contentEquals (CharSequence charSequence){
 		if (value.length != charSequence.length()){
 			return false;
-    }
+		}
 
-    // that should be the common case (String)
+		// that should be the common case (String)
 		if (charSequence.equals(this)){
 			return true;
 		}
-    
-    // we can do that natively, too
+
+		// we can do that natively, too
 		if (charSequence instanceof AbstractStringBuilder) {
-      return equals0( value,  ((AbstractStringBuilder) charSequence).getValue(), value.length);
+			byte[] val = ((AbstractStringBuilder) charSequence).getValue();
+			byte coder = ((AbstractStringBuilder) charSequence).getCoder();
+			assert coder == UTF16 : "Currently only UTF16 is supported for String comparision with an instance of type AbstractStringBuilder";
+			return StringUTF16.contentEquals(this.value, val, this.length());
 		}
 
 		// generic CharSequence - expensive
-    char v[] = value;
-    for (int n=value.length, i=0; n >= 0; n--,i++){
-      if (v[i] != charSequence.charAt(i)){
-        return false;
-      }
-    }
+		int n = charSequence.length();
+		byte[] val = this.value;
+		if (isLatin1()) {
+			for (int i = 0; i < n; i++) {
+				if ((val[i] & 0xff) != charSequence.charAt(i)) {
+					return false;
+				}
+			}
+		} else {
+			return StringUTF16.contentEquals(val, charSequence, n);
+		}
+
 		return true;
 	}
 
@@ -356,7 +401,10 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	native public static String valueOf(double d);
 	public native String intern();
 
-  
+	private boolean isLatin1() {
+		return this.coder == LATIN1;
+	}
+
   /*
    * methods to be compatible with Harmony/Android, which now has modified
    * versions of the old (offset based) String
