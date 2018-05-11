@@ -57,7 +57,6 @@ public class SharedSecrets {
   private static JavaIOFileDescriptorAccess javaIOFileDescriptorAccess;
   private static JavaNioAccess javaNioAccess;
   private static JavaAWTAccess javaAWTAccess;
-  private static JavaOISAccess javaOISAccess;
   private static JavaObjectInputStreamAccess javaObjectInputStreamAccess;
 
   // (required for EnumSet ops)
@@ -159,16 +158,4 @@ public class SharedSecrets {
     return javaAWTAccess;
   }
 
-  public static void setJavaOISAccess(JavaOISAccess access) {
-    javaOISAccess = access;
-  }
-
-  public static JavaOISAccess getJavaOISAccess() {
-    if (javaOISAccess == null) {
-      unsafe.ensureClassInitialized(ObjectInputStream.class);
-      throw new UnsupportedOperationException("sun.misc.SharedSecrets.getJavaOISAccess() not supported yet");
-    }
-
-    return javaOISAccess;
-  }
 }
