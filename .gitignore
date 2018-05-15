@@ -12,6 +12,9 @@ activity*.png
 ####### Ant #######
 build/
 
+####### Gradle #######
+.gradle/
+
 ####### Covers NetBeans IDE #######
 nbproject/private/
 nbbuild/
