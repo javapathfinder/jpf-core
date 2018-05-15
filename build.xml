@@ -141,6 +141,12 @@
 
       <compilerarg value="--patch-module"/>
       <compilerarg value="java.logging=src/classes/modules/java.logging"/>
+
+      <compilerarg value="--add-exports"/>
+      <compilerarg value="java.base/sun.net.www.protocol.http=ALL-UNNAMED"/>
+
+      <compilerarg value="--add-reads"/>
+      <compilerarg value="java.base=ALL-UNNAMED"/>
     </javac>
   </target>
   
