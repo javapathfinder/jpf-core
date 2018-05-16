@@ -1,0 +1,5 @@
+ant.importBuild "build.xml"
+
+task check {
+    description = "This is a dummy task"
+}
