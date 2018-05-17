@@ -255,4 +255,24 @@ public class MethodTest extends TestMethodBase {
       assert a.foo() == 1 : "wrong A.foo() called for A1";
     }
   }
+
+
+  interface InterfaceWithDefaultMethod {
+    default int foo() {
+      return 42;
+    }
+  }
+
+  static class Base implements InterfaceWithDefaultMethod {
+  }
+
+  static class Child extends Base implements InterfaceWithDefaultMethod {
+  }
+
+  @Test
+  public void testDefaultMethodCall() {
+    if (verifyNoPropertyViolation()) {
+      assertEquals(42, new Child().foo());
+    }
+  }
 }
