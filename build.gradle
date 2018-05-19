@@ -1,5 +1,31 @@
-ant.importBuild "build.xml"
+apply plugin: "java"
 
-task check {
-    description = "This is a dummy task"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "junit:junit:4.12"
+}
+
+sourceSets {
+    main {
+        java.srcDirs = ["src/main", "src/peers", "src/annotations", "src/classes", "src/examples"]
+    }
+    test {
+        java.srcDirs = ["src/tests"]
+    }
+}
+
+test {
+    enableAssertions = true
+
+    maxHeapSize = "1024m"
+
+    include "**/*Test.class"
+    exclude "**/SplitInputStreamTest.class"
+    exclude "**/JPF_*.class"
 }
