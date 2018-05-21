@@ -60,3 +60,14 @@ test {
     }
 }
 
+task compile {
+    group = "JPF Build"
+    description = "Compile all JPF core sources"
+
+    // These are automatic generated tasks from the Java Gradle Plugin.
+    // Gradle is able to infer the ordering of the source source sets
+    // due to the compileClasspath attribute
+    dependsOn compileTestJava, compileExamplesJava
+}
+
+defaultTasks "compile"
