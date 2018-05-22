@@ -197,7 +197,9 @@
     <copy file=".version" todir="build/main/gov/nasa/jpf" failonerror="false"/>
 
     <jar jarfile="build/jpf-classes.jar">
-      <fileset dir="build/classes"/>
+      <fileset dir="build/classes/java.base"/>
+      <fileset dir="build/classes/java.logging"/>
+
       <fileset dir="build/annotations"/>
 
       <fileset dir="build/main">
