@@ -43,7 +43,14 @@ sourceSets {
     }
 }
 
+clean {
+    group = "JPF Build"
+}
+
 test {
+    group = "JPF Build"
+    description = "Runs core regression tests."
+
     enableAssertions = true
     forkEvery = 1
 
@@ -62,10 +69,10 @@ test {
 
 task compile {
     group = "JPF Build"
-    description = "Compile all JPF core sources"
+    description = "Compiles all JPF core sources."
 
     // These are automatic generated tasks from the Java Gradle Plugin.
-    // Gradle is able to infer the ordering of the source source sets
+    // Gradle is able to infer the ordering of the source sets
     // due to the compileClasspath attribute
     dependsOn compileTestJava, compileExamplesJava
 }
