@@ -101,10 +101,63 @@ task jpfClassesJar(type: Jar) {
     }
 }
 
+task jpfJar(type: Jar) {
+    archiveName = "jpf.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compileClassesJava, compileAnnotationsJava, compileJava, compilePeersJava
+
+    from sourceSets.main.java.outputDir
+    from sourceSets.peers.java.outputDir
+    from sourceSets.annotations.java.outputDir
+    from(sourceSets.classes.java.outputDir) {
+        include "org/junit/*.class"
+    }
+
+    manifest {
+        attributes(
+            "Built-By": "etc",
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Implementation-Title": "Java Pathfinder core system",
+            "Implementation-Version": "1234"
+        )
+    }
+}
+
+task annotationsJar(type: Jar) {
+    archiveName = "jpf-annotations.jpf"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compileAnnotationsJava
+
+    from sourceSets.annotations.java.outputDir
+}
+
+task classloaderSpecificTestsJar(type: Jar) {
+    archiveName = "classloader_specific_tests.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compileTestJava
+
+    from(sourceSets.test.java.outputDir) {
+        include "classloader_specific_tests/*.class"
+    }
+}
+
 jar {
     group = "JPF Build"
     description = "Generates the core JPF jar files."
-    dependsOn jpfClassesJar
+    dependsOn jpfClassesJar, jpfJar, annotationsJar,
+              classloaderSpecificTestsJar
 }
 
 defaultTasks "jar"
