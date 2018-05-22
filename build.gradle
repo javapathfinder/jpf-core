@@ -1,5 +1,73 @@
-ant.importBuild "build.xml"
+apply plugin: "java"
 
-task check {
-    description = "This is a dummy task"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
 }
+
+dependencies {
+    testImplementation "junit:junit:4.12"
+}
+
+sourceSets {
+    annotations {
+        java.srcDirs = ["src/annotations"]
+        java.outputDir = file("${buildDir}/annotations")
+    }
+    main {
+        java.srcDirs = ["src/main"]
+        java.outputDir = file("${buildDir}/main")
+        compileClasspath += sourceSets.annotations.output
+    }
+    examples {
+        java.srcDirs = ["src/examples"]
+        java.outputDir = file("${buildDir}/examples")
+        compileClasspath += sourceSets.main.output
+    }
+    classes {
+        java.srcDirs = ["src/classes"]
+        java.outputDir = file("${buildDir}/classes")
+        compileClasspath += sourceSets.main.output + sourceSets.annotations.output
+    }
+    peers {
+        java.srcDirs = ["src/peers"]
+        java.outputDir = file("${buildDir}/peers")
+        compileClasspath += sourceSets.main.output + sourceSets.annotations.output
+    }
+    test {
+        java.srcDirs = ["src/tests"]
+        java.outputDir = file("${buildDir}/tests")
+        compileClasspath += sourceSets.annotations.output + sourceSets.classes.output + sourceSets.peers.output
+    }
+}
+
+test {
+    enableAssertions = true
+    forkEvery = 1
+
+    maxHeapSize = "1024m"
+
+    include "**/*Test.class"
+    exclude "**/SplitInputStreamTest.class"
+    exclude "**/JPF_*.class"
+
+    // XXX Tests temporarily ignored because they are not fully supported in the Gradle build yet
+    new File("failing-tests.txt").eachLine { failedTestClass ->
+        def ignoredPath = "**/" + failedTestClass.replace(".", "/") + ".class"
+        exclude ignoredPath
+    }
+}
+
+task compile {
+    group = "JPF Build"
+    description = "Compile all JPF core sources"
+
+    // These are automatic generated tasks from the Java Gradle Plugin.
+    // Gradle is able to infer the ordering of the source source sets
+    // due to the compileClasspath attribute
+    dependsOn compileTestJava, compileExamplesJava
+}
+
+defaultTasks "compile"

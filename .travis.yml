@@ -1,17 +1,17 @@
 language: java
-before_install:
-  - mkdir ~/junit
-  - ln -s /usr/share/java/junit4.jar ~/junit
-  - ln -s /usr/share/java/hamcrest-core.jar ~/junit
-  - export JUNIT_HOME=~/junit
-
-install: ant test
 
 jdk:
   - oraclejdk8
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
 
 addons:
   apt:
     packages:
       - oracle-java8-installer
-      - junit4
