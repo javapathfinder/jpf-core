@@ -51,6 +51,8 @@ test {
     group = "JPF Build"
     description = "Runs core regression tests."
 
+    dependsOn jar
+
     enableAssertions = true
     forkEvery = 1
 
@@ -77,4 +79,32 @@ task compile {
     dependsOn compileTestJava, compileExamplesJava
 }
 
-defaultTasks "compile"
+task jpfClassesJar(type: Jar) {
+    archiveName = "jpf-classes.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compileClassesJava, compileAnnotationsJava, compileJava
+
+    from sourceSets.classes.java.outputDir
+    from sourceSets.annotations.java.outputDir
+    from(sourceSets.main.java.outputDir) {
+
+        def classesToInclude = ["Verify", "JPFShell", "TypeRef", "TestJPF",
+                                "TestMultiProcessJPF", "TestHelper"]
+
+        classesToInclude.each { className ->
+            include "**/" + className + ".class"
+        }
+    }
+}
+
+jar {
+    group = "JPF Build"
+    description = "Generates the core JPF jar files."
+    dependsOn jpfClassesJar
+}
+
+defaultTasks "jar"
