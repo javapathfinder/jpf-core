@@ -391,7 +391,7 @@ public class AttrsTest extends TestJPF {
   @Test public void testObjectAttr(){
 
     if (verifyNoPropertyViolation()){
-      Integer o = new Integer(41);
+      Integer o = 41;
       Verify.setObjectAttribute(o, 42);
 
       boolean b = Verify.getBoolean();

@@ -36,7 +36,7 @@ public class ObjectListTest extends TestJPF {
     assertTrue( ObjectList.size(attr) == 1);
     assertTrue( attr != null && attr.equals("one"));
     
-    attr = ObjectList.add(attr, new Integer(2));
+    attr = ObjectList.add(attr, 2);
     assertTrue( ObjectList.size(attr) == 2);
     assertTrue( attr != null && !(attr instanceof Integer));
   }
@@ -44,7 +44,7 @@ public class ObjectListTest extends TestJPF {
   
   @Test
   public void testListIteration() {
-    Object[] v = { new Integer(2), "one" };
+    Object[] v = {2, "one" };
     
     for (Object a: ObjectList.iterator(attr)){
       fail("list should be empty");
@@ -62,7 +62,7 @@ public class ObjectListTest extends TestJPF {
     }
 
     attr = ObjectList.add(attr, "three");
-    attr = ObjectList.add(attr, new Integer(4));
+    attr = ObjectList.add(attr, 4);
     
     int i=0;
     for (Integer a = ObjectList.getFirst(attr, Integer.class); a!=null; a = ObjectList.getNext(attr, Integer.class, a)){
@@ -157,12 +157,12 @@ public class ObjectListTest extends TestJPF {
     String one = "one";
     attr = ObjectList.add(attr, one);
     
-    Integer i1 = new Integer(1);
+    Integer i1 = 1;
     attr = ObjectList.replace(attr, one, i1);
     assertTrue(attr == i1);
     
     String two = "two";
-    Integer i2 = new Integer(2);
+    Integer i2 = 2;
     attr = ObjectList.add(attr, two);
     attr = ObjectList.replace(attr, two, i2);
     Integer o = ObjectList.getFirst(attr, Integer.class);

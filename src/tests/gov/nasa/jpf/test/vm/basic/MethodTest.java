@@ -59,7 +59,7 @@ class TestMethodBase extends TestJPF implements TMI {
     assert l == 424242;
     assert f == 4.2f;
     assert d == 4.242;
-    assert o.equals(new Integer(42));
+    assert o.equals(42);
 
     baseData = 44;
 
@@ -113,7 +113,7 @@ public class MethodTest extends TestMethodBase {
     assert l == 424242;
     assert f == 4.2f;
     assert d == 4.242;
-    assert o.equals(new Integer(42));
+    assert o.equals(42);
 
     data = 43;
 
@@ -146,7 +146,7 @@ public class MethodTest extends TestMethodBase {
   public void testCall() {
     if (verifyNoPropertyViolation()) {
       MethodTest o = new MethodTest();
-      assert o.foo(true, (byte) 4, '?', (short) 42, 4242, 424242, 4.2f, 4.242, new Integer(42)) == 4.242;
+      assert o.foo(true, (byte) 4, '?', (short) 42, 4242, 424242, 4.2f, 4.242, 42) == 4.242;
       assert o.data == 43;
     }
   }
@@ -155,7 +155,7 @@ public class MethodTest extends TestMethodBase {
   public void testInheritedCall() {
     if (verifyNoPropertyViolation()) {
       MethodTest o = new MethodTest();
-      assert o.baz(true, (byte) 4, '?', (short) 42, 4242, 424242, 4.2f, 4.242, new Integer(42));
+      assert o.baz(true, (byte) 4, '?', (short) 42, 4242, 424242, 4.2f, 4.242, 42);
       assert o.baseData == 44;
     }
   }

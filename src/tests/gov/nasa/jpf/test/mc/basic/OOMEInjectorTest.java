@@ -29,13 +29,13 @@ public class OOMEInjectorTest extends TestJPF {
   public void testDirectLoc () {
     if (verifyUnhandledException("java.lang.OutOfMemoryError", "+listener=.listener.OOMEInjector",
                                   "+oome.locations=OOMEInjectorTest.java:32")){
-      Object o = new Integer(42);
+      Object o = 42;
     }
   }
   
   
   static int bar(int y){
-    Integer res = new Integer(y);  // this should fail
+    Integer res = y;  // this should fail
     return res;
   }
   

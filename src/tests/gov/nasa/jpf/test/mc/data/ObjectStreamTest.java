@@ -47,7 +47,7 @@ public class ObjectStreamTest extends TestJPF {
   @Test
   public void testWriteReadInteger() {
     if (!isJPFRun()) {
-      Verify.writeObjectToFile(new Integer(123), osFileName);
+      Verify.writeObjectToFile(123, osFileName);
     }
 
     if (verifyNoPropertyViolation()) {

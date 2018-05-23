@@ -125,7 +125,7 @@ public class SystemTest extends TestJPF {
   public void testIncompatibleReferencesArrayCopy(){
     if (verifyUnhandledException("java.lang.ArrayStoreException")){
       String[] dst = new String[2];
-      Object[] src = { "one", new Integer(2) };
+      Object[] src = { "one", 2};
 
       System.arraycopy(src,0,dst,0,src.length);
     }

@@ -76,7 +76,7 @@ public class ArrayTest extends TestJPF {
     if (verifyNoPropertyViolation()) {
       try {
         Object x[] = new String[1];
-        x[0] = new Integer(42);
+        x[0] = 42;
       } catch (ArrayStoreException osx) {
         return;
       }
@@ -91,7 +91,7 @@ public class ArrayTest extends TestJPF {
 
       boolean caught = false;
       try {
-        System.arraycopy(new Object[]{new Integer(42)}, 0, new String[2], 0, 1);
+        System.arraycopy(new Object[]{42}, 0, new String[2], 0, 1);
       } catch (ArrayStoreException x) {
         caught = true;
       }
@@ -101,7 +101,7 @@ public class ArrayTest extends TestJPF {
 
       caught = false;
       try {
-        System.arraycopy(new Object[]{new Integer(42)}, 0, new int[2], 0, 1);
+        System.arraycopy(new Object[]{42}, 0, new int[2], 0, 1);
       } catch (ArrayStoreException x) {
         caught = true;
       }

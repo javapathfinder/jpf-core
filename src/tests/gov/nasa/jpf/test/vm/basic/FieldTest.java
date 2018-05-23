@@ -158,8 +158,8 @@ public class FieldTest extends TestFieldBase {
       base_D = _D;
       assert base_D == _D;
 
-      _o = new Integer(42);
-      assert _o.equals(new Integer(42));
+      _o = 42;
+      assert _o.equals(42);
       base_o = _o;
       assert base_o.equals(_o);
     }
@@ -202,8 +202,8 @@ public class FieldTest extends TestFieldBase {
       s_base_D = s_D;
       assert s_base_D == s_D;
 
-      s_o = new Integer(42);
-      assert s_o.equals(new Integer(42));
+      s_o = 42;
+      assert s_o.equals(42);
       s_base_o = s_o;
       assert s_base_o.equals(s_o);
     }

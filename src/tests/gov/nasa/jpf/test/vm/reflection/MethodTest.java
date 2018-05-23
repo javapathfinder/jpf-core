@@ -84,7 +84,7 @@ public class MethodTest extends TestJPF {
         Class<?> cls = o.getClass();
         Method m = cls.getMethod("foo", int.class, double.class, String.class);
 
-        Object res = m.invoke(o, new Integer(3), new Double(3.33), "Blah");
+        Object res = m.invoke(o, 3, 3.33, "Blah");
         double d = ((Double) res).doubleValue();
         System.out.println("foo returned " + d);
 
@@ -113,7 +113,7 @@ public class MethodTest extends TestJPF {
         Class<?> cls = o.getClass();
         Method m = cls.getMethod("harr", int.class);
 
-        Object res = m.invoke(null, new Integer(41));
+        Object res = m.invoke(null, 41);
         int r = (Integer)res;
         System.out.println("harr returned " + r);
 
