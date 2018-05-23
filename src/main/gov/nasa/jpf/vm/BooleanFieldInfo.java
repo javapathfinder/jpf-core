@@ -55,7 +55,7 @@ public class BooleanFieldInfo extends SingleSlotFieldInfo {
   @Override
   public Object getValueObject (Fields f){
     int i = f.getIntValue(storageOffset);
-    return new Boolean(i != 0);
+    return i != 0;
   }
 
   @Override

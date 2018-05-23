@@ -38,7 +38,7 @@ public class LRETURN extends LongReturn {
       ret = frame.peekLong();
     }
 
-    return new Long(ret);
+    return ret;
   }
 
   @Override

@@ -70,33 +70,33 @@ public class JVMNativeStackFrame extends NativeStackFrame {
 
       case Types.T_SHORT:
         ival = callerFrame.peek(stackOffset);
-        a[j] = new Short((short) ival);
+        a[j] = (short) ival;
 
         break;
 
       case Types.T_INT:
         ival = callerFrame.peek(stackOffset);
-        a[j] = new Integer(ival);
+        a[j] = ival;
 
         break;
 
       case Types.T_LONG:
         lval = callerFrame.peekLong(stackOffset);
         stackOffset++; // 2 stack words
-        a[j] = new Long(lval);
+        a[j] = lval;
 
         break;
 
       case Types.T_FLOAT:
         ival = callerFrame.peek(stackOffset);
-        a[j] = new Float(Types.intToFloat(ival));
+        a[j] = Types.intToFloat(ival);
 
         break;
 
       case Types.T_DOUBLE:
         lval = callerFrame.peekLong(stackOffset);
         stackOffset++; // 2 stack words
-        a[j] = new Double(Types.longToDouble(lval));
+        a[j] = Types.longToDouble(lval);
 
         break;
 
@@ -104,7 +104,7 @@ public class JVMNativeStackFrame extends NativeStackFrame {
         // NOTE - we have to store T_REFERENCE as an Integer, because
         // it shows up in our native method as an 'int'
         ival = callerFrame.peek(stackOffset);
-        a[j] = new Integer(ival);
+        a[j] = ival;
       }
 
       stackOffset++;
@@ -114,10 +114,10 @@ public class JVMNativeStackFrame extends NativeStackFrame {
     a[0] = ti.getMJIEnv();
     
     if (nmi.isStatic()) {
-      a[1] = new Integer( nmi.getClassInfo().getClassObjectRef());
+      a[1] = nmi.getClassInfo().getClassObjectRef();
     } else {
       int thisRef = callerFrame.getCalleeThis(nmi);
-      a[1] = new Integer( thisRef);
+      a[1] = thisRef;
       
       setThis(thisRef);
     }

@@ -244,19 +244,19 @@ public abstract class StackFrame implements Cloneable {
         case 'Z':
           return Boolean.valueOf(v != 0);
         case 'B':
-          return new Byte((byte) v);
+          return (byte) v;
         case 'C':
-          return new Character((char) v);
+          return (char) v;
         case 'S':
-          return new Short((short) v);
+          return (short) v;
         case 'I':
-          return new Integer(v);
+          return v;
         case 'J':
-          return new Long(Types.intsToLong(slots[slotIdx + 1], v)); // Java is big endian, Types expects low,high
+          return Types.intsToLong(slots[slotIdx + 1], v); // Java is big endian, Types expects low,high
         case 'F':
-          return new Float(Float.intBitsToFloat(v));
+          return Float.intBitsToFloat(v);
         case 'D':
-          return new Double(Double.longBitsToDouble(Types.intsToLong(slots[slotIdx + 1], v)));
+          return Double.longBitsToDouble(Types.intsToLong(slots[slotIdx + 1], v));
         default:  // reference
           if (v >= 0) {
             return VM.getVM().getHeap().get(v);
@@ -911,36 +911,36 @@ public abstract class StackFrame implements Cloneable {
         break;
 
       case Types.T_LONG:
-        args[i] = new Long(peekLong(off));
+        args[i] = peekLong(off);
         off+=2;
         break;
       case Types.T_DOUBLE:
-        args[i] = new Double(Types.longToDouble(peekLong(off)));
+        args[i] = Types.longToDouble(peekLong(off));
         off+=2;
         break;
 
       case Types.T_BOOLEAN:
-        args[i] = new Boolean(peek(off) != 0);
+        args[i] = peek(off) != 0;
         off++;
         break;
       case Types.T_BYTE:
-        args[i] = new Byte((byte)peek(off));
+        args[i] = (byte) peek(off);
         off++;
         break;
       case Types.T_CHAR:
-        args[i] = new Character((char)peek(off));
+        args[i] = (char) peek(off);
         off++;
         break;
       case Types.T_SHORT:
-        args[i] = new Short((short)peek(off));
+        args[i] = (short) peek(off);
         off++;
         break;
       case Types.T_INT:
-        args[i] = new Integer(peek(off));
+        args[i] = peek(off);
         off++;
         break;
       case Types.T_FLOAT:
-        args[i] = new Float(Types.intToFloat(peek(off)));
+        args[i] = Types.intToFloat(peek(off));
         off++;
         break;
       default:

@@ -211,7 +211,7 @@ public class SparseObjVector<E> {
     
     // add some
     for (int i = -4200; i < 4200; i += 10) {
-      vect.set(i, new Integer(i));
+      vect.set(i, i);
     }
     
     // check for added & non-added
@@ -230,7 +230,7 @@ public class SparseObjVector<E> {
     
     // add some more
     for (int i = -4201; i < 4200; i += 10) {
-      vect.set(i, new Integer(i));
+      vect.set(i, i);
     }
 
     // check all added
@@ -268,10 +268,10 @@ public class SparseObjVector<E> {
 
     // add even more
     for (int i = -4203; i < 4200; i += 10) {
-      vect.set(i, new Integer(i));
+      vect.set(i, i);
     }
     for (int i = -4204; i < 4200; i += 10) {
-      vect.set(i, new Integer(i));
+      vect.set(i, i);
     }
   }
 }

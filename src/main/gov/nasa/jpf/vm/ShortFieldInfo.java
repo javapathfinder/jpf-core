@@ -62,7 +62,7 @@ public class ShortFieldInfo extends SingleSlotFieldInfo {
   @Override
   public Object getValueObject (Fields f){
     int i = f.getIntValue(storageOffset);
-    return new Short((short)i);
+    return (short) i;
   }
 
   @Override

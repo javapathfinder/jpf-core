@@ -235,33 +235,33 @@ public class NativeMethodInfo extends MethodInfo {
 
       case Types.T_SHORT:
         ival = caller.peek(stackOffset);
-        a[j] = new Short((short) ival);
+        a[j] = (short) ival;
 
         break;
 
       case Types.T_INT:
         ival = caller.peek(stackOffset);
-        a[j] = new Integer(ival);
+        a[j] = ival;
 
         break;
 
       case Types.T_LONG:
         lval = caller.peekLong(stackOffset);
         stackOffset++; // 2 stack words
-        a[j] = new Long(lval);
+        a[j] = lval;
 
         break;
 
       case Types.T_FLOAT:
         ival = caller.peek(stackOffset);
-        a[j] = new Float(Types.intToFloat(ival));
+        a[j] = Types.intToFloat(ival);
 
         break;
 
       case Types.T_DOUBLE:
         lval = caller.peekLong(stackOffset);
         stackOffset++; // 2 stack words
-        a[j] = new Double(Types.longToDouble(lval));
+        a[j] = Types.longToDouble(lval);
 
         break;
 
@@ -269,7 +269,7 @@ public class NativeMethodInfo extends MethodInfo {
         // NOTE - we have to store T_REFERENCE as an Integer, because
         // it shows up in our native method as an 'int'
         ival = caller.peek(stackOffset);
-        a[j] = new Integer(ival);
+        a[j] = ival;
       }
 
       stackOffset++;
@@ -277,9 +277,9 @@ public class NativeMethodInfo extends MethodInfo {
 
     //--- set  our standard MJI header arguments
     if (isStatic()) {
-      a[1] = new Integer(ci.getClassObjectRef());
+      a[1] = ci.getClassObjectRef();
     } else {
-      a[1] = new Integer(ti.getCalleeThis(this));
+      a[1] = ti.getCalleeThis(this);
     }
 
     a[0] = ti.getMJIEnv();

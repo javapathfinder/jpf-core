@@ -844,31 +844,31 @@ public class MJIEnv {
   }
 
   public Byte getByteObject (int objref){
-    return new Byte(getByteField(objref, "value"));
+    return getByteField(objref, "value");
   }
 
   public Character getCharObject (int objref){
-    return new Character(getCharField(objref, "value"));
+    return getCharField(objref, "value");
   }
 
   public Short getShortObject (int objref){
-    return new Short(getShortField(objref, "value"));
+    return getShortField(objref, "value");
   }
 
   public Integer getIntegerObject (int objref){
-    return new Integer(getIntField(objref, "value"));
+    return getIntField(objref, "value");
   }
 
   public Long getLongObject (int objref){
-    return new Long(getLongField(objref, "value"));
+    return getLongField(objref, "value");
   }
 
   public Float getFloatObject (int objref){
-    return new Float(getFloatField(objref, "value"));
+    return getFloatField(objref, "value");
   }
 
   public Double getDoubleObject (int objref){
-    return new Double(getDoubleField(objref, "value"));
+    return getDoubleField(objref, "value");
   }
 
   // danger - the returned arrays could be used to modify contents of stored objects

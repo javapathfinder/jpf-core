@@ -111,7 +111,7 @@ public class RandomIntIntervalGenerator extends ChoiceGeneratorBase<Integer> imp
 
   @Override
   public Integer getNextChoice () {
-    return new Integer(next);
+    return next;
   }
 
   @Override

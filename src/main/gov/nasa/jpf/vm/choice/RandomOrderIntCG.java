@@ -57,7 +57,7 @@ public class RandomOrderIntCG extends ChoiceGeneratorBase<Integer> implements In
   
   @Override
   public Integer getNextChoice() {
-    return new Integer(choices[nextIdx]);
+    return choices[nextIdx];
   }
 
   @Override

@@ -58,7 +58,7 @@ public class RandomOrderLongCG extends ChoiceGeneratorBase<Long> implements Long
 
   @Override
   public Long getNextChoice() {
-    return new Long(choices[nextIdx]);
+    return choices[nextIdx];
   }
 
   @Override

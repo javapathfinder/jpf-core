@@ -96,7 +96,7 @@ public class DeadlockAnalyzer extends ListenerAdapter {
     }
 
     void printLocOn (PrintWriter pw) {
-      pw.print(String.format("%6d", new Integer(stateId)));
+      pw.print(String.format("%6d", stateId));
       
       if (insn != null) {
         pw.print(String.format(" %18.18s ", insn.getMnemonic()));

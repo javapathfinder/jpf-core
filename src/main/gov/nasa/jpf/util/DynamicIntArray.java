@@ -49,7 +49,7 @@ public final class DynamicIntArray implements Iterable<Integer> {
 
     @Override
 	public Integer next() {
-      return new Integer(get(i++));
+      return get(i++);
     }
 
     @Override

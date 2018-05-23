@@ -106,7 +106,7 @@ public class IntIntervalGenerator extends ChoiceGeneratorBase<Integer> implement
   
   @Override
   public Integer getNextChoice () {
-    return new Integer(next);
+    return next;
   }
 
   @Override

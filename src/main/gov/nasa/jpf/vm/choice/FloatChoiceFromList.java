@@ -42,12 +42,12 @@ public class FloatChoiceFromList extends NumberChoiceFromList<Float> implements 
   @Override
   protected Float parseLiteral (String literal, int sign){
     Float val = Float.parseFloat(literal);
-    return new Float( val * sign);
+    return val * sign;
   }
   
   @Override
   protected Float newValue (Number num, int sign){
-    return new Float( num.intValue() * sign);
+    return (float) (num.intValue() * sign);
   }
   
   /**
