@@ -44,7 +44,7 @@ public class JPF_java_io_RandomAccessFile extends NativePeer {
 	// get the mapped object if one exists
 	private static int getMapping(MJIEnv env, int this_ptr) {
 		int fn_ptr = env.getReferenceField(this_ptr,"filename");
-		Object o = File2DataMap.get(new Integer(fn_ptr));
+		Object o = File2DataMap.get(fn_ptr);
 		if (o == null)
 			return this_ptr;
 		return ((Integer)o).intValue();
@@ -54,8 +54,8 @@ public class JPF_java_io_RandomAccessFile extends NativePeer {
   @MJI
 	public void setDataMap____V (MJIEnv env, int this_ptr) {
 		int fn_ptr = env.getReferenceField(this_ptr,"filename");
-		if (!File2DataMap.containsKey(new Integer(fn_ptr))) 
-			File2DataMap.put(new Integer(fn_ptr),new Integer(this_ptr));
+		if (!File2DataMap.containsKey(fn_ptr))
+			File2DataMap.put(fn_ptr, this_ptr);
 	}
 	
   static ClassInfo getDataRepresentationClassInfo (MJIEnv env) {
