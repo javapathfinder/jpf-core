@@ -40,6 +40,7 @@ sourceSets {
         java.srcDirs = ["src/tests"]
         java.outputDir = file("${buildDir}/tests")
         compileClasspath += sourceSets.annotations.output + sourceSets.classes.output + sourceSets.peers.output
+        runtimeClasspath += compileClasspath
     }
 }
 
