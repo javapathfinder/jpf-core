@@ -129,6 +129,7 @@ public class BoxObjectCacheTest extends TestJPF {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testIntCacheBoxObject() throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
     if (verifyNoPropertyViolation(JPF_ARGS)){
       Integer i1 = Integer.valueOf( 1);        // should be cached
@@ -142,6 +143,7 @@ public class BoxObjectCacheTest extends TestJPF {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testCharacterCacheBoxObject() throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
     if (verifyNoPropertyViolation(JPF_ARGS)){
       Character c1 = Character.valueOf( '?');        // should be cached
@@ -155,6 +157,7 @@ public class BoxObjectCacheTest extends TestJPF {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testByteCacheBoxObject() throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
     if (verifyNoPropertyViolation(JPF_ARGS)){
       Byte b1 = Byte.valueOf( (byte)1);        // should be cached
@@ -168,6 +171,7 @@ public class BoxObjectCacheTest extends TestJPF {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testShortCacheBoxObject() throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
     if (verifyNoPropertyViolation(JPF_ARGS)){
       Short s1 = Short.valueOf((short)1);        // should be cached
@@ -181,6 +185,7 @@ public class BoxObjectCacheTest extends TestJPF {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testLongCacheBoxObject() throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
     if (verifyNoPropertyViolation(JPF_ARGS)){
       Long l1 = Long.valueOf(1);        // should be cached
@@ -194,6 +199,7 @@ public class BoxObjectCacheTest extends TestJPF {
   }
 
   @Test
+  @SuppressWarnings("deprecation")
   public void testBooleanCacheBoxObject() throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException{
     if (verifyNoPropertyViolation(JPF_ARGS)){
       Boolean b1 = Boolean.valueOf(true);        // should be cached

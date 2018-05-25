@@ -361,6 +361,7 @@ public class AttrsTest extends TestJPF {
     }
   }
   
+  @SuppressWarnings("deprecation")
   @Test public void testInteger() {
     if (verifyNoPropertyViolation()) {
       int v = 42;
