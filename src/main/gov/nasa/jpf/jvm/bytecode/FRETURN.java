@@ -60,7 +60,7 @@ public class FRETURN extends JVMReturnInstruction {
       ret = frame.peekFloat();
     }
     
-    return new Float(ret);
+    return ret;
   }
   
   @Override

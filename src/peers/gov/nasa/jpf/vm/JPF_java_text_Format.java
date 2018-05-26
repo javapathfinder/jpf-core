@@ -41,7 +41,7 @@ public class JPF_java_text_Format extends NativePeer {
   
   static void putInstance (MJIEnv env, int objref, Format fmt) {
     int id = env.getIntField(objref,  "id");
-    formatters.put(new Integer(id), fmt);
+    formatters.put(id, fmt);
   }
 
   static Format getInstance (MJIEnv env, int objref) {

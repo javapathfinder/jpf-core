@@ -63,9 +63,9 @@ public class DoubleThresholdGenerator extends ChoiceGeneratorBase<Double> implem
   @Override
   public Double getNextChoice () {
     if (count >=0) {
-      return new Double(values[count]);
+      return values[count];
     } else {
-      return new Double(values[0]);
+      return values[0];
     }
   }
 

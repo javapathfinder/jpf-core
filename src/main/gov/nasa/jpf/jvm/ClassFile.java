@@ -955,7 +955,7 @@ public class ClassFile extends BinaryClassSource {
           dataIdx[i] = j++;
 
           int iVal = (data[j++]&0xff)<<24 | (data[j++]&0xff)<<16 | (data[j++]&0xff)<<8 | (data[j++]&0xff);
-          values[i] = new Integer(iVal);
+          values[i] = iVal;
           break;
 
         case CONSTANT_FLOAT:  // Float_info  { u1 tag; u4 bytes; }
@@ -963,14 +963,14 @@ public class ClassFile extends BinaryClassSource {
 
           int iBits = (data[j++]&0xff)<<24 | (data[j++]&0xff)<<16 | (data[j++]&0xff)<<8 | (data[j++]&0xff);
           float fVal = Float.intBitsToFloat(iBits);
-          values[i] = new Float(fVal);
+          values[i] = fVal;
           break;
 
         case CONSTANT_LONG:  // Long_info { u1 tag; u4 high_bytes; u4 low_bytes; }
           dataIdx[i] = j++;
           long lVal =  (data[j++]&0xffL)<<56 | (data[j++]&0xffL)<<48 | (data[j++]&0xffL)<<40 | (data[j++]&0xffL)<<32
                     | (data[j++]&0xffL)<<24 | (data[j++]&0xffL)<<16 | (data[j++]&0xffL)<<8 | (data[j++]&0xffL);
-          values[i] = new Long(lVal);
+          values[i] = lVal;
 
           dataIdx[++i] = -1;  // 8 byte cpValue occupy 2 index slots
           break;
@@ -981,7 +981,7 @@ public class ClassFile extends BinaryClassSource {
           long lBits = (data[j++]&0xffL)<<56 | (data[j++]&0xffL)<<48 | (data[j++]&0xffL)<<40 | (data[j++]&0xffL)<<32
                     | (data[j++]&0xffL)<<24 | (data[j++]&0xffL)<<16 | (data[j++]&0xffL)<<8 | (data[j++]&0xffL);
           double dVal = Double.longBitsToDouble(lBits);
-          values[i] = new Double(dVal);
+          values[i] = dVal;
 
           dataIdx[++i] = -1;  // 8 byte cpValue occupy 2 index slots
           break;

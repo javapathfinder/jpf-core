@@ -66,7 +66,7 @@ public class LongFieldInfo extends DoubleSlotFieldInfo {
   @Override
   public Object getValueObject (Fields f){
     long v = f.getLongValue(storageOffset);
-    return new Long(v);
+    return v;
   }
 
   @Override

@@ -40,7 +40,7 @@ public class DRETURN extends LongReturn {
       ret = frame.peekLong();
     }
 
-    return new Double(Types.longToDouble(ret));
+    return Types.longToDouble(ret);
   }
 
   @Override

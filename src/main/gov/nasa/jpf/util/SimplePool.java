@@ -164,20 +164,20 @@ public class SimplePool<E> {
   public static void main(String[] args) {
     SimplePool<Integer> pool = new SimplePool<Integer>(4);
     for (int i = 0; i < 1000000; i += 42) {
-      Integer o = new Integer(i);
+      Integer o = i;
       Integer p = pool.pool(o);
       if (o != p) throw new RuntimeException();
       Integer q = pool.pool(p);
       if (q != p) throw new RuntimeException();
     }
     for (int i = 0; i < 1000000; i += 42) {
-      Integer o = new Integer(i);
+      Integer o = i;
       Integer p = pool.pool(o);
       if (o == p) throw new RuntimeException();
       if (!o.equals(p)) throw new RuntimeException();
     }
     for (int i = 1; i < 1000000; i += 42) {
-      Integer o = new Integer(i);
+      Integer o = i;
       Integer p = pool.pool(o);
       if (o != p) throw new RuntimeException();
     }

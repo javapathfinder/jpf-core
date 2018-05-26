@@ -60,7 +60,7 @@ public class IRETURN extends JVMReturnInstruction {
       ret = frame.peek();
     }
 
-    return new Integer(ret);
+    return ret;
   }
   
   @Override

@@ -59,14 +59,14 @@ public class SparseClusterArrayTest extends TestJPF {
     int ref;
 
     ref = (1 << S1) | 42;
-    arr.set(ref, (v = new Integer(ref)));
+    arr.set(ref, (v = ref));
 
     Object o = arr.get(ref);
     System.out.println(o);
     assert o.equals(v);
 
     ref = (2 << S1);
-    arr.set(ref, new Integer(ref));
+    arr.set(ref, ref);
 
     System.out.println("cardinality = " + arr.cardinality());
     assert arr.cardinality() == 2;
@@ -78,7 +78,7 @@ public class SparseClusterArrayTest extends TestJPF {
 
   @Test
   public void testNextNull () {
-    Object e = new Integer(42);
+    Object e = 42;
     SparseClusterArray<Object> arr = new SparseClusterArray<Object>();
     int k;
     int limit = 10000000;
@@ -173,9 +173,9 @@ public class SparseClusterArrayTest extends TestJPF {
   public void testClone() {
     SparseClusterArray<Integer> arr = new SparseClusterArray<Integer>();
 
-    arr.set(0, new Integer(0));
-    arr.set(42, new Integer(42));
-    arr.set(6762, new Integer(6762));
+    arr.set(0, 0);
+    arr.set(42, 42);
+    arr.set(6762, 6762);
     arr.set(6762, null);
 
     Cloner<Integer> cloner = new Cloner<Integer>() {
@@ -199,14 +199,14 @@ public class SparseClusterArrayTest extends TestJPF {
   public void testSnapshot() {
     SparseClusterArray<Integer> arr = new SparseClusterArray<Integer>();
 
-    arr.set(0, new Integer(0));
-    arr.set(42, new Integer(42));
-    arr.set(4095, new Integer(4095));
-    arr.set(4096, new Integer(4096));
-    arr.set(7777, new Integer(7777));
-    arr.set(67620, new Integer(67620));
+    arr.set(0, 0);
+    arr.set(42, 42);
+    arr.set(4095, 4095);
+    arr.set(4096, 4096);
+    arr.set(7777, 7777);
+    arr.set(67620, 67620);
     arr.set(67620, null);
-    arr.set(7162827, new Integer(7162827));
+    arr.set(7162827, 7162827);
 
     Transformer<Integer,String> i2s = new Transformer<Integer,String>() {
       @Override
@@ -218,7 +218,7 @@ public class SparseClusterArrayTest extends TestJPF {
     Transformer<String,Integer> s2i = new Transformer<String,Integer>() {
       @Override
 	public Integer transform (String s) {
-        return new Integer( Integer.parseInt(s));
+        return Integer.parseInt(s);
       }
     };
 
@@ -230,8 +230,8 @@ public class SparseClusterArrayTest extends TestJPF {
     }
 
     arr.set(42,null);
-    arr.set(87, new Integer(87));
-    arr.set(7162827, new Integer(-1));
+    arr.set(87, 87);
+    arr.set(7162827, -1);
 
     arr.restore(snap, s2i);
     for (Integer i : arr) {
@@ -251,17 +251,17 @@ public class SparseClusterArrayTest extends TestJPF {
   public void testChanges() {
     SparseClusterArray<Integer> arr = new SparseClusterArray<Integer>();
 
-    arr.set(42, new Integer(42));
-    arr.set(6276, new Integer(6276));
+    arr.set(42, 42);
+    arr.set(6276, 6276);
 
     arr.trackChanges();
 
-    arr.set(0, new Integer(0));
-    arr.set(42, new Integer(-1));
-    arr.set(4095, new Integer(4095));
-    arr.set(4096, new Integer(4096));
-    arr.set(7777, new Integer(7777));
-    arr.set(7162827, new Integer(7162827));
+    arr.set(0, 0);
+    arr.set(42, -1);
+    arr.set(4095, 4095);
+    arr.set(4096, 4096);
+    arr.set(7777, 7777);
+    arr.set(7162827, 7162827);
 
     Entry<Integer> changes = arr.getChanges();
     arr.revertChanges(changes);

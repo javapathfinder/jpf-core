@@ -61,7 +61,7 @@ public class FloatFieldInfo extends SingleSlotFieldInfo {
   @Override
   public Object getValueObject (Fields f){
     float v = f.getFloatValue(storageOffset);
-    return new Float(v);
+    return v;
   }
 
   @Override

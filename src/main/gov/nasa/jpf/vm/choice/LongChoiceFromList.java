@@ -41,12 +41,12 @@ public class LongChoiceFromList extends NumberChoiceFromList<Long> implements Lo
   @Override
   protected Long parseLiteral(String literal, int sign) {
     long val = Long.parseLong(literal);
-    return new Long(val * sign);
+    return val * sign;
   }
 
   @Override
   protected Long newValue(Number num, int sign) {
-    return new Long(num.longValue() * sign);
+    return num.longValue() * sign;
   }
 
   /**

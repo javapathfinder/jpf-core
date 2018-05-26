@@ -67,7 +67,7 @@ public class DoubleFieldInfo extends DoubleSlotFieldInfo {
   @Override
   public Object getValueObject (Fields f){
     double d = f.getDoubleValue(storageOffset);
-    return new Double(d);
+    return d;
   }
 
   @Override

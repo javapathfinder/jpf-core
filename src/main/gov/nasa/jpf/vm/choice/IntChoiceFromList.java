@@ -50,12 +50,12 @@ public class IntChoiceFromList extends NumberChoiceFromList<Integer> implements 
   @Override
   protected Integer parseLiteral (String literal, int sign){
     int val = Integer.parseInt(literal);
-    return new Integer( val * sign);
+    return val * sign;
   }
   
   @Override
   protected Integer newValue (Number num, int sign){
-    return new Integer( num.intValue() * sign);
+    return num.intValue() * sign;
   }
   
   /**

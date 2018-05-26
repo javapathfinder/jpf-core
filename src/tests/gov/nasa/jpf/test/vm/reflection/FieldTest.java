@@ -28,7 +28,7 @@ public class FieldTest extends TestJPF {
   int instInt = 42;
   double instDouble = 42.0;
   double primField = 42.0;
-  Object refField = new Integer(42);
+  Object refField = 42;
   int[] arrayField = new int[]{42};
 
   static int statInt = 43;
@@ -102,7 +102,7 @@ public class FieldTest extends TestJPF {
         double d = ((Double) f.get(this)).doubleValue();
         assert d == 42.0;
 
-        f.set(this, new Double(43.0));
+        f.set(this, 43.0);
         assert primField == 43.0;
 
       } catch (Throwable t) {
@@ -122,7 +122,7 @@ public class FieldTest extends TestJPF {
         Object o = f.get(this);
         assert o == refField;
 
-        Object ob = new Double(43.0);
+        Object ob = 43.0;
         f.set(this, ob);
         assert ob == refField;
 

@@ -46,12 +46,12 @@ public class DoubleChoiceFromList extends NumberChoiceFromList<Double> implement
   @Override
   protected Double parseLiteral(String literal, int sign) {
     double val = Double.parseDouble(literal);
-    return new Double(val * sign);
+    return val * sign;
   }
 
   @Override
   protected Double newValue(Number num, int sign) {
-    return new Double(num.intValue() * sign);
+    return (double) (num.intValue() * sign);
   }
 
   /**

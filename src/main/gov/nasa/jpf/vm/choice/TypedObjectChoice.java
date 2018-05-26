@@ -115,9 +115,9 @@ public class TypedObjectChoice extends ChoiceGeneratorBase<Integer> implements R
   @Override
   public Integer getNextChoice () {
     if ((count >= 0) && (count < values.length)) {
-      return new Integer(values[count]);
+      return values[count];
     } else {
-      return new Integer(-1);
+      return -1;
     }
   }
   

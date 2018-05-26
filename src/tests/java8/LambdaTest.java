@@ -112,7 +112,7 @@ public class LambdaTest extends TestJPF{
     }
   }
   
-  static Integer io = new Integer(20);
+  static Integer io = 20;
   
   @Test
   public void testClosure() {
