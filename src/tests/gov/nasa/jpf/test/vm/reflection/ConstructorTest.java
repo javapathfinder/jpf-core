@@ -85,7 +85,7 @@ public class ConstructorTest extends TestJPF {
 
         I obj = ctor.newInstance(42);
         assertNotNull(obj);
-        assertEquals(new Integer(42), obj.i);
+        assertEquals(Integer.valueOf(42), obj.i);
       } catch (Throwable t) {
         fail("ctor invocation with Integer failed: " + t);
       }
