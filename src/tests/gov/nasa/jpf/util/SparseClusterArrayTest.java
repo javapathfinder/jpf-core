@@ -180,6 +180,7 @@ public class SparseClusterArrayTest extends TestJPF {
 
     Cloner<Integer> cloner = new Cloner<Integer>() {
       @Override
+      @SuppressWarnings("deprecation")
 	public Integer clone (Integer other) {
         return new Integer(other);
       }
