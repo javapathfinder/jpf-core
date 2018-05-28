@@ -543,7 +543,7 @@ public abstract class TestJPF implements JPFShell  {
         testMethodName = testMethod.getName();
         String result = testMethodName;
         try {
-          Object testObject = testCls.newInstance();
+          Object testObject = testCls.getDeclaredConstructor().newInstance();
 
           nTests++;
           reportTestStart( testMethodName);
@@ -564,7 +564,7 @@ public abstract class TestJPF implements JPFShell  {
             invoke( cleanupMethod, testObject);
           }
 
-        } catch (InvocationTargetException x) {
+        } catch (InvocationTargetException | NoSuchMethodException x) {
           Throwable cause = x.getCause();
           cause.printStackTrace();
           if (cause instanceof AssertionError) {
@@ -640,7 +640,7 @@ public abstract class TestJPF implements JPFShell  {
     String testMthName = getProperty("target.test_method");
     
     Class<?> testCls = Class.forName(testClsName);
-    Object target = testCls.newInstance();
+    Object target = testCls.getDeclaredConstructor().newInstance();
     
     Method method = testCls.getMethod(testMthName);
 

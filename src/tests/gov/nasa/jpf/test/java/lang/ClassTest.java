@@ -150,10 +150,10 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
   }
   
   @Test 
-  public void testNewInstance () throws InstantiationException, IllegalAccessException {
+  public void testNewInstance () throws ReflectiveOperationException {
     if (verifyNoPropertyViolation()) {
       Class<?> clazz = ClassTest.class;
-      ClassTest o = (ClassTest) clazz.newInstance();
+      ClassTest o = (ClassTest) clazz.getDeclaredConstructor().newInstance();
       
       System.out.println("new instance: " + o);
       
@@ -169,10 +169,10 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
   }
   
   @Test 
-  public void testNewInstanceFailAccess () throws IllegalAccessException, InstantiationException {
+  public void testNewInstanceFailAccess () throws ReflectiveOperationException {
     if (verifyUnhandledException("java.lang.IllegalAccessException")){
       Class<?> clazz = InAccessible.class;
-      clazz.newInstance();
+      clazz.getDeclaredConstructor().newInstance();
     }
   }
   
@@ -180,10 +180,10 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
   }
     
   @Test 
-  public void testNewInstanceFailAbstract () throws IllegalAccessException, InstantiationException {
+  public void testNewInstanceFailAbstract () throws ReflectiveOperationException {
     if (verifyUnhandledException("java.lang.InstantiationException")){
       Class<?> clazz = AbstractClass.class;
-      clazz.newInstance();
+      clazz.getDeclaredConstructor().newInstance();
     }
   }
   
