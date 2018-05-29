@@ -48,45 +48,6 @@ clean {
     group = "JPF Build"
 }
 
-test {
-    group = "JPF Build"
-    description = "Runs core regression tests."
-
-    dependsOn jar
-
-    enableAssertions = true
-    forkEvery = 1
-
-    maxHeapSize = "1024m"
-
-    include "**/*Test.class"
-    exclude "**/SplitInputStreamTest.class"
-    exclude "**/JPF_*.class"
-
-    // XXX Tests temporarily ignored because they are not fully supported in the Gradle build yet
-    new File("failing-tests.txt").eachLine { failedTestClass ->
-        def ignoredPath = "**/" + failedTestClass.replace(".", "/") + ".class"
-        exclude ignoredPath
-    }
-
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-
-    afterSuite { testDescriptor, result ->
-        if (!testDescriptor.parent) {
-            println "Test Execution: ${result.resultType}"
-
-            def summaryFields = ["${result.testCount} tests",
-                                 "${result.successfulTestCount} passed",
-                                 "${result.failedTestCount} failed",
-                                 "${result.skippedTestCount} skipped"]
-
-            println "Summary: " + summaryFields.join(", ")
-        }
-    }
-}
-
 task compile(type: Copy) {
     group = "JPF Build"
     description = "Compiles all JPF core sources."
@@ -130,7 +91,7 @@ task jpfJar(type: Jar) {
     description = "Creates the ${archiveName} file."
     group = "JPF Jars"
 
-    dependsOn compileClassesJava, compileAnnotationsJava, compileJava, compilePeersJava
+    dependsOn compile
 
     from sourceSets.main.java.outputDir
     from sourceSets.peers.java.outputDir
@@ -181,6 +142,45 @@ task buildJars {
 
     dependsOn classloaderSpecificTestsJar, annotationsJar,
               jpfClassesJar, jpfJar
+}
+
+test {
+    group = "JPF Build"
+    description = "Runs core regression tests."
+
+    dependsOn buildJars
+
+    enableAssertions = true
+    forkEvery = 1
+
+    maxHeapSize = "1024m"
+
+    include "**/*Test.class"
+    exclude "**/SplitInputStreamTest.class"
+    exclude "**/JPF_*.class"
+
+    // XXX Tests temporarily ignored because they are not fully supported in the Gradle build yet
+    new File("failing-tests.txt").eachLine { failedTestClass ->
+        def ignoredPath = "**/" + failedTestClass.replace(".", "/") + ".class"
+        exclude ignoredPath
+    }
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    afterSuite { testDescriptor, result ->
+        if (!testDescriptor.parent) {
+            println "Test Execution: ${result.resultType}"
+
+            def summaryFields = ["${result.testCount} tests",
+                                 "${result.successfulTestCount} passed",
+                                 "${result.failedTestCount} failed",
+                                 "${result.skippedTestCount} skipped"]
+
+            println "Summary: " + summaryFields.join(", ")
+        }
+    }
 }
 
 defaultTasks "buildJars"
