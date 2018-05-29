@@ -68,9 +68,26 @@ test {
         def ignoredPath = "**/" + failedTestClass.replace(".", "/") + ".class"
         exclude ignoredPath
     }
+
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+    afterSuite { testDescriptor, result ->
+        if (!testDescriptor.parent) {
+            println "Test Execution: ${result.resultType}"
+
+            def summaryFields = ["${result.testCount} tests",
+                                 "${result.successfulTestCount} passed",
+                                 "${result.failedTestCount} failed",
+                                 "${result.skippedTestCount} skipped"]
+
+            println "Summary: " + summaryFields.join(", ")
+        }
+    }
 }
 
-task compile {
+task compile(type: Copy) {
     group = "JPF Build"
     description = "Compiles all JPF core sources."
 
@@ -78,6 +95,10 @@ task compile {
     // Gradle is able to infer the ordering of the source sets
     // due to the compileClasspath attribute
     dependsOn compileTestJava, compileExamplesJava
+
+    // Copies build.properties file to the build directory
+    from "build.properties"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
 }
 
 task jpfClassesJar(type: Jar) {
