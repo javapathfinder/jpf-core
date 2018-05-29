@@ -136,12 +136,84 @@ task classloaderSpecificTestsJar(type: Jar) {
     }
 }
 
+task runJpfJar(type: Jar) {
+    archiveName = "RunJPF.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from(sourceSets.main.java.outputDir) {
+        include "gov/nasa/jpf/tool/Run.class"
+        include "gov/nasa/jpf/tool/RunJPF.class"
+        include "gov/nasa/jpf/Config.class"
+        include "gov/nasa/jpf/ConfigChangeListener.class"
+        include "gov/nasa/jpf/Config\$MissingRequiredKeyException.class"
+        include "gov/nasa/jpf/JPFClassLoader.class"
+        include "gov/nasa/jpf/JPFShell.class"
+        include "gov/nasa/jpf/JPFException.class"
+        include "gov/nasa/jpf/JPFConfigException.class"
+        include "gov/nasa/jpf/JPFTargetException.class"
+        include "gov/nasa/jpf/util/JPFSiteUtils.class"
+        include "gov/nasa/jpf/util/FileUtils.class"
+        include "gov/nasa/jpf/util/StringMatcher.class"
+        include "gov/nasa/jpf/util/Pair.class"
+    }
+    manifest {
+        attributes(
+            "Built-By": "etc",
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Implementation-Title": "Java Pathfinder core system",
+            "Implementation-Version": "1234",
+            "Main-Class": "gov.nasa.jpf.tool.RunJPF"
+        )
+    }
+}
+
+task runTestJar(type: Jar) {
+    archiveName = "RunTest.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from(sourceSets.main.java.outputDir) {
+        include "gov/nasa/jpf/tool/Run.class"
+        include "gov/nasa/jpf/tool/RunTest.class"
+        include "gov/nasa/jpf/tool/RunTest\$Failed.class"
+        include "gov/nasa/jpf/Config.class"
+        include "gov/nasa/jpf/ConfigChangeListener.class"
+        include "gov/nasa/jpf/Config\$MissingRequiredKeyException.class"
+        include "gov/nasa/jpf/JPFClassLoader.class"
+        include "gov/nasa/jpf/JPFException.class"
+        include "gov/nasa/jpf/JPFConfigException.class"
+        include "gov/nasa/jpf/util/JPFSiteUtils.class"
+        include "gov/nasa/jpf/util/FileUtils.class"
+        include "gov/nasa/jpf/util/StringMatcher.class"
+        include "gov/nasa/jpf/util/DevNullPrintStream.class"
+    }
+    manifest {
+        attributes(
+            "Built-By": "etc",
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Implementation-Title": "Java Pathfinder core system",
+            "Implementation-Version": "1234",
+            "Main-Class": "gov.nasa.jpf.tool.RunTest"
+        )
+    }
+}
+
 task buildJars {
     group = "JPF Build"
     description = "Generates the core JPF jar files."
 
     dependsOn classloaderSpecificTestsJar, annotationsJar,
-              jpfClassesJar, jpfJar
+              jpfClassesJar, jpfJar, runJpfJar,
+              runTestJar
 }
 
 test {
