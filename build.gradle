@@ -108,7 +108,7 @@ task jpfClassesJar(type: Jar) {
     description = "Creates the ${archiveName} file."
     group = "JPF Jars"
 
-    dependsOn compileClassesJava, compileAnnotationsJava, compileJava
+    dependsOn compile
 
     from sourceSets.classes.java.outputDir
     from sourceSets.annotations.java.outputDir
@@ -150,13 +150,13 @@ task jpfJar(type: Jar) {
 }
 
 task annotationsJar(type: Jar) {
-    archiveName = "jpf-annotations.jpf"
+    archiveName = "jpf-annotations.jar"
     destinationDir = file("${buildDir}")
 
     description = "Creates the ${archiveName} file."
     group = "JPF Jars"
 
-    dependsOn compileAnnotationsJava
+    dependsOn compile
 
     from sourceSets.annotations.java.outputDir
 }
@@ -168,18 +168,19 @@ task classloaderSpecificTestsJar(type: Jar) {
     description = "Creates the ${archiveName} file."
     group = "JPF Jars"
 
-    dependsOn compileTestJava
+    dependsOn compile
 
     from(sourceSets.test.java.outputDir) {
         include "classloader_specific_tests/*.class"
     }
 }
 
-jar {
+task buildJars {
     group = "JPF Build"
     description = "Generates the core JPF jar files."
-    dependsOn jpfClassesJar, jpfJar, annotationsJar,
-              classloaderSpecificTestsJar
+
+    dependsOn classloaderSpecificTestsJar, annotationsJar,
+              jpfClassesJar, jpfJar
 }
 
-defaultTasks "jar"
+defaultTasks "buildJars"
