@@ -31,24 +31,7 @@ tmp/
 .recommenders
 
 ## Covers JetBrains IDE: IntelliJ
-
-# User-specific stuff:
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/dictionaries
-.idea/ant.xml
-
-# Sensitive or high-churn files:
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-
-## Gradle:
-.idea/**/gradle.xml
-.idea/**/libraries
+.idea/
 
 ## File-based project format:
 *.iws
