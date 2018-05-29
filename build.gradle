@@ -77,7 +77,7 @@ test {
     }
 }
 
-task compile {
+task compile(type: Copy) {
     group = "JPF Build"
     description = "Compile all JPF core sources"
 
@@ -85,6 +85,10 @@ task compile {
     // Gradle is able to infer the ordering of the source source sets
     // due to the compileClasspath attribute
     dependsOn compileTestJava, compileExamplesJava
+
+    // Copies build.properties file to the build directory
+    from "build.properties"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
 }
 
 defaultTasks "compile"
