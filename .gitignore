@@ -1,7 +1,7 @@
 local.properties
 .version
 
-####### General #######
+## General
 trace
 activity*.png
 *.class
@@ -9,17 +9,17 @@ activity*.png
 *~
 *.DS_Store
 
-####### Ant #######
+## Ant
 build/
 
-####### Covers NetBeans IDE #######
+## Covers NetBeans IDE
 nbproject/private/
 nbbuild/
 dist/
 nbdist/
 .nb-gradle/
 
-####### Covers Eclipse IDE #######
+## Covers Eclipse IDE
 .metadata
 tmp/
 *.tmp
@@ -30,7 +30,7 @@ tmp/
 .loadpath
 .recommenders
 
-####### Covers JetBrains IDE: IntelliJ #######
+## Covers JetBrains IDE: IntelliJ
 
 # User-specific stuff:
 .idea/**/workspace.xml
@@ -46,7 +46,7 @@ tmp/
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
 
-# Gradle:
+## Gradle:
 .idea/**/gradle.xml
 .idea/**/libraries
 
