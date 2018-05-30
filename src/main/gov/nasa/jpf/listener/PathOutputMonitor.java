@@ -239,7 +239,7 @@ public class PathOutputMonitor extends PropertyListenerAdapter {
 
   PathOutputSpec createPathOutputSpec() {
     try {
-      return psClass.newInstance();
+      return psClass.getDeclaredConstructor().newInstance();
     } catch (Throwable t) {
       log.severe("cannot instantiate PathoutputSpec class: " + t.getMessage());
       return null;

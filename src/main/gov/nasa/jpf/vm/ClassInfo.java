@@ -30,6 +30,7 @@ import gov.nasa.jpf.util.OATHash;
 import gov.nasa.jpf.util.Source;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -399,17 +400,19 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
         for (String clsName : attrTypes){
           try {
             Class<?> attrCls = loader.loadClass(clsName);
-            Object attr = attrCls.newInstance(); // needs to have a default ctor
+            Object attr = attrCls.getDeclaredConstructor().newInstance(); // needs to have a default ctor
             infoObj.addAttr(attr);
             
           } catch (ClassNotFoundException cnfx){
             logger.warning("attribute class not found: " + clsName);
-            
+          } catch (NoSuchMethodException e) {
+            logger.warning("attribute class has no public default ctor: " + clsName);
           } catch (IllegalAccessException iax){
-            logger.warning("attribute class has no public default ctor: " + clsName);            
-            
+            logger.warning("attribute class's public default ctor is inaccessible: " + clsName);
           } catch (InstantiationException ix){
-            logger.warning("attribute class has no default ctor: " + clsName);            
+            logger.warning("underlying constructor is an abstract class: " + clsName);
+          } catch (InvocationTargetException e) {
+            logger.warning("attribute class's default ctor throws an exception: " + clsName);
           }
         }
       }

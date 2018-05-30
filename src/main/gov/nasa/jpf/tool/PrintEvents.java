@@ -24,6 +24,7 @@ import gov.nasa.jpf.util.FileUtils;
 import gov.nasa.jpf.util.JPFSiteUtils;
 import gov.nasa.jpf.util.event.EventTree;
 
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * very simple tool to print .util.script.EventTrees
@@ -102,7 +103,7 @@ public class PrintEvents {
 
     try {     
       Class<EventTree> cls = (Class<EventTree>)cl.loadClass(clsName);
-      EventTree et = cls.newInstance();
+      EventTree et = cls.getDeclaredConstructor().newInstance();
       
       if (printTree){
         System.out.println("---------------- event tree of " + clsName);
@@ -116,11 +117,15 @@ public class PrintEvents {
     } catch (ClassNotFoundException cnfx){
       System.err.println("class not found: " + clsName);
     } catch (NoClassDefFoundError ncdf){
-      System.err.println("class does not load: " + ncdf.getMessage());      
+      System.err.println("class does not load: " + ncdf.getMessage());
     } catch (InstantiationException ex) {
       System.err.println("cannot instantiate: " + ex.getMessage());      
     } catch (IllegalAccessException ex) {
-      System.err.println("cannot instantiate: " + ex.getMessage());      
+      System.err.println("constructor is inaccessible: " + ex.getMessage());
+    } catch (NoSuchMethodException e) {
+      System.err.println("cannot find constructor: " + e.getMessage());
+    } catch (InvocationTargetException e) {
+      System.err.println("constructor invocation throws an exception: " + e.getMessage());
     }
   }
 }

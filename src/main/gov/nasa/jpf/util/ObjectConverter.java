@@ -244,7 +244,7 @@ public class ObjectConverter {
       String typeName = ei.getType();
       Class clazz = ClassLoader.getSystemClassLoader().loadClass(typeName);
 
-      Object javaObject = clazz.newInstance();
+      Object javaObject = clazz.getDeclaredConstructor().newInstance();
       ClassInfo ci = ei.getClassInfo();
       while (ci != null) {
 
