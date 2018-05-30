@@ -102,10 +102,10 @@ task jpfJar(type: Jar) {
 
     manifest {
         attributes(
-            "Built-By": "etc",
+            "Built-By": System.getProperty("user.name"),
             "Implementation-Vendor": "NASA Ames Research Center",
             "Implementation-Title": "Java Pathfinder core system",
-            "Implementation-Version": "1234"
+            "Implementation-Version": "1234" //FIXME
         )
     }
 }
@@ -163,10 +163,10 @@ task runJpfJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Built-By": "etc",
+            "Built-By": System.getProperty("user.name"),
             "Implementation-Vendor": "NASA Ames Research Center",
             "Implementation-Title": "Java Pathfinder core system",
-            "Implementation-Version": "1234",
+            "Implementation-Version": "1234", //FIXME
             "Main-Class": "gov.nasa.jpf.tool.RunJPF"
         )
     }
@@ -198,10 +198,10 @@ task runTestJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Built-By": "etc",
+            "Built-By": System.getProperty("user.name"),
             "Implementation-Vendor": "NASA Ames Research Center",
-            "Implementation-Title": "Java Pathfinder core system",
-            "Implementation-Version": "1234",
+            "Implementation-Title": "Java Pathfinder test launch system",
+            "Implementation-Version": "1234", // FIXME
             "Main-Class": "gov.nasa.jpf.tool.RunTest"
         )
     }
