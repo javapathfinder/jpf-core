@@ -74,13 +74,12 @@ task jpfClassesJar(type: Jar) {
     from sourceSets.classes.java.outputDir
     from sourceSets.annotations.java.outputDir
     from(sourceSets.main.java.outputDir) {
-
-        def classesToInclude = ["Verify", "JPFShell", "TypeRef", "TestJPF",
-                                "TestMultiProcessJPF", "TestHelper"]
-
-        classesToInclude.each { className ->
-            include "**/" + className + ".class"
-        }
+        include "gov/nasa/jpf/JPFShell.class"
+        include "gov/nasa/jpf/vm/Verify.class"
+        include "gov/nasa/jpf/util/TypeRef.class"
+        include "gov/nasa/jpf/util/test/TestJPF.class"
+        include "gov/nasa/jpf/util/test/TestMultiProcessJPF.class"
+        include "gov/nasa/jpf/util/test/TestJPFHelper.class"
     }
 }
 
@@ -165,7 +164,7 @@ task runJpfJar(type: Jar) {
         attributes(
             "Built-By": System.getProperty("user.name"),
             "Implementation-Vendor": "NASA Ames Research Center",
-            "Implementation-Title": "Java Pathfinder core system",
+            "Implementation-Title": "Java Pathfinder core launch system",
             "Implementation-Version": "1234", //FIXME
             "Main-Class": "gov.nasa.jpf.tool.RunJPF"
         )
