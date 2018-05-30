@@ -107,6 +107,9 @@
     <javac srcdir="src/peers" destdir="build/peers" includeantruntime="false"
            debug="${debug}" deprecation="${deprecation}" classpathref="lib.path">
       <compilerarg value="-Xlint:all,-serial"/>
+
+      <compilerarg value="--add-exports"/>
+      <compilerarg value="java.base/jdk.internal.misc=ALL-UNNAMED"/>
      </javac>
   </target>
   
