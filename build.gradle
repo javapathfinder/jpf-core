@@ -40,10 +40,187 @@ sourceSets {
         java.srcDirs = ["src/tests"]
         java.outputDir = file("${buildDir}/tests")
         compileClasspath += sourceSets.annotations.output + sourceSets.classes.output + sourceSets.peers.output
+        runtimeClasspath += compileClasspath
     }
 }
 
+clean {
+    group = "JPF Build"
+}
+
+task compile(type: Copy) {
+    group = "JPF Build"
+    description = "Compiles all JPF core sources."
+
+    // These are automatic generated tasks from the Java Gradle Plugin.
+    // Gradle is able to infer the ordering of the source sets
+    // due to the compileClasspath attribute
+    dependsOn compileTestJava, compileExamplesJava
+
+    // Copies build.properties file to the build directory
+    from "build.properties"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+}
+
+task jpfClassesJar(type: Jar) {
+    archiveName = "jpf-classes.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from sourceSets.classes.java.outputDir
+    from sourceSets.annotations.java.outputDir
+    from(sourceSets.main.java.outputDir) {
+        include "gov/nasa/jpf/JPFShell.class"
+        include "gov/nasa/jpf/vm/Verify.class"
+        include "gov/nasa/jpf/util/TypeRef.class"
+        include "gov/nasa/jpf/util/test/TestJPF.class"
+        include "gov/nasa/jpf/util/test/TestMultiProcessJPF.class"
+        include "gov/nasa/jpf/util/test/TestJPFHelper.class"
+    }
+}
+
+task jpfJar(type: Jar) {
+    archiveName = "jpf.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from sourceSets.main.java.outputDir
+    from sourceSets.peers.java.outputDir
+    from sourceSets.annotations.java.outputDir
+    from(sourceSets.classes.java.outputDir) {
+        include "org/junit/*.class"
+    }
+
+    manifest {
+        attributes(
+            "Built-By": System.getProperty("user.name"),
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Implementation-Title": "Java Pathfinder core system",
+            "Implementation-Version": "1234" //FIXME
+        )
+    }
+}
+
+task annotationsJar(type: Jar) {
+    archiveName = "jpf-annotations.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from sourceSets.annotations.java.outputDir
+}
+
+task classloaderSpecificTestsJar(type: Jar) {
+    archiveName = "classloader_specific_tests.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from(sourceSets.test.java.outputDir) {
+        include "classloader_specific_tests/*.class"
+    }
+}
+
+task runJpfJar(type: Jar) {
+    archiveName = "RunJPF.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from(sourceSets.main.java.outputDir) {
+        include "gov/nasa/jpf/tool/Run.class"
+        include "gov/nasa/jpf/tool/RunJPF.class"
+        include "gov/nasa/jpf/Config.class"
+        include "gov/nasa/jpf/ConfigChangeListener.class"
+        include "gov/nasa/jpf/Config\$MissingRequiredKeyException.class"
+        include "gov/nasa/jpf/JPFClassLoader.class"
+        include "gov/nasa/jpf/JPFShell.class"
+        include "gov/nasa/jpf/JPFException.class"
+        include "gov/nasa/jpf/JPFConfigException.class"
+        include "gov/nasa/jpf/JPFTargetException.class"
+        include "gov/nasa/jpf/util/JPFSiteUtils.class"
+        include "gov/nasa/jpf/util/FileUtils.class"
+        include "gov/nasa/jpf/util/StringMatcher.class"
+        include "gov/nasa/jpf/util/Pair.class"
+    }
+    manifest {
+        attributes(
+            "Built-By": System.getProperty("user.name"),
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Implementation-Title": "Java Pathfinder core launch system",
+            "Implementation-Version": "1234", //FIXME
+            "Main-Class": "gov.nasa.jpf.tool.RunJPF"
+        )
+    }
+}
+
+task runTestJar(type: Jar) {
+    archiveName = "RunTest.jar"
+    destinationDir = file("${buildDir}")
+
+    description = "Creates the ${archiveName} file."
+    group = "JPF Jars"
+
+    dependsOn compile
+
+    from(sourceSets.main.java.outputDir) {
+        include "gov/nasa/jpf/tool/Run.class"
+        include "gov/nasa/jpf/tool/RunTest.class"
+        include "gov/nasa/jpf/tool/RunTest\$Failed.class"
+        include "gov/nasa/jpf/Config.class"
+        include "gov/nasa/jpf/ConfigChangeListener.class"
+        include "gov/nasa/jpf/Config\$MissingRequiredKeyException.class"
+        include "gov/nasa/jpf/JPFClassLoader.class"
+        include "gov/nasa/jpf/JPFException.class"
+        include "gov/nasa/jpf/JPFConfigException.class"
+        include "gov/nasa/jpf/util/JPFSiteUtils.class"
+        include "gov/nasa/jpf/util/FileUtils.class"
+        include "gov/nasa/jpf/util/StringMatcher.class"
+        include "gov/nasa/jpf/util/DevNullPrintStream.class"
+    }
+    manifest {
+        attributes(
+            "Built-By": System.getProperty("user.name"),
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Implementation-Title": "Java Pathfinder test launch system",
+            "Implementation-Version": "1234", // FIXME
+            "Main-Class": "gov.nasa.jpf.tool.RunTest"
+        )
+    }
+}
+
+task buildJars {
+    group = "JPF Build"
+    description = "Generates the core JPF jar files."
+
+    dependsOn classloaderSpecificTestsJar, annotationsJar,
+              jpfClassesJar, jpfJar, runJpfJar,
+              runTestJar
+}
+
 test {
+    group = "JPF Build"
+    description = "Runs core regression tests."
+
+    dependsOn buildJars
+
     enableAssertions = true
     forkEvery = 1
 
@@ -77,18 +254,4 @@ test {
     }
 }
 
-task compile(type: Copy) {
-    group = "JPF Build"
-    description = "Compile all JPF core sources"
-
-    // These are automatic generated tasks from the Java Gradle Plugin.
-    // Gradle is able to infer the ordering of the source source sets
-    // due to the compileClasspath attribute
-    dependsOn compileTestJava, compileExamplesJava
-
-    // Copies build.properties file to the build directory
-    from "build.properties"
-    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
-}
-
-defaultTasks "compile"
+defaultTasks "buildJars"
