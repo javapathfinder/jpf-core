@@ -40,7 +40,7 @@ public class DecimalFormatTest extends TestJPF {
     if (verifyNoPropertyViolation()) {
       StringBuffer sb = new StringBuffer();
       DecimalFormat dFormat = new DecimalFormat();
-      sb = dFormat.format(new Double(42), sb, new FieldPosition(0));
+      sb = dFormat.format(Double.valueOf(42), sb, new FieldPosition(0));
       String output = sb.toString();
       try {
         double d = Double.parseDouble(output);
