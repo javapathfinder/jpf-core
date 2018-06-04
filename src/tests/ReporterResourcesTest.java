@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,4 +32,38 @@ public class ReporterResourcesTest extends TestJPF {
     assertNotNull("build.properties should exist on classpath", jpf.getClass().getResourceAsStream("build.properties"));
     assertNotNull(".version should exist on classpath", jpf.getClass().getResourceAsStream(".version"));
   }
+
+  @Test
+  public void hashMustMatch() {
+    InputStream stream = jpf.getClass().getResourceAsStream(".version");
+    assertEquals("Should have the same hash", fetchCurrentRevisionFromVCS().trim(), readContentFrom(stream).trim());
+  }
+
+  private String fetchCurrentRevisionFromVCS() {
+    String currentRevision = "";
+    try {
+      Process process = Runtime.getRuntime().exec("git rev-parse HEAD");
+      process.waitFor();
+      InputStream output = process.getInputStream();
+      currentRevision = readContentFrom(output);
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return currentRevision;
+  }
+
+  private String readContentFrom(InputStream stream) {
+    BufferedReader buffer = new BufferedReader(new InputStreamReader(stream));
+    StringBuilder output = new StringBuilder();
+    try {
+      while (buffer.ready()) {
+        output.append(buffer.readLine().trim()).append("\n");
+      }
+    } catch (IOException e) {
+      fail("Should not have failed while reading the file");
+    }
+    return output.toString();
+  }
+
 }
