@@ -48,6 +48,18 @@ clean {
     group = "JPF Build"
 }
 
+task generateVersion {
+    description = "Generates the .version file with the current revision hash"
+    group = "JPF Build Properties"
+
+    doLast {
+        def revision = "git rev-parse HEAD".execute().text
+        new File(".version").withWriter("utf-8") { writer ->
+            writer.writeLine revision
+        }
+    }
+}
+
 task compile(type: Copy) {
     group = "JPF Build"
     description = "Compiles all JPF core sources."
@@ -55,10 +67,14 @@ task compile(type: Copy) {
     // These are automatic generated tasks from the Java Gradle Plugin.
     // Gradle is able to infer the ordering of the source sets
     // due to the compileClasspath attribute
-    dependsOn compileTestJava, compileExamplesJava
+    dependsOn compileTestJava, compileExamplesJava, generateVersion
 
     // Copies build.properties file to the build directory
     from "build.properties"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+
+    // Copies .version file to the build directory
+    from ".version"
     into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
 }
 
