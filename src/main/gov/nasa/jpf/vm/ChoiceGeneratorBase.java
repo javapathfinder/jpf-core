@@ -100,7 +100,7 @@ public abstract class ChoiceGeneratorBase<T> implements ChoiceGenerator<T> {
    *  don't use this since it is not safe for cascaded ChoiceGenerators
    * (we need the 'id' to be as context specific as possible)
    */
-  @Deprecated
+  @Deprecated(forRemoval = true)
   protected ChoiceGeneratorBase() {
     id = "?";
   }
