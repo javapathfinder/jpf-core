@@ -60,6 +60,36 @@ task generateVersion {
     }
 }
 
+task buildInfo {
+    group = "JPF Build Properties"
+    description = "Creates build info properties."
+    doLast {
+
+        // Must fail if there are uncommitted changes
+        def status  = "git status --short".execute().text.trim()
+        if (!status.isEmpty()) {
+            throw new GradleException("There are uncomitted changes:\n " + status)
+        }
+        Properties info = new Properties()
+
+        def revision = "git rev-parse --short HEAD".execute().text.trim()
+        def userName = ["git", "log", "-1", "--format=%an <%ae>"].execute().text.trim()
+        def date = "git log -1 --format=%ci".execute().text.trim()
+
+        info.setProperty("revision", revision)
+        info.setProperty("date", date)
+        info.setProperty("author", userName)
+        info.setProperty("os.arch", System.getProperty("os.arch"))
+        info.setProperty("os.name", System.getProperty("os.name"))
+        info.setProperty("user.country", System.getProperty("user.country"))
+        info.setProperty("java.version", System.getProperty("java.version"))
+
+        def writer = new File("build.properties").newWriter("utf-8")
+        info.store(writer, "JPF core build info")
+        writer.close()
+    }
+}
+
 task compile(type: Copy) {
     group = "JPF Build"
     description = "Compiles all JPF core sources."
