@@ -63,11 +63,6 @@ public class URLClassLoaderTest extends LoadUtility {
 	protected Package[] getPackages() {
       return super.getPackages();
     }
-
-    @Override
-	protected Package getPackage(String name) {
-      return super.getPackage(name);
-    }
   }
 
   @Test
@@ -480,18 +475,18 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
-  public void testGetPackage() throws ClassNotFoundException, MalformedURLException {
+  public void testGetDefinedPackage() throws ClassNotFoundException, MalformedURLException {
     movePkgOut();
     if(verifyNoPropertyViolation()) {
       URL[] urls = { new URL(dirUrl) };
       TestClassLoader cl = new TestClassLoader(urls);
-      assertNotNull(cl.getPackage("java.lang"));
-      assertNull(cl.getPackage("non_existing_package"));
-      assertNull(cl.getPackage("classloader_specific_tests"));
+      assertNotNull(cl.getDefinedPackage("java.lang"));
+      assertNull(cl.getDefinedPackage("non_existing_package"));
+      assertNull(cl.getDefinedPackage("classloader_specific_tests"));
 
       String cname = pkg + ".Class1";
       cl.loadClass(cname);
-      assertNotNull(cl.getPackage("classloader_specific_tests"));
+      assertNotNull(cl.getDefinedPackage("classloader_specific_tests"));
     }
     movePkgBack();
   }
