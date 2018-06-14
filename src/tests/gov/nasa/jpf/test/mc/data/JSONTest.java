@@ -23,6 +23,9 @@ import gov.nasa.jpf.vm.Verify;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 
 /**
  * JPF regression test for JSON test object creation
@@ -350,6 +353,11 @@ public class JSONTest extends TestJPF {
       Bool bool = (Bool) o;
       return this.b == bool.b;
     }
+
+    @Override
+    public int hashCode() {
+      return Boolean.hashCode(b);
+    }
   }
 
   static void checkValue(Object[] expected, Object curVal) {
@@ -398,6 +406,11 @@ public class JSONTest extends TestJPF {
       ByteShortIntLong bs = (ByteShortIntLong) o;
 
       return bs.b == b && bs.s == s && bs.i == i && bs.l == l;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(b, s, i, l);
     }
   }
 
@@ -457,6 +470,11 @@ public class JSONTest extends TestJPF {
 
       return outer.inner.i == this.inner.i;
     }
+
+    @Override
+    public int hashCode() {
+      return Integer.hashCode(inner.i);
+    }
   }
 
   @Test
@@ -498,6 +516,11 @@ public class JSONTest extends TestJPF {
       }
       return true;
     }
+
+    @Override
+    public int hashCode() {
+      return Arrays.hashCode(arr);
+    }
   }
 
   @Test
@@ -528,6 +551,11 @@ public class JSONTest extends TestJPF {
     public boolean equals(Object obj) {
       BoxedInteger bic = (BoxedInteger) obj;
       return this.bi.equals(bic.bi);
+    }
+
+    @Override
+    public int hashCode() {
+      return bi.hashCode();
     }
   }
 
@@ -564,6 +592,11 @@ public class JSONTest extends TestJPF {
       double diff = 0.001;
 
       return Math.abs(d1 - d2) <= diff;
+    }
+
+    @Override
+    public int hashCode() {
+      return Double.hashCode(d);
     }
   }
 

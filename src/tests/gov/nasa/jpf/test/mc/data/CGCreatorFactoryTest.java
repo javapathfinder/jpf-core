@@ -56,6 +56,10 @@ static class TestBoolCGCreator implements CGCreator {
       return this.b == other.b;
     }
 
+    @Override
+    public int hashCode() {
+        return Boolean.hashCode(b);
+    }
   }
 
   @Test
