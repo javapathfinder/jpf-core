@@ -108,6 +108,53 @@ task compile(type: Copy) {
     into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
 }
 
+task srcDist(type: Zip) {
+    group = "JPF Build"
+    description = "Builds the source distribution"
+
+    baseName = project.name
+    version = "git rev-parse --short HEAD".execute().text.trim()
+    classifier = "src"
+    extension = "zip"
+
+    destinationDir = buildDir
+    includeEmptyDirs = false
+
+    from projectDir
+    include "build.gradle"
+    include "settings.gradle"
+    include "gradlew"
+    include "gradlew.bat"
+    include "gradle/**/*"
+    include "nbproject/**/*"
+    include "eclipse/**/*"
+    include "src/**/*"
+    include "bin/**/*"
+    include "jpf.properties"
+    include "build.properties"
+    include "LICENSE-2.0.txt"
+    include "README.md"
+}
+
+task dist(type: Zip) {
+    group = "JPF Build"
+    description = "Builds binary distribution"
+
+    baseName = project.name
+    version = "git rev-parse --short HEAD".execute().text.trim()
+    extension = "zip"
+
+    destinationDir = buildDir
+    includeEmptyDirs = false
+
+    from projectDir
+    include "jpf.properties"
+    include "build.properties"
+    include "bin/**/*"
+    include "lib/**/*"
+    include "${buildDir.name}/**/*.jar"
+}
+
 task jpfClassesJar(type: Jar) {
     archiveName = "jpf-classes.jar"
     destinationDir = file("${buildDir}")
