@@ -21,6 +21,8 @@ package gov.nasa.jpf.util;
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
 
+import java.util.Objects;
+
 
 /**
  * regression test for SortedArrayObjectSet
@@ -58,6 +60,11 @@ public class SortedArrayObjectSetTest extends TestJPF {
       }
       
       return false;
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(id, x);
     }
   }
   

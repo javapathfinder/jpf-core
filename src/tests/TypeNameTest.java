@@ -46,6 +46,11 @@ class B {
   }
 
   @Override
+  public int hashCode() {
+    return Integer.hashCode(data);
+  }
+
+  @Override
   public String toString() {
     return "B {data=" + data + "}";
   }
