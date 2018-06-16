@@ -37,6 +37,7 @@ public class FinalizerThreadTest extends TestJPF {
     }
     
     @Override
+    @SuppressWarnings("deprecation")
     protected void finalize() throws Throwable {
       System.out.println("finalizer executing... ");
       throw new Exception();
