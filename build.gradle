@@ -44,14 +44,9 @@ sourceSets {
     }
 }
 
-clean {
-    group = "JPF Build"
-}
-
 task generateVersion {
+    group = "JPF Resources"
     description = "Generates the .version file with the current revision hash"
-    group = "JPF Build Properties"
-
     doLast {
         def revision = "git rev-parse HEAD".execute().text
         new File(".version").withWriter("utf-8") { writer ->
@@ -61,7 +56,7 @@ task generateVersion {
 }
 
 task buildInfo {
-    group = "JPF Build Properties"
+    group = "JPF Resources"
     description = "Creates build info properties."
     doLast {
 
@@ -87,25 +82,33 @@ task buildInfo {
         def writer = new File("build.properties").newWriter("utf-8")
         info.store(writer, "JPF core build info")
         writer.close()
-
-        // Copies generated build.properties file to the build directory
-        from "build.properties"
-        into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
     }
 }
 
-task compile(type: Copy) {
+task copyResources(type: Copy) {
+    group = "JPF Resources"
+    description = "Copies .version and build.properties files to the build directory."
+
+    dependsOn buildInfo
+    dependsOn generateVersion
+
+    from "build.properties"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+
+    from ".version"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+}
+
+
+task compile {
     group = "JPF Build"
     description = "Compiles all JPF core sources."
 
     // These are automatic generated tasks from the Java Gradle Plugin.
-    // Gradle is able to infer the ordering of the source sets
+    // Gradle is able to infer the order of the source sets
     // due to the compileClasspath attribute
-    dependsOn compileTestJava, compileExamplesJava, generateVersion
-
-    // Copies .version file to the build directory
-    from ".version"
-    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+    dependsOn compileTestJava
+    dependsOn compileExamplesJava
 }
 
 task srcDist(type: Zip) {
@@ -163,6 +166,7 @@ task jpfClassesJar(type: Jar) {
     group = "JPF Jars"
 
     dependsOn compile
+    dependsOn copyResources
 
     from sourceSets.classes.java.outputDir
     from sourceSets.annotations.java.outputDir
@@ -184,6 +188,7 @@ task jpfJar(type: Jar) {
     group = "JPF Jars"
 
     dependsOn compile
+    dependsOn copyResources
 
     from sourceSets.main.java.outputDir
     from sourceSets.peers.java.outputDir
@@ -210,6 +215,7 @@ task annotationsJar(type: Jar) {
     group = "JPF Jars"
 
     dependsOn compile
+    dependsOn copyResources
 
     from sourceSets.annotations.java.outputDir
 }
@@ -222,6 +228,7 @@ task classloaderSpecificTestsJar(type: Jar) {
     group = "JPF Jars"
 
     dependsOn compile
+    dependsOn copyResources
 
     from(sourceSets.test.java.outputDir) {
         include "classloader_specific_tests/*.class"
@@ -236,6 +243,7 @@ task runJpfJar(type: Jar) {
     group = "JPF Jars"
 
     dependsOn compile
+    dependsOn copyResources
 
     from(sourceSets.main.java.outputDir) {
         include "gov/nasa/jpf/tool/Run.class"
@@ -272,6 +280,7 @@ task runTestJar(type: Jar) {
     group = "JPF Jars"
 
     dependsOn compile
+    dependsOn copyResources
 
     from(sourceSets.main.java.outputDir) {
         include "gov/nasa/jpf/tool/Run.class"
@@ -301,13 +310,14 @@ task runTestJar(type: Jar) {
 
 task buildJars {
     group = "JPF Build"
-    description = "Generates the core JPF jar files."
+    description = "Generates all core JPF jar files."
 
-    dependsOn buildInfo
-
-    dependsOn classloaderSpecificTestsJar, annotationsJar,
-              jpfClassesJar, jpfJar, runJpfJar,
-              runTestJar
+    dependsOn classloaderSpecificTestsJar
+    dependsOn annotationsJar
+    dependsOn jpfClassesJar
+    dependsOn jpfJar
+    dependsOn runJpfJar
+    dependsOn runTestJar
 }
 
 test {
