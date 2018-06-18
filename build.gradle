@@ -94,7 +94,7 @@ task generateBuildInfo {
 }
 
 task copyResources(type: Copy) {
-    group = "JPF Build"
+    group = "JPF Build Resources"
     description = "Copies .version and build.properties files to the build directory."
 
     dependsOn generateBuildInfo
@@ -119,8 +119,8 @@ task compile {
 }
 
 task srcDist(type: Zip) {
-    group = "JPF Build"
-    description = "Builds the source distribution"
+    group = "JPF Distribution"
+    description = "Builds the source distribution."
 
     baseName = project.name
     version = "git rev-parse --short HEAD".execute().text.trim()
@@ -136,8 +136,6 @@ task srcDist(type: Zip) {
     include "gradlew"
     include "gradlew.bat"
     include "gradle/**/*"
-    include "nbproject/**/*"
-    include "eclipse/**/*"
     include "src/**/*"
     include "bin/**/*"
     include "jpf.properties"
@@ -147,8 +145,8 @@ task srcDist(type: Zip) {
 }
 
 task dist(type: Zip) {
-    group = "JPF Build"
-    description = "Builds binary distribution"
+    group = "JPF Distribution"
+    description = "Builds binary distribution."
 
     baseName = project.name
     version = "git rev-parse --short HEAD".execute().text.trim()
@@ -320,7 +318,6 @@ task buildJars {
 }
 
 test {
-    group = "JPF Build"
     description = "Runs core regression tests."
 
     dependsOn buildJars
