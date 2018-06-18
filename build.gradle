@@ -87,6 +87,10 @@ task buildInfo {
         def writer = new File("build.properties").newWriter("utf-8")
         info.store(writer, "JPF core build info")
         writer.close()
+
+        // Copies generated build.properties file to the build directory
+        from "build.properties"
+        into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
     }
 }
 
@@ -98,10 +102,6 @@ task compile(type: Copy) {
     // Gradle is able to infer the ordering of the source sets
     // due to the compileClasspath attribute
     dependsOn compileTestJava, compileExamplesJava, generateVersion
-
-    // Copies build.properties file to the build directory
-    from "build.properties"
-    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
 
     // Copies .version file to the build directory
     from ".version"
