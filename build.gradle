@@ -302,6 +302,8 @@ task runTestJar(type: Jar) {
 task buildJars {
     group = "JPF Build"
     description = "Generates the core JPF jar files."
+    
+    dependsOn buildInfo
 
     dependsOn classloaderSpecificTestsJar, annotationsJar,
               jpfClassesJar, jpfJar, runJpfJar,
