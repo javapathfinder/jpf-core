@@ -1,4 +1,7 @@
-apply plugin: "java"
+plugins {
+    id "com.gradle.build-scan"
+    id "java"
+}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -9,6 +12,11 @@ ext.manifestCommonAttrbutes = manifest {
         "Implementation-Vendor": "NASA Ames Research Center",
         "Implementation-Version": "1234" // FIXME
     )
+}
+
+buildScan {
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 repositories {
