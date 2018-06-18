@@ -3,6 +3,14 @@ apply plugin: "java"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+ext.manifestCommonAttrbutes = manifest {
+    attributes(
+        "Built-By": System.getProperty("user.name"),
+        "Implementation-Vendor": "NASA Ames Research Center",
+        "Implementation-Version": "1234" // FIXME
+    )
+}
+
 repositories {
     mavenCentral()
 }
@@ -45,7 +53,7 @@ sourceSets {
 }
 
 task generateVersion {
-    group = "JPF Resources"
+    group = "JPF Build Resources"
     description = "Generates the .version file with the current revision hash"
     doLast {
         def revision = "git rev-parse HEAD".execute().text
@@ -55,9 +63,9 @@ task generateVersion {
     }
 }
 
-task buildInfo {
-    group = "JPF Resources"
-    description = "Creates build info properties."
+task generateBuildInfo {
+    group = "JPF Build Resources"
+    description = "Generates the build.properties file."
     doLast {
 
         // Must fail if there are uncommitted changes
@@ -86,10 +94,10 @@ task buildInfo {
 }
 
 task copyResources(type: Copy) {
-    group = "JPF Resources"
+    group = "JPF Build"
     description = "Copies .version and build.properties files to the build directory."
 
-    dependsOn buildInfo
+    dependsOn generateBuildInfo
     dependsOn generateVersion
 
     from "build.properties"
@@ -98,7 +106,6 @@ task copyResources(type: Copy) {
     from ".version"
     into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
 }
-
 
 task compile {
     group = "JPF Build"
@@ -158,12 +165,12 @@ task dist(type: Zip) {
     include "${buildDir.name}/**/*.jar"
 }
 
-task jpfClassesJar(type: Jar) {
+task createJpfClassesJar(type: Jar) {
     archiveName = "jpf-classes.jar"
     destinationDir = file("${buildDir}")
 
-    description = "Creates the ${archiveName} file."
     group = "JPF Jars"
+    description = "Creates the ${archiveName} file."
 
     dependsOn compile
     dependsOn copyResources
@@ -180,12 +187,12 @@ task jpfClassesJar(type: Jar) {
     }
 }
 
-task jpfJar(type: Jar) {
+task createJpfJar(type: Jar) {
     archiveName = "jpf.jar"
     destinationDir = file("${buildDir}")
 
-    description = "Creates the ${archiveName} file."
     group = "JPF Jars"
+    description = "Creates the ${archiveName} file."
 
     dependsOn compile
     dependsOn copyResources
@@ -198,21 +205,17 @@ task jpfJar(type: Jar) {
     }
 
     manifest {
-        attributes(
-            "Built-By": System.getProperty("user.name"),
-            "Implementation-Vendor": "NASA Ames Research Center",
-            "Implementation-Title": "Java Pathfinder core system",
-            "Implementation-Version": "1234" //FIXME
-        )
+        attributes "Implementation-Title": "Java Pathfinder core system"
+        from manifestCommonAttrbutes
     }
 }
 
-task annotationsJar(type: Jar) {
+task createAnnotationsJar(type: Jar) {
     archiveName = "jpf-annotations.jar"
     destinationDir = file("${buildDir}")
 
-    description = "Creates the ${archiveName} file."
     group = "JPF Jars"
+    description = "Creates the ${archiveName} file."
 
     dependsOn compile
     dependsOn copyResources
@@ -220,12 +223,12 @@ task annotationsJar(type: Jar) {
     from sourceSets.annotations.java.outputDir
 }
 
-task classloaderSpecificTestsJar(type: Jar) {
+task createClassloaderSpecificTestsJar(type: Jar) {
     archiveName = "classloader_specific_tests.jar"
     destinationDir = file("${buildDir}")
 
-    description = "Creates the ${archiveName} file."
     group = "JPF Jars"
+    description = "Creates the ${archiveName} file."
 
     dependsOn compile
     dependsOn copyResources
@@ -235,7 +238,7 @@ task classloaderSpecificTestsJar(type: Jar) {
     }
 }
 
-task runJpfJar(type: Jar) {
+task createRunJpfJar(type: Jar) {
     archiveName = "RunJPF.jar"
     destinationDir = file("${buildDir}")
 
@@ -263,16 +266,14 @@ task runJpfJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Built-By": System.getProperty("user.name"),
-            "Implementation-Vendor": "NASA Ames Research Center",
             "Implementation-Title": "Java Pathfinder core launch system",
-            "Implementation-Version": "1234", //FIXME
             "Main-Class": "gov.nasa.jpf.tool.RunJPF"
         )
+        from manifestCommonAttrbutes
     }
 }
 
-task runTestJar(type: Jar) {
+task createRunTestJar(type: Jar) {
     archiveName = "RunTest.jar"
     destinationDir = file("${buildDir}")
 
@@ -299,12 +300,10 @@ task runTestJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Built-By": System.getProperty("user.name"),
-            "Implementation-Vendor": "NASA Ames Research Center",
             "Implementation-Title": "Java Pathfinder test launch system",
-            "Implementation-Version": "1234", // FIXME
             "Main-Class": "gov.nasa.jpf.tool.RunTest"
         )
+        from manifestCommonAttrbutes
     }
 }
 
@@ -312,12 +311,12 @@ task buildJars {
     group = "JPF Build"
     description = "Generates all core JPF jar files."
 
-    dependsOn classloaderSpecificTestsJar
-    dependsOn annotationsJar
-    dependsOn jpfClassesJar
-    dependsOn jpfJar
-    dependsOn runJpfJar
-    dependsOn runTestJar
+    dependsOn createClassloaderSpecificTestsJar
+    dependsOn createAnnotationsJar
+    dependsOn createJpfClassesJar
+    dependsOn createJpfJar
+    dependsOn createRunJpfJar
+    dependsOn createRunTestJar
 }
 
 test {

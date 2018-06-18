@@ -3,6 +3,7 @@ local.properties
 build.properties
 
 ####### General #######
+*.swo
 trace
 activity*.png
 *.class
