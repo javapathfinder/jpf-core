@@ -1,5 +1,6 @@
 local.properties
 .version
+build.properties
 
 ####### General #######
 trace
