@@ -1,4 +1,5 @@
 # Java PathFinder [![Build Status](https://travis-ci.org/javapathfinder/jpf-core.svg?branch=master)](https://travis-ci.org/javapathfinder/jpf-core)
+[![codecov](https://codecov.io/gh/jeandersonbc/jpf-core/branch/gradle/graph/badge.svg)](https://codecov.io/gh/jeandersonbc/jpf-core)
 
 
 An extensible software model checking framework for Java bytecode programs
