@@ -23,7 +23,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -100,16 +103,19 @@ public abstract class ClassLoader {
 
   @SuppressWarnings({"unchecked","rawtypes"})
   public Enumeration<URL> getResources(String name) throws IOException {
-    Enumeration<URL>[] resEnum = new Enumeration[2];
+    Collection<URL> collection = new ArrayList<>();
 
-    if(parent == null) {
-      resEnum[0] = getSystemClassLoader().getResourcesURL(name);
-    } else{
-      resEnum[0] = parent.getResources(name);
+    if (parent == null) {
+      getSystemClassLoader().getResourcesURL(name).asIterator()
+              .forEachRemaining(collection::add);
+    } else {
+      parent.getResources(name).asIterator()
+              .forEachRemaining(collection::add);
     }
-    resEnum[1] = findResources(name);
+    findResources(name).asIterator()
+            .forEachRemaining(collection::add);
 
-    return new CompoundEnumeration<URL>(resEnum);
+    return new EnumerationAdapter<>(collection);
   }
 
   /**
@@ -251,5 +257,26 @@ public abstract class ClassLoader {
                                   String implVendor, URL sealBase) 
                                       throws IllegalArgumentException {
     throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Written as a replacement for the auxiliary class {@link CompoundEnumeration}
+   */
+  final class EnumerationAdapter<E> implements Enumeration<E> {
+    private final Iterator<E> iterator;
+
+    public EnumerationAdapter(Collection<E> collection) {
+      iterator = collection.iterator();
+    }
+
+    @Override
+    public boolean hasMoreElements() {
+      return iterator.hasNext();
+    }
+
+    @Override
+    public E nextElement() {
+      return iterator.next();
+    }
   }
 }
