@@ -1,6 +1,7 @@
 plugins {
     id "com.gradle.build-scan" version "1.14"
     id "java"
+    id "jacoco"
 }
 
 sourceCompatibility = 1.8
@@ -17,6 +18,13 @@ ext.manifestCommonAttrbutes = manifest {
 buildScan {
     termsOfServiceUrl = 'https://gradle.com/terms-of-service'
     termsOfServiceAgree = 'yes'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = false
+    }
 }
 
 repositories {
