@@ -2,6 +2,7 @@ plugins {
     id "com.gradle.build-scan" version "1.14"
     id "java"
     id "jacoco"
+    id "eclipse"
 }
 
 sourceCompatibility = 1.8
@@ -11,7 +12,7 @@ ext.manifestCommonAttrbutes = manifest {
     attributes(
         "Built-By": System.getProperty("user.name"),
         "Implementation-Vendor": "NASA Ames Research Center",
-        "Implementation-Version": "1234" // FIXME
+        "Implementation-Version": "8.0"
     )
 }
 
@@ -361,6 +362,24 @@ test {
                                  "${result.skippedTestCount} skipped"]
 
             println "Summary: " + summaryFields.join(", ")
+        }
+    }
+}
+
+eclipse {
+    group = "JPF IDE Support"
+
+    project {
+        natures = ["org.eclipse.buildship.core.gradleprojectnature"]
+    }
+    classpath {
+        defaultOutputDir = buildDir
+        file {
+            whenMerged { classpath ->
+                classpath.entries.findAll{ entry -> entry.kind == "src" }*.every { srcNode ->
+                    srcNode.output = srcNode.output.replace("bin", "${buildDir.name}")
+                }
+            }
         }
     }
 }

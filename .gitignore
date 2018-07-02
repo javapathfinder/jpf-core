@@ -25,6 +25,7 @@ nbdist/
 .nb-gradle/
 
 ####### Covers Eclipse IDE #######
+.idea/
 .metadata
 tmp/
 *.tmp
@@ -34,8 +35,12 @@ tmp/
 .settings/
 .loadpath
 .recommenders
+.classpath
+.project
 
 ####### Covers JetBrains IDE: IntelliJ #######
+*.iml
+*.ipr
 
 # User-specific stuff:
 .idea/**/workspace.xml
