@@ -5,6 +5,8 @@ plugins {
     id "eclipse"
 }
 
+version = "git describe --tags".execute().text.trim()
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -12,7 +14,7 @@ ext.manifestCommonAttrbutes = manifest {
     attributes(
         "Built-By": System.getProperty("user.name"),
         "Implementation-Vendor": "NASA Ames Research Center",
-        "Implementation-Version": "8.0"
+        "Implementation-Version": version
     )
 }
 
@@ -136,7 +138,7 @@ task srcDist(type: Zip) {
     description = "Builds the source distribution."
 
     baseName = project.name
-    version = "git rev-parse --short HEAD".execute().text.trim()
+    version = project.version
     classifier = "src"
     extension = "zip"
 
@@ -162,7 +164,7 @@ task dist(type: Zip) {
     description = "Builds binary distribution."
 
     baseName = project.name
-    version = "git rev-parse --short HEAD".execute().text.trim()
+    version = project.version
     extension = "zip"
 
     destinationDir = buildDir
