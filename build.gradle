@@ -85,13 +85,9 @@ task generateBuildInfo {
     description = "Generates the build.properties file."
     doLast {
 
-        // Must fail if there are uncommitted changes
-        def status  = "git status --short".execute().text.trim()
-        if (!status.isEmpty()) {
-            throw new GradleException("There are uncomitted changes:\n " + status)
-        }
         Properties info = new Properties()
 
+        def status  = "git status --short".execute().text.trim()
         def revision = "git rev-parse --short HEAD".execute().text.trim()
         def userName = ["git", "log", "-1", "--format=%an <%ae>"].execute().text.trim()
         def date = "git log -1 --format=%ci".execute().text.trim()
