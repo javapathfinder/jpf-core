@@ -1,11 +1,13 @@
 plugins {
-    id "com.gradle.build-scan" version "1.14"
     id "java"
-    id "jacoco"
     id "eclipse"
 }
 
-version = "git describe --tags".execute().text.trim()
+def getCurrentVersion() {
+    "DEVELOPMENT-SNAPSHOT"
+}
+
+version = currentVersion
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -16,18 +18,6 @@ ext.manifestCommonAttrbutes = manifest {
         "Implementation-Vendor": "NASA Ames Research Center",
         "Implementation-Version": version
     )
-}
-
-buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = false
-    }
 }
 
 repositories {
