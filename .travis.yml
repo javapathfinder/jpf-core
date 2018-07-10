@@ -4,11 +4,7 @@ jdk:
   - oraclejdk8
 
 script:
-  - ./gradlew check --scan -s
-
-after_script:
-  - ./gradlew jacocoTestReport
-  - bash <(curl -s https://codecov.io/bash)
+  - ./gradlew check
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
