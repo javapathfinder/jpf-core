@@ -113,9 +113,8 @@ public class JarClassFileContainer extends JVMClassFileContainer {
   }
     
   @Override
-  public ClassFileMatch getMatch(String clsName) throws ClassParseException, ClassNotFoundException {
-    String moduleName = Class.forName(clsName).getModule().getName();
-    String entryName = moduleName + "/" + clsName.replace('.', '/') + ".class";
+  public ClassFileMatch getMatch(String clsName) throws ClassParseException {
+    String entryName = getClassEntryURL(clsName);
     
     if (pathPrefix != null){
       entryName = pathPrefix + entryName;

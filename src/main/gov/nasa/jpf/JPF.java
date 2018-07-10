@@ -225,6 +225,7 @@ public class JPF implements Runnable {
   static void setNativeClassPath(Config config) {
     if (!config.hasSetClassLoader()) {
       config.initClassLoader( JPF.class.getClassLoader());
+//      config.initClassLoader(ClassLoader.getPlatformClassLoader());
     }
   }
 

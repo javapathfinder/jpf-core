@@ -104,6 +104,7 @@ public class JVMSystemClassLoaderInfo extends SystemClassLoaderInfo {
 
   protected void addSystemBootClassPath () {
     String v = System.getProperty("sun.boot.class.path");
+
     if (v != null) {
       for (String pn : v.split(File.pathSeparator)) {
         if (pn != null && !pn.isEmpty()) {
