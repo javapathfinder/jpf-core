@@ -16,6 +16,7 @@ build/
 
 ####### Gradle #######
 .gradle/
+reports/
 
 ####### Covers NetBeans IDE #######
 nbproject/private/
