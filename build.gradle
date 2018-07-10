@@ -1,7 +1,4 @@
-plugins {
-    id "java"
-    id "eclipse"
-}
+apply plugin: "java"
 
 def getCurrentVersion() {
     "DEVELOPMENT-SNAPSHOT"
@@ -12,14 +9,6 @@ version = currentVersion
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext.manifestCommonAttrbutes = manifest {
-    attributes(
-        "Built-By": System.getProperty("user.name"),
-        "Implementation-Vendor": "NASA Ames Research Center",
-        "Implementation-Version": version
-    )
-}
-
 repositories {
     mavenCentral()
 }
@@ -28,89 +17,18 @@ dependencies {
     testImplementation "junit:junit:4.12"
 }
 
-sourceSets {
-    annotations {
-        java.srcDirs = ["src/annotations"]
-        java.outputDir = file("${buildDir}/annotations")
-    }
-    main {
-        java.srcDirs = ["src/main"]
-        java.outputDir = file("${buildDir}/main")
-        compileClasspath += sourceSets.annotations.output
-    }
-    examples {
-        java.srcDirs = ["src/examples"]
-        java.outputDir = file("${buildDir}/examples")
-        compileClasspath += sourceSets.main.output
-    }
-    classes {
-        java.srcDirs = ["src/classes"]
-        java.outputDir = file("${buildDir}/classes")
-        compileClasspath += sourceSets.main.output + sourceSets.annotations.output
-    }
-    peers {
-        java.srcDirs = ["src/peers"]
-        java.outputDir = file("${buildDir}/peers")
-        compileClasspath += sourceSets.main.output + sourceSets.annotations.output
-    }
-    test {
-        java.srcDirs = ["src/tests"]
-        java.outputDir = file("${buildDir}/tests")
-        compileClasspath += sourceSets.annotations.output + sourceSets.classes.output + sourceSets.peers.output
-        runtimeClasspath += compileClasspath
-    }
+ext.manifestCommonAttrbutes = manifest {
+    attributes(
+        "Built-By": System.getProperty("user.name"),
+        "Implementation-Vendor": "NASA Ames Research Center",
+        "Implementation-Version": version
+    )
 }
 
-task generateVersion {
-    group = "JPF Build Resources"
-    description = "Generates the .version file with the current revision hash"
-    doLast {
-        def revision = "git rev-parse HEAD".execute().text
-        new File(".version").withWriter("utf-8") { writer ->
-            writer.writeLine revision
-        }
-    }
-}
-
-task generateBuildInfo {
-    group = "JPF Build Resources"
-    description = "Generates the build.properties file."
-    doLast {
-
-        Properties info = new Properties()
-
-        def status  = "git status --short".execute().text.trim()
-        def revision = "git rev-parse --short HEAD".execute().text.trim()
-        def userName = ["git", "log", "-1", "--format=%an <%ae>"].execute().text.trim()
-        def date = "git log -1 --format=%ci".execute().text.trim()
-
-        info.setProperty("revision", revision)
-        info.setProperty("date", date)
-        info.setProperty("author", userName)
-        info.setProperty("os.arch", System.getProperty("os.arch"))
-        info.setProperty("os.name", System.getProperty("os.name"))
-        info.setProperty("user.country", System.getProperty("user.country"))
-        info.setProperty("java.version", System.getProperty("java.version"))
-
-        def writer = new File("build.properties").newWriter("utf-8")
-        info.store(writer, "JPF core build info")
-        writer.close()
-    }
-}
-
-task copyResources(type: Copy) {
-    group = "JPF Build Resources"
-    description = "Copies .version and build.properties files to the build directory."
-
-    dependsOn generateBuildInfo
-    dependsOn generateVersion
-
-    from "build.properties"
-    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
-
-    from ".version"
-    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
-}
+apply from: "gradle/ide-support.gradle"
+apply from: "gradle/distribution.gradle"
+apply from: "gradle/source-sets.gradle"
+apply from: "gradle/build-resources.gradle"
 
 task compile {
     group = "JPF Build"
@@ -121,51 +39,6 @@ task compile {
     // due to the compileClasspath attribute
     dependsOn compileTestJava
     dependsOn compileExamplesJava
-}
-
-task srcDist(type: Zip) {
-    group = "JPF Distribution"
-    description = "Builds the source distribution."
-
-    baseName = project.name
-    version = project.version
-    classifier = "src"
-    extension = "zip"
-
-    destinationDir = buildDir
-    includeEmptyDirs = false
-
-    from projectDir
-    include "build.gradle"
-    include "settings.gradle"
-    include "gradlew"
-    include "gradlew.bat"
-    include "gradle/**/*"
-    include "src/**/*"
-    include "bin/**/*"
-    include "jpf.properties"
-    include "build.properties"
-    include "LICENSE-2.0.txt"
-    include "README.md"
-}
-
-task dist(type: Zip) {
-    group = "JPF Distribution"
-    description = "Builds binary distribution."
-
-    baseName = project.name
-    version = project.version
-    extension = "zip"
-
-    destinationDir = buildDir
-    includeEmptyDirs = false
-
-    from projectDir
-    include "jpf.properties"
-    include "build.properties"
-    include "bin/**/*"
-    include "lib/**/*"
-    include "${buildDir.name}/**/*.jar"
 }
 
 task createJpfClassesJar(type: Jar) {
@@ -327,9 +200,8 @@ test {
 
     dependsOn buildJars
 
-    enableAssertions = true
     forkEvery = 1
-
+    enableAssertions = true
     maxHeapSize = "1024m"
 
     include "**/*Test.class"
@@ -350,24 +222,6 @@ test {
                                  "${result.skippedTestCount} skipped"]
 
             println "Summary: " + summaryFields.join(", ")
-        }
-    }
-}
-
-eclipse {
-    group = "JPF IDE Support"
-
-    project {
-        natures = ["org.eclipse.buildship.core.gradleprojectnature"]
-    }
-    classpath {
-        defaultOutputDir = buildDir
-        file {
-            whenMerged { classpath ->
-                classpath.entries.findAll{ entry -> entry.kind == "src" }*.every { srcNode ->
-                    srcNode.output = srcNode.output.replace("bin", "${buildDir.name}")
-                }
-            }
         }
     }
 }
