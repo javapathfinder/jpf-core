@@ -1,0 +1,19 @@
+apply plugin: "eclipse"
+
+eclipse {
+    group = "JPF IDE Support"
+
+    project {
+        natures = ["org.eclipse.buildship.core.gradleprojectnature"]
+    }
+    classpath {
+        defaultOutputDir = buildDir
+        file {
+            whenMerged { classpath ->
+                classpath.entries.findAll{ entry -> entry.kind == "src" }*.every { srcNode ->
+                    srcNode.output = srcNode.output.replace("bin", "${buildDir.name}")
+                }
+            }
+        }
+    }
+}

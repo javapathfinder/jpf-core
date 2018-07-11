@@ -1,7 +1,9 @@
 local.properties
 .version
+build.properties
 
 ####### General #######
+*.swo
 trace
 activity*.png
 *.class
@@ -12,6 +14,10 @@ activity*.png
 ####### Ant #######
 build/
 
+####### Gradle #######
+.gradle/
+reports/
+
 ####### Covers NetBeans IDE #######
 nbproject/private/
 nbbuild/
@@ -20,6 +26,7 @@ nbdist/
 .nb-gradle/
 
 ####### Covers Eclipse IDE #######
+.idea/
 .metadata
 tmp/
 *.tmp
@@ -29,8 +36,12 @@ tmp/
 .settings/
 .loadpath
 .recommenders
+.classpath
+.project
 
 ####### Covers JetBrains IDE: IntelliJ #######
+*.iml
+*.ipr
 
 # User-specific stuff:
 .idea/**/workspace.xml
