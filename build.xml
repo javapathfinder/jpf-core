@@ -200,9 +200,7 @@
     <copy file=".version" todir="build/main/gov/nasa/jpf" failonerror="false"/>
 
     <jar jarfile="build/jpf-classes.jar">
-      <fileset dir="build/classes/java.base"/>
-      <fileset dir="build/classes/java.logging"/>
-
+      <fileset dir="build/classes"/>
       <fileset dir="build/annotations"/>
 
       <fileset dir="build/main">
@@ -447,8 +445,8 @@
       </not>
     </condition>
     
-    <junit printsummary="on" showoutput="off" 
-           haltonfailure="no" logfailedtests="true" failureproperty="test.failed" 
+    <junit printsummary="on" showoutput="on"
+           haltonfailure="off" logfailedtests="true" failureproperty="test.failed"
            dir="${basedir}" fork="yes" forkmode="perTest" maxmemory="1024m" outputtoformatters="true">
       <formatter type="plain" usefile="${junit.usefile}"/>
 
@@ -475,6 +473,8 @@
           <exclude name="**/SplitInputStreamTest.class"/>
         </fileset>
       </batchtest>
+
+       <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005" />-->
 
     </junit>
 

@@ -31,6 +31,7 @@ import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.SystemAttribute;
+import gov.nasa.jpf.jvm.JModClassFileContainer;
 import gov.nasa.jpf.util.JPFLogger;
 import gov.nasa.jpf.util.SparseIntVector;
 import gov.nasa.jpf.util.StringSetMatcher;
@@ -351,7 +352,7 @@ public class ClassLoaderInfo
             try {
               log.info("loading class ", typeName, " from ",  url);
               ci = match.createClassInfo(this);
-              
+
             } catch (ClassParseException cpx){
               throw new ClassInfoException( "error parsing class", this, "java.lang.NoClassDefFoundError", typeName, cpx);
             }
@@ -359,8 +360,18 @@ public class ClassLoaderInfo
             loadedClasses.put( url, ci);
           }
           
-        } else { // no match found
-          throw new ClassInfoException("class not found: " + typeName, this, "java.lang.ClassNotFoundException", typeName);
+        } else { // no match found in class path
+          // try load from the run-time image
+            match = new JModClassFileContainer(typeName).getMatch(typeName);
+          try {
+            ci = match.createClassInfo(this);
+          } catch (ClassParseException e) {
+            throw new ClassInfoException( "error parsing class", this, "java.lang.ClassParseException", typeName, e);
+          }
+
+          loadedClasses.put(match.getClassURL(), ci);
+
+//          throw new ClassInfoException("class not found: " + typeName, this, "java.lang.ClassNotFoundException", typeName);
         }
       }
       
@@ -423,7 +434,17 @@ public class ClassLoaderInfo
         } 
         
       } else { // no match found
-        throw new ClassInfoException("class not found: " + typeName, this, "java.lang.ClassNotFoundException", typeName);
+        // try load from the run-time image
+        match = new JModClassFileContainer(typeName).getMatch(typeName);
+        try {
+          ai = match.createAnnotationInfo(this);
+        } catch (ClassParseException e) {
+          throw new ClassInfoException( "error parsing class", this, "java.lang.ClassParseException", typeName, e);
+        }
+
+        loadedAnnotations.put(match.getClassURL(), ai);
+
+//        throw new ClassInfoException("class not found: " + typeName, this, "java.lang.ClassNotFoundException", typeName);
       }
       
       resolvedAnnotations.put( typeName, ai);
