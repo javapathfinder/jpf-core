@@ -18,11 +18,14 @@
 
 package gov.nasa.jpf.jvm;
 
+import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.vm.AnnotationInfo;
 import gov.nasa.jpf.vm.ClassFileContainer;
 import gov.nasa.jpf.vm.ClassFileMatch;
 import gov.nasa.jpf.vm.ClassLoaderInfo;
 import gov.nasa.jpf.vm.ClassParseException;
+
+import java.io.File;
 
 /**
  * ClassFileContainer that holds Java classfiles
@@ -70,10 +73,44 @@ public abstract class JVMClassFileContainer extends ClassFileContainer {
   protected JVMClassFileContainer (String name, String url) {
     super(name, url);
   }
-  
+
+  /**
+   * @return the path to .class file including the source path of the container
+   * eg:-
+   *     jar:file:/path/to/jpf-classes.jar!/java.base/java/lang/Object.class
+   *
+   *     /path/to/build/tests/TypeNameTest.class
+   */
   @Override
   public String getClassURL (String typeName){
-    return getURL() + typeName.replace('.', '/') + ".class";
+    return getURL() + getClassEntryURL(typeName);
+  }
+
+  /**
+   * @param typeName in the format java.lang.Object
+   * @return Returns a path to .class file including the module name
+   * in a format similar to java.base/java/lang/Object.class
+   *
+   * If the module for the typeName is an unnamed module, returns a path in a format similar to
+   * java/lang/Object.class
+   */
+  static String getClassEntryURL(String typeName) {
+    String moduleName = getModuleName(typeName);
+    if (moduleName == null) {
+      return typeName.replace('.', File.separatorChar) + ".class";
+    }
+    return moduleName + File.separator + typeName.replace('.', File.separatorChar) + ".class";
+  }
+
+  /**
+   * @return the module name for the given typeName or null if the module is an unnamed module
+   */
+  static String getModuleName(String typeName) {
+    try {
+      return Class.forName(typeName.split("\\$")[0]).getModule().getName();
+    } catch (ClassNotFoundException e) {
+      throw new JPFException("Class for typename " + typeName + " not found", e);
+    }
   }
 
 }
