@@ -35,6 +35,13 @@ public abstract class ClassFileContainer {
     return name;
   }
 
+  /**
+   * @return the path of the container
+   * eg :-
+   *     /path/to/root/dir/that/contains/class/files
+   *
+   *     jar:file:/path/to/jpf-classes.jar!/
+   */
   public String getURL() {
     return url;
   }

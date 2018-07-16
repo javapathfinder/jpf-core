@@ -114,13 +114,13 @@ public class JarClassFileContainer extends JVMClassFileContainer {
     
   @Override
   public ClassFileMatch getMatch(String clsName) throws ClassParseException {
-    String pn = clsName.replace('.', '/') + ".class";
+    String classEntryURL = getClassEntryURL(clsName);
     
     if (pathPrefix != null){
-      pn = pathPrefix + pn;
+      classEntryURL = pathPrefix + classEntryURL;
     }
     
-    JarEntry e = jar.getJarEntry(pn);
+    JarEntry e = jar.getJarEntry(classEntryURL);
 
     if (e != null) {
       InputStream is = null;
