@@ -88,8 +88,12 @@ public class JVMClassInfo extends ClassInfo {
     }
     
     @Override
-    public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String descriptor, int[] cpArgs) {    
-   
+    public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String descriptor, int[] cpArgs) {
+      if (cls.equals("java/lang/invoke/StringConcatFactory")) {
+        bootstrapMethods[idx] = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
+        return;
+      }
+
       int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
       
       int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);

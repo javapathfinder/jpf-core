@@ -44,7 +44,16 @@ public class BootstrapMethodInfo {
     this.lambdaBody = lambdaBody;
     this.samDescriptor = samDescriptor;
   }
-  
+
+  /**
+   * Constructor for constructing {@link BootstrapMethodInfo} for bootstrap methods
+   * with arbitrary number of bootstrap method arguments
+   */
+  public BootstrapMethodInfo(ClassInfo enclosingClass, int[] cpArgs) {
+    this.enclosingClass = enclosingClass;
+      // TODO: find a way to parse lambdaBody, samDescriptor etc
+  }
+
   @Override
   public String toString() {
     return "BootstrapMethodInfo[" + enclosingClass.getName() + "." + lambdaBody.getBaseName() + 
