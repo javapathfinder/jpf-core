@@ -27,6 +27,7 @@ import gov.nasa.jpf.vm.NativePeer;
 import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
 
+import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
 
 /**
  * we don't want this class! This is a hodgepodge of stuff that shouldn't be in Java, but
@@ -39,17 +40,59 @@ import gov.nasa.jpf.vm.ThreadInfo;
  *
  * <2do> this might change with better modeling of high level java.util.concurrent constructs
  */
-public class JPF_sun_misc_Unsafe extends NativePeer {
+public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
 
   @MJI
   public int getUnsafe____Lsun_misc_Unsafe_2 (MJIEnv env, int clsRef) {
-    int objRef = env.getStaticReferenceField("sun.misc.Unsafe", "theUnsafe");
+    int objRef = env.getStaticReferenceField("jdk.internal.misc.Unsafe", "theUnsafe");
     return objRef;
   }
 
   @MJI
   public long objectFieldOffset__Ljava_lang_reflect_Field_2__J (MJIEnv env, int unsafeRef, int fieldRef) {
     return fieldOffset__Ljava_lang_reflect_Field_2__I(env, unsafeRef, fieldRef);
+  }
+
+  /**
+   * NativePeer method for {@link jdk.internal.misc.Unsafe#objectFieldOffset(java.lang.Class, java.lang.String)}
+   */
+  @MJI
+  public long objectFieldOffset__Ljava_lang_Class_2Ljava_lang_String_2__J (MJIEnv env, int unsafeRef, int clsRef, int nameRef) {
+    ClassInfo ci = env.getReferredClassInfo(clsRef);
+    String fname = env.getStringObject(nameRef);
+    FieldInfo fi = null;
+
+    fi = ci.getInstanceField(fname);
+    if (fi == null) {
+      fi = ci.getStaticField(fname);
+    }
+
+    if (fi == null) {
+      env.throwException("java.lang.NoSuchFieldException", fname);
+      return MJIEnv.NULL;
+
+    } else {
+      ClassInfo fci = JPF_java_lang_Class.getInitializedClassInfo(env, FIELD_CLASSNAME);
+      if (fci == null) {
+        env.repeatInvocation();
+        return MJIEnv.NULL;
+      }
+      int fieldRef = JPF_java_lang_Class.createFieldObject(env, fi, fci);
+      return env.getIntField(fieldRef, "regIdx");
+    }
+  }
+
+  /**
+   * NativePeer method for {@link jdk.internal.misc.Unsafe#compareAndSetObject(java.lang.Object, long, java.lang.Object, java.lang.Object)}
+   */
+  @MJI
+  public boolean compareAndSetObject__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z(MJIEnv env, int unsafeRef, int oRef, long offset, int expectedRef, int xRef) {
+    int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, oRef, offset);
+    if (actual == expectedRef) {
+      putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, oRef, offset, xRef);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -62,6 +105,34 @@ public class JPF_sun_misc_Unsafe extends NativePeer {
     //FieldInfo fi = JPF_java_lang_reflect_Field.getFieldInfo(env, fieldRef);
     //return fi.getStorageOffset();
     return env.getIntField(fieldRef, "regIdx");
+  }
+
+  /**
+   * NativePeer method for {@link jdk.internal.misc.Unsafe#compareAndSetInt(java.lang.Object, long, int, int)}
+   */
+  @MJI
+  public boolean compareAndSetInt__Ljava_lang_Object_2JII__Z (MJIEnv env, int unsafeRef,
+                                                               int oRef, long offset, int expected, int x) {
+    int actual = getInt__Ljava_lang_Object_2J__I(env, unsafeRef, oRef, offset);
+    if (actual == expected) {
+      putInt__Ljava_lang_Object_2JI__V(env, unsafeRef, oRef, offset, x);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * NativePeer method for {@link jdk.internal.misc.Unsafe#compareAndSetLong(Object, long, long, long)}
+   */
+  @MJI
+  public boolean compareAndSetLong__Ljava_lang_Object_2JJJ__Z (MJIEnv env, int unsafeRef,
+                                                              int oRef, long offset, long expected, long x) {
+    long actual = getLong__Ljava_lang_Object_2J__J(env, unsafeRef, oRef, offset);
+    if (actual == expected) {
+      putLong__Ljava_lang_Object_2JJ__V(env, unsafeRef, oRef, offset, x);
+      return true;
+    }
+    return false;
   }
 
   @MJI

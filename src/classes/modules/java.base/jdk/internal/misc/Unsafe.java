@@ -41,6 +41,11 @@ public class Unsafe {
   // a numeric id for the corresponding FieldInfo here
   public native int fieldOffset (Field f);
   public native long objectFieldOffset (Field f);
+  public native long objectFieldOffset(Class<?> c, String name);
+
+  public final native boolean compareAndSetInt(Object o, long offset, int expected, int x);
+  public final native boolean compareAndSetLong(Object o, long offset, long expected, long x);
+  public final native boolean compareAndSetObject(Object o, long offset, Object expected, Object x);
 
   // those do the usual CAS magic
   public native boolean compareAndSwapObject (Object oThis, long offset, Object expect, Object update);
@@ -72,6 +77,10 @@ public class Unsafe {
 
   public native Object getObject(Object obj, long l);
   public native Object getObjectVolatile(Object obj, long l);
+
+  public final Object getObjectAcquire(Object o, long offset) {
+    return getObjectVolatile(o, offset);
+  }
 
   @Deprecated
   public Object getObject(Object obj, int offset) {
@@ -208,8 +217,11 @@ public class Unsafe {
   public native int arrayBaseOffset(Class<?> clazz);
 
   public native int arrayIndexScale(Class<?> clazz);
-  
-  
+
+  public final void putObjectRelease(Object o, long offset, Object x) {
+    putObjectVolatile(o, offset, x);
+  }
+
   //--- java.nio finally breaks object boundaries  - hello, evil pointer arithmetic
   
   /**
