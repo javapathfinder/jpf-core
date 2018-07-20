@@ -31,6 +31,7 @@ import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.SystemAttribute;
+import gov.nasa.jpf.jvm.JRTClassFileContainer;
 import gov.nasa.jpf.util.JPFLogger;
 import gov.nasa.jpf.util.SparseIntVector;
 import gov.nasa.jpf.util.StringSetMatcher;
@@ -647,6 +648,9 @@ public class ClassLoaderInfo
     }
   }
 
+  /**
+   * @return a {@link ClassFileMatch} or null if a match is not found
+   */
   protected ClassFileMatch getMatch(String typeName) {
     if(ClassInfo.isBuiltinClass(typeName)) {
       return null;
@@ -657,6 +661,12 @@ public class ClassLoaderInfo
       match = cp.findMatch(typeName); 
     } catch (ClassParseException cfx){
       throw new JPFException("error reading class " + typeName, cfx);
+    }
+
+    if (match == null) {
+      // match not found in the classpath
+      // try to load from the run-time image
+      match = new JRTClassFileContainer().getMatch(typeName);
     }
 
     return match;
