@@ -80,6 +80,8 @@ public abstract class JVMClassFileContainer extends ClassFileContainer {
    *     jar:file:/path/to/jpf-classes.jar!/java.base/java/lang/Object.class
    *
    *     /path/to/build/tests/TypeNameTest.class
+   *
+   *     jrt:/java.base/java/lang/Class.class
    */
   @Override
   public String getClassURL (String typeName){
