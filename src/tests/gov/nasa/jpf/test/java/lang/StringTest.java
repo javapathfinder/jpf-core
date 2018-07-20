@@ -301,4 +301,13 @@ public class StringTest extends TestJPF {
       assertTrue( s.contentEquals(sb));
     }
   }
+
+	@Test
+	public void testConcat() {
+		if (verifyNoPropertyViolation()) {
+			String str = "Hello, ";
+			String out = str + "World!";
+			assert out.equals("Hello, World!");
+		}
+	}
 }
