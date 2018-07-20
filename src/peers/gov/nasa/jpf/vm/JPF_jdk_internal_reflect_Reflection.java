@@ -20,7 +20,7 @@ package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.annotation.MJI;
 
-public class JPF_sun_reflect_Reflection extends NativePeer {
+public class JPF_jdk_internal_reflect_Reflection extends NativePeer {
 
   @MJI
   public int getCallerClass__I__Ljava_lang_Class_2(MJIEnv env, int clsObjRef, int offset){
