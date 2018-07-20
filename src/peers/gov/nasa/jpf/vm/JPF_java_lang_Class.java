@@ -490,7 +490,7 @@ public class JPF_java_lang_Class extends NativePeer {
   }
   
   // this is only used for system classes such as java.lang.reflect.Method
-  ClassInfo getInitializedClassInfo (MJIEnv env, String clsName){
+  static ClassInfo getInitializedClassInfo (MJIEnv env, String clsName){
     ThreadInfo ti = env.getThreadInfo();
     Instruction insn = ti.getPC();
     ClassInfo ci = ClassLoaderInfo.getSystemResolvedClassInfo( clsName);

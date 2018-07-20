@@ -161,6 +161,9 @@
            includes="*,gov/nasa/jpf/**,classloader_specific_tests/**">
       <compilerarg value="-Xlint:all,-serial,-rawtypes,-unchecked"/>
 
+      <compilerarg value="--add-exports"/>
+      <compilerarg value="java.base/jdk.internal.misc=ALL-UNNAMED"/>
+
       <include name="*gov/nasa/jpf/**"/>
       <include name="classloader_specific_tests/**"/>
       <include name="java8/**" if="have_java8"/>
