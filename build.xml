@@ -477,6 +477,8 @@
         </fileset>
       </batchtest>
 
+      <jvmarg value="--add-opens"/>
+      <jvmarg value="java.base/jdk.internal.misc=ALL-UNNAMED"/>
     </junit>
 
     <fail if="test.failed" />
