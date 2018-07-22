@@ -24,7 +24,7 @@ import gov.nasa.jpf.vm.NativePeer;
 /**
  * this is just a placeholder for now, we don't support its functionality
  */
-public class JPF_sun_misc_VM extends NativePeer {
+public class JPF_jdk_internal_misc_VM extends NativePeer {
   
   @MJI
   public void initialize____V (MJIEnv env, int clsObjRef){
