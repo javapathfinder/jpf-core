@@ -253,6 +253,26 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		}
 	}
 
+	private boolean nonSyncContentEquals(AbstractStringBuilder abstractStringBuilder) {
+		int len = length();
+		if (len != abstractStringBuilder.length()) {
+			return false;
+		}
+		byte v1[] = value;
+		byte v2[] = abstractStringBuilder.getValue();
+		if (coder() == abstractStringBuilder.getCoder()) {
+			int n = v1.length;
+			for (int i = 0; i < n; i++) {
+				if (v1[i] != v2[i]) {
+					return false;
+				}
+			}
+		} else {
+			return isLatin1() && StringUTF16.contentEquals(v1, v2, len);
+		}
+		return true;
+	}
+
   native static boolean equals0 (char[] a, char[] b, int len);
   
   /**
@@ -264,21 +284,28 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 			return false;
 		}
 
-		// that should be the common case (String)
-		if (charSequence.equals(this)){
-			return true;
+		// cs is a String
+		if (charSequence instanceof String) {
+			return equals(charSequence);
 		}
 
-		// we can do that natively, too
+		// cs is a StringBuffer, or StringBuilder
 		if (charSequence instanceof AbstractStringBuilder) {
-			byte[] val = ((AbstractStringBuilder) charSequence).getValue();
-			byte coder = ((AbstractStringBuilder) charSequence).getCoder();
-			assert coder == UTF16 : "Currently only UTF16 is supported for String comparision with an instance of type AbstractStringBuilder";
-			return StringUTF16.contentEquals(this.value, val, this.length());
+			if (charSequence instanceof StringBuffer) {
+				synchronized (charSequence) {
+					return nonSyncContentEquals((AbstractStringBuilder) charSequence);
+				}
+			} else {
+				return nonSyncContentEquals((AbstractStringBuilder) charSequence);
+			}
 		}
 
 		// generic CharSequence - expensive
 		int n = charSequence.length();
+		if (n != length()) {
+			return false;
+		}
+
 		byte[] val = this.value;
 		if (isLatin1()) {
 			for (int i = 0; i < n; i++) {
