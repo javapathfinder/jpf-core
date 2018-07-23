@@ -63,6 +63,10 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 
 	private static final long serialVersionUID = -6849794470754667710L;
 
+	static final boolean COMPACT_STRINGS;
+	static {
+		COMPACT_STRINGS = true;
+	}
 
 	private static final ObjectStreamField[] serialPersistentFields =
 			new ObjectStreamField[0];
@@ -189,17 +193,18 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		if (len == 0) {
 			this.value = "".value;
 			this.coder = "".coder;
-		} else {
+			return;
+		}
+		if (COMPACT_STRINGS) {
 			byte[] val = StringUTF16.compress(value, off, len);
 			if (val != null) {
 				this.value = val;
 				this.coder = LATIN1;
 				return;
 			}
-
-			this.coder = UTF16;
-			this.value = StringUTF16.toBytes(value, off, len);
 		}
+		this.coder = UTF16;
+		this.value = StringUTF16.toBytes(value, off, len);
 	}
 
 	@Deprecated
@@ -234,11 +239,8 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 			throws UnsupportedEncodingException;
 
 	public byte[] getBytes(Charset x){
-		// No Charset model.
-		if (x == null){
-			throw new NullPointerException();
-		}
-		return StringCoding.encode(x, this.coder, this.value);
+		if (x == null) throw new NullPointerException();
+		return StringCoding.encode(x, coder(), value);
 	}
 
 	native public byte[] getBytes();
@@ -401,8 +403,12 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	native public static String valueOf(double d);
 	public native String intern();
 
+	byte coder() {
+		return COMPACT_STRINGS ? coder : UTF16;
+	}
+
 	private boolean isLatin1() {
-		return this.coder == LATIN1;
+		return COMPACT_STRINGS && coder == LATIN1;
 	}
 
   /*
