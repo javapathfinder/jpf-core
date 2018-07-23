@@ -105,13 +105,14 @@ public abstract class JVMClassFileContainer extends ClassFileContainer {
   }
 
   /**
-   * @return the module name for the given typeName or null if the module is an unnamed module
+   * @return the module name for the given typeName. Returns null if the module is an unnamed module
+   * or the Class object associated with the given typeName is not found.
    */
   static String getModuleName(String typeName) {
     try {
       return Class.forName(typeName.split("\\$")[0]).getModule().getName();
     } catch (ClassNotFoundException e) {
-      throw new JPFException("Class for typename " + typeName + " not found", e);
+      return null;
     }
   }
 
