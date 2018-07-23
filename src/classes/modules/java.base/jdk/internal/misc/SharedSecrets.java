@@ -53,6 +53,7 @@ public class SharedSecrets {
   private static JavaUtilJarAccess javaUtilJarAccess;
   private static JavaLangAccess javaLangAccess;
   private static JavaIOAccess javaIOAccess;
+  private static JavaNetURLAccess javaNetURLAccess;
   private static JavaIODeleteOnExitAccess javaIODeleteOnExitAccess;
   private static JavaNetAccess javaNetAccess;
   private static JavaIOFileDescriptorAccess javaIOFileDescriptorAccess;
@@ -79,6 +80,15 @@ public class SharedSecrets {
     return javaNetAccess;
   }
 
+  public static void setJavaNetURLAccess(JavaNetURLAccess jnua) {
+    javaNetURLAccess = jnua;
+  }
+
+  public static JavaNetURLAccess getJavaNetURLAccess() {
+    if (javaNetURLAccess == null)
+      unsafe.ensureClassInitialized(java.net.URL.class);
+    return javaNetURLAccess;
+  }
 
   public static JavaUtilJarAccess javaUtilJarAccess() {
     if (javaUtilJarAccess == null) {
