@@ -63,6 +63,10 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 
 	private static final long serialVersionUID = -6849794470754667710L;
 
+	static final boolean COMPACT_STRINGS;
+	static {
+		COMPACT_STRINGS = true;
+	}
 
 	private static final ObjectStreamField[] serialPersistentFields =
 			new ObjectStreamField[0];
@@ -90,7 +94,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(value,offset,count);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(char[] value, int offset, int count);
@@ -99,7 +102,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(codePoints,offset,count);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(int[] codePoints, int offset, int count);
@@ -109,7 +111,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(ascii,hibyte,offset,count);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(byte ascii[], int hibyte, int offset, int count);
@@ -125,7 +126,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(bytes,offset,length,charsetName);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(byte bytes[], int offset, int length, String charsetName);
@@ -189,17 +189,18 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		if (len == 0) {
 			this.value = "".value;
 			this.coder = "".coder;
-		} else {
+			return;
+		}
+		if (COMPACT_STRINGS) {
 			byte[] val = StringUTF16.compress(value, off, len);
 			if (val != null) {
 				this.value = val;
 				this.coder = LATIN1;
 				return;
 			}
-
-			this.coder = UTF16;
-			this.value = StringUTF16.toBytes(value, off, len);
 		}
+		this.coder = UTF16;
+		this.value = StringUTF16.toBytes(value, off, len);
 	}
 
 	@Deprecated
@@ -234,11 +235,8 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 			throws UnsupportedEncodingException;
 
 	public byte[] getBytes(Charset x){
-		// No Charset model.
-		if (x == null){
-			throw new NullPointerException();
-		}
-		return StringCoding.encode(x, this.coder, this.value);
+		if (x == null) throw new NullPointerException();
+		return StringCoding.encode(x, coder(), value);
 	}
 
 	native public byte[] getBytes();
@@ -249,6 +247,26 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		synchronized (stringBuffer) {
 			return contentEquals((CharSequence) stringBuffer);
 		}
+	}
+
+	private boolean nonSyncContentEquals(AbstractStringBuilder abstractStringBuilder) {
+		int len = length();
+		if (len != abstractStringBuilder.length()) {
+			return false;
+		}
+		byte v1[] = value;
+		byte v2[] = abstractStringBuilder.getValue();
+		if (coder() == abstractStringBuilder.getCoder()) {
+			int n = v1.length;
+			for (int i = 0; i < n; i++) {
+				if (v1[i] != v2[i]) {
+					return false;
+				}
+			}
+		} else {
+			return isLatin1() && StringUTF16.contentEquals(v1, v2, len);
+		}
+		return true;
 	}
 
   native static boolean equals0 (char[] a, char[] b, int len);
@@ -262,21 +280,28 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 			return false;
 		}
 
-		// that should be the common case (String)
-		if (charSequence.equals(this)){
-			return true;
+		// cs is a String
+		if (charSequence instanceof String) {
+			return equals(charSequence);
 		}
 
-		// we can do that natively, too
+		// cs is a StringBuffer, or StringBuilder
 		if (charSequence instanceof AbstractStringBuilder) {
-			byte[] val = ((AbstractStringBuilder) charSequence).getValue();
-			byte coder = ((AbstractStringBuilder) charSequence).getCoder();
-			assert coder == UTF16 : "Currently only UTF16 is supported for String comparision with an instance of type AbstractStringBuilder";
-			return StringUTF16.contentEquals(this.value, val, this.length());
+			if (charSequence instanceof StringBuffer) {
+				synchronized (charSequence) {
+					return nonSyncContentEquals((AbstractStringBuilder) charSequence);
+				}
+			} else {
+				return nonSyncContentEquals((AbstractStringBuilder) charSequence);
+			}
 		}
 
 		// generic CharSequence - expensive
 		int n = charSequence.length();
+		if (n != length()) {
+			return false;
+		}
+
 		byte[] val = this.value;
 		if (isLatin1()) {
 			for (int i = 0; i < n; i++) {
@@ -401,8 +426,12 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	native public static String valueOf(double d);
 	public native String intern();
 
+	byte coder() {
+		return COMPACT_STRINGS ? coder : UTF16;
+	}
+
 	private boolean isLatin1() {
-		return this.coder == LATIN1;
+		return COMPACT_STRINGS && coder == LATIN1;
 	}
 
   /*
