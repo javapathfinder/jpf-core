@@ -94,7 +94,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(value,offset,count);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(char[] value, int offset, int count);
@@ -103,7 +102,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(codePoints,offset,count);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(int[] codePoints, int offset, int count);
@@ -113,7 +111,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(ascii,hibyte,offset,count);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(byte ascii[], int hibyte, int offset, int count);
@@ -129,7 +126,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		String proxy=init(bytes,offset,length,charsetName);
 		this.value=proxy.value;
 		this.coder=proxy.coder;
-		this.hash=proxy.hash;
 	}
 
 	private native String init(byte bytes[], int offset, int length, String charsetName);
