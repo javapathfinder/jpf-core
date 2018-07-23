@@ -19,6 +19,7 @@ package jdk.internal.misc;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.util.jar.JarFile;
 
@@ -58,6 +59,7 @@ public class SharedSecrets {
   private static JavaNioAccess javaNioAccess;
   private static JavaAWTAccess javaAWTAccess;
   private static JavaObjectInputStreamAccess javaObjectInputStreamAccess;
+  private static JavaObjectInputFilterAccess javaObjectInputFilterAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -150,7 +152,18 @@ public class SharedSecrets {
   public static void setJavaObjectInputStreamAccess(JavaObjectInputStreamAccess access) {
     javaObjectInputStreamAccess = access;
   }
-  
+
+  public static JavaObjectInputFilterAccess getJavaObjectInputFilterAccess() {
+    if (javaObjectInputFilterAccess == null) {
+      unsafe.ensureClassInitialized(ObjectInputFilter.Config.class);
+    }
+    return javaObjectInputFilterAccess;
+  }
+
+  public static void setJavaObjectInputFilterAccess(JavaObjectInputFilterAccess access) {
+    javaObjectInputFilterAccess = access;
+  }
+
   public static void setJavaAWTAccess (JavaAWTAccess jaa){
     javaAWTAccess = jaa;
   }
