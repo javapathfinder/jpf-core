@@ -60,6 +60,9 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   
   private String name;
 
+  // set by VM
+  private transient Module module;
+
   private ClassLoader classLoader;
   
   /**
@@ -358,5 +361,9 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public boolean isSynthetic (){
     final int SYNTHETIC = 0x00001000;
     return (getModifiers() & SYNTHETIC) != 0;
+  }
+
+  public Module getModule() {
+    return module;
   }
 }
