@@ -55,4 +55,13 @@ public class JPF_jdk_internal_reflect_Reflection extends NativePeer {
   public int getCallerClass____Ljava_lang_Class_2(MJIEnv env, int clsObjRef){
     return getCallerClass__I__Ljava_lang_Class_2( env, clsObjRef, 2);
   }
+
+  /**
+   * NativePeer method for {@link jdk.internal.reflect.Reflection#getClassAccessFlags(java.lang.Class)}
+   */
+  @MJI
+  public static int getClassAccessFlags__Ljava_lang_Class_2__I(MJIEnv env, int clsObjRef, int cRef) {
+    ClassInfo classInfo = env.getClassInfo(cRef);
+    return classInfo.getModifiers();
+  }
 }
