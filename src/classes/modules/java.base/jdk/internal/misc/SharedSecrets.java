@@ -52,6 +52,7 @@ public class SharedSecrets {
 
   private static JavaUtilJarAccess javaUtilJarAccess;
   private static JavaLangAccess javaLangAccess;
+  private static JavaLangInvokeAccess javaLangInvokeAccess;
   private static JavaIOAccess javaIOAccess;
   private static JavaNetURLAccess javaNetURLAccess;
   private static JavaIODeleteOnExitAccess javaIODeleteOnExitAccess;
@@ -71,6 +72,20 @@ public class SharedSecrets {
     javaLangAccess = jla;
   }
 
+  public static void setJavaLangInvokeAccess(JavaLangInvokeAccess jlia) {
+    javaLangInvokeAccess = jlia;
+  }
+
+  public static JavaLangInvokeAccess getJavaLangInvokeAccess() {
+    if (javaLangInvokeAccess == null) {
+      try {
+        Class<?> c = Class.forName("java.lang.invoke.MethodHandleImpl");
+        unsafe.ensureClassInitialized(c);
+      } catch (ClassNotFoundException ignored) {
+      }
+    }
+    return javaLangInvokeAccess;
+  }
 
   public static void setJavaNetAccess(JavaNetAccess jna) {
     javaNetAccess = jna;
