@@ -207,10 +207,12 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	String(int offset, int count, char[] value) {
 		this(value, offset, count);
 	}
+
 	@Override
 	public int length() {
-		return value.length;
+		return value.length >> coder();
 	}
+
 	public boolean isEmpty() {
 		return value.length == 0;
 	}
