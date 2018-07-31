@@ -745,6 +745,8 @@ public class MJIEnv {
     return ci.getStaticElementInfo().getShortField(fname);
   }
 
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
   public char[] getStringChars (int objRef){
     if (objRef != MJIEnv.NULL) {
       ElementInfo ei = getElementInfo(objRef);
