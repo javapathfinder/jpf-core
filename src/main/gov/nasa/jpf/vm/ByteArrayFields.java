@@ -106,6 +106,10 @@ public class ByteArrayFields extends ArrayFields {
     return values[pos];
   }
 
+  public void setByteValues(byte[] v) {
+    System.arraycopy(v, 0, values, 0, v.length);
+  }
+
   @Override
   public void appendTo (IntVector v) {
     v.appendPacked(values);
