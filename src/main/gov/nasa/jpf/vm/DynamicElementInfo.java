@@ -154,8 +154,8 @@ public class DynamicElementInfo extends ElementInfo {
 
     int vref = getDeclaredReferenceField("value", "java.lang.String");
     ElementInfo e = VM.getVM().getHeap().get(vref);
-    CharArrayFields cf = (CharArrayFields)e.getFields();
-    char[] v = cf.asCharArray();
+    ByteArrayFields cf = (ByteArrayFields) e.getFields();
+    byte[] v = cf.asByteArray();
     
     return new String(v).equals(s);
   }
