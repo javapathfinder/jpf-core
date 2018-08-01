@@ -341,22 +341,22 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
     ei.setReferenceField("value", vref);
 
     ElementInfo eVal = getModifiable(vref);
-    CharArrayFields cf = (CharArrayFields)eVal.getFields();
-    cf.setCharValues(str.toCharArray());
-    
+    ByteArrayFields cf = (ByteArrayFields) eVal.getFields();
+    cf.setByteValues(str.getBytes());
+
     return ei;
   }
   
-  protected ElementInfo newString (ClassInfo ciString, ClassInfo ciChars, String str, ThreadInfo ti, AllocationContext ctx) {
+  protected ElementInfo newString (ClassInfo ciString, ClassInfo ciBytes, String str, ThreadInfo ti, AllocationContext ctx) {
     
     //--- the string object itself
     int sRef = getNewElementInfoIndex( ctx);
     createObject( ciString, ti, sRef);
     
-    //--- its char[] array
-    ctx = ctx.extend(ciChars, sRef);
+    //--- its byte[] array
+    ctx = ctx.extend(ciBytes, sRef);
     int vRef = getNewElementInfoIndex( ctx);
-    createArray( "C", str.length(), ciChars, ti, vRef);
+    createArray( "B", str.getBytes().length, ciBytes, ti, vRef);
     
     ElementInfo ei = initializeStringObject(str, sRef, vRef);      
     return ei;
@@ -367,10 +367,10 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
     if (str != null) {
       SystemClassLoaderInfo sysCl = ti.getSystemClassLoaderInfo();
       ClassInfo ciString = sysCl.getStringClassInfo();
-      ClassInfo ciChars = sysCl.getCharArrayClassInfo();
-      
+      ClassInfo ciBytes = sysCl.getByteArrayClassInfo();
+
       AllocationContext ctx = getSUTAllocationContext( ciString, ti);
-      return newString( ciString, ciChars, str, ti, ctx);
+      return newString( ciString, ciBytes, str, ti, ctx);
       
     } else {
       return null;
@@ -382,10 +382,10 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
     if (str != null) {
       SystemClassLoaderInfo sysCl = ti.getSystemClassLoaderInfo();
       ClassInfo ciString = sysCl.getStringClassInfo();
-      ClassInfo ciChars = sysCl.getCharArrayClassInfo();
-      
+      ClassInfo ciBytes = sysCl.getByteArrayClassInfo();
+
       AllocationContext ctx = getSystemAllocationContext( ciString, ti, anchor);
-      return newString( ciString, ciChars, str, ti, ctx);
+      return newString( ciString, ciBytes, str, ti, ctx);
       
     } else {
       return null;
@@ -442,8 +442,8 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
                                  ThreadInfo ti, int anchor) {
     SystemClassLoaderInfo sysCl = ti.getSystemClassLoaderInfo(); 
     ClassInfo ciString = sysCl.getStringClassInfo();
-    ClassInfo ciChars = sysCl.getCharArrayClassInfo();
-    
+    ClassInfo ciBytes = sysCl.getByteArrayClassInfo();
+
     //--- the Throwable object itself
     AllocationContext ctx = getSystemAllocationContext( ciThrowable, ti, anchor);
     int xRef = getNewElementInfoIndex( ctx);
@@ -452,7 +452,7 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
     //--- the detailMsg field
     if (details != null) {
       AllocationContext ctxString = ctx.extend( ciString, xRef);
-      ElementInfo eiMsg = newString( ciString, ciChars, details, ti, ctxString);
+      ElementInfo eiMsg = newString( ciString, ciBytes, details, ti, ctxString);
       eiThrowable.setReferenceField("detailMessage", eiMsg.getObjectRef());
     }
 

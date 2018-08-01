@@ -1572,10 +1572,15 @@ public abstract class ElementInfo implements Cloneable {
     throw new JPFException("not a String object: " + this);
   }
 
+  @Deprecated(forRemoval = true)
   public char[] getStringChars(){
     throw new JPFException("not a String object: " + this);    
   }
-  
+
+  public byte[] getStringBytes() {
+    throw new JPFException("not a String object: " + this);
+  }
+
   /**
    * just a helper to avoid creating objects just for the sake of comparing
    */

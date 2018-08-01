@@ -96,7 +96,7 @@ public class DynamicElementInfo extends ElementInfo {
 
   @Override
   public String asString() {
-    char[] data = getStringChars();
+    byte[] data = getStringBytes();
     if (data != null){
       return new String(data);
       
@@ -106,6 +106,8 @@ public class DynamicElementInfo extends ElementInfo {
   }
 
   @Override
+  @SuppressWarnings("removal")
+  @Deprecated(forRemoval = true)
   public char[] getStringChars(){
     if (!ClassInfo.isStringClassInfo(ci)) {
       throw new JPFException("object is not of type java.lang.String");
@@ -121,7 +123,26 @@ public class DynamicElementInfo extends ElementInfo {
       return null;
     }    
   }
-  
+
+  /**
+   * @return the value of the String#value field of this element
+   * @throws JPFException if the element is not of type {@link java.lang.String}
+   */
+  @Override
+  public byte[] getStringBytes(){
+    if (!ClassInfo.isStringClassInfo(ci)) {
+      throw new JPFException("object is not of type java.lang.String");
+    }
+
+    int valueFieldRef = getDeclaredReferenceField("value", "java.lang.String");
+    if (valueFieldRef == MJIEnv.NULL){
+      return null;
+    }
+
+    ElementInfo eVal = VM.getVM().getHeap().get(valueFieldRef);
+    return eVal.asByteArray();
+  }
+
   /**
    * just a helper to avoid creating objects just for the sake of comparing
    */
@@ -133,8 +154,8 @@ public class DynamicElementInfo extends ElementInfo {
 
     int vref = getDeclaredReferenceField("value", "java.lang.String");
     ElementInfo e = VM.getVM().getHeap().get(vref);
-    CharArrayFields cf = (CharArrayFields)e.getFields();
-    char[] v = cf.asCharArray();
+    ByteArrayFields cf = (ByteArrayFields) e.getFields();
+    byte[] v = cf.asByteArray();
     
     return new String(v).equals(s);
   }

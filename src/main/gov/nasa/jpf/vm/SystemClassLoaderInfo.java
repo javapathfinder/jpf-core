@@ -65,6 +65,7 @@ public abstract class SystemClassLoaderInfo extends ClassLoaderInfo {
   protected ClassInfo threadClassInfo;
   protected ClassInfo threadGroupClassInfo;
   protected ClassInfo charArrayClassInfo;
+  protected ClassInfo byteArrayClassInfo;
 
   protected int unCachedClasses = 10;
   
@@ -212,6 +213,8 @@ public abstract class SystemClassLoaderInfo extends ClassLoaderInfo {
       stringClassInfo = ci; unCachedClasses--;
     } else if ((charArrayClassInfo == null) && name.equals("[C")) {
       charArrayClassInfo = ci; unCachedClasses--;
+    } else if ((byteArrayClassInfo == null) && name.equals("[B")) {
+      byteArrayClassInfo = ci; unCachedClasses--;
     } else if ((weakRefClassInfo == null) && name.equals("java.lang.ref.WeakReference")) {
       weakRefClassInfo = ci; unCachedClasses--;
     } else if ((refClassInfo == null) && name.equals("java.lang.ref.Reference")) {
@@ -243,6 +246,10 @@ public abstract class SystemClassLoaderInfo extends ClassLoaderInfo {
   
   protected ClassInfo getCharArrayClassInfo() {
     return charArrayClassInfo;
+  }
+
+  protected ClassInfo getByteArrayClassInfo() {
+    return byteArrayClassInfo;
   }
 
   protected ClassInfo getEnumClassInfo() {
