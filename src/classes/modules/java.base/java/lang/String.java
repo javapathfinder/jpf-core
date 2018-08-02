@@ -246,6 +246,19 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		return StringCoding.encode(x, coder(), value);
 	}
 
+	/**
+	 * If two coders are different and target is big enough,
+	 * invoker guarantees that the target is in UTF16
+	 */
+	void getBytes(byte dst[], int dstBegin, byte coder) {
+		assert coder == UTF16;
+		if (coder() == coder) {
+			System.arraycopy(value, 0, dst, dstBegin << coder, value.length);
+		} else { // this.coder == LATIN1 && coder == UTF16
+			StringLatin1.inflate(value, 0, dst, dstBegin, value.length);
+		}
+	}
+
 	native public byte[] getBytes();
 	@Override
 	native public boolean equals(Object anObject);
