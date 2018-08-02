@@ -185,6 +185,11 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		this.coder = x.coder;
 	}
 
+	String(byte[] value, byte coder) {
+		this.value = value;
+		this.coder = coder;
+	}
+
 	String(char[] value, int off, int len, Void sig) {
 		if (len == 0) {
 			this.value = "".value;
