@@ -170,7 +170,7 @@ public class JPF_java_lang_String extends NativePeer {
     }
 
     String s1 = env.getStringObject(objRef);
-    String s2 = env.getStringObject(objRef);
+    String s2 = env.getStringObject(argRef);
 
     return s1.equals(s2);
   }
