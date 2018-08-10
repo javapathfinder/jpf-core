@@ -317,7 +317,7 @@ public class JPF_java_lang_String extends NativePeer {
   @MJI
   public int concat__Ljava_lang_String_2__Ljava_lang_String_2 (MJIEnv env, int objRef, int strRef) {
     String thisStr = env.getStringObject(objRef);
-    String otherStr = env.getStringObject(objRef);
+    String otherStr = env.getStringObject(strRef);
 
     String result = thisStr.concat(otherStr);
     return env.newString(result);
