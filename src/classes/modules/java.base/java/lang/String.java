@@ -251,10 +251,10 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	 * invoker guarantees that the target is in UTF16
 	 */
 	void getBytes(byte dst[], int dstBegin, byte coder) {
-		assert coder == UTF16;
 		if (coder() == coder) {
 			System.arraycopy(value, 0, dst, dstBegin << coder, value.length);
-		} else { // this.coder == LATIN1 && coder == UTF16
+		} else {
+			assert this.coder == LATIN1 && coder == UTF16;
 			StringLatin1.inflate(value, 0, dst, dstBegin, value.length);
 		}
 	}
