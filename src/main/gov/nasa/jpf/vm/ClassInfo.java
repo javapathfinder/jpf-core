@@ -1091,17 +1091,21 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   public MethodInfo getDefaultMethod (String uniqueName) {
     MethodInfo mi = null;
     
-    for (ClassInfo ci = this; ci != null; ci = ci.superClass){
-      for (ClassInfo ciIfc : ci.interfaces){
-        MethodInfo miIfc = ciIfc.getMethod(uniqueName, true);
-        if (miIfc != null && !miIfc.isAbstract()){
-          if (mi != null && !mi.equals(miIfc)){
+    for (ClassInfo ciIfc : this.getAllInterfaces()){
+      MethodInfo miIfc = ciIfc.getMethod(uniqueName, false);
+      if (miIfc != null && !miIfc.isAbstract() && !miIfc.isPrivate() && !miIfc.isStatic()){
+        if (mi != null && !mi.equals(miIfc)){
+          if(miIfc.getClassInfo().isSubInterfaceOf(mi.getClassInfo())) {
+            miIfc = mi;
+          } else if(mi.getClassInfo().isSubInterfaceOf(miIfc.getClassInfo())) {
+            continue;
+          } else {
             // this has to throw a IncompatibleClassChangeError in the client since Java prohibits ambiguous default methods
             String msg = "Conflicting default methods: " + mi.getFullName() + ", " + miIfc.getFullName();
             throw new ClassChangeException(msg);
-          } else {
-            mi = miIfc;
           }
+        } else {
+          mi = miIfc;
         }
       }
     }
@@ -1109,6 +1113,11 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return mi;
   }
   
+  private boolean isSubInterfaceOf(ClassInfo classInfo) {
+    assert this.isInterface() && classInfo.isInterface();
+    return this == classInfo || this.getAllInterfaces().contains(classInfo);
+  }
+
   /**
    * This retrieves the SAM from this functional interface. Note that this is only
    * called on functional interface expecting to have a SAM. This shouldn't expect 
