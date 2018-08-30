@@ -19,6 +19,8 @@ package java8;
 
 import gov.nasa.jpf.util.test.TestJPF;
 
+import java.util.function.Supplier;
+
 import org.junit.Test;
 
 /**
@@ -293,5 +295,17 @@ public class LambdaTest extends TestJPF{
       
       assertSame(fi1,fi2);
     }
+  }
+  
+  @Test
+  public void testNullCaptureValues() {
+    if(verifyNoPropertyViolation()) {
+      Supplier<String> provider = getStringProvider(null);
+      assertEquals(provider.get(), "It was null");
+    }
+  }
+
+  private Supplier<String> getStringProvider(String object) {
+    return () -> object == null ? "It was null" : object;
   }
 }
