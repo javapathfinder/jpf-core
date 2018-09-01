@@ -1096,7 +1096,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
       if (miIfc != null && !miIfc.isAbstract() && !miIfc.isPrivate() && !miIfc.isStatic()){
         if (mi != null && !mi.equals(miIfc)){
           if(miIfc.getClassInfo().isSubInterfaceOf(mi.getClassInfo())) {
-            miIfc = mi;
+            mi = miIfc;
           } else if(mi.getClassInfo().isSubInterfaceOf(miIfc.getClassInfo())) {
             continue;
           } else {
