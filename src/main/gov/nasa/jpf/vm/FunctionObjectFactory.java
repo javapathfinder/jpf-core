@@ -61,8 +61,12 @@ public class FunctionObjectFactory {
       } else if (typeName.equals("boolean")) {
         fields.setBooleanValue(i, (Boolean)freeVarValues[i]);
       } else {
-        int val = ((ElementInfo)freeVarValues[i]).getObjectRef();
-        fields.setReferenceValue(i, val);
+        if(freeVarValues[i] == null) {
+          fields.setReferenceValue(i, MJIEnv.NULL); 
+        } else {
+          int val = ((ElementInfo)freeVarValues[i]).getObjectRef();
+          fields.setReferenceValue(i, val);
+        }
       }
     }
   }
