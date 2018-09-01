@@ -111,7 +111,7 @@ public class JPF_java_lang_reflect_Array extends NativePeer {
   @MJI
   public int get__Ljava_lang_Object_2I__Ljava_lang_Object_2 (MJIEnv env, int clsRef,
                                                                     int aref, int index){
-    String at = env.getArrayType(aref);
+    String at = Types.getTypeName(env.getArrayType(aref));
     if (at.equals("int")){
       int vref = env.newObject("java.lang.Integer");
       env.setIntField(vref, "value", env.getIntArrayElement(aref,index));

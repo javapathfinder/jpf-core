@@ -562,11 +562,13 @@ public class MJIEnv {
   }
 
   public void setShortField (int objref, String fname, short val) {
-    setIntField(objref, fname, /*(int)*/ val);
+    ElementInfo ei = heap.getModifiable(objref);
+    ei.setShortField(fname, val);
   }
 
   public short getShortField (int objref, String fname) {
-    return (short) getIntField(objref, fname);
+    ElementInfo ei = heap.get(objref);
+    return ei.getShortField(fname);
   }
 
   /**
