@@ -44,7 +44,7 @@ public class Throwable {
     } catch (ClassNotFoundException e) {
       throw new NoClassDefFoundError("java.lang.StackTraceElement");
     }
-     
+    cause = this;
     fillInStackTrace();
   }
 
