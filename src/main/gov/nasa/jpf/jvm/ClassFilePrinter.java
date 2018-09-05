@@ -18,10 +18,10 @@
 
 package gov.nasa.jpf.jvm;
 
-import gov.nasa.jpf.jvm.JVMByteCodePrinter;
+import java.io.PrintWriter;
+
 import gov.nasa.jpf.util.StructuredPrinter;
 import gov.nasa.jpf.vm.ClassParseException;
-import java.io.PrintWriter;
 
 /**
  * simple tool to print contents of a classfile
@@ -776,5 +776,10 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     if (dataLength>maxBytes){
       pw.print("..");
     }
+  }
+
+  @Override
+  public void setAnnotationFieldValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex) {
+    
   }
 }

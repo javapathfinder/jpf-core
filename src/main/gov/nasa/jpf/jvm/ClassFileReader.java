@@ -167,6 +167,8 @@ public interface ClassFileReader {
   void setAnnotationValueCount(ClassFile cf, Object tag, int annotationIndex, int nValuePairs);
 
   void setPrimitiveAnnotationValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex, Object val);
+  
+  void setAnnotationFieldValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex);
 
   void setStringAnnotationValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex, String s);
 

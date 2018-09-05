@@ -246,4 +246,7 @@ public class ClassFileReaderAdapter implements ClassFileReader {
 
   @Override
   public void setSignature(ClassFile cf, Object tag, String signature) {}
+
+  @Override
+  public void setAnnotationFieldValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex) {}
 }

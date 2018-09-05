@@ -17,6 +17,8 @@
  */
 package gov.nasa.jpf.jvm;
 
+import java.util.LinkedList;
+
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.vm.AnnotationInfo;
 import gov.nasa.jpf.vm.AnnotationParser;
@@ -46,6 +48,10 @@ public class JVMAnnotationParser extends ClassFileReaderAdapter implements Annot
 
   String annotationName;
   AnnotationInfo.Entry[] entries;
+  
+  protected LinkedList<AnnotationInfo> annotationStack;
+  protected AnnotationInfo curAi;
+  protected LinkedList<Object[]> valuesStack;
   
   public JVMAnnotationParser (ClassFile cf) {
     this.cf = cf;
@@ -113,28 +119,60 @@ public class JVMAnnotationParser extends ClassFileReaderAdapter implements Annot
 
   @Override
   public void setAnnotation (ClassFile cf, Object tag, int annotationIndex, String annotationType) {
-    if (annotationType.equals("Ljava/lang/annotation/Inherited;")) {
+    if (key == null && annotationType.equals("Ljava/lang/annotation/Inherited;")) {
       ai.setInherited( true);
     }
+    if(key != null  && annotationIndex == -1) {
+      if(annotationStack == null) {
+        assert valuesStack == null;
+        annotationStack = new LinkedList<>();
+        valuesStack = new LinkedList<>();
+      }
+      annotationStack.addFirst(curAi);
+      valuesStack.addFirst(valElements);
+      valElements = null;
+      curAi = ai.getClassLoaderInfo().getResolvedAnnotationInfo(Types.getClassNameFromTypeName(annotationType));
+    }
   }
-
+  
+  @Override
+  public void setAnnotationFieldValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex) {
+    assert annotationStack.size() > 0;
+    AnnotationInfo ai = curAi;
+    valElements = valuesStack.pop();
+    curAi = annotationStack.pop();
+    if(arrayIndex >= 0) {
+      valElements[arrayIndex] = ai;
+    } else {
+      if(curAi != null) {
+        curAi.setClonedEntryValue(elementName, ai);
+      } else {
+        value = ai;
+      }
+    }
+  }
+  
   @Override
   public void setPrimitiveAnnotationValue (ClassFile cf, Object tag, int annotationIndex, int valueIndex,
           String elementName, int arrayIndex, Object val) {
     if (arrayIndex >= 0) {
       valElements[arrayIndex] = val;
+    } else if(curAi != null) {
+      curAi.setClonedEntryValue(elementName, val);
     } else {
       if (key != null){
         value = val;
       }
     }
   }
-
+  
   @Override
   public void setStringAnnotationValue (ClassFile cf, Object tag, int annotationIndex, int valueIndex,
           String elementName, int arrayIndex, String val) {
     if (arrayIndex >= 0) {
       valElements[arrayIndex] = val;
+    } else if(curAi != null) {
+      curAi.setClonedEntryValue(elementName, val);
     } else {
       if (key != null){
         value = val;
@@ -148,6 +186,8 @@ public class JVMAnnotationParser extends ClassFileReaderAdapter implements Annot
     Object val = AnnotationInfo.getClassValue(typeName);
     if (arrayIndex >= 0) {
       valElements[arrayIndex] = val;
+    } else if(curAi != null) {
+      curAi.setClonedEntryValue(elementName, val);
     } else {
       if (key != null){
         value = val;
@@ -161,6 +201,8 @@ public class JVMAnnotationParser extends ClassFileReaderAdapter implements Annot
     Object val = AnnotationInfo.getEnumValue(enumType, enumValue);
     if (arrayIndex >= 0) {
       valElements[arrayIndex] = val;
+    } else if(curAi != null) {
+      curAi.setClonedEntryValue(elementName, val);
     } else {
       if (key != null){
         value = val;
@@ -177,7 +219,9 @@ public class JVMAnnotationParser extends ClassFileReaderAdapter implements Annot
   @Override
   public void setAnnotationValueElementsDone (ClassFile cf, Object tag, int annotationIndex, int valueIndex,
           String elementName) {
-    if (key != null) {
+    if(curAi != null) {
+      curAi.setClonedEntryValue(elementName, valElements);
+    } else if (key != null) {
       value = valElements;
     }
   }
