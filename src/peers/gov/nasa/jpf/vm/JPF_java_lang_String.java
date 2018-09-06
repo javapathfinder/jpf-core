@@ -17,10 +17,16 @@
  */
 package gov.nasa.jpf.vm;
 
+import gov.nasa.jpf.annotation.MJI;
+import gov.nasa.jpf.vm.CharArrayFields;
+import gov.nasa.jpf.vm.ElementInfo;
+import gov.nasa.jpf.vm.Fields;
+import gov.nasa.jpf.vm.Heap;
+import gov.nasa.jpf.vm.MJIEnv;
+import gov.nasa.jpf.vm.NativePeer;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
-
-import gov.nasa.jpf.annotation.MJI;
 
 /**
  * MJI NativePeer class for java.lang.String library abstraction
@@ -570,7 +576,7 @@ public class JPF_java_lang_String extends NativePeer {
   }
 
   @MJI
-  public int format0__Ljava_lang_String_2_3Ljava_lang_Object_2__Ljava_lang_String_2 (MJIEnv env, int clsObjRef, int fmtRef, int argRef) {
+  public int format__Ljava_lang_String_2_3Ljava_lang_Object_2__Ljava_lang_String_2 (MJIEnv env, int clsObjRef, int fmtRef, int argRef) {
     return env.newString(env.format(fmtRef, argRef));
   }
 
