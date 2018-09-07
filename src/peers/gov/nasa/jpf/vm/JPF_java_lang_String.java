@@ -272,6 +272,10 @@ public class JPF_java_lang_String extends NativePeer {
 
   @MJI
   public int hashCode____I (MJIEnv env, int objref) {
+    return computeStringHashCode(env, objref);
+  }
+
+  public static int computeStringHashCode(MJIEnv env, int objref) {
     ElementInfo ei = env.getElementInfo(objref);
     int h = ei.getIntField("hash");
 

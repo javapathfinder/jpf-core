@@ -147,6 +147,27 @@ public class JPF_java_lang_reflect_Method extends NativePeer {
   }
   
   @MJI
+  public int getDefaultValue____Ljava_lang_Object_2(MJIEnv env, int objRef) {
+    MethodInfo mi = getMethodInfo(env, objRef);
+    ClassInfo ci = mi.getClassInfo();
+    if(!ci.isInterface() || ci.getDirectInterfaceNames() == null || ci.getDirectInterfaceNames().length != 1 || !ci.getDirectInterfaceNames()[0].equals("java.lang.annotation.Annotation")) {
+      return MJIEnv.NULL;
+    }
+    String annotationName = ci.getName();
+    AnnotationInfo ai = ci.getClassLoaderInfo().getResolvedAnnotationInfo(annotationName);
+    Object o = ai.getValue(mi.getName());
+    if(o == null) {
+      return MJIEnv.NULL;
+    }
+    try {
+      return env.liftNativeAnnotationValue(Types.getTypeName(mi.getReturnType()), o);
+    } catch(ClinitRequired e) {
+      env.handleClinitRequest(e.getRequiredClassInfo());
+      return -1;
+    }
+  }
+  
+  @MJI
   public int getReturnType____Ljava_lang_Class_2 (MJIEnv env, int objRef){
     MethodInfo mi = getMethodInfo(env, objRef);
     ThreadInfo ti = env.getThreadInfo();
