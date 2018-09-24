@@ -18,13 +18,12 @@
 
 package gov.nasa.jpf.jvm;
 
-import gov.nasa.jpf.jvm.JVMByteCodeReader;
-import gov.nasa.jpf.vm.ClassParseException;
+import java.io.File;
+
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.util.BailOut;
 import gov.nasa.jpf.util.BinaryClassSource;
-
-import java.io.File;
+import gov.nasa.jpf.vm.ClassParseException;
 
 /**
  * class to read and dissect Java classfile contents (as specified by the Java VM
@@ -692,11 +691,67 @@ public class ClassFile extends BinaryClassSource {
     reader.setAnnotationCount( this, tag, annotationCount);
     pos = p;
   }
-  private void setAnnotation(ClassFileReader reader, Object tag, int annotationIndex, String annotationType){
+  private boolean setAnnotation(ClassFileReader reader, Object tag, int annotationIndex, String annotationType){
     int p = pos;
-    reader.setAnnotation( this, tag, annotationIndex, annotationType);
-    pos = p;
+    try {
+      reader.setAnnotation( this, tag, annotationIndex, annotationType);
+      pos = p;
+      return true;
+    } catch (SkipAnnotation sa) {
+      this.skipAnnotation(false);
+      return false;
+    }
   }
+  
+  /*
+   * This is largely lifted from AnnotationParser.java
+   *   annotation {
+   *     u2 type_index;
+   *     u2 num_element_value_pairs;
+   *     {
+   *       u2 element_name_index;
+   *       element_value value;
+   *     } element_value_pairs[num_element_value_pairs]
+   *   }
+   */
+  private void skipAnnotation(boolean skipTypeIndex) {
+    if(skipTypeIndex) { // we may want to skip after reading the type name
+      readU2();
+    }
+    int numKV = readU2();
+    for(int i = 0; i < numKV; i++) {
+      readU2(); // skip name
+      skipMemberValue();
+    }
+  }
+
+  /*
+   * Skips an element_value
+   */
+  private void skipMemberValue() {
+    int tag = readUByte();
+    switch(tag) {
+    case 'e': // Enum value
+      pos += 4; // an enum value is a struct of two shorts, for 4 bytes total
+      break;
+    case '@':
+      skipAnnotation(true);
+      break;
+    case '[':
+      skipArray();
+      break;
+    default:
+      pos += 2; // either two bye const val index or two byte class info index
+    }
+  }
+
+  private void skipArray() {
+    int len = readU2();
+    for(int i = 0; i < len; i++) {
+      skipMemberValue();
+    }
+  }
+
   private void setAnnotationsDone(ClassFileReader reader, Object tag){
     int p = pos;
     reader.setAnnotationsDone(this, tag);
@@ -738,6 +793,13 @@ public class ClassFile extends BinaryClassSource {
     reader.setClassAnnotationValue( this, tag, annotationIndex, valueIndex, elementName, arrayIndex, typeName);
     pos = p;
   }
+  
+  private void setAnnotationFieldValue(ClassFileReader reader, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex) {
+    int p = pos;
+    reader.setAnnotationFieldValue( this, tag, annotationIndex, valueIndex, elementName, arrayIndex);
+    pos = p;
+  }
+  
   private void setEnumAnnotationValue(ClassFileReader reader, Object tag, int annotationIndex, int valueIndex,
           String elementName, int arrayIndex, String enumType, String enumValue){
     int p = pos;
@@ -774,10 +836,17 @@ public class ClassFile extends BinaryClassSource {
     reader.setParameterAnnotationCount(this, tag, paramIndex, annotationCount);
     pos = p;
   }
-  private void setParameterAnnotation(ClassFileReader reader, Object tag, int annotationIndex, String annotationType){
+
+  private boolean setParameterAnnotation(ClassFileReader reader, Object tag, int annotationIndex, String annotationType){
     int p = pos;
-    reader.setParameterAnnotation( this, tag, annotationIndex, annotationType);
-    pos = p;
+    try {
+      reader.setParameterAnnotation( this, tag, annotationIndex, annotationType);
+      pos = p;
+      return true;
+    } catch(SkipAnnotation s) {
+      this.skipAnnotation(false);
+      return false;
+    }
   }
   private void setParameterAnnotationsDone(ClassFileReader reader, Object tag, int paramIndex){
     int p = pos;
@@ -1515,7 +1584,8 @@ public class ClassFile extends BinaryClassSource {
         break;
 
       case '@':
-        parseAnnotation(reader, tag, 0, false);  // getting recursive here
+        parseAnnotation(reader, tag, -1, false);  // getting recursive here
+        setAnnotationFieldValue(reader, tag, annotationIndex, valueIndex, elementName, arrayIndex);
         break;
 
       case '[':
@@ -1542,14 +1612,15 @@ public class ClassFile extends BinaryClassSource {
   void parseAnnotation (ClassFileReader reader, Object tag, int annotationIndex, boolean isParameterAnnotation){
     int cpIdx = readU2();
     String annotationType = (String)cpValue[cpIdx];
-
+    boolean parseValues;
     if (isParameterAnnotation){
-      setParameterAnnotation(reader, tag, annotationIndex, annotationType);
+      parseValues = setParameterAnnotation(reader, tag, annotationIndex, annotationType);
     } else {
-      setAnnotation(reader, tag, annotationIndex, annotationType);
+      parseValues = setAnnotation(reader, tag, annotationIndex, annotationType);
     }
-
-    parseAnnotationValues(reader, tag, annotationIndex);
+    if(parseValues) {
+      parseAnnotationValues(reader, tag, annotationIndex);
+    }
   }
 
   void parseAnnotationValues (ClassFileReader reader, Object tag, int annotationIndex){

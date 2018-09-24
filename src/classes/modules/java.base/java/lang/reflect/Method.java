@@ -65,9 +65,7 @@ public final class Method extends AccessibleObject implements Member {
 
   // for Annotations - return the default value of the annotation member
   // represented by this method
-  public Object getDefaultValue() {
-    throw new UnsupportedOperationException("Method.getDefaultValue() not supported yet");
-  }
+  public native Object getDefaultValue();
 
   @Override
   public native boolean equals (Object obj);

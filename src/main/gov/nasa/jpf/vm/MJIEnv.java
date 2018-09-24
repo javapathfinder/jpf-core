@@ -17,15 +17,16 @@
  */
 package gov.nasa.jpf.vm;
 
+import java.util.Date;
+import java.util.Locale;
+import java.util.Optional;
+
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.JPFListener;
+import gov.nasa.jpf.vm.AnnotationInfo.EnumValue;
 import gov.nasa.jpf.vm.serialize.UnknownJPFClass;
-
-import java.util.Date;
-import java.util.Locale;
-
 
 /**
  * MJIEnv is the call environment for "native" methods, i.e. code that
@@ -561,11 +562,13 @@ public class MJIEnv {
   }
 
   public void setShortField (int objref, String fname, short val) {
-    setIntField(objref, fname, /*(int)*/ val);
+    ElementInfo ei = heap.getModifiable(objref);
+    ei.setShortField(fname, val);
   }
 
   public short getShortField (int objref, String fname) {
-    return (short) getIntField(objref, fname);
+    ElementInfo ei = heap.get(objref);
+    return ei.getShortField(fname);
   }
 
   /**
@@ -745,8 +748,6 @@ public class MJIEnv {
     return ci.getStaticElementInfo().getShortField(fname);
   }
 
-  @SuppressWarnings("removal")
-  @Deprecated(forRemoval = true)
   public char[] getStringChars (int objRef){
     if (objRef != MJIEnv.NULL) {
       ElementInfo ei = getElementInfo(objRef);
@@ -1152,7 +1153,6 @@ public class MJIEnv {
         }
       }
     }
-
     return String.format(format,arg);
   }
 
@@ -1352,7 +1352,7 @@ public class MJIEnv {
 
   public void throwException (String clsName) {
     ClassInfo ciX = ClassInfo.getInitializedClassInfo(clsName, ti);
-    assert ciX.isInstanceOf("java.lang.Throwable");
+    assert ciX.isInstanceOf("java.lang.Throwable") : ciX;
     exceptionRef = ti.createException(ciX, null, NULL);
   }
 
@@ -1595,42 +1595,40 @@ public class MJIEnv {
     ei.lockNotified(ti);
   }
 
-  void initAnnotationProxyField (int proxyRef, FieldInfo fi, Object v) throws ClinitRequired {
-    String fname = fi.getName();
-    String ftype = fi.getType();
-
+  public int liftNativeAnnotationValue(String ftype, Object v) {
     if (v instanceof String){
-      setReferenceField(proxyRef, fname, newString((String)v));
+      return newString((String)v);
     } else if (v instanceof Boolean){
-      setBooleanField(proxyRef, fname, ((Boolean)v).booleanValue());
-    } else if (v instanceof Integer){
-      setIntField(proxyRef, fname, ((Integer)v).intValue());
+      return valueOfBoolean((Boolean)v);
+    } else if (v instanceof Integer) {
+      return valueOfInteger((Integer)v);
     } else if (v instanceof Long){
-      setLongField(proxyRef, fname, ((Long)v).longValue());
+      return valueOfLong((Long)v);
     } else if (v instanceof Float){
-      setFloatField(proxyRef, fname, ((Float)v).floatValue());
+      return newFloat((Float) v);
     } else if (v instanceof Short){
-      setShortField(proxyRef, fname, ((Short)v).shortValue());
+      return valueOfShort((Short)v);
     } else if (v instanceof Character){
-      setCharField(proxyRef, fname, ((Character)v).charValue());
+      return valueOfCharacter((Character)v);
     } else if (v instanceof Byte){
-      setByteField(proxyRef, fname, ((Byte)v).byteValue());
+      return valueOfByte((Byte)v);
     } else if (v instanceof Double){
-      setDoubleField(proxyRef, fname, ((Double)v).doubleValue());
-
-    } else if (v instanceof AnnotationInfo.EnumValue){ // an enum constant
-      AnnotationInfo.EnumValue ev = (AnnotationInfo.EnumValue)v;
-      String eCls = ev.getEnumClassName();
-      String eConst = ev.getEnumConstName();
-
-      ClassInfo eci = ClassLoaderInfo.getCurrentResolvedClassInfo(eCls);
-      if (!eci.isInitialized()){
-        throw new ClinitRequired(eci);
+      return newDouble((Double)v);
+    } else {
+      Optional<Integer> ref = liftAnnotationReferenceValue(v, ftype);
+      if(ref.isPresent()) {
+        return ref.get();
+      } else {
+        throwException("java.lang.InternalError", "AnnotationElement type not supported: " + ftype);
+        return -1;
       }
+    }
+  }
 
-      StaticElementInfo sei = eci.getStaticElementInfo();
-      int eref = sei.getReferenceField(eConst);
-      setReferenceField(proxyRef, fname, eref);
+  Optional<Integer> liftAnnotationReferenceValue(Object v, String ftype) {
+    if (v instanceof AnnotationInfo.EnumValue){ // an enum constant
+      int eref = makeAnnotationEnumRef((EnumValue) v);
+      return Optional.of(eref);
 
     } else if (v instanceof AnnotationInfo.ClassValue){ // a class
       String clsName = v.toString();
@@ -1642,7 +1640,7 @@ public class MJIEnv {
       }
 
       int cref = cci.getClassObjectRef();
-      setReferenceField(proxyRef, fname, cref);
+      return Optional.of(cref);
 
     } else if (v.getClass().isArray()){ // ..or arrays thereof
       Object[] a = (Object[])v;
@@ -1673,6 +1671,26 @@ public class MJIEnv {
         for (int i=0; i<a.length; i++){
           setDoubleArrayElement(aref,i,((Number)a[i]).doubleValue());
         }
+      } else if(ftype.equals("char[]")) {
+        aref = newCharArray(a.length);
+        for (int i=0; i<a.length; i++){
+          setCharArrayElement(aref,i,((Character)a[i]).charValue());
+        }
+      } else if(ftype.equals("short[]")) {
+        aref = newShortArray(a.length);
+        for (int i=0; i<a.length; i++){
+          setShortArrayElement(aref,i,((Number)a[i]).shortValue());
+        }
+      } else if(ftype.equals("byte[]")) {
+        aref = newByteArray(a.length);
+        for (int i=0; i<a.length; i++){
+          setByteArrayElement(aref,i,((Number)a[i]).byteValue());
+        }
+      } else if(ftype.equals("float[]")) {
+        aref = newFloatArray(a.length);
+        for (int i=0; i<a.length; i++){
+          setFloatArrayElement(aref,i,((Number)a[i]).floatValue());
+        }
       } else if (ftype.equals("java.lang.Class[]")){
         aref = newObjectArray("java.lang.Class", a.length);
         for (int i=0; i<a.length; i++){
@@ -1684,17 +1702,80 @@ public class MJIEnv {
           int cref = cci.getClassObjectRef();
           setReferenceArrayElement(aref,i,cref);
         }
+      } else {
+        String typeName = ftype.substring(0, ftype.length() - 2);
+        ClassInfo elemType = ClassLoaderInfo.getCurrentResolvedClassInfo(typeName);
+        aref = newObjectArray(typeName, a.length);
+        if(elemType.isEnum()) {
+          for(int i = 0; i < a.length; i++) {
+            setReferenceArrayElement(aref, i, makeAnnotationEnumRef((EnumValue) a[i]));
+          }
+
+        } else {
+          for(int i = 0; i < a.length; i++) {
+            setReferenceArrayElement(aref, i, makeAnnotationProxy((AnnotationInfo) a[i]));
+          }
+        }
       }
 
       if (aref != NULL){
-        setReferenceField(proxyRef, fname, aref);
+        return Optional.of(aref);
       } else {
-        throwException("AnnotationElement type not supported: " + ftype);
+        return Optional.empty();
       }
 
+    } else if(v instanceof AnnotationInfo) {
+      return Optional.of(makeAnnotationProxy((AnnotationInfo) v));
     } else {
-      throwException("AnnotationElement type not supported: " + ftype);
+      return Optional.empty();
     }
+  }
+
+  void initAnnotationProxyField (int proxyRef, FieldInfo fi, Object v) throws ClinitRequired {
+    String fname = fi.getName();
+    String ftype = fi.getType();
+
+    if (v instanceof String){
+      setReferenceField(proxyRef, fname, newString((String)v));
+    } else if (v instanceof Boolean){
+      setBooleanField(proxyRef, fname, ((Boolean)v).booleanValue());
+    } else if (v instanceof Integer){
+      setIntField(proxyRef, fname, ((Integer)v).intValue());
+    } else if (v instanceof Long){
+      setLongField(proxyRef, fname, ((Long)v).longValue());
+    } else if (v instanceof Float){
+      setFloatField(proxyRef, fname, ((Float)v).floatValue());
+    } else if (v instanceof Short){
+      setShortField(proxyRef, fname, ((Short)v).shortValue());
+    } else if (v instanceof Character){
+      setCharField(proxyRef, fname, ((Character)v).charValue());
+    } else if (v instanceof Byte){
+      setByteField(proxyRef, fname, ((Byte)v).byteValue());
+    } else if (v instanceof Double){
+      setDoubleField(proxyRef, fname, ((Double)v).doubleValue());
+    } else {
+      Optional<Integer> ref = liftAnnotationReferenceValue(v, ftype);
+      if(ref.isPresent()) {
+        setReferenceField(proxyRef, fname, ref.get());
+      } else {
+        throwException("java.lang.InternalError", "AnnotationElement type not supported: " + ftype);
+      }
+    }
+  }
+
+  private int makeAnnotationEnumRef(AnnotationInfo.EnumValue v) {
+    AnnotationInfo.EnumValue ev = (AnnotationInfo.EnumValue)v;
+    String eCls = ev.getEnumClassName();
+    String eConst = ev.getEnumConstName();
+
+    ClassInfo eci = ClassLoaderInfo.getCurrentResolvedClassInfo(eCls);
+    if (!eci.isInitialized()){
+      throw new ClinitRequired(eci);
+    }
+
+    StaticElementInfo sei = eci.getStaticElementInfo();
+    int eref = sei.getReferenceField(eConst);
+    return eref;
   }
 
   int newAnnotationProxy (ClassInfo aciProxy, AnnotationInfo ai) throws ClinitRequired {
@@ -1706,7 +1787,6 @@ public class MJIEnv {
       Object v = e.getValue();
       String fname = e.getKey();
       FieldInfo fi = aciProxy.getInstanceField(fname);
-
       initAnnotationProxyField(proxyRef, fi, v);
     }
 
@@ -1718,10 +1798,7 @@ public class MJIEnv {
     if ((ai != null) && (ai.length > 0)){
       int aref = newObjectArray("Ljava/lang/annotation/Annotation;", ai.length);
       for (int i=0; i<ai.length; i++){
-        ClassInfo aci = ClassLoaderInfo.getCurrentResolvedClassInfo(ai[i].getName());
-        ClassInfo aciProxy = aci.getAnnotationProxy();
-
-        int ar = newAnnotationProxy(aciProxy, ai[i]);
+        int ar = makeAnnotationProxy(ai[i]);
         setReferenceArrayElement(aref, i, ar);
       }
       return aref;
@@ -1735,6 +1812,14 @@ public class MJIEnv {
       }
       return aref;
     }
+  }
+
+  private int makeAnnotationProxy(AnnotationInfo annotationInfo) {
+    ClassInfo aci = ClassLoaderInfo.getCurrentResolvedClassInfo(annotationInfo.getName());
+    ClassInfo aciProxy = aci.getAnnotationProxy();
+
+    int ar = newAnnotationProxy(aciProxy, annotationInfo);
+    return ar;
   }
 
   public void handleClinitRequest (ClassInfo ci) {

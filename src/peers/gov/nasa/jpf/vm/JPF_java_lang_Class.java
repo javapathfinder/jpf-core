@@ -17,14 +17,14 @@
  */
 package gov.nasa.jpf.vm;
 
-import gov.nasa.jpf.Config;
-import gov.nasa.jpf.annotation.MJI;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
+
+import gov.nasa.jpf.Config;
+import gov.nasa.jpf.annotation.MJI;
 
 
 /**

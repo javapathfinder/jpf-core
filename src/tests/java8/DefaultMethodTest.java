@@ -140,7 +140,63 @@ public class DefaultMethodTest extends TestJPF {
       o.bar();
     }
   }
+  // -- most specific implementations
+  
+  public static interface Intf1 {
+    default int getInt() {
+      return 4;
+    }
+  }
+  
+  public static interface Intf2 extends Intf1 {
+    @Override
+    default int getInt() {
+      return 3;
+    }
+  }
+  public static abstract class A implements Intf1 {
+    
+  }
+  
+  public static class B extends A implements Intf2 {
+  }
+  
+  @Test
+  public void testMostSpecificImplementationResolution() {
+    if(verifyNoPropertyViolation()) {
+      B b = new B();
+      int x = b.getInt();
+      assertEquals(x, 3);
+    }
+  }
 
+  // --- inherited default methods
+  
+  interface SuperIntf {
+    default String getString() {
+      return "Hello World";
+    }
+  }
+  
+  interface SubIntf extends SuperIntf {
+    default int getZero() {
+      return 0;
+    }
+  }
+  
+  public class ConcreteClass implements SubIntf {
+    
+  }
+  
+  @Test
+  public void testInheritedDefaultMethod() {
+    if(verifyNoPropertyViolation()) {
+      ConcreteClass cls = new ConcreteClass();
+      assertEquals(cls.getString(), "Hello World");
+    }
+  }
+  
   // <2do> how to test IncompatibleClassChangeError without explicit classfile restore?
 }
+
 

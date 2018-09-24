@@ -1,7 +1,9 @@
 local.properties
 .version
+build.properties
 
-## General
+####### General #######
+*.swo
 trace
 activity*.png
 *.class
@@ -9,17 +11,21 @@ activity*.png
 *~
 *.DS_Store
 
-## Ant
+####### Ant #######
 build/
 
-## Covers NetBeans IDE
+####### Gradle #######
+.gradle/
+reports/
+
+####### Covers NetBeans IDE #######
 nbproject/private/
 nbbuild/
 dist/
 nbdist/
 .nb-gradle/
 
-## Covers Eclipse IDE
+####### Covers Eclipse IDE #######
 .metadata
 tmp/
 *.tmp
@@ -29,9 +35,30 @@ tmp/
 .settings/
 .loadpath
 .recommenders
+.classpath
+.project
 
-## Covers JetBrains IDE: IntelliJ
-.idea/
+####### Covers JetBrains IDE: IntelliJ #######
+*.iml
+*.ipr
+
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+.idea/ant.xml
+
+# Sensitive or high-churn files:
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+
+# Gradle:
+.idea/**/gradle.xml
+.idea/**/libraries
 
 ## File-based project format:
 *.iws

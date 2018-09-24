@@ -248,8 +248,29 @@ public class JPF_java_lang_String extends NativePeer {
 
   @MJI
   public int hashCode____I (MJIEnv env, int objref) {
-      String str = env.getStringObject(objref);
-      return str.hashCode();
+    return computeStringHashCode(env, objref);
+  }
+
+  public static int computeStringHashCode(MJIEnv env, int objref) {
+    ElementInfo ei = env.getElementInfo(objref);
+    int h = ei.getIntField("hash");
+
+    if (h == 0) {
+      int vref = env.getReferenceField(objref, "value");
+
+      // now get the char array data, but be aware they are stored as ints
+      ElementInfo eiVal = env.getElementInfo(vref);
+      char[] values = eiVal.asCharArray();
+
+      for (int i = 0; i < values.length; i++) {
+        h = 31 * h + values[i];
+      }
+
+      ei = ei.getModifiableInstance();
+      ei.setIntField("hash", h);
+    }
+
+    return h;
   }
 
   @MJI
