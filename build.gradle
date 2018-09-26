@@ -6,8 +6,20 @@ def getCurrentVersion() {
 
 version = currentVersion
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
+
+tasks.withType(JavaCompile) {
+    options.compilerArgumentProviders << ({
+        [
+            '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED',
+            '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+            '--add-reads', 'java.base=ALL-UNNAMED',
+            '--patch-module', 'java.base=src/classes/modules/java.base',
+            '--patch-module', 'java.logging=src/classes/modules/java.logging'
+        ]
+    } as CommandLineArgumentProvider)
+}
 
 repositories {
     mavenCentral()
@@ -142,8 +154,8 @@ task createRunJpfJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Implementation-Title": "Java Pathfinder core launch system",
-            "Main-Class": "gov.nasa.jpf.tool.RunJPF"
+                "Implementation-Title": "Java Pathfinder core launch system",
+                "Main-Class": "gov.nasa.jpf.tool.RunJPF"
         )
         from manifestCommonAttrbutes
     }
@@ -176,8 +188,8 @@ task createRunTestJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Implementation-Title": "Java Pathfinder test launch system",
-            "Main-Class": "gov.nasa.jpf.tool.RunTest"
+                "Implementation-Title": "Java Pathfinder test launch system",
+                "Main-Class": "gov.nasa.jpf.tool.RunTest"
         )
         from manifestCommonAttrbutes
     }
