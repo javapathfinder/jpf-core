@@ -9,18 +9,6 @@ version = currentVersion
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
 
-tasks.withType(JavaCompile) {
-    options.compilerArgumentProviders << ({
-        [
-            '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED',
-            '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
-            '--add-reads', 'java.base=ALL-UNNAMED',
-            '--patch-module', 'java.base=src/classes/modules/java.base',
-            '--patch-module', 'java.logging=src/classes/modules/java.logging'
-        ]
-    } as CommandLineArgumentProvider)
-}
-
 repositories {
     mavenCentral()
 }

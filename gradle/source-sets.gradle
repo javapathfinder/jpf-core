@@ -14,9 +14,14 @@ sourceSets {
         compileClasspath += sourceSets.main.output
     }
     classes {
-        java.srcDirs = ["src/classes"]
+        java.srcDirs = ["src/classes/gov", "src/classes/org"]
         java.outputDir = file("${buildDir}/classes")
         compileClasspath += sourceSets.main.output + sourceSets.annotations.output
+    }
+    modules {
+        java.srcDirs = ["src/classes/modules"]
+        java.outputDir = file("${buildDir}/classes")
+        compileClasspath += sourceSets.classes.output + sourceSets.main.output + sourceSets.annotations.output
     }
     peers {
         java.srcDirs = ["src/peers"]
@@ -30,3 +35,26 @@ sourceSets {
         runtimeClasspath += compileClasspath
     }
 }
+
+compilePeersJava.options.compilerArgs += [
+        '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED'
+]
+
+compileClassesJava.options.compilerArgs += [
+        '--patch-module', 'java.base=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.base',
+        '--patch-module', 'java.logging=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.logging',
+        '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+        '--add-reads', 'java.base=ALL-UNNAMED'
+]
+
+compileModulesJava.options.compilerArgs += [
+        '--patch-module', 'java.base=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.base',
+        '--patch-module', 'java.logging=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.logging',
+        '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+        '--add-reads', 'java.base=ALL-UNNAMED',
+        '--module-source-path', files(sourceSets.modules.java.srcDirs).asPath
+]
+
+compileTestJava.options.compilerArgs += [
+        '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED'
+]
