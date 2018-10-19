@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# This script allows JPF to run on Benchexec.
+# https://github.com/sosy-lab/benchexec
+
+# create site.properties
+SITE_PROPERTIES=site.properties
+echo "jpf-core = `pwd`/jpf-core" > $SITE_PROPERTIES
+echo "extensions=\${jpf-core}" >> $SITE_PROPERTIES
+
+# parse arguments
+BENCHMARK=""
+PROPERTY_FILE=""
+WITNESS_FILE=""
+
+while [ -n "$1" ] ; do
+  case "$1" in
+    --propertyfile) PROPERTY_FILE="$2" ; shift 2 ;;
+    --graphml-witness) WITNESS_FILE="$2" ; shift 2 ;;
+    --version) jpf-core/bin/jpf -version ; exit 0 ;;
+    *) BENCHMARK="$1" ; shift 1 ;;
+  esac
+done
+
+if [ -z "$BENCHMARK" ] ; then
+  echo "Missing benchmark file"
+  exit 1
+fi
+
+if [ -z "$PROPERTY_FILE" ] ; then
+  echo "Missing property file"
+  exit 1
+fi
+
+if [ ! -s "$BENCHMARK" ]  ; then
+  echo "Empty benchmark file"
+  exit 1
+fi
+
+if [ ! -s "$PROPERTY_FILE" ] ; then
+  echo "Empty property file"
+  exit 1
+fi
+
+LOG=`mktemp -t jpf-log.XXXXXX`
+DIR=`mktemp -d -t jpf-benchmark.XXXXXX`
+trap "rm -rf $DIR $LOG" EXIT
+
+# we ignore the property file (there is only one property at the moment)
+# we ignore the witness file (not used yet)
+# we unpack the benchmark zip file, build it and analyze it
+unzip $BENCHMARK -d $DIR
+make -C $DIR
+
+# create configuration file
+echo "target=Main" > $DIR/config.jpf
+echo "classpath=$DIR/target/classes" >> $DIR/config.jpf
+echo "cg.enumerate_random=true" >> $DIR/config.jpf
+
+LD_LIBRARY_PATH=`pwd`/jpf-symbc/lib:$LD_LIBRARY_PATH
+
+jpf-core/bin/jpf $DIR/config.jpf +cg.enumerate_random | tee $LOG
+
+grep "no errors detected" $LOG > /dev/null
+if [ $? -eq 0 ]; then
+  echo "SAFE"
+else
+  grep "^error.*NoUncaughtExceptionsProperty.*AssertionError" $LOG > /dev/null
+  if [ $? -eq 0 ]; then
+    echo "UNSAFE"
+  else
+    echo "UNKNOWN"
+  fi
+fi
