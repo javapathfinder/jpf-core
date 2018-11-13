@@ -18,7 +18,7 @@ while [ -n "$1" ] ; do
   case "$1" in
     --propertyfile) PROPERTY_FILE="$2" ; shift 2 ;;
     --graphml-witness) WITNESS_FILE="$2" ; shift 2 ;;
-    --version) jpf-core/bin/jpf -version ; exit 0 ;;
+    --version) bin/jpf -version ; exit 0 ;;
     *) BENCHMARK="$1" ; shift 1 ;;
   esac
 done
@@ -61,7 +61,7 @@ echo "listener = .symbc.SymbolicListener" >> $DIR/config.jpf
 
 LD_LIBRARY_PATH=`pwd`/jpf-symbc/lib:$LD_LIBRARY_PATH
 
-jpf-core/bin/jpf $DIR/config.jpf | tee $LOG
+bin/jpf $DIR/config.jpf | tee $LOG
 
 grep "no errors detected" $LOG > /dev/null
 if [ $? -eq 0 ]; then
