@@ -1,11 +1,5 @@
 apply plugin: "java"
 
-def getCurrentVersion() {
-    "DEVELOPMENT-SNAPSHOT"
-}
-
-version = currentVersion
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -13,15 +7,31 @@ repositories {
     mavenCentral()
 }
 
+buildscript {
+    repositories {
+	maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.11.0"
+    }
+}
+
 dependencies {
     testImplementation "junit:junit:4.12"
 }
+
+apply plugin: "com.palantir.git-version"
+version gitVersion()
+def gitDetails = versionDetails()
 
 ext.manifestCommonAttrbutes = manifest {
     attributes(
         "Built-By": System.getProperty("user.name"),
         "Implementation-Vendor": "NASA Ames Research Center",
-        "Implementation-Version": version
+        "Specification-Version": gitDetails.lastTag,
+        "Implementation-Version": gitDetails.gitHashFull
     )
 }
 
