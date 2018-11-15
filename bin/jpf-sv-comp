@@ -12,7 +12,7 @@ BM=()
 PROP_FILE=""
 WITNESS_FILE=""
 
-TOOL_BINARY=jpf-core/bin/jpf
+TOOL_BINARY=bin/jpf
 FIND_OPTIONS="-name '*.java'"
 
 while [ -n "$1" ] ; do
@@ -57,7 +57,7 @@ echo "listener = .symbc.SymbolicListener" >> $DIR/config.jpf
 
 # run SPF
 export LD_LIBRARY_PATH=`pwd`/jpf-symbc/lib:$LD_LIBRARY_PATH
-jpf-core/bin/jpf $DIR/config.jpf | tee $LOG
+$TOOL_BINARY $DIR/config.jpf | tee $LOG
 
 # check the result
 grep "no errors detected" $LOG > /dev/null

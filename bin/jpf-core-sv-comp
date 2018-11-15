@@ -5,7 +5,7 @@
 
 # create site.properties
 SITE_PROPERTIES=site.properties
-echo "jpf-core = `pwd`/jpf-core" > $SITE_PROPERTIES
+echo "jpf-core = `pwd`" > $SITE_PROPERTIES
 echo "extensions=\${jpf-core}" >> $SITE_PROPERTIES
 
 # parse arguments
@@ -14,7 +14,7 @@ BM=()
 PROP_FILE=""
 WITNESS_FILE=""
 
-TOOL_BINARY=jpf-core/bin/jpf
+TOOL_BINARY=bin/jpf
 FIND_OPTIONS="-name '*.java'"
 
 while [ -n "$1" ] ; do
@@ -56,7 +56,7 @@ echo "classpath=$DIR/target/classes" >> $DIR/config.jpf
 echo "cg.enumerate_random=true" >> $DIR/config.jpf
 
 # run JPF
-jpf-core/bin/jpf $DIR/config.jpf +cg.enumerate_random | tee $LOG
+$TOOL_BINARY $DIR/config.jpf +cg.enumerate_random | tee $LOG
 
 # check the result
 grep "no errors detected" $LOG > /dev/null
