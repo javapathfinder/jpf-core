@@ -9,5 +9,14 @@ if test -z "$JVM_FLAGS"; then
   JVM_FLAGS="-Xmx1024m -ea"
 fi
 
+if [ "$1" = "--version" ]
+then
+	if [ -e "$JPF_HOME/.version" ]
+	then
+		cat "$JPF_HOME/.version"
+		exit
+	fi
+fi
+
 java $JVM_FLAGS -jar "$JPF_HOME/build/RunJPF.jar" "$@"
 

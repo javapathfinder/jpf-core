@@ -5,7 +5,8 @@
 
 # create site.properties
 SITE_PROPERTIES=site.properties
-echo "jpf-core = `pwd`/jpf-core" > $SITE_PROPERTIES
+P="`dirname $0`"
+echo "jpf-core = $P/.." > $SITE_PROPERTIES
 echo "extensions=\${jpf-core}" >> $SITE_PROPERTIES
 
 # parse arguments
@@ -17,7 +18,7 @@ while [ -n "$1" ] ; do
   case "$1" in
     --propertyfile) PROPERTY_FILE="$2" ; shift 2 ;;
     --graphml-witness) WITNESS_FILE="$2" ; shift 2 ;;
-    --version) bin/jpf -version ; exit 0 ;;
+    --version) "$P/bin/jpf" -version ; exit 0 ;;
     *) BENCHMARK="$1" ; shift 1 ;;
   esac
 done
@@ -57,9 +58,7 @@ echo "target=Main" > $DIR/config.jpf
 echo "classpath=$DIR/target/classes" >> $DIR/config.jpf
 echo "cg.enumerate_random=true" >> $DIR/config.jpf
 
-LD_LIBRARY_PATH=`pwd`/jpf-symbc/lib:$LD_LIBRARY_PATH
-
-bin/jpf $DIR/config.jpf +cg.enumerate_random | tee $LOG
+"$P/bin/jpf" $DIR/config.jpf +cg.enumerate_random | tee $LOG
 
 grep "no errors detected" $LOG > /dev/null
 if [ $? -eq 0 ]; then
