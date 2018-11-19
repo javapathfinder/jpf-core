@@ -63,8 +63,11 @@ grep "no errors detected" $LOG > /dev/null
 if [ $? -eq 0 ]; then
   echo "SAFE"
 else
-  grep "^error.*NoUncaughtExceptionsProperty.*AssertionError" $LOG > /dev/null
-  if [ $? -eq 0 ]; then
+  E="`grep "^error.*NoUncaughtExceptionsProperty" $LOG`"
+  if [ $? -eq 0 \
+	-a "`echo $E | grep NoSuchMethodException`" = "" \
+	-a "`echo $E | grep UnsatisfiedLinkError`" = "" ]
+  then
     echo "UNSAFE"
   else
     echo "UNKNOWN"
