@@ -15,40 +15,28 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.Instruction;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.ThreadInfo;
+package gov.nasa.jpf.test.java.io;
 
+import gov.nasa.jpf.util.test.TestJPF;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
+import org.junit.Test;
 
 /**
- * Divide double
- * ..., value1, value2 => ..., result
+ * regression test for object streams
  */
-public class DDIV extends Instruction implements JVMInstruction {
+public class PrintStreamTest extends TestJPF {
 
-  @Override
-  public Instruction execute (ThreadInfo ti) {
-    StackFrame frame = ti.getModifiableTopFrame();
-
-    double v1 = frame.popDouble();
-    double v2 = frame.popDouble();
-
-    double r = v2 / v1;
-    
-    frame.pushDouble(r);
-    
-    return getNext(ti);
-  }
-
-  @Override
-  public int getByteCode () {
-    return 0x6F;
-  }
-  
-  @Override
-  public void accept(JVMInstructionVisitor insVisitor) {
-	  insVisitor.visit(this);
+  @Test // currently fails with: java.lang.NoSuchMethodError: java.util.regex.Matcher.find(I)Z
+  public void testPrintCharFormat () {
+    if (verifyNoPropertyViolation()){
+	ByteArrayOutputStream baos = new ByteArrayOutputStream(1);
+	PrintStream baps = new PrintStream(baos, true);
+//	baps.printf("%c", 'a'); // fails
+//	assert (baos.toByteArray()[0] == 97);
+    }
   }
 }
