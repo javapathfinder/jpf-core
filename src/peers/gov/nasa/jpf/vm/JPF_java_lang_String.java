@@ -142,7 +142,12 @@ public class JPF_java_lang_String extends NativePeer {
   @MJI
   public char charAt__I__C (MJIEnv env, int objRef, int index){
     char[] data = env.getStringChars(objRef);
-    return data[index];
+    if (index >= 0 && index < data.length) {
+      return data[index];
+    }
+    env.throwException("java.lang.StringIndexOutOfBoundsException",
+		       "String index out of range: " + index);
+    return '\0';
   }
 
   

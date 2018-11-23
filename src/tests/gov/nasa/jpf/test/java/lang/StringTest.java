@@ -160,6 +160,34 @@ public class StringTest extends TestJPF {
 	}
 
 	@Test
+	public void testCharAtOutOfBounds() {
+		if (verifyNoPropertyViolation()){
+		    try {
+		      "".charAt(0);
+		    } catch (StringIndexOutOfBoundsException e) {
+		      return;
+		    }
+		    assert false;
+		}
+	}
+
+	@Test
+	public void testCharAtOutOfBoundsNeg() {
+		boolean passed = false;
+		if (verifyNoPropertyViolation()){
+		    try {
+		      assert(" ".charAt(0) == ' ');
+		      passed = true;
+		      " ".charAt(-1);
+		    } catch (StringIndexOutOfBoundsException e) {
+		      assert(passed);
+		      return;
+		    }
+		    assert false;
+		}
+	}
+
+	@Test
   @SuppressWarnings("deprecation")
   public void testConstructors(){
 		if (verifyNoPropertyViolation()){
