@@ -1135,7 +1135,7 @@ public class MJIEnv {
           arg[i] = getBooleanObject(ref);
         } else if (clsName.equals("java.lang.Byte")) {
           arg[i] = getByteObject(ref);
-        } else if (clsName.equals("java.lang.Char")) {
+        } else if (clsName.equals("java.lang.Character")) {
           arg[i] = getCharObject(ref);
         } else if (clsName.equals("java.lang.Short")) {
           arg[i] = getShortObject(ref);
@@ -1169,7 +1169,7 @@ public class MJIEnv {
 	          arg[i] = getStringObject(ref);
 	        } else if (clsName.equals("java.lang.Byte")) {
 	          arg[i] = getByteObject(ref);
-	        } else if (clsName.equals("java.lang.Char")) {
+	        } else if (clsName.equals("java.lang.Character")) {
 	          arg[i] = getCharObject(ref);
 	        } else if (clsName.equals("java.lang.Short")) {
 	          arg[i] = getShortObject(ref);
