@@ -188,6 +188,54 @@ public class StringTest extends TestJPF {
 	}
 
 	@Test
+	public void testSubstringOutOfBounds0() {
+		boolean passed = false;
+		if (verifyNoPropertyViolation()){
+		    try {
+		      " ".substring(0, 1);
+		      passed = true;
+		      " ".substring(0, 2);
+		    } catch (StringIndexOutOfBoundsException e) {
+		      assert(passed);
+		      return;
+		    }
+		    assert false;
+		}
+	}
+
+	@Test
+	public void testSubstringOutOfBounds1() {
+		boolean passed = false;
+		if (verifyNoPropertyViolation()){
+		    try {
+		      " ".substring(0, 1);
+		      passed = true;
+		      " ".substring(1, 0);
+		    } catch (StringIndexOutOfBoundsException e) {
+		      assert(passed);
+		      return;
+		    }
+		    assert false;
+		}
+	}
+
+	@Test
+	public void testSubstringOutOfBoundsNeg() {
+		boolean passed = false;
+		if (verifyNoPropertyViolation()){
+		    try {
+		      assert("".substring(0).equals(""));
+		      passed = true;
+		      " ".substring(-1);
+		    } catch (StringIndexOutOfBoundsException e) {
+		      assert(passed);
+		      return;
+		    }
+		    assert false;
+		}
+	}
+
+	@Test
   @SuppressWarnings("deprecation")
   public void testConstructors(){
 		if (verifyNoPropertyViolation()){

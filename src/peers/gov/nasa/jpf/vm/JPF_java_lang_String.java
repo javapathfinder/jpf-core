@@ -32,7 +32,8 @@ import java.util.Locale;
  * MJI NativePeer class for java.lang.String library abstraction
  */
 public class JPF_java_lang_String extends NativePeer {
-
+  final static String sioobe = "java.lang.StringIndexOutOfBoundsException";
+  final static String sioor = "String index out of range: ";
   
   @MJI
   public int init___3CII__Ljava_lang_String_2 (MJIEnv env, int objRef, int valueRef, int offset, int count) {
@@ -145,8 +146,7 @@ public class JPF_java_lang_String extends NativePeer {
     if (index >= 0 && index < data.length) {
       return data[index];
     }
-    env.throwException("java.lang.StringIndexOutOfBoundsException",
-		       "String index out of range: " + index);
+    env.throwException(sioobe, sioor + index);
     return '\0';
   }
 
@@ -379,14 +379,24 @@ public class JPF_java_lang_String extends NativePeer {
   @MJI
   public int substring__I__Ljava_lang_String_2 (MJIEnv env, int objRef, int beginIndex) {
     String obj = env.getStringObject(objRef);
-    String result = obj.substring(beginIndex);
-    return env.newString(result);
-
+    return substring__II__Ljava_lang_String_2(env, objRef, beginIndex, obj.length());
   }
 
   @MJI
   public int substring__II__Ljava_lang_String_2 (MJIEnv env, int objRef, int beginIndex, int endIndex) {
+    if (beginIndex > endIndex) {
+      env.throwException(sioobe, sioor + (endIndex - beginIndex));
+      return 0;
+    }
+    if (beginIndex < 0) {
+      env.throwException(sioobe, sioor + beginIndex);
+      return 0;
+    }
     String obj = env.getStringObject(objRef);
+    if (endIndex > obj.length()) {
+      env.throwException(sioobe, sioor + endIndex);
+      return 0;
+    }
     String result = obj.substring(beginIndex, endIndex);
     return env.newString(result);
 
