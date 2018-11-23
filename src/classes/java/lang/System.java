@@ -34,7 +34,7 @@ public class System {
 
   static Properties properties;
 
-  public static InputStream in; // new BufferedInputStream(...);  // <2do> not yet
+  public static InputStream in = new BufferedInputStream(null);  // <2do> not yet
   public static PrintStream out;
   public static PrintStream err;
   
