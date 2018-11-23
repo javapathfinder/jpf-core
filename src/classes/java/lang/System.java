@@ -17,6 +17,7 @@
  */
 package java.lang;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.channels.Channel;
@@ -34,7 +35,13 @@ public class System {
 
   static Properties properties;
 
-  public static InputStream in; // new BufferedInputStream(...);  // <2do> not yet
+  public static InputStream in = new InputStream() {
+    public int available() { return 0; }
+    public int read() { return -1; }
+    public int read(byte[] b, int off, int len) { return 0; }
+    public int read(byte[] b) { return 0; }
+  };
+
   public static PrintStream out;
   public static PrintStream err;
   
