@@ -415,9 +415,9 @@ public class Types {
    * 
    * int    -> int
    * int[]  -> [I
-   * String -> java.lang.String
-   * String[] -> [Ljava.lang.String;
-   * String[][] -> [[Ljava.lang.String;
+   * String -> java/lang/String
+   * String[] -> [Ljava/lang/String;
+   * String[][] -> [[Ljava/lang/String;
    * 
    * <2do> this is really not very efficient
    */
@@ -1020,7 +1020,7 @@ public class Types {
   public static boolean instanceOf (String type, String ofType) {
     int bType = getBuiltinTypeFromSignature(type);
 
-    if ((bType == T_ARRAY) && ofType.equals("Ljava.lang.Object;")) {
+    if ((bType == T_ARRAY) && ofType.equals("Ljava/lang/Object;")) {
       return true;
     }
 

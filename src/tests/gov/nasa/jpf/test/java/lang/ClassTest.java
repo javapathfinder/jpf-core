@@ -582,4 +582,12 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       assertNull(c.getResource("not_existing_resources"));
     }
   }  
+
+  @Test
+  public void instanceOfArrayTest() {
+    String[] args = new String[0];
+    if (verifyNoPropertyViolation()) {
+      assert args instanceof Object;
+    }
+  }
 }
