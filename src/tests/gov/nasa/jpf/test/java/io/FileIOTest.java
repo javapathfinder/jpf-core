@@ -20,6 +20,7 @@ package gov.nasa.jpf.test.java.io;
 
 import gov.nasa.jpf.util.test.TestJPF;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
@@ -113,6 +115,20 @@ public class FileIOTest extends TestJPF {
       }
 
       System.out.println("##---- done");
+    }
+  }
+
+  @Test
+  public void testRedirection() throws IOException {
+    if (verifyNoPropertyViolation()) {
+        System.out.println("Before.");
+        FileOutputStream out = new FileOutputStream("output.txt");
+        System.setOut(new PrintStream(new BufferedOutputStream(out), true));
+        System.out.println("After.");
+        out.close();
+        FileInputStream is = new FileInputStream(new File("output.txt"));
+        assert (is.read() == (int)'A');
+        is.close();
     }
   }
 
