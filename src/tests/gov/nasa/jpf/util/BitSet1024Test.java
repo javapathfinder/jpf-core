@@ -159,21 +159,21 @@ public class BitSet1024Test extends TestJPF {
       b.set(2264);
       throw new AssertionError("set(2264) failed to throw");
     } catch (IndexOutOfBoundsException x){
-      System.out.println(x);
+      //System.out.println(x); Expected 
     }
 
     try {
       b.get(1256);
       throw new AssertionError("get(1256) failed to throw");
     } catch (IndexOutOfBoundsException x){
-      System.out.println(x);
+      //System.out.println(x); Expected
     }
 
     try {
       b.clear(-1);
       throw new AssertionError("clear(-1) failed to throw");
     } catch (IndexOutOfBoundsException x){
-      System.out.println(x);
+      //System.out.println(x); Expected
     }
   }
 
