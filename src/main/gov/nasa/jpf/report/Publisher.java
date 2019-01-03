@@ -248,6 +248,7 @@ public abstract class Publisher {
       } else if ("platform".equalsIgnoreCase(item)){
         publishPlatform();
       } else if ("user".equalsIgnoreCase(item)) {
+	publishUser();
       } else if ("dtg".equalsIgnoreCase(item)) {
         publishDTG();
       } else if ("config".equalsIgnoreCase(item)){
