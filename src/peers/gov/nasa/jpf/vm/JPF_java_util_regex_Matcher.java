@@ -39,6 +39,16 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
     matchers = new HashMap<Integer,Matcher>();
   }
 
+  Pattern getPatternFromMatcher(MJIEnv env, int objref) {
+    int patRef = env.getReferenceField(objref, "pattern");
+
+    int regexRef = env.getReferenceField(patRef, "regex");
+    String regex = env.getStringObject(regexRef);
+    int flags = env.getIntField(patRef, "flags");
+
+    return Pattern.compile(regex, flags);
+  }
+
   void putInstance (MJIEnv env, int objref, Matcher matcher) {
     int id = env.getIntField(objref,  "id");
     matchers.put(id, matcher);
@@ -52,13 +62,7 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
   
   @MJI
   public void register____V (MJIEnv env, int objref) {
-    int patRef = env.getReferenceField(objref, "pattern");
-    
-    int regexRef = env.getReferenceField(patRef, "regex");
-    String regex = env.getStringObject(regexRef);
-    int flags = env.getIntField(patRef, "flags");
-    
-    Pattern pat = Pattern.compile(regex, flags);
+    Pattern pat = getPatternFromMatcher(env, objref);
 
     int inputRef = env.getReferenceField(objref, "input");
     String input = env.getStringObject(inputRef);
@@ -197,6 +201,19 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
   public int useAnchoringBounds__Z__Ljava_util_regex_Matcher_2(MJIEnv env, int objref, boolean b) {
     Matcher matcher = getInstance(env, objref);
     matcher = matcher.useAnchoringBounds(b);
+    putInstance(env, objref, matcher);
+
+    return objref;
+  }
+
+  @MJI
+  public int updatePattern____Ljava_util_regex_Matcher_2(MJIEnv env, int objref) {
+    //We get the newly updated pattern
+    Pattern pat = getPatternFromMatcher(env, objref);
+
+    //We update the matcher with the new pattern
+    Matcher matcher = getInstance(env, objref);
+    matcher = matcher.usePattern(pat);
     putInstance(env, objref, matcher);
 
     return objref;

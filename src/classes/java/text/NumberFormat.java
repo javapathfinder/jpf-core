@@ -18,6 +18,8 @@
 
 package java.text;
 
+import java.util.Locale;
+
 public abstract class NumberFormat extends Format {
 
   static final int INTEGER_STYLE=0;
@@ -28,6 +30,10 @@ public abstract class NumberFormat extends Format {
   }
   
   public static NumberFormat getNumberInstance() {
+    return new DecimalFormat(NUMBER_STYLE);
+  }
+
+  public static NumberFormat getNumberInstance(Locale locale) {
     return new DecimalFormat(NUMBER_STYLE);
   }
 
