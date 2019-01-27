@@ -30,13 +30,13 @@ import org.junit.Test;
  */
 public class PrintStreamTest extends TestJPF {
 
-  @Test // currently fails with: java.lang.NoSuchMethodError: java.util.regex.Matcher.find(I)Z
+  @Test 
   public void testPrintCharFormat () {
     if (verifyNoPropertyViolation()){
 	ByteArrayOutputStream baos = new ByteArrayOutputStream(1);
 	PrintStream baps = new PrintStream(baos, true);
-//	baps.printf("%c", 'a'); // fails
-//	assert (baos.toByteArray()[0] == 97);
+	baps.printf("%c", 'a'); 
+	assert (baos.toByteArray()[0] == 97);
     }
   }
 }
