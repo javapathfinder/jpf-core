@@ -74,6 +74,12 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
   }
   
   @MJI
+  public boolean find__I__Z (MJIEnv env, int objref, int i) {
+	Matcher matcher = getInstance( env, objref);
+    return matcher.find(i);
+  }
+
+  @MJI
   public boolean find____Z (MJIEnv env, int objref) {
 	Matcher matcher = getInstance( env, objref);
     return matcher.find();
