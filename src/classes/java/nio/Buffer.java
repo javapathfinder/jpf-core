@@ -18,9 +18,26 @@
 package java.nio;
 
 public abstract class Buffer {
+
 	protected int position;
 	protected int capacity;
 	protected int limit;
+	protected int mark = -1;
+
+
+	// Todo: There exists other missing methods in this class
+	// which may throw NoSuchMethodException errors to users
+	// For example checkBounds has yet to be implemented
+	Buffer(int mark, int pos, int lim, int cap) {
+		if (cap < 0)
+			throw new IllegalArgumentException("Negative capacity: " + cap);
+		this.capacity = cap;
+		limit(lim);
+		position(pos);
+		if (mark >= 0 && mark <= pos){
+			this.mark = mark;
+		}
+	}
 
 	public final int capacity() {
 		return capacity;
@@ -53,6 +70,7 @@ public abstract class Buffer {
 	public final Buffer clear(){
 		position = 0;
 		limit = capacity;
+		mark = -1;
 		return this;
 	}
 

@@ -92,6 +92,13 @@ public class Matcher {
 
   public native Matcher useAnchoringBounds(boolean b);
 
+  public Matcher usePattern(Pattern newPattern){
+    this.pattern = newPattern;
+    return updatePattern();
+  }
+
+  public native Matcher updatePattern();
+
   public native int regionStart();
 
   public native int regionEnd();
