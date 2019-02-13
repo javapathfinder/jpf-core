@@ -122,7 +122,7 @@ public class JPF_java_util_Random extends NativePeer {
     
     reproducibleRandom = conf.getBoolean("vm.reproducible_random", true);
     constantSeed = conf.getLong("vm.random_seed", 42);
-    defaultIntSet = conf.getIntArray("vm.random_ints", Integer.MIN_VALUE, 0, Integer.MAX_VALUE);
+    defaultIntSet = conf.getIntArray("vm.random_ints", Integer.MIN_VALUE, 0, 1, 2, 3, 4, Integer.MAX_VALUE);
     defaultDoubleSet = conf.getDoubleArray("vm.random_doubles", Double.MIN_VALUE, 0, Double.MAX_VALUE);  
     defaultLongSet = conf.getLongArray("vm.random_longs", Long.MIN_VALUE, 0, Long.MAX_VALUE);  
     defaultFloatSet = conf.getFloatArray("vm.random_floats", Float.MIN_VALUE, 0, Float.MAX_VALUE);  

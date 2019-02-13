@@ -432,7 +432,7 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     }
   }
 
-  static int getIntFromList (MJIEnv env, int[] values){
+  public static int getIntFromList (MJIEnv env, int[] values){
     ThreadInfo ti = env.getThreadInfo();
     SystemState ss = env.getSystemState();
 
