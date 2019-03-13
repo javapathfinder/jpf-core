@@ -47,7 +47,8 @@ public class ConcurrentCount {
 		//System.out.println("a + b = " + (a + b));
 		//System.out.println("count = " + count);
 
-		//assert a + b == COUNT;
+		//Checks for concurrency error (which should be found when using model checking)
+		assert a + b == COUNT;
 	}
 	
 	private static synchronized void decreaseCount() {
