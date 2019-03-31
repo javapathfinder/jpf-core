@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * <p>The main purpose of the {@code Search} class is to track general search information such as depth, configured properties, 
  * errors, etc. as well as to define how the search algorithm functions. In its simplest form, a search algorithm can be defined 
- * using the abstract method {@code search()} with a series of {@code forward()} and {@code backtrack()}. More complex search 
+ * using the abstract method {@code search} with a series of {@code forward} and {@code backtrack}. More complex search 
  * algorithms can also make use of the state storing functionality of the {@code Search} class, as well as ignoring states and
  * removing states from the search tree.
  * 
@@ -66,7 +66,7 @@ public abstract class Search {
   
   /** A running list of all errors encountered during verification. The list will always 
    * contain the current and past values of {@code currentError}. Errors are set added
-   * during verification in the {@code error(Property property, Path path, ThreadList threadList)}
+   * during verification in the {@code error}
    * method.
    * 
    * <p>{@code errors} will only hold one error before verification stops unless {@code getAllErrors}
@@ -82,7 +82,7 @@ public abstract class Search {
   /** {@code vm} represents the virtual machine that the search algorithm will be traversing*/
   protected VM vm;
 
-  /** A list of properties provided from the search configuration at the start of verification. Every property has a {@code check()}
+  /** A list of properties provided from the search configuration at the start of verification. Every property has a {@code check}
    * method that will be used during verification to tell if any of the properties have been violated.*/
   protected ArrayList<Property> properties;
 
@@ -107,7 +107,7 @@ public abstract class Search {
   protected boolean getAllErrors;
 
   /** A {@code String} set to contain details on what the constraint that caused verification to halt was. Will generally be 
-   * used by the {@code searchContraintHit(Search search)} methods in {@code SearchListeners}.
+   * used by the {@code searchContraintHit} methods in {@code SearchListeners}.
    * 
    * @see gov.nasa.jpf.search.SearchListener#searchConstraintHit(Search) */
   protected String lastSearchConstraint;
@@ -119,7 +119,7 @@ public abstract class Search {
   protected boolean doBacktrack = false;
 
  /** {@code notifyProbeListeners} is a flag set during verification stating whether or not a probe has been 
-  * requested. When a probe is requested, relevant {@code SearchListener}s will be notified via {@code checkAndResetProbeRequest}*/
+  * requested. When a probe is requested, relevant {@code SearchListeners} will be notified via {@code checkAndResetProbeRequest}*/
   protected AtomicBoolean notifyProbeListeners = new AtomicBoolean(false);
 
   /** {@code listeners} is an array used to hold {@code SearchListener} objects. We keep them in a simple array to avoid
@@ -286,18 +286,18 @@ public abstract class Search {
   }
 
   /**
-   * Add a new property to the {@code properties} ArrayList
+   * Add a new property to {@code properties}
    * 
-   * @param newProperty The property to add to the {@code properties} ArrayList
+   * @param newProperty The property to add to {@code properties}
    */
   public void addProperty (Property newProperty) {
     properties.add(newProperty);
   }
 
   /**
-   * Remove the specified property from the {@code properties} ArrayList
+   * Remove the specified property from {@code properties}
    * 
-   * @param oldProperty The property to remove from the {@code properties} ArrayList
+   * @param oldProperty The property to remove from {@code properties}
    */
   public void removeProperty (Property oldProperty) {
      properties.remove(oldProperty);
@@ -340,7 +340,7 @@ public abstract class Search {
   }
 
   /**
-   * Iterates through the {@code properties} list and checks for property violations. {@code checkPropertyViolation()} should only be 
+   * Iterates through {@code properties} and checks for property violations. {@code checkPropertyViolation} should only be 
    * called once per transition to avoid it adding the same error every time it is called.
    * 
    * @return true if a property violation is found, false otherwise
@@ -388,7 +388,7 @@ public abstract class Search {
    * 
    * <p>This does not perform the actual listener notification, it only stores
    * the request, which is then processed from within JPFs inner execution loop.
-   * As a consequence, probeSearch() can be called asynchronously, and searchProbed() listeners
+   * As a consequence, {@code probeSearch} can be called asynchronously, and {@code searchProbed} listeners
    * don't have to bother with synchronization or inconsistent JPF states (notification 
    * happens from within JPFs main thread after a completed Instruction execution)
    */
@@ -508,7 +508,7 @@ public abstract class Search {
   }
 
   /**
-   * Returns whether the current state has been visited yet. The opposite of {@code isNewState()}
+   * Returns whether the current state has been visited yet. The opposite of {@code isNewState}
    * 
    * @return true if the state has been visited, false otherwise (behavior changes if {@code matchDepth} is true)
    * @see #isNewState()
@@ -584,7 +584,7 @@ public abstract class Search {
    * Returns the purged states id
    * 
    * <p>Note that while it should return the purged states id, it currently only returns -1 as a 
-   * result of many searches not utilizing this functionality. If it is required, {@code getPurgedStateId()}
+   * result of many searches not utilizing this functionality. If it is required, {@code getPurgedStateId}
    * should be overridden and changed in subsequent child classes.
    * 
    * @return The purged states id (currently only returns -1)
@@ -597,7 +597,7 @@ public abstract class Search {
   /**
    * Requests that the search loop backtracks one step
    * 
-   * <p>This is somewhat redundant to SystemState.setIgnored(), but we don't
+   * <p>This is somewhat redundant to {@code SystemState.setIgnored}, but we don't
    * want to mix the case of overriding state matching with backtracking when
    * searching for multiple errors.
    * 
@@ -924,7 +924,7 @@ public abstract class Search {
 
   /**
    * Requests that the virtual machine move to the next unvisited state below the current one in the search tree.
-   * {@code forward()} along with {@code backtrack()} constitute the two methods that are generally used to advance
+   * {@code forward} along with {@code backtrack} constitute the two methods that are generally used to advance
    * the search algorithm during verification.
    * 
    * @return true if a state exists and the virtual machine can move to it, false if the state does not exist
@@ -941,8 +941,8 @@ public abstract class Search {
   }
   
   /**
-   * Requests that the virtual machine move to the previous state in the search tree. {@code backtrack()} along
-   * with {@code forward()} constitute the two methods that are generally used to advance the search algorithm 
+   * Requests that the virtual machine move to the previous state in the search tree. {@code backtrack} along
+   * with {@code forward} constitute the two methods that are generally used to advance the search algorithm 
    * during verification.
    * 
    * @return true if the backtrack to the previous state was successful, false otherwise
