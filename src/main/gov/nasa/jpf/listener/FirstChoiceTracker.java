@@ -55,7 +55,7 @@ public class FirstChoiceTracker extends ListenerAdapter {
   
   boolean showShared = false;
 
-  int count = 0;  
+  int choiceCount = 0;
   PrintWriter out;
   String lastLine;
   MethodInfo lastMi;
@@ -110,7 +110,11 @@ public class FirstChoiceTracker extends ListenerAdapter {
   @Override
   public void stateAdvanced(Search search) {
     int id = search.getStateId();
-    count++;
+
+    if (!search.getVM().getChoiceGenerator().getId().equals("ROOT")) {
+      choiceCount++;
+    }
+  
     
     // out.print("----------------------------------- [" +
     //                  search.getDepth() + "] forward: " + id);
@@ -125,7 +129,7 @@ public class FirstChoiceTracker extends ListenerAdapter {
     // }
     
     // out.println();
-    if ( count == 2 ) {
+    if ( choiceCount == 1 ) {
        out.println("+++++++++++++++++++++++ First choice +++++++++++++++++++++++");
     }
     
