@@ -28,6 +28,8 @@ import gov.nasa.jpf.vm.Instruction;
 import gov.nasa.jpf.vm.VM;
 import gov.nasa.jpf.vm.MethodInfo;
 import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.choice.IntIntervalGenerator;
+
 
 import java.io.PrintWriter;
 
@@ -56,6 +58,12 @@ public class FirstChoiceTracker extends ListenerAdapter {
   boolean showShared = false;
 
   int choiceCount = 0;
+  int min;
+  int max;
+  int next;
+  int delta = 1;
+  VM vm;
+  IntIntervalGenerator parent;
   PrintWriter out;
   String lastLine;
   MethodInfo lastMi;
@@ -110,8 +118,9 @@ public class FirstChoiceTracker extends ListenerAdapter {
   @Override
   public void stateAdvanced(Search search) {
     int id = search.getStateId();
+    vm = search.getVM();
 
-    if (!search.getVM().getChoiceGenerator().getId().equals("ROOT")) {
+    if (!vm.getChoiceGenerator().getId().equals("ROOT")) {
       choiceCount++;
     }
   
@@ -131,6 +140,35 @@ public class FirstChoiceTracker extends ListenerAdapter {
     // out.println();
     if ( choiceCount == 1 ) {
        out.println("+++++++++++++++++++++++ First choice +++++++++++++++++++++++");
+
+       try {
+         parent = (IntIntervalGenerator) vm.getChoiceGenerator();
+         min = parent.getMin();
+         max = parent.getMax();
+         next = parent.getNext();
+
+         out.println("min = " + min);
+         out.println("max = " + max);
+         out.println("split at " + max/2);
+         parent.setMax(max / 2);
+       }
+       catch (ClassCastException exception){
+         //Do nothing
+       }
+
+    }
+    else {
+      if (parent != null) {
+        next = parent.getNext();
+        //out.println("next = " + next);
+
+        if (next == max/2 ) {
+          parent.setMin(max / 2 + 1);
+          parent.setMax(max);
+          parent.reset();
+        }
+
+      }
     }
     
     lastLine = null; // in case we report by source line
