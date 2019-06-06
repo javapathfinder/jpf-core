@@ -1345,6 +1345,10 @@ public abstract class VM {
     return ss.getChoiceGenerator();
   }
 
+  public void setChoiceGenerator(ChoiceGenerator<?> cg) {
+    ss.setChoiceGenerator(cg);
+  }
+
   public ChoiceGenerator<?> getNextChoiceGenerator() {
     return ss.getNextChoiceGenerator();
   }

@@ -38,6 +38,48 @@ public class IntIntervalGenerator extends ChoiceGeneratorBase<Integer> implement
   protected int next;
   protected int delta;
 
+  /**
+   * @return the min
+   */
+  public int getMin() {
+    return min;
+  }
+  
+  /**
+   * @return the max
+   */
+  public int getMax() {
+    return max;
+  }
+
+  /**
+   * @param min the min to set
+   */
+  public void setMin(int min) {
+    this.min = min;
+  }
+
+  /**
+   * @param max the max to set
+   */
+  public void setMax(int max) {
+    this.max = max;
+  }
+
+  /**
+   * @return the next
+   */
+  public int getNext() {
+    return next;
+  }
+
+  /**
+   * @param next the next to set
+   */
+  public void setNext(int next) {
+    this.next = next;
+  }
+  
   @Override
   public void reset () {
     isDone = false;

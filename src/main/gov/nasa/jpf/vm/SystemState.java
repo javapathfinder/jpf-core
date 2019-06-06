@@ -323,6 +323,10 @@ public class SystemState {
     return curCg;
   }
 
+  public void setChoiceGenerator(ChoiceGenerator<?> cg) {
+    curCg = cg;
+  }
+
   public ChoiceGenerator<?> getChoiceGenerator (String id) {
     for (ChoiceGenerator<?> cg = curCg; cg != null; cg = cg.getPreviousChoiceGenerator()){
       if (id.equals(cg.getId())){
