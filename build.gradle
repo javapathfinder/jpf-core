@@ -6,8 +6,8 @@ def getCurrentVersion() {
 
 version = currentVersion
 
-sourceCompatibility = 1.10
-targetCompatibility = 1.10
+sourceCompatibility = 11
+targetCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -39,6 +39,19 @@ task compile {
     // due to the compileClasspath attribute
     dependsOn compileTestJava
     dependsOn compileExamplesJava
+}
+
+task compileModules(type: JavaCompile) {
+    source = fileTree(dir: 'src/classes/modules')
+    classpath = fileTree(dir:'build', include: '**/*.jar')
+    options.compilerArgs = [  
+        '--module-source-path', file('src/classes/modules'),
+        '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+        '--add-reads', 'java.base=ALL-UNNAMED',
+        '--patch-module', "java.base=" + file('src/classes/modules/java.base'),
+        '--patch-module', "java.logging=" + file('src/classes/modules/java.logging'),
+    ]
+    destinationDir = file('build/classes')
 }
 
 task createJpfClassesJar(type: Jar) {
