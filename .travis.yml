@@ -16,9 +16,9 @@ cache:
 addons:
   apt:
     packages:
-      - oracle-java10-installer
-      - oracle-java10-set-default
+      - oracle-java11-installer
+      - oracle-java11-set-default
 
 env:
   global:
-    - JAVA_HOME=/usr/lib/jvm/java-10-oracle
+    - JAVA_HOME=/usr/lib/jvm/java-11-oracle
