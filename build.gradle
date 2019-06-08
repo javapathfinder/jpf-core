@@ -30,20 +30,10 @@ apply from: "gradle/distribution.gradle"
 apply from: "gradle/source-sets.gradle"
 apply from: "gradle/build-resources.gradle"
 
-task compile {
-    group = "JPF Build"
-    description = "Compiles all JPF core sources."
-
-    // These are automatic generated tasks from the Java Gradle Plugin.
-    // Gradle is able to infer the order of the source sets
-    // due to the compileClasspath attribute
-    dependsOn compileTestJava
-    dependsOn compileExamplesJava
-}
-
 task compileModules(type: JavaCompile) {
+    dependsOn compileTestJava
     source = fileTree(dir: 'src/classes/modules')
-    classpath = fileTree(dir:'build', include: '**/*.jar')
+    classpath = files('build/annotations','build/classes','build/main')
     options.compilerArgs = [  
         '--module-source-path', file('src/classes/modules'),
         '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
@@ -51,7 +41,18 @@ task compileModules(type: JavaCompile) {
         '--patch-module', "java.base=" + file('src/classes/modules/java.base'),
         '--patch-module', "java.logging=" + file('src/classes/modules/java.logging'),
     ]
-    destinationDir = file('build/classes')
+    destinationDir = file('build/classes/modules')
+}
+
+task compile {
+    group = "JPF Build"
+    description = "Compiles all JPF core sources."
+
+    // These are automatic generated tasks from the Java Gradle Plugin.
+    // Gradle is able to infer the order of the source sets
+    // due to the compileClasspath attribute
+    dependsOn compileExamplesJava
+    dependsOn compileModules
 }
 
 task createJpfClassesJar(type: Jar) {
