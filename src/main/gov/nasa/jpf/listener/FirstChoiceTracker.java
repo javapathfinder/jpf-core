@@ -64,6 +64,7 @@ public class FirstChoiceTracker extends ListenerAdapter {
   int delta = 1;
   VM vm;
   IntIntervalGenerator parent;
+  IntIntervalGenerator clone;
   PrintWriter out;
   String lastLine;
   MethodInfo lastMi;
@@ -151,21 +152,30 @@ public class FirstChoiceTracker extends ListenerAdapter {
          out.println("max = " + max);
          out.println("split at " + max/2);
          parent.setMax(max / 2);
+         clone = (IntIntervalGenerator) parent.deepClone();
+         clone.setMin(max / 2 + 1);
+         clone.setMax(max);
+         clone.setPreviousChoiceGenerator(parent);
+         //clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
+
+
        }
        catch (ClassCastException exception){
          //Do nothing
+       }
+       catch (CloneNotSupportedException exception) {
+         clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
+         out.println("new created");
        }
 
     }
     else {
       if (parent != null) {
         next = parent.getNext();
-        //out.println("next = " + next);
+        out.println("next = " + next);
 
         if (next == max/2 ) {
-          parent.setMin(max / 2 + 1);
-          parent.setMax(max);
-          parent.reset();
+          vm.setChoiceGenerator(clone);
         }
 
       }

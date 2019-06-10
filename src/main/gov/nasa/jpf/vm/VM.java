@@ -24,6 +24,7 @@ import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.JPFListenerException;
 import gov.nasa.jpf.jvm.ClassFile;
 import gov.nasa.jpf.vm.FinalizerThreadInfo;
+import gov.nasa.jpf.vm.choice.IntIntervalGenerator;
 import gov.nasa.jpf.search.Search;
 import gov.nasa.jpf.util.IntTable;
 import gov.nasa.jpf.util.JPFLogger;
@@ -1345,7 +1346,7 @@ public abstract class VM {
     return ss.getChoiceGenerator();
   }
 
-  public void setChoiceGenerator(ChoiceGenerator<?> cg) {
+  public void setChoiceGenerator(IntIntervalGenerator cg) {
     ss.setChoiceGenerator(cg);
   }
 

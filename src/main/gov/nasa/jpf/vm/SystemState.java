@@ -21,6 +21,7 @@ import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.util.TypeSpecMatcher;
 import gov.nasa.jpf.vm.choice.BreakGenerator;
+import gov.nasa.jpf.vm.choice.IntIntervalGenerator;
 
 import java.io.PrintWriter;
 import java.util.LinkedHashMap;
@@ -323,7 +324,7 @@ public class SystemState {
     return curCg;
   }
 
-  public void setChoiceGenerator(ChoiceGenerator<?> cg) {
+  public void setChoiceGenerator(IntIntervalGenerator cg) {
     curCg = cg;
   }
 
