@@ -1,1 +1,2 @@
 target = VerifyChoiceTest
+search.class = .search.ConcurrentDFSearch

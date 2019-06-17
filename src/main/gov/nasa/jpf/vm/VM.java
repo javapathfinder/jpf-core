@@ -159,6 +159,9 @@ public abstract class VM {
   // we want a (internal) mechanism that is on-demand only, i.e. processed
   // actions are removed from the list
   protected ArrayList<Runnable> postGcActions = new ArrayList<Runnable>();
+
+  //Keeps a count of the total number of transitions
+  private int transitionCount = 0;
   
   /**
    * be prepared this might throw JPFConfigExceptions
@@ -1762,6 +1765,224 @@ public abstract class VM {
       return false;  // no transition occurred
     }
   }
+
+  public boolean concurrentForward () {
+
+    // the reason we split up CG initialization and transition execution
+    // is that program state storage is not required if the CG initialization
+    // does not produce a new choice since we have to backtrack in that case
+    // anyways. This can be caused by complete enumeration of CGs and/or by
+    // CG listener intervention (i.e. not just after backtracking). For a large
+    // number of matched or end states and ignored transitions this can be a
+    // huge saving.
+    // The downside is that CG notifications are NOT allowed anymore to change the
+    // KernelState (modify fields or thread states) since those changes would
+    // happen before storing the KernelState, and hence would make backtracking
+    // inconsistent. This is advisable anyways since all program state changes
+    // should take place during transitions, but the real snag is that this
+    // cannot be easily enforced.
+
+    //Tries to incercept the first transition and split the ChoiceGenerator into two equal parts
+    if (transitionCount == 1) {
+      System.out.println("+++++++++++++++++++++++ First choice +++++++++++++++++++++++");
+      //ChoiceGenerator cg = ss.getChoiceGenerator();
+
+      try {
+        IntIntervalGenerator parent = (IntIntervalGenerator) vm.getChoiceGenerator();
+        int min = parent.getMin();
+        int max = parent.getMax();
+        int next = parent.getNext();
+
+        System.out.println("min = " + min);
+        System.out.println("max = " + max);
+        System.out.println("split at " + max/2);
+        parent.setMax(max / 2);
+        IntIntervalGenerator clone = (IntIntervalGenerator) parent.deepClone();
+        clone.setMin(max / 2 + 1);
+        clone.setMax(max);
+        //clone.setPreviousChoiceGenerator(parent);
+        //clone.setCascaded();
+        //clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
+        //vm.getChoiceGenerator().setDone();
+        //backtrack();
+        vm.setChoiceGenerator(clone);
+
+
+      }
+      catch (ClassCastException exception){
+        //Do nothing
+      }
+      catch (CloneNotSupportedException exception) {
+        // IntIntervalGenerator clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
+        // System.out.println("new created");
+      }
+
+
+    }
+
+    // actually, it hasn't occurred yet, but will
+    transitionOccurred = ss.initializeNextTransition(this);
+    
+    if (transitionOccurred){
+      if (CHECK_CONSISTENCY) {
+        checkConsistency(true); // don't push an inconsistent state
+      }
+
+      backtracker.pushKernelState();
+
+      // cache this before we enter (and increment) the next insn(s)
+      lastTrailInfo = path.getLast();
+
+      try {
+        ss.executeNextTransition(vm);
+        System.out.println("transition ***** + " + ss.getChoiceGenerator().getId() + transitionCount);
+
+        if (!ss.getChoiceGenerator().getId().equals("ROOT")) {
+          transitionCount++;
+        }
+
+      } catch (UncaughtException e) {
+        // we don't pass this up since it means there were insns executed and we are
+        // in a consistent state
+      } // every other exception goes upwards
+
+      backtracker.pushSystemState();
+      updatePath();
+
+      if (!isIgnoredState()) {
+        // if this is ignored we are going to backtrack anyways
+        // matching states out of ignored transitions is also not a good idea
+        // because this transition is usually incomplete
+
+        if (runGc && !hasPendingException()) {
+          if(ss.gcIfNeeded()) {
+            processFinalizers();
+          }
+        }
+
+        if (stateSet != null) {
+          newStateId = stateSet.size();
+          int id = stateSet.addCurrent();
+          ss.setId(id);
+
+        } else { // this is 'state-less' model checking, i.e. we don't match states
+          ss.setId(++newStateId); // but we still should have states numbered in case listeners use the id
+        }
+      }
+      
+      return true;
+
+    } else {
+
+      return false;  // no transition occurred
+    }
+  }
+
+  public boolean concurrentForwardWithSystemStateClone () {
+
+    // the reason we split up CG initialization and transition execution
+    // is that program state storage is not required if the CG initialization
+    // does not produce a new choice since we have to backtrack in that case
+    // anyways. This can be caused by complete enumeration of CGs and/or by
+    // CG listener intervention (i.e. not just after backtracking). For a large
+    // number of matched or end states and ignored transitions this can be a
+    // huge saving.
+    // The downside is that CG notifications are NOT allowed anymore to change the
+    // KernelState (modify fields or thread states) since those changes would
+    // happen before storing the KernelState, and hence would make backtracking
+    // inconsistent. This is advisable anyways since all program state changes
+    // should take place during transitions, but the real snag is that this
+    // cannot be easily enforced.
+
+    //Tries to incercept the first transition and split the ChoiceGenerator into two equal parts
+    if (transitionCount == 1) {
+      System.out.println("+++++++++++++++++++++++ First choice *** +++++++++++++++++++++++");
+      //SystemState ssClone = (SystemState) ss.clone();
+
+      try {
+        IntIntervalGenerator parent = (IntIntervalGenerator) ss.getChoiceGenerator();
+        int min = parent.getMin();
+        int max = parent.getMax();
+
+        System.out.println("min = " + min);
+        System.out.println("max = " + max);
+        System.out.println("split at " + max/2);
+        parent.setMax(max / 2);
+        
+        //IntIntervalGenerator clone = (IntIntervalGenerator) ssClone.getChoiceGenerator();
+        // clone.setMin(max/2 + 1);
+        // clone.setMax(max);
+
+        ///ss = ssClone;
+
+
+      }
+      catch (ClassCastException exception){
+        //Do nothing
+      }
+
+
+    }
+
+    // actually, it hasn't occurred yet, but will
+    transitionOccurred = ss.initializeNextTransition(this);
+    
+    if (transitionOccurred){
+      if (CHECK_CONSISTENCY) {
+        checkConsistency(true); // don't push an inconsistent state
+      }
+
+      backtracker.pushKernelState();
+
+      // cache this before we enter (and increment) the next insn(s)
+      lastTrailInfo = path.getLast();
+
+      try {
+        ss.executeNextTransition(vm);
+        System.out.println("transition ***** + " + ss.getChoiceGenerator().getId() + transitionCount);
+
+        if (!ss.getChoiceGenerator().getId().equals("ROOT")) {
+          transitionCount++;
+        }
+
+      } catch (UncaughtException e) {
+        // we don't pass this up since it means there were insns executed and we are
+        // in a consistent state
+      } // every other exception goes upwards
+
+      backtracker.pushSystemState();
+      updatePath();
+
+      if (!isIgnoredState()) {
+        // if this is ignored we are going to backtrack anyways
+        // matching states out of ignored transitions is also not a good idea
+        // because this transition is usually incomplete
+
+        if (runGc && !hasPendingException()) {
+          if(ss.gcIfNeeded()) {
+            processFinalizers();
+          }
+        }
+
+        if (stateSet != null) {
+          newStateId = stateSet.size();
+          int id = stateSet.addCurrent();
+          ss.setId(id);
+
+        } else { // this is 'state-less' model checking, i.e. we don't match states
+          ss.setId(++newStateId); // but we still should have states numbered in case listeners use the id
+        }
+      }
+      
+      return true;
+
+    } else {
+
+      return false;  // no transition occurred
+    }
+  }
+
+
 
   /**
    * Prints the current stack trace. Just for debugging purposes

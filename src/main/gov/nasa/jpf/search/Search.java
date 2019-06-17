@@ -939,6 +939,20 @@ public abstract class Search {
     checkPropertyViolation();
     return ret;
   }
+
+
+  /**
+   * modified forward() to support concurrent search
+   * @return
+   */
+  protected boolean concurrentForward () {
+    currentError = null;
+
+    boolean ret = vm.concurrentForward();
+
+    checkPropertyViolation();
+    return ret;
+  }
   
   /**
    * Requests that the virtual machine move to the previous state in the search tree. {@code backtrack} along

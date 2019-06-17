@@ -156,7 +156,9 @@ public class FirstChoiceTracker extends ListenerAdapter {
          clone.setMin(max / 2 + 1);
          clone.setMax(max);
          clone.setPreviousChoiceGenerator(parent);
+         clone.setCascaded();
          //clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
+         vm.setChoiceGenerator(clone);
 
 
        }
@@ -169,17 +171,17 @@ public class FirstChoiceTracker extends ListenerAdapter {
        }
 
     }
-    else {
-      if (parent != null) {
-        next = parent.getNext();
-        out.println("next = " + next);
+    // else {
+    //   if (parent != null) {
+    //     next = parent.getNext();
+    //     out.println("next = " + next);
 
-        if (next == max/2 ) {
-          vm.setChoiceGenerator(clone);
-        }
+    //     if (next == max/2 ) {
+    //       vm.setChoiceGenerator(clone);
+    //     }
 
-      }
-    }
+    //   }
+    // }
     
     lastLine = null; // in case we report by source line
     lastMi = null;

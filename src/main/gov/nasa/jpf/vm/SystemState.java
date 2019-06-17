@@ -324,8 +324,38 @@ public class SystemState {
     return curCg;
   }
 
-  public void setChoiceGenerator(IntIntervalGenerator cg) {
-    curCg = cg;
+  public boolean setChoiceGenerator(ChoiceGenerator<?> cg) {
+    if (isIgnored){
+      // if this transition is already marked as ignored, we are not allowed
+      // to set nextCg because 'isIgnored' results in a shortcut backtrack that
+      // is not handed back to the Search (its solely in VM forward)
+      return false;
+    }
+
+    if (cg != null){
+      // first, check if we have to randomize it. Note this might change the CG
+      // instance since some algorithmic CG types need to be transformed into
+      // explicit choice lists
+      if (ChoiceGeneratorBase.useRandomization()) {
+        cg = cg.randomize();
+      }
+
+      // set its context (thread and insn)
+      cg.setContext(curCg.getThreadInfo());
+
+      // do we already have a nextCG, which means this one is a cascaded CG
+      
+        //cg.setPreviousChoiceGenerator(curCg);
+        //nextCg.setCascaded(); // note the last registered CG is NOT set cascaded
+
+
+      curCg = cg;
+
+      execThread.getVM().notifyChoiceGeneratorRegistered(cg, curCg.getThreadInfo()); // <2do> we need a better way to get the vm
+    }
+
+    // a choiceGeneratorRegistered listener might have removed this CG
+    return (curCg != null);
   }
 
   public ChoiceGenerator<?> getChoiceGenerator (String id) {
