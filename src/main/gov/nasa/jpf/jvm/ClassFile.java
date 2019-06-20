@@ -20,6 +20,7 @@ package gov.nasa.jpf.jvm;
 
 import java.io.File;
 
+import java.util.*;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.util.BailOut;
 import gov.nasa.jpf.util.BinaryClassSource;
@@ -55,6 +56,11 @@ public class ClassFile extends BinaryClassSource {
   public static final int REF_INVOKESPECIAL = 7;
   public static final int REF_NEW_INVOKESPECIAL = 8;
   public static final int REF_INVOKEINTERFACE = 9;
+
+  //for debugging
+  public String className = null;//not used 
+
+  public ArrayList<String> classNames  = new ArrayList<String>(); 
 
   // used to store types in cpValue[]
   public static enum CpInfo {
@@ -432,7 +438,7 @@ public class ClassFile extends BinaryClassSource {
     int idx = pos;
     pos += 4;
     byte[] data = this.data;
-
+    
     return (data[idx++] <<24) | ((data[idx++]&0xff) << 16) | ((data[idx++]&0xff) << 8) | (data[idx]&0xff);
   }
 
@@ -440,7 +446,13 @@ public class ClassFile extends BinaryClassSource {
   //--- reader notifications
   private void setClass(ClassFileReader reader, String clsName, String superClsName, int flags, int cpCount) throws ClassParseException {
     int p = pos;
-    reader.setClass( this, clsName, superClsName, flags, cpCount);
+    //Handling mutual recursions.
+    System.err.println("setClass with classname = "+ clsName);  
+    boolean dependency = ClassNames.classNames.contains(clsName);
+    if(!dependency) {
+      ClassNames.classNames.add(clsName);
+      reader.setClass( this, clsName, superClsName, flags, cpCount);
+    }
     pos = p;
   }
 
@@ -632,6 +644,7 @@ public class ClassFile extends BinaryClassSource {
   }
   private void setClassAttribute(ClassFileReader reader, int attrIndex, String name, int attrLength){
     int p = pos + attrLength;
+    System.err.println("setClassAttribute at pos = "+ pos);
     reader.setClassAttribute( this, attrIndex, name, attrLength);
     pos = p;
   }
