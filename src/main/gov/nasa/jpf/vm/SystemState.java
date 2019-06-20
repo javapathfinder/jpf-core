@@ -33,7 +33,7 @@ import java.util.LinkedHashMap;
  * by VM to backtrack, plus some potential annotations that can be used to
  * control the search (i.e. forward/backtrack calls)
  */
-public class SystemState {
+public class SystemState implements Cloneable {
 
   /**
    * instances of this class are used to store the SystemState parts which are
@@ -965,6 +965,11 @@ public class SystemState {
 
   // the three primitive ops used from within VM.forward()
 
+
+  @Override
+  public Object clone() throws CloneNotSupportedException{
+    return super.clone();
+  }
 
 }
 

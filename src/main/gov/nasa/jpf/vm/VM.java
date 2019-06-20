@@ -1796,7 +1796,8 @@ public abstract class VM {
         System.out.println("min = " + min);
         System.out.println("max = " + max);
         System.out.println("split at " + max/2);
-        parent.setMax(max / 2);
+        parent.setMin(max / 2);
+        parent.reset();
         IntIntervalGenerator clone = (IntIntervalGenerator) parent.deepClone();
         clone.setMin(max / 2 + 1);
         clone.setMax(max);
@@ -1805,7 +1806,7 @@ public abstract class VM {
         //clone = new IntIntervalGenerator( "clone", max / 2 + 1, max);
         //vm.getChoiceGenerator().setDone();
         //backtrack();
-        vm.setChoiceGenerator(clone);
+        //vm.setNextChoiceGenerator(clone);
 
 
       }
@@ -1897,9 +1898,12 @@ public abstract class VM {
     //Tries to incercept the first transition and split the ChoiceGenerator into two equal parts
     if (transitionCount == 1) {
       System.out.println("+++++++++++++++++++++++ First choice *** +++++++++++++++++++++++");
-      //SystemState ssClone = (SystemState) ss.clone();
+      SystemState ssClone;
 
       try {
+
+        ssClone = (SystemState) ss.clone();
+
         IntIntervalGenerator parent = (IntIntervalGenerator) ss.getChoiceGenerator();
         int min = parent.getMin();
         int max = parent.getMax();
@@ -1909,16 +1913,21 @@ public abstract class VM {
         System.out.println("split at " + max/2);
         parent.setMax(max / 2);
         
-        //IntIntervalGenerator clone = (IntIntervalGenerator) ssClone.getChoiceGenerator();
-        // clone.setMin(max/2 + 1);
-        // clone.setMax(max);
+        IntIntervalGenerator clone = (IntIntervalGenerator) ssClone.getChoiceGenerator();
+        clone.setMin(max/2 + 1);
+        clone.setMax(max);
+        clone.reset();
 
-        ///ss = ssClone;
+        ss = ssClone;
+        //backtrack();
 
 
       }
       catch (ClassCastException exception){
         //Do nothing
+      }
+      catch (CloneNotSupportedException exception) {
+        System.out.println("Clone not supported");
       }
 
 
