@@ -446,13 +446,7 @@ public class ClassFile extends BinaryClassSource {
   //--- reader notifications
   private void setClass(ClassFileReader reader, String clsName, String superClsName, int flags, int cpCount) throws ClassParseException {
     int p = pos;
-    //Handling mutual recursions.
-    System.err.println("setClass with classname = "+ clsName);  
-    boolean dependency = ClassNames.classNames.contains(clsName);
-    if(!dependency) {
-      ClassNames.classNames.add(clsName);
       reader.setClass( this, clsName, superClsName, flags, cpCount);
-    }
     pos = p;
   }
 
@@ -644,7 +638,6 @@ public class ClassFile extends BinaryClassSource {
   }
   private void setClassAttribute(ClassFileReader reader, int attrIndex, String name, int attrLength){
     int p = pos + attrLength;
-    System.err.println("setClassAttribute at pos = "+ pos);
     reader.setClassAttribute( this, attrIndex, name, attrLength);
     pos = p;
   }
