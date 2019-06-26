@@ -44,15 +44,17 @@ public class DirClassFileContainer extends JVMClassFileContainer {
 
   public DirClassFileContainer(File dir) {
     super(dir.getPath(), getContainerURL(dir));
-
     this.dir = dir;
   }
 
   @Override
   public ClassFileMatch getMatch(String clsName) throws ClassParseException {
     String classEntryURL = getClassEntryURL(clsName);
-    File f = new File(dir, classEntryURL);
 
+    if(clsName.startsWith("java."))
+      classEntryURL = "modules\\"+classEntryURL;
+
+    File f = new File(dir, classEntryURL);
     if (f.isFile()) {
       FileInputStream fis = null;
 
