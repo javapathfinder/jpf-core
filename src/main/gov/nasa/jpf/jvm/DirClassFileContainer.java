@@ -52,8 +52,8 @@ public class DirClassFileContainer extends JVMClassFileContainer {
     String classEntryURL = getClassEntryURL(clsName);
 
     if(clsName.startsWith("java."))
-      classEntryURL = "modules\\"+classEntryURL;
-
+      classEntryURL = "modules" + File.separator + classEntryURL;
+    
     File f = new File(dir, classEntryURL);
     if (f.isFile()) {
       FileInputStream fis = null;

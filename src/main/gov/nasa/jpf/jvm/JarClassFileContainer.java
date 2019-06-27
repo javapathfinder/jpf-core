@@ -120,6 +120,9 @@ public class JarClassFileContainer extends JVMClassFileContainer {
       classEntryURL = pathPrefix + classEntryURL;
     }
     
+    if(clsName.startsWith("java."))
+      classEntryURL = "modules" + File.separator +classEntryURL;
+
     JarEntry e = jar.getJarEntry(classEntryURL);
 
     if (e != null) {
