@@ -60,6 +60,8 @@ public class DefaultBacktracker<KState> implements Backtracker {
    */
   @Override
   public boolean backtrack () {
+    printStack();
+
     if (sstack != null) {
   
       backtrackKernelState();
@@ -70,6 +72,19 @@ public class DefaultBacktracker<KState> implements Backtracker {
       // we are back to the top of where we can backtrack to
       return false;
     }
+  }
+
+  private void printStack() {
+    StringBuilder result = new StringBuilder("Stack: ");
+    if (sstack == null) {
+      result.append("EMPTY");
+    } else {
+      for (Object obj : sstack) {
+        SystemState.Memento memento = (SystemState.Memento) obj;
+        result.append(" ").append(memento.id);
+      }
+    }
+    System.out.println(result);
   }
   
   /**

@@ -949,6 +949,7 @@ public abstract class Search {
     currentError = null;
 
     boolean ret = vm.concurrentForwardWithSystemStateClone();
+    //boolean ret = vm.forward();
 
     checkPropertyViolation();
     return ret;

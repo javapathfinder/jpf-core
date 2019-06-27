@@ -89,51 +89,51 @@ public class ExecTracker extends ListenerAdapter {
   
   @Override
   public void stateRestored(Search search) {
-    int id = search.getStateId();
-    out.println("----------------------------------- [" +
-                       search.getDepth() + "] restored: " + id);
+//    int id = search.getStateId();
+//    out.println("----------------------------------- [" +
+//                       search.getDepth() + "] restored: " + id);
   }
     
   //--- the ones we are interested in
   @Override
   public void searchStarted(Search search) {
     out.println("----------------------------------- search started");
-    if (skipInit) {
-      ThreadInfo tiCurrent = ThreadInfo.getCurrentThread();
-      miMain = tiCurrent.getEntryMethod();
-      
-      out.println("      [skipping static init instructions]");
-    }
+//    if (skipInit) {
+//      ThreadInfo tiCurrent = ThreadInfo.getCurrentThread();
+//      miMain = tiCurrent.getEntryMethod();
+//
+//      out.println("      [skipping static init instructions]");
+//    }
   }
 
   @Override
   public void stateAdvanced(Search search) {
-    int id = search.getStateId();
-    
-    out.print("----------------------------------- [" +
-                     search.getDepth() + "] forward: " + id);
-    if (search.isNewState()) {
-      out.print(" new");
-    } else {
-      out.print(" visited");
-    }
-    
-    if (search.isEndState()) {
-      out.print(" end");
-    }
-    
-    out.println();
-    
-    lastLine = null; // in case we report by source line
-    lastMi = null;
-    linePrefix = null;
+//    int id = search.getStateId();
+//
+//    out.print("----------------------------------- [" +
+//                     search.getDepth() + "] forward: " + id);
+//    if (search.isNewState()) {
+//      out.print(" new");
+//    } else {
+//      out.print(" visited");
+//    }
+//
+//    if (search.isEndState()) {
+//      out.print(" end");
+//    }
+//
+//    out.println();
+//
+//    lastLine = null; // in case we report by source line
+//    lastMi = null;
+//    linePrefix = null;
   }
 
   @Override
   public void stateProcessed (Search search) {
-    int id = search.getStateId();
-    out.println("----------------------------------- [" +
-                       search.getDepth() + "] done: " + id);
+//    int id = search.getStateId();
+//    out.println("----------------------------------- [" +
+//                       search.getDepth() + "] done: " + id);
   }
 
   @Override
@@ -156,90 +156,90 @@ public class ExecTracker extends ListenerAdapter {
 
   @Override
   public void gcEnd(VM vm) {
-    out.println("\t\t # garbage collection");
+//    out.println("\t\t # garbage collection");
   }
 
   //--- the ones we are interested in
   @Override
   public void instructionExecuted(VM vm, ThreadInfo ti, Instruction nextInsn, Instruction executedInsn) {
-    
-    if (skip) {
-      MethodInfo mi = executedInsn.getMethodInfo();
-      if (mi == miMain) {
-        skip = false; // start recording
-      } else {
-        return;  // skip
-      }
-    }
-
-    int nNoSrc = 0;
-    
-    if (linePrefix == null) {
-      linePrefix = Integer.toString( ti.getId()) + " : ";
-    }
-    
-    // that's pretty redundant to what is done in the ConsolePublisher, but we don't want 
-    // presentation functionality in Step anymore
-    if (printSrc) {
-      String line = executedInsn.getSourceLine();
-      if (line != null){
-        if (nNoSrc > 0) {
-          out.println("            [" + nNoSrc + " insn w/o sources]");
-        }
-
-        if (!line.equals(lastLine)) {
-          out.print("            [");
-          out.print(executedInsn.getFileLocation());
-          out.print("] : ");
-          out.println(line.trim());
-        }
-        
-        nNoSrc = 0;
-        
-      } else { // no source
-        nNoSrc++;
-      }
-      
-      lastLine = line;
-    }
-    
-    if (printInsn) {      
-      if (printMth) {
-        MethodInfo mi = executedInsn.getMethodInfo();
-        if (mi != lastMi){
-          ClassInfo mci = mi.getClassInfo();
-          out.print("      ");
-          if (mci != null) {
-            out.print(mci.getName());
-            out.print(".");
-          }
-          out.println(mi.getUniqueName());
-          lastMi = mi;
-        }
-      }
-      
-      out.print( linePrefix);
-      
-      out.printf("[%04x]   ", executedInsn.getPosition());
-      
-      out.println( executedInsn.toPostExecString());
-    }
+//
+//    if (skip) {
+//      MethodInfo mi = executedInsn.getMethodInfo();
+//      if (mi == miMain) {
+//        skip = false; // start recording
+//      } else {
+//        return;  // skip
+//      }
+//    }
+//
+//    int nNoSrc = 0;
+//
+//    if (linePrefix == null) {
+//      linePrefix = Integer.toString( ti.getId()) + " : ";
+//    }
+//
+//    // that's pretty redundant to what is done in the ConsolePublisher, but we don't want
+//    // presentation functionality in Step anymore
+//    if (printSrc) {
+//      String line = executedInsn.getSourceLine();
+//      if (line != null){
+//        if (nNoSrc > 0) {
+//          out.println("            [" + nNoSrc + " insn w/o sources]");
+//        }
+//
+//        if (!line.equals(lastLine)) {
+//          out.print("            [");
+//          out.print(executedInsn.getFileLocation());
+//          out.print("] : ");
+//          out.println(line.trim());
+//        }
+//
+//        nNoSrc = 0;
+//
+//      } else { // no source
+//        nNoSrc++;
+//      }
+//
+//      lastLine = line;
+//    }
+//
+//    if (printInsn) {
+//      if (printMth) {
+//        MethodInfo mi = executedInsn.getMethodInfo();
+//        if (mi != lastMi){
+//          ClassInfo mci = mi.getClassInfo();
+//          out.print("      ");
+//          if (mci != null) {
+//            out.print(mci.getName());
+//            out.print(".");
+//          }
+//          out.println(mi.getUniqueName());
+//          lastMi = mi;
+//        }
+//      }
+//
+//      out.print( linePrefix);
+//
+//      out.printf("[%04x]   ", executedInsn.getPosition());
+//
+//      out.println( executedInsn.toPostExecString());
+//    }
   }
 
   @Override
   public void threadStarted(VM vm, ThreadInfo ti) {
-    out.println( "\t\t # thread started: " + ti.getName() + " index: " + ti.getId());
+//    out.println( "\t\t # thread started: " + ti.getName() + " index: " + ti.getId());
   }
 
   @Override
   public void threadTerminated(VM vm, ThreadInfo ti) {
-    out.println( "\t\t # thread terminated: " + ti.getName() + " index: " + ti.getId());
+//    out.println( "\t\t # thread terminated: " + ti.getName() + " index: " + ti.getId());
   }
   
   @Override
   public void exceptionThrown (VM vm, ThreadInfo ti, ElementInfo ei) {
-    MethodInfo mi = ti.getTopFrameMethodInfo();
-    out.println("\t\t\t\t # exception: " + ei + " in " + mi);
+//    MethodInfo mi = ti.getTopFrameMethodInfo();
+//    out.println("\t\t\t\t # exception: " + ei + " in " + mi);
   }
   
   @Override
@@ -251,27 +251,27 @@ public class ExecTracker extends ListenerAdapter {
   
   @Override
   public void objectExposed (VM vm, ThreadInfo currentThread, ElementInfo fieldOwnerObject, ElementInfo exposedObject) {
-    if (showShared){
-      String msg = "\t\t # exposed " + exposedObject;
-      if (fieldOwnerObject != null){
-        String ownerStatus = "";
-        if (fieldOwnerObject.isShared()){
-          ownerStatus = "shared ";
-        } else if (fieldOwnerObject.isExposed()){
-          ownerStatus = "exposed ";
-        }
-        
-        msg += " through " + ownerStatus + fieldOwnerObject;
-      }
-      out.println(msg);
-    }
+//    if (showShared){
+//      String msg = "\t\t # exposed " + exposedObject;
+//      if (fieldOwnerObject != null){
+//        String ownerStatus = "";
+//        if (fieldOwnerObject.isShared()){
+//          ownerStatus = "shared ";
+//        } else if (fieldOwnerObject.isExposed()){
+//          ownerStatus = "exposed ";
+//        }
+//
+//        msg += " through " + ownerStatus + fieldOwnerObject;
+//      }
+//      out.println(msg);
+//    }
   }
   
   @Override
   public void objectShared (VM vm, ThreadInfo currentThread, ElementInfo sharedObject) {
-    if (showShared){
-      out.println("\t\t # shared " + sharedObject);
-    }
+//    if (showShared){
+//      out.println("\t\t # shared " + sharedObject);
+//    }
   }
   
   
