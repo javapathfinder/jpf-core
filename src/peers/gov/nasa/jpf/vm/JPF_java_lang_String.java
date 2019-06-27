@@ -345,7 +345,7 @@ public class JPF_java_lang_String extends NativePeer {
       fromIndex = len - 1;
     }
 
-    for (int i = fromIndex; i > 0; i--) {
+    for (int i = fromIndex; i >= 0; i--) {
       if (values[i] == c) { return i; }
     }
 
