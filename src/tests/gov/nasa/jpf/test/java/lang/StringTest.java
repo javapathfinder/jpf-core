@@ -86,6 +86,16 @@ public class StringTest extends TestJPF {
 			assert i2 == -1;
 		}
 	}
+	
+	@Test
+	public void testLastIndexOf() {
+		if (verifyNoPropertyViolation()) {
+			String val = "-1";
+			int i = val.lastIndexOf('-');
+			
+			assert(i == 0); // test against off-by-one error (issue #197)
+		}
+	}
 
 	@Test
 	public void testCompareTo() {
