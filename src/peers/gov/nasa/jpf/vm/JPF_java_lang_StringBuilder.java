@@ -136,6 +136,11 @@ public class JPF_java_lang_StringBuilder extends NativePeer {
     int i;
     int n = count +1;
     
+    if (alen == 0) {
+      $init____V (env, objref);
+      aref = env.getReferenceField(objref, "value");
+      alen = env.getArrayLength(aref);
+    }
     if (n < alen) {
       env.setCharArrayElement(aref, count, c);
     } else {

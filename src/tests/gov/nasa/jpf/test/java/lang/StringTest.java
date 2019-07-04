@@ -387,4 +387,16 @@ public class StringTest extends TestJPF {
       assertTrue( s.contentEquals(sb));
     }
   }
+  
+  @Test
+  public void testStringBuilderAppendChar() {
+    if (verifyNoPropertyViolation()){
+      StringBuilder sb = new StringBuilder(0);
+      sb.append('[');
+      sb.append(']');
+      String s = sb.toString();
+      
+      assertTrue( s.equals("[]"));
+    }
+  }
 }
