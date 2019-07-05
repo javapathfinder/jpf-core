@@ -20,6 +20,12 @@ buildscript {
 
 dependencies {
     testImplementation "junit:junit:4.12"
+    compile "org.ow2.asm:asm:7.1"
+}
+
+task copyLibs(type: Copy) {
+    from configurations.compile
+    into 'build'
 }
 
 apply plugin: "com.palantir.git-version"
@@ -203,6 +209,7 @@ task buildJars {
     dependsOn createJpfJar
     dependsOn createRunJpfJar
     dependsOn createRunTestJar
+	dependsOn copyLibs
 }
 
 test {

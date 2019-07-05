@@ -134,11 +134,10 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     String cname = env.getStringObject(nameRef);
     ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);
 
-    // determine whether that the corresponding class is already defined by this 
-    // classloader, if so, this attempt is invalid, and loading throws a LinkageError
+    // determine whether that the corresponding class is already defined by this
+    // classloader, if so, just return the already defined class
     if (cl.getDefinedClassInfo(cname) != null) {  // attempt to define twice
-      env.throwException("java.lang.LinkageError"); 
-      return MJIEnv.NULL;
+      return cl.getDefinedClassInfo(cname).getClassObjectRef();
     }
         
     byte[] buffer = env.getByteArrayObject(bufferRef);
@@ -146,7 +145,7 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     try {
       ClassInfo ci = cl.getResolvedClassInfo( cname, buffer, offset, length);
 
-      // Note: if the representation is not of a supported major or minor version, loading 
+      // Note: if the representation is not of a supported major or minor version, loading
       // throws an UnsupportedClassVersionError. But for now, we do not check for this here 
       // since we don't do much with minor and major versions
 
@@ -154,13 +153,31 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
       ci.registerClass(ti);
 
       return ci.getClassObjectRef();
-      
+
+    } catch (LoadOnJPFRequired rre) {
+      return searchThroughSystemClassLoader(env, objRef, nameRef, bufferRef, offset, length);
+
     } catch (ClassInfoException cix){
+      if (cix.getExceptionClass().equals("java.lang.ClassNotFoundException")) {
+        return searchThroughSystemClassLoader(env, objRef, nameRef, bufferRef, offset, length);
+      }
       env.throwException("java.lang.ClassFormatError");
       return MJIEnv.NULL;
+
     }
   }
+  
+  private int searchThroughSystemClassLoader
+          (MJIEnv env, int objRef, int nameRef, int bufferRef, int offset, int length) {
 
+    int sysObjRef = env.getSystemClassLoaderInfo().getClassLoaderObjectRef();
+    if (objRef != sysObjRef) {
+      return defineClass0__Ljava_lang_String_2_3BII__Ljava_lang_Class_2
+              (env, sysObjRef, nameRef, bufferRef, offset, length);
+    }
+    env.throwException("java.lang.ClassNotFoundException");
+    return MJIEnv.NULL;
+  }
 
   protected static boolean check(MJIEnv env, String cname, byte[] buffer, int offset, int length) {
     // throw SecurityExcpetion if the package prefix is java

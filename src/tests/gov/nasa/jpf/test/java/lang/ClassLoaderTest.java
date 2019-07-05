@@ -26,6 +26,11 @@ import java.util.Enumeration;
 
 import org.junit.Test;
 
+// ASM 5.0.3 library for testing the defineClass() method
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+
 /**
  * test of java.lang.ClassLoader API
  */
@@ -166,6 +171,16 @@ public class ClassLoaderTest extends TestJPF {
     assertNotNull(is);
     assertTrue(is.read() > 0);
   }
+  
+  @Test
+  public void testDefineClass() throws IOException {
+    if(verifyNoPropertyViolation()) {
+      TestClassLoader classLoader = new TestClassLoader();
+      Class<?> cls = classLoader.loadMagic();
+      assertNotNull(cls);
+      assertTrue(cls.getName().equals("sun.reflect.GroovyMagic"));
+    }
+  }
 
   class TestClassLoader extends ClassLoader {
       
@@ -180,6 +195,20 @@ public class ClassLoaderTest extends TestJPF {
     @Override
 	protected Enumeration<URL> findResources(String name) throws IOException {
       return super.findResources(name);
+    }
+    
+	// Adapted from the class SunClassLoader of the Groovy library
+    public Class<?> loadMagic() {
+      ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+      cw.visit(Opcodes.V1_4, Opcodes.ACC_PUBLIC, "sun/reflect/GroovyMagic", null, "java/lang/Object", null);
+      MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+      mv.visitCode();
+      mv.visitMaxs(0,0);
+      mv.visitEnd();
+      cw.visitEnd();
+
+      byte[] bytes = cw.toByteArray();
+	  return defineClass("sun.reflect.GroovyMagic", bytes, 0, bytes.length);
     }
   }
 }
