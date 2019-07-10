@@ -51,6 +51,10 @@ public class DirClassFileContainer extends JVMClassFileContainer {
   @Override
   public ClassFileMatch getMatch(String clsName) throws ClassParseException {
     String classEntryURL = getClassEntryURL(clsName);
+
+    if(clsName.startsWith("java."))
+      classEntryURL = "modules" + File.separator + classEntryURL;
+      
     File f = new File(dir, classEntryURL);
 
     if (f.isFile()) {
