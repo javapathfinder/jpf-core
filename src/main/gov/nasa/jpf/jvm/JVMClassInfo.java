@@ -116,41 +116,57 @@ public class JVMClassInfo extends ClassInfo {
     }
     
     @Override
-    public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String descriptor, int[] cpArgs) {
-      if (cls.equals("java/lang/invoke/StringConcatFactory")) {
-        bootstrapMethods[idx] = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
-        return;
+    public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
+                                     String parameters, String descriptor, int[] cpArgs) {
+      String clsName = null;
+      ClassInfo enclosingLambdaCls;
+      
+      if (cpArgs.length > 1) {
+        
+      	int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);
+        clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
+
+        if(!clsName.equals(JVMClassInfo.this.getName())) {
+          enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+        } else {
+          enclosingLambdaCls = JVMClassInfo.this;
+        }
+
+        assert (enclosingLambdaCls!=null);
+
+      	int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
+      	String mthName = cf.methodNameAt(mrefIdx);
+        String signature = cf.methodDescriptorAt(mrefIdx);
+        String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]); 
+        
+        setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor);
       }
-      else if (cls.equals("java/lang/invoke/LambdaMetafactory")) {
-        bootstrapMethods[idx] = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
-        return;
+      else {
+        clsName = cls; 
+          
+        if(!clsName.equals(JVMClassInfo.this.getName())) {
+        enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+        } else {
+          enclosingLambdaCls = JVMClassInfo.this;
+        }
+
+        assert (enclosingLambdaCls!=null);
+        
+        setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor);
       }
-      int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
-      
-      int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);
-      String clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
-      ClassInfo eclosingLambdaCls;
-      
-      if(!clsName.equals(JVMClassInfo.this.getName())) {
-        eclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
-      } else {
-        eclosingLambdaCls = JVMClassInfo.this;
-      }
-      
-      assert (eclosingLambdaCls!=null);
-      
-      String mthName = cf.methodNameAt(mrefIdx);
-      String signature = cf.methodDescriptorAt(mrefIdx);
-      
-      MethodInfo lambdaBody = eclosingLambdaCls.getMethod(mthName + signature, false);
-      
-      String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]);
-            
-      if(lambdaBody!=null) {
-        bootstrapMethods[idx] = new BootstrapMethodInfo(lambdaRefKind, JVMClassInfo.this, lambdaBody, samDescriptor);
-      }
+
     }
     
+    // helper method for setBootstrapMethod()
+    public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind, 
+                              String descriptor){
+      MethodInfo methodBody = enclosingCls.getMethod(mthName + parameters, false);
+        
+      if(methodBody!=null) {
+        bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor);
+      }
+    }
+
    //--- inner/enclosing classes 
     @Override
     public void setInnerClassCount (ClassFile cf, Object tag, int classCount) {

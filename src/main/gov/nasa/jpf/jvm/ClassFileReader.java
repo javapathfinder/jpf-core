@@ -135,7 +135,7 @@ public interface ClassFileReader {
   void setInnerClassesDone (ClassFile cf, Object tag);
 
   void setBootstrapMethodCount (ClassFile cf, Object tag, int count);
-  void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String descriptor, int[] cpArgs);
+  void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs);
   void setBootstrapMethodsDone (ClassFile cf, Object tag);
   
   void setEnclosingMethod(ClassFile cf, Object tag, String enclosingClass, String enclosingMethod, String descriptor);

@@ -121,7 +121,7 @@ public class JarClassFileContainer extends JVMClassFileContainer {
     }
     
     if(clsName.startsWith("java."))
-      classEntryURL = "modules" + File.separator +classEntryURL;
+      classEntryURL = "modules" + "/" +classEntryURL;
 
     JarEntry e = jar.getJarEntry(classEntryURL);
 
@@ -134,7 +134,7 @@ public class JarClassFileContainer extends JVMClassFileContainer {
         }
 
         is = jar.getInputStream(e);
-
+        
         byte[] data = new byte[(int) len];
         FileUtils.getContents(is, data);
 

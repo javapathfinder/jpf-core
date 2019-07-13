@@ -158,7 +158,7 @@ public class ClassFileReaderAdapter implements ClassFileReader {
   public void setBootstrapMethodCount (ClassFile cf, Object tag, int count) {}
   
   @Override
-  public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String descriptor, int[] cpArgs){}
+  public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){}
   
   @Override
   public void setBootstrapMethodsDone (ClassFile cf, Object tag) {}

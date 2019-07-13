@@ -51,6 +51,9 @@ public class BootstrapMethodInfo {
    */
   public BootstrapMethodInfo(ClassInfo enclosingClass, int[] cpArgs) {
     this.enclosingClass = enclosingClass;
+    //System.err.println("enclossingClass="+enclosingClass.getName());
+    //System.err.println("cpArgs"+cpArgs[0]);
+
       // TODO: find a way to parse lambdaBody, samDescriptor etc
   }
 
