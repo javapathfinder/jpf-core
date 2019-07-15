@@ -116,6 +116,9 @@ public class JarClassFileContainer extends JVMClassFileContainer {
   public ClassFileMatch getMatch(String clsName) throws ClassParseException {
     String classEntryURL = getClassEntryURL(clsName);
     
+    if(clsName.startsWith("java."))
+      classEntryURL = "modules" + '/' + classEntryURL;
+
     if (pathPrefix != null){
       classEntryURL = pathPrefix + classEntryURL;
     }

@@ -121,6 +121,10 @@ public class JVMClassInfo extends ClassInfo {
         bootstrapMethods[idx] = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
         return;
       }
+      else if (cls.equals("java/lang/invoke/LambdaMetafactory")) {
+        bootstrapMethods[idx] = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
+        return;
+      }
 
       int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
       
