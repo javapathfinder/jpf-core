@@ -122,7 +122,7 @@ public class JVMClassInfo extends ClassInfo {
       ClassInfo enclosingLambdaCls;
       
       if (cpArgs.length > 1) {
-        
+        // For Lambdas
       	int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);
         clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
 
@@ -142,6 +142,7 @@ public class JVMClassInfo extends ClassInfo {
         setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor);
       }
       else {
+        // For String Concatenation
         clsName = cls; 
           
         if(!clsName.equals(JVMClassInfo.this.getName())) {
@@ -161,7 +162,7 @@ public class JVMClassInfo extends ClassInfo {
     public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind, 
                               String descriptor){
       MethodInfo methodBody = enclosingCls.getMethod(mthName + parameters, false);
-        
+      
       if(methodBody!=null) {
         bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor);
       }
