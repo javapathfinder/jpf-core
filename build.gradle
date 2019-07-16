@@ -20,11 +20,11 @@ buildscript {
 
 dependencies {
     testImplementation "junit:junit:4.12"
-    compile "org.ow2.asm:asm:7.1"
+    testCompile "org.ow2.asm:asm:7.1"
 }
 
 task copyLibs(type: Copy) {
-    from configurations.compile
+    from configurations.testCompile
     into 'build'
 }
 
@@ -209,7 +209,7 @@ task buildJars {
     dependsOn createJpfJar
     dependsOn createRunJpfJar
     dependsOn createRunTestJar
-	dependsOn copyLibs
+    dependsOn copyLibs
 }
 
 test {
