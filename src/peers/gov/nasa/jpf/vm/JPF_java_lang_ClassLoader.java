@@ -135,9 +135,10 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);
 
     // determine whether that the corresponding class is already defined by this
-    // classloader, if so, just return the already defined class
+    // classloader, if so, this attempt is invalid, and loading throws a LinkageError
     if (cl.getDefinedClassInfo(cname) != null) {  // attempt to define twice
-      return cl.getDefinedClassInfo(cname).getClassObjectRef();
+      env.throwException("java.lang.LinkageError");
+      return MJIEnv.NULL;
     }
         
     byte[] buffer = env.getByteArrayObject(bufferRef);
@@ -172,8 +173,16 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
 
     int sysObjRef = env.getSystemClassLoaderInfo().getClassLoaderObjectRef();
     if (objRef != sysObjRef) {
-      return defineClass0__Ljava_lang_String_2_3BII__Ljava_lang_Class_2
-              (env, sysObjRef, nameRef, bufferRef, offset, length);
+      // Check if this class has been defined in the SystemClassLoader
+      ClassLoaderInfo cl = env.getSystemClassLoaderInfo();
+      String cname = env.getStringObject(nameRef);
+      if (cl.getDefinedClassInfo(cname) != null) {
+        ClassInfo ci = cl.getResolvedClassInfo(cname);
+        return ci.getClassObjectRef();
+      } else {
+        return defineClass0__Ljava_lang_String_2_3BII__Ljava_lang_Class_2
+                (env, sysObjRef, nameRef, bufferRef, offset, length);
+      }
     }
     env.throwException("java.lang.ClassNotFoundException");
     return MJIEnv.NULL;
