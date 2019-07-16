@@ -181,6 +181,15 @@ public class ClassLoaderTest extends TestJPF {
       assertTrue(cls.getName().equals("sun.reflect.GroovyMagic"));
     }
   }
+	
+  @Test
+  public void testDefineClassError() {
+    if (verifyUnhandledException("java.lang.LinkageError")) {
+      TestClassLoader classLoader = new TestClassLoader();
+      Class<?> cls = classLoader.loadMagic();
+      Class<?> cls2 = classLoader.loadMagic();
+    }
+  }
 
   class TestClassLoader extends ClassLoader {
       
