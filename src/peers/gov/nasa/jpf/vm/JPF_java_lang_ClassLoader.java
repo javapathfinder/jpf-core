@@ -112,12 +112,18 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
   public int findSystemClass__Ljava_lang_String_2__Ljava_lang_Class_2 (MJIEnv env, int objRef, int nameRef) {
     String cname = env.getStringObject(nameRef);
 
-    checkForIllegalName(env, cname);
-    if(env.hasException()) {
-      return MJIEnv.NULL;
-    }
-
     ClassLoaderInfo cl = ClassLoaderInfo.getCurrentSystemClassLoader();
+
+    // We need to differentiate two different error messages:
+    // 1) If the class has been resolved before but the name is illegal, we throw java.lang.NoClassDefFoundError
+    // 2) If the class cannot be found anywhere, we throw java.lang.ClassNotFoundException    
+    ClassInfo cir = cl.getAlreadyResolvedClassInfo(Types.getClassNameFromTypeName(cname));
+    if(cir != null) {
+      checkForIllegalName(env, cname);
+      if(env.hasException()) {
+        return MJIEnv.NULL;
+      }
+    }
 
     ClassInfo ci = cl.getResolvedClassInfo(cname);
 
