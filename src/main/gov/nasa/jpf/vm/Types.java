@@ -761,7 +761,7 @@ public class Types {
       return typeName;
     }
     
-    int i=typeName.indexOf('[');
+    int i=typeName.indexOf("[]");
     if (i>0){ // the sort of "<type>[]"
       StringBuilder sb = new StringBuilder();
       sb.append('[');
