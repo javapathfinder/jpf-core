@@ -17,7 +17,7 @@
  */
 package gov.nasa.jpf.vm;
 
-/**
+/*
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  */
 public class FunctionObjectFactory {
@@ -26,7 +26,6 @@ public class FunctionObjectFactory {
                                          String[] freeVariableTypeNames, Object[] freeVariableValues) {
     
     ClassLoaderInfo cli = bmi.enclosingClass.getClassLoaderInfo();
-    
     ClassInfo funcObjType = cli.getResolvedFuncObjType(bsIdx, fiClassInfo, samUniqueName, bmi, freeVariableTypeNames);
     
     funcObjType.registerClass(ti);

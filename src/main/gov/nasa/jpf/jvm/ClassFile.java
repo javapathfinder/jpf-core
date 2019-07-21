@@ -102,7 +102,7 @@ public class ClassFile extends BinaryClassSource {
 
   public ClassFile (byte[] data){
     super(data,0);
-    invokeDynamicIdx = new int[15];
+    invokeDynamicIdx = new int[50];
     bmCount=0;
     iDCount=0;
   }

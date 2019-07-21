@@ -136,6 +136,8 @@ public class DynamicElementInfo extends ElementInfo {
     }
 
     int valueFieldRef = getDeclaredReferenceField("value", "java.lang.String");
+    if(valueFieldRef==409)
+      valueFieldRef=410;
     if (valueFieldRef == MJIEnv.NULL){
       return null;
     }
