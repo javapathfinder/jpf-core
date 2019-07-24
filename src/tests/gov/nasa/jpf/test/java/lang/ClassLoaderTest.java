@@ -79,6 +79,23 @@ public class ClassLoaderTest extends TestJPF {
       }
     }
   }
+  
+  @Test
+  public void testLoadClassNoClassDefFoundError() throws ClassNotFoundException {
+    if (verifyUnhandledException("java.lang.NoClassDefFoundError")) {
+      TestClassLoader classLoader = new TestClassLoader();
+      Class<?> cls = classLoader.loadClass("java/lang/Object");
+    }
+  }
+  
+  @Test
+  public void testLoadClassClassNotFoundException() throws ClassNotFoundException {
+    if (verifyUnhandledException("java.lang.ClassNotFoundException")) {
+      TestClassLoader classLoader = new TestClassLoader();
+      // Adapted from the Groovy library's class resolution
+      Class<?> cls = classLoader.loadClass("[Ljava.lang.Object;BeanInfo;");
+    }
+  }
 
   @Test
   public void testGetSystemResource() {
@@ -190,7 +207,7 @@ public class ClassLoaderTest extends TestJPF {
       Class<?> cls2 = classLoader.loadMagic();
     }
   }
-
+ 
   class TestClassLoader extends ClassLoader {
       
     public TestClassLoader() {
