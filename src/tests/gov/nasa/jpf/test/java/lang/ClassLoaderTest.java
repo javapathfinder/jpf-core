@@ -207,7 +207,7 @@ public class ClassLoaderTest extends TestJPF {
       Class<?> cls2 = classLoader.loadMagic();
     }
   }
-  
+ 
   class TestClassLoader extends ClassLoader {
       
     public TestClassLoader() {
