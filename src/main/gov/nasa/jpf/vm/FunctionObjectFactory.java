@@ -63,7 +63,7 @@ public class FunctionObjectFactory {
         if(freeVarValues[i] == null) {
           fields.setReferenceValue(i, MJIEnv.NULL); 
         } else {
-          int val = ((ElementInfo)freeVarValues[i]).getObjectRef();
+          int val = ((ElementInfo)freeVarValues[i]).getObjectRef() + 1;
           fields.setReferenceValue(i, val);
         }
       }
