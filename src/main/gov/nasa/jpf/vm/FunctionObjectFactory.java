@@ -23,16 +23,28 @@ package gov.nasa.jpf.vm;
 public class FunctionObjectFactory {
   
   public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi, 
-                                         String[] freeVariableTypeNames, Object[] freeVariableValues) {
+                               String[] freeVariableTypeNames, Object[] freeVariableValues) {
     
     ClassLoaderInfo cli = bmi.enclosingClass.getClassLoaderInfo();
     ClassInfo funcObjType = cli.getResolvedFuncObjType(bsIdx, fiClassInfo, samUniqueName, bmi, freeVariableTypeNames);
     
     funcObjType.registerClass(ti);
-
+    ElementInfo ei;
     Heap heap = ti.getHeap();
-    ElementInfo ei = heap.newObject(funcObjType, ti);
-    
+    MJIEnv env = new MJIEnv(ti);
+
+    int val = ((ElementInfo)freeVariableValues[0]).getObjectRef(); // ObjRef value of String 2
+    String s2 = env.getStringObject(val); // Second string ( for example, "world!")
+
+    if(bmi.getBmType().equals("StringConcatenation")){
+      // Creating a newString for Concatenated string (example, "Hello," + "World");
+      ei = heap.newString(bmi.getBmArg() + s2,ti);
+      freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
+    }
+    else {
+      ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
+    }
+
     setFuncObjFields(ei, bmi, freeVariableTypeNames, freeVariableValues);
     
     return ei.getObjectRef();
@@ -64,6 +76,9 @@ public class FunctionObjectFactory {
           fields.setReferenceValue(i, MJIEnv.NULL); 
         } else {
           int val = ((ElementInfo)freeVarValues[i]).getObjectRef() + 1;
+          // + 1 because when object is created ( i.e GenericHeap.createObject(...)) the value of objRef is initialized
+          // to the NamedField value in ElementInfo. But the value needed here is the value of arrayField which
+          // NamedField value +1. This is because both array and object fields are created in GenericHeap.newString().
           fields.setReferenceValue(i, val);
         }
       }

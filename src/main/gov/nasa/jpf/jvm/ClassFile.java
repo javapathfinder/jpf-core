@@ -297,7 +297,7 @@ public class ClassFile extends BinaryClassSource {
   public String methodClassNameAt(int methodRefInfoIdx){
     return (String) cpValue[ u2(cpPos[methodRefInfoIdx]+1)];
   }
-  int i=0;
+
   public String methodNameAt(int methodRefInfoIdx){
     return utf8At( u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+1));
   }
@@ -310,12 +310,12 @@ public class ClassFile extends BinaryClassSource {
     return utf8At( u2(cpPos[methodTypeInfoIdx]+1));
   }
   
-  public String methodTypeAt (int methodTypeInfoIdx, String message){
-    System.err.println("U2(cpPos[328])="+u2(cpPos[328]));
-    System.err.println("U2(cpPos[5784])="+u2(5784));//2561
-    System.err.println("U2(cpPos[330]+2)="+u2(cpPos[330]+2));//336
-    return utf8At( u2( cpPos[ u2(cpPos[methodTypeInfoIdx]+3)]+1));
+
+
+  public String getBmArgString(int cpIdx){
+    return utf8At( u2( cpPos[cpIdx]+1));
   }
+
 
   public String interfaceMethodClassNameAt(int ifcMethodRefInfoIdx){
     return (String) cpValue[ u2(cpPos[ifcMethodRefInfoIdx]+1)];

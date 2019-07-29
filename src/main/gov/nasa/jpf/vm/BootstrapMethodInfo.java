@@ -37,12 +37,18 @@ public class BootstrapMethodInfo {
   
   // descriptor of a SAM declared within the functional interface   
   String samDescriptor;
-  
-  public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor) {
+
+  String bmArg;
+
+  String bmType;
+  public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor,
+                             String bmArg, String bmType) {
     this.lambdaRefKind = lambdaRefKind;
     this.enclosingClass = enclosingClass;
     this.lambdaBody = lambdaBody;
     this.samDescriptor = samDescriptor;
+    this.bmArg = bmArg;
+    this.bmType = bmType;
   }
 
   /**
@@ -74,4 +80,8 @@ public class BootstrapMethodInfo {
   public int getLambdaRefKind () {
     return lambdaRefKind;
   }
+
+  public String getBmArg(){ return bmArg;}
+
+  public String getBmType() { return bmType;}
 }

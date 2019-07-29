@@ -139,7 +139,8 @@ public class JVMClassInfo extends ClassInfo {
         String signature = cf.methodDescriptorAt(mrefIdx);
         String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]); 
         
-        setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor);
+        setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor, null,
+                "LambdaExpression");
       }
       else {
         // For String Concatenation
@@ -152,19 +153,23 @@ public class JVMClassInfo extends ClassInfo {
         }
 
         assert (enclosingLambdaCls!=null);
-        
-        setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor);
+
+        String bmArg = cf.getBmArgString(cpArgs[0]);
+
+        setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
+                "StringConcatenation");
       }
 
     }
     
     // helper method for setBootstrapMethod()
     public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind, 
-                              String descriptor){
+                              String descriptor, String bmArg, String bmType){
       MethodInfo methodBody = enclosingCls.getMethod(mthName + parameters, false);
       
       if(methodBody!=null) {
-        bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor);
+        bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor
+                , bmArg, bmType);
       }
     }
 
