@@ -40,9 +40,13 @@ public class BootstrapMethodInfo {
 
   String bmArg;
 
-  String bmType;
+  public enum BMType{
+    STRING_CONCATENATION,
+    LAMBDA_EXPRESSION
+  }
+  BMType bmType;
   public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor,
-                             String bmArg, String bmType) {
+                             String bmArg, BMType bmType) {
     this.lambdaRefKind = lambdaRefKind;
     this.enclosingClass = enclosingClass;
     this.lambdaBody = lambdaBody;
@@ -57,8 +61,6 @@ public class BootstrapMethodInfo {
    */
   public BootstrapMethodInfo(ClassInfo enclosingClass, int[] cpArgs) {
     this.enclosingClass = enclosingClass;
-    //System.err.println("enclossingClass="+enclosingClass.getName());
-    //System.err.println("cpArgs"+cpArgs[0]);
 
       // TODO: find a way to parse lambdaBody, samDescriptor etc
   }
@@ -83,5 +85,5 @@ public class BootstrapMethodInfo {
 
   public String getBmArg(){ return bmArg;}
 
-  public String getBmType() { return bmType;}
+  public BMType getBmType() { return bmType;}
 }

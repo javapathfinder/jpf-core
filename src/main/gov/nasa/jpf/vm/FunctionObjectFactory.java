@@ -36,7 +36,7 @@ public class FunctionObjectFactory {
     int val = ((ElementInfo)freeVariableValues[0]).getObjectRef(); // ObjRef value of String 2
     String s2 = env.getStringObject(val); // Second string ( for example, "world!")
 
-    if(bmi.getBmType().equals("StringConcatenation")){
+    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
       // Creating a newString for Concatenated string (example, "Hello," + "World");
       ei = heap.newString(bmi.getBmArg() + s2,ti);
       freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
