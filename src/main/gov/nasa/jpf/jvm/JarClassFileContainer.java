@@ -123,6 +123,8 @@ public class JarClassFileContainer extends JVMClassFileContainer {
       classEntryURL = pathPrefix + classEntryURL;
     }
 
+    classEntryURL = classEntryURL.replace("\\", "/");
+
     JarEntry e = jar.getJarEntry(classEntryURL);
 
     if (e != null) {
