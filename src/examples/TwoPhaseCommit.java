@@ -7,8 +7,8 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.lang.Thread;
-import gov.nasa.jpf.vm.Verify;
 /**
  A simplified two phase commit protocol to demonstrate how we can perform conformance testing using JPF
  */
@@ -133,7 +133,6 @@ public class TwoPhaseCommit {
                             totalSuccReceived++;
                             if (totalSuccReceived == participants.size()) {
                                 SendToAllParticipants(new eGlobalCommit());
-                                assert false;
                                 currentState = 2;
                             }
                         } else if (message instanceof ePrepareFailed) {
@@ -166,17 +165,13 @@ public class TwoPhaseCommit {
                         //wait for responses
                         Object message = Recv();
                         if (message instanceof ePrepare) {
-                            if (Verify.getBoolean()) {
+                            Random random = new Random(0);
+                            if (random.nextBoolean()) {
                                 ((ePrepare) message).coor.Send(new ePrepareFailed());
                             } else {
                                 ((ePrepare) message).coor.Send(new ePrepareSuccess());
-                                assert false;
                             }
                             currentState = 1;
-                        }
-                        else
-                        {
-                            assert false;
                         }
                         break;
                     }
