@@ -96,19 +96,20 @@ public class TwoPhaseCommit {
         public void Send(Object message) {
             try {
                 buf.put(message);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) { }
         }
         public Object Recv() {
             try {
-                return buf.get();
+                Object ret = buf.get();
+                CoordinatorConformanceCheckingMonitor.CheckConformance(ret);
+                return ret;
             } catch (InterruptedException e) {
                 return null;
             }
         }
-
         public void SendToAllParticipants(Object message) {
             for (int i = 0; i < participants.size(); i++) {
+                CoordinatorConformanceCheckingMonitor.CheckConformance(message);
                 participants.get(i).Send(message);
             }
         }
@@ -148,6 +149,58 @@ public class TwoPhaseCommit {
         }
     }
 
+    public static class CoordinatorConformanceCheckingMonitor {
+        static int stateofmonitor = 0;
+        static int count = 0;
+        public static void CheckConformance(Object message) {
+            switch(stateofmonitor)
+            {
+                case 0: {
+                    //coordinator first sends 2 prepares
+                    assert message instanceof ePrepare: "Expecting ePrepare Message";
+                    count++;
+                    if(count == 2)
+                    {
+                        stateofmonitor = 1;
+                        count = 0;
+                    }
+                    break;
+
+                }
+                case 1:
+                    //coordinator must wait for prepare success or prepare failure messages
+                    if(message instanceof ePrepareSuccess)
+                    {
+                        count++;
+                        if(count == 2)
+                        {
+                            stateofmonitor = 2;
+                        }
+                    }
+                    else if(message instanceof ePrepareFailed)
+                    {
+                        stateofmonitor = 3;
+                    }
+                    else
+                    {
+                        assert false: "Expected to receive ePrepareSuccess or ePrepareFailed, but saw " + message.getClass().getSimpleName();
+                    }
+                    break;
+                case 2:
+                    assert message instanceof  eGlobalCommit: "Expected eGlobalCommit but saw " + message.getClass().getSimpleName();
+                    stateofmonitor = 10;
+                    break;
+                case 3:
+                    assert message instanceof  eGlobalAbort: "Expected eGlobalAbort but saw " + message.getClass().getSimpleName();
+                    stateofmonitor = 10;
+                    break;
+
+                default:
+
+
+            }
+        }
+    }
     //--- the consumer
     public static class Participant extends Thread {
         BoundedBuffer buf;
