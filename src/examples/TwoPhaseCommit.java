@@ -134,17 +134,17 @@ public class TwoPhaseCommit {
                             totalSuccReceived++;
                             if (totalSuccReceived == participants.size()) {
                                 SendToAllParticipants(new eGlobalCommit());
+                                currentState = 2;
                             }
                         } else if (message instanceof ePrepareFailed) {
                             SendToAllParticipants(new eGlobalAbort());
-                            break;
+                            currentState = 2;
                         }
-                        currentState = 2;
                     }
                     break;
                     default:
-                        System.out.print("End State!");
                 }
+
             }
         }
     }
@@ -173,11 +173,12 @@ public class TwoPhaseCommit {
                             } else {
                                 ((ePrepare) message).coor.Send(new ePrepareSuccess());
                             }
+                            currentState = 1;
                         }
                         break;
                     }
+                    default:
                 }
-                break;
             }
         }
 
@@ -206,7 +207,7 @@ public class TwoPhaseCommit {
         parts.add(new Participant());
         new Coordinator(parts).start();
         for (int i = 0; i < parts.size(); i++) {
-            parts.get(0).start();
+            parts.get(i).start();
         }
     }
 }
