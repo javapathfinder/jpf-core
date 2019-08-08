@@ -4,12 +4,10 @@
 * Compile: javac  -cp .:../../build/RunTest.jar:../../build/jpf.jar ConcurrentListTest.java
 * Run: ../../bin/test ConcurrentListTest
 */
-//import gov.nasa.jpf.util.test.JPFTestSuite;
+
 import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.Verify;
 import org.junit.Test;
-
-//import ConcurrentList;
 
 public class ConcurrentListTest extends TestJPF{
     
