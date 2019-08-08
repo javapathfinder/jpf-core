@@ -1,7 +1,8 @@
 /*
 * @author Yifan Ning
-* An example showing how jpf model checks thread-safe operations on 
-* linked List
+* An example showing how to write junit tests for ConcurrentLinkedList
+* Compile: javac  -cp .:../../build/RunTest.jar:../../build/jpf.jar ConcurrentListTest.java
+* Run: ../../bin/test ConcurrentListTest
 */
 //import gov.nasa.jpf.util.test.JPFTestSuite;
 import gov.nasa.jpf.util.test.TestJPF;
