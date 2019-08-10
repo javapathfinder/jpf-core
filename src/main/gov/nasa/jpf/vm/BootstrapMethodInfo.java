@@ -41,7 +41,8 @@ public class BootstrapMethodInfo {
   String bmArg;
 
   public enum BMType{
-    STRING_CONCATENATION,
+    STRING_CONCATENATION_TYPE1,
+    STRING_CONCATENATION_TYPE2,
     LAMBDA_EXPRESSION
   }
   BMType bmType;

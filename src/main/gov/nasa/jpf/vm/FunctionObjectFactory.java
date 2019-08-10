@@ -34,14 +34,16 @@ public class FunctionObjectFactory {
     MJIEnv env = new MJIEnv(ti);
 
     int val = ((ElementInfo)freeVariableValues[0]).getObjectRef(); // ObjRef value of String 2
-    String s2 = env.getStringObject(val); // Second string ( for example, "world!")
+    String str = env.getStringObject(val); // Second string ( for example, "world!")
 
-    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
+    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION_TYPE1){
       // Creating a newString for Concatenated string (example, "Hello," + "World");
-      ei = heap.newString(bmi.getBmArg() + s2,ti);
+      ei = heap.newString(bmi.getBmArg() + str,ti);
       freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
-    }
-    else {
+    } else if (bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION_TYPE2) {
+      ei = heap.newString(str + bmi.getBmArg() ,ti);
+      freeVariableValues[0] = ei;
+    } else {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
 
