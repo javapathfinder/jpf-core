@@ -49,6 +49,8 @@ tmp/
 .idea/ant.xml
 .idea/misc.xml
 .idea/vcs.xml
+.idea/compiler.xml
+.idea/modules.xml
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/

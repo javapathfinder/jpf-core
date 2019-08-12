@@ -22,8 +22,8 @@ package gov.nasa.jpf.vm;
  */
 public class FunctionObjectFactory {
   
-  public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi, 
-                               String[] freeVariableTypeNames, Object[] freeVariableValues) {
+  public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName,
+                               BootstrapMethodInfo bmi, String[] freeVariableTypeNames, Object[] freeVariableValues) {
     
     ClassLoaderInfo cli = bmi.enclosingClass.getClassLoaderInfo();
     ClassInfo funcObjType = cli.getResolvedFuncObjType(bsIdx, fiClassInfo, samUniqueName, bmi, freeVariableTypeNames);
@@ -31,19 +31,14 @@ public class FunctionObjectFactory {
     funcObjType.registerClass(ti);
     ElementInfo ei;
     Heap heap = ti.getHeap();
-    MJIEnv env = new MJIEnv(ti);
 
-    int val = ((ElementInfo)freeVariableValues[0]).getObjectRef(); // ObjRef value of String 2
-    String str = env.getStringObject(val); // Second string ( for example, "world!")
 
-    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION_TYPE1){
+    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
+      String concatenatedString =  makeConcatWithStrings(ti, freeVariableValues, bmi);
       // Creating a newString for Concatenated string (example, "Hello," + "World");
-      ei = heap.newString(bmi.getBmArg() + str,ti);
+      ei = heap.newString(concatenatedString,ti);
       freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
-    } else if (bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION_TYPE2) {
-      ei = heap.newString(str + bmi.getBmArg() ,ti);
-      freeVariableValues[0] = ei;
-    } else {
+    }else {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
 
@@ -51,7 +46,34 @@ public class FunctionObjectFactory {
     
     return ei.getObjectRef();
   }
-  
+
+  public String makeConcatWithStrings( ThreadInfo ti, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
+    MJIEnv env = new MJIEnv(ti);
+    String[] markerCharStrings = new String[freeVariableValues.length];
+    int markerCharCount = 0;
+    /* Store the marker characters string value in makerCharStrings i.e,
+       \u0001" are "\u0001 = how are you?.
+       Here "how" and "you?" are represented by marker characters respectively.
+     */
+    for (int i=0; i<freeVariableValues.length;i++){
+      int val = ((ElementInfo)freeVariableValues[i]).getObjectRef(); // ObjRef value of marker character
+      markerCharStrings[i] = env.getStringObject(val); // the string equal to the marker character
+    }
+
+    String bmArg = bmi.getBmArg();
+
+    for( int pos = 0; pos < bmArg.length(); pos++){
+      char ch = bmArg.charAt(pos);
+      int markerCharacterVal = (int) ch;
+      if( markerCharacterVal == 1 || markerCharacterVal == 2){
+        // replace marker character with actual string.
+        bmArg = bmArg.substring(0, pos)+ markerCharStrings[markerCharCount] + bmArg.substring(pos+1);
+        markerCharCount++;
+      }
+    }
+    return bmArg;
+  }
+
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
     Fields fields = funcObj.getFields();
     

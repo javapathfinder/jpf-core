@@ -155,14 +155,9 @@ public class JVMClassInfo extends ClassInfo {
         assert (enclosingLambdaCls!=null);
 
         String bmArg = cf.getBmArgString(cpArgs[0]);
-        int val = (int) bmArg.charAt(0);
-        if( val != 1) {
-          setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
-                  BootstrapMethodInfo.BMType.STRING_CONCATENATION_TYPE1);
-        }else{
-          setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
-                  BootstrapMethodInfo.BMType.STRING_CONCATENATION_TYPE2);
-        }
+
+        setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
+                BootstrapMethodInfo.BMType.STRING_CONCATENATION);
       }
 
     }
