@@ -61,17 +61,21 @@ public class FunctionObjectFactory {
     }
 
     String bmArg = bmi.getBmArg();
+    StringBuilder concatenatedString = new StringBuilder();
 
     for( int pos = 0; pos < bmArg.length(); pos++){
       char ch = bmArg.charAt(pos);
       int markerCharacterVal = (int) ch;
       if( markerCharacterVal == 1 || markerCharacterVal == 2){
         // replace marker character with actual string.
-        bmArg = bmArg.substring(0, pos)+ markerCharStrings[markerCharCount] + bmArg.substring(pos+1);
+        concatenatedString.append(markerCharStrings[markerCharCount]);
         markerCharCount++;
       }
+      else{
+        concatenatedString.append(ch);
+      }
     }
-    return bmArg;
+    return concatenatedString.toString();
   }
 
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
