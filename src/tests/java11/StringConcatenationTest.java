@@ -23,4 +23,16 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
+
+    @Test
+    public void testStringConcatenation() {
+        if (verifyNoPropertyViolation()) {
+            String sunny = "sunny";
+            String tomorrow = "tomorrow";
+            String actual = "The weather will be " + sunny + " " + tomorrow + ".";
+            String expected = "The weather will be sunny tomorrow.";
+            assertEquals(expected, actual);
+        }
+    }
+
 }
