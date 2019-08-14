@@ -36,8 +36,8 @@ public class LoadUtility extends TestJPF{
   protected String originalPath = user_dir + "/build/tests/" + pkg;
   protected String tempPath = user_dir + "/build/" + pkg;
 
-  protected String jarUrl = "jar:file:" + user_dir + "/build/" + pkg + ".jar!/";
-  protected String dirUrl = "file:" + user_dir + "/build";
+  protected String jarUrl = "jar:file:/" + user_dir + "/build/" + pkg + ".jar!/";
+  protected String dirUrl = "file:/" + user_dir + "/build";
 
   /**
    * move the package, to avoid systemClassLoader loading its classes
