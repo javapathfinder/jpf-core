@@ -35,4 +35,21 @@ public class StringConcatenationTest extends TestJPF {
         }
     }
 
+    @Test
+    public void testStringConcatenationWithEmptyString(){
+        if (verifyNoPropertyViolation()) {
+            String[] strings = {"The", "weather", "will", "be", "sunny", "tomorrow"};
+            String actual = "";
+            for (int i = 0; i < strings.length; i++) {
+                actual = actual + ((i == 0) ? "" : " ") + strings[i];
+            }
+            actual = actual + ".";
+            String expected = "The weather will be sunny tomorrow.";
+            assertEquals(expected, actual);
+
+            actual = "" + "" + "Hello";
+            expected = "Hello";
+            assertEquals(expected, actual);
+        }
+    }
 }
