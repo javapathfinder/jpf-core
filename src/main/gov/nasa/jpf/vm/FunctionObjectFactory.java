@@ -51,27 +51,22 @@ public class FunctionObjectFactory {
     MJIEnv env = new MJIEnv(ti);
     String[] markerCharStrings = new String[freeVariableValues.length];
     int markerCharCount = 0;
-    /* Store the marker characters string value in makerCharStrings i.e,
-       \u0001" are "\u0001 = how are you?.
-       Here "how" and "you?" are represented by marker characters respectively.
-     */
-    for (int i=0; i<freeVariableValues.length;i++){
-      int val = ((ElementInfo)freeVariableValues[i]).getObjectRef(); // ObjRef value of marker character
-      markerCharStrings[i] = env.getStringObject(val); // the string equal to the marker character
-    }
 
     String bmArg = bmi.getBmArg();
     StringBuilder concatenatedString = new StringBuilder();
+    int val;
 
     for( int pos = 0; pos < bmArg.length(); pos++){
       char ch = bmArg.charAt(pos);
       int markerCharacterVal = (int) ch;
       if( markerCharacterVal == 1 || markerCharacterVal == 2){
-        // replace marker character with actual string.
-        concatenatedString.append(markerCharStrings[markerCharCount]);
+        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+        //append marker character values
+        concatenatedString.append(env.getStringObject(val));
         markerCharCount++;
       }
       else{
+        //if character is not a marker character
         concatenatedString.append(ch);
       }
     }
