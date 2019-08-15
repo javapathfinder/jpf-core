@@ -52,4 +52,14 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
+
+    @Test
+    public void testStringConcatenationWith_typeByte() {
+        if (verifyNoPropertyViolation()) {
+            Byte value = 10;
+            String actual = "Value=" + value;
+            String expected = "Value=10";
+            assertEquals(expected, actual);
+        }
+    }
 }
