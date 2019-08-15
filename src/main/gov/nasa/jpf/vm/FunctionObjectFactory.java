@@ -49,28 +49,22 @@ public class FunctionObjectFactory {
 
   public String makeConcatWithStrings( ThreadInfo ti, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
     MJIEnv env = new MJIEnv(ti);
-    String[] markerCharStrings = new String[freeVariableValues.length];
+    String concatenatedString = new String();
+    String bmArg = bmi.getBmArg();
+    int markerPos = -1;
+    int val;
     int markerCharCount = 0;
 
-    String bmArg = bmi.getBmArg();
-    StringBuilder concatenatedString = new StringBuilder();
-    int val;
-
-    for( int pos = 0; pos < bmArg.length(); pos++){
-      char ch = bmArg.charAt(pos);
-      int markerCharacterVal = (int) ch;
-      if( markerCharacterVal == 1 || markerCharacterVal == 2){
-        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-        //append marker character values
-        concatenatedString.append(env.getStringObject(val));
-        markerCharCount++;
-      }
-      else{
-        //if character is not a marker character
-        concatenatedString.append(ch);
-      }
+    while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
+            ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
+      val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + env.getStringObject(val);
+      bmArg = bmArg.substring(markerPos+1);
+      markerCharCount++;
     }
-    return concatenatedString.toString();
+    concatenatedString = concatenatedString + bmArg;
+
+    return concatenatedString;
   }
 
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
