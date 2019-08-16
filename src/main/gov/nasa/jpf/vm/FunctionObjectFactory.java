@@ -38,6 +38,7 @@ public class FunctionObjectFactory {
       // Creating a newString for Concatenated string (example, "Hello," + "World");
       ei = heap.newString(concatenatedString,ti);
       freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
+      freeVariableTypeNames[0] = "String";
     }else {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
@@ -54,22 +55,24 @@ public class FunctionObjectFactory {
     int markerPos = -1;
     int val;
     int markerCharCount = 0;
-    String makerCharacterValue = new String();
+    String markerCharacterValue = new String();
     while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
             ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
-      val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+      //val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
 
       try {
-        makerCharacterValue = env.getStringObject(val);
+        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+        markerCharacterValue = env.getStringObject(val);
       }catch (Exception notStringException){
         try{
-          makerCharacterValue = Byte.toString((env.getByteObject(val)));
+          val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+          markerCharacterValue = Byte.toString((env.getByteObject(val)));
         }catch (Exception notByteException){
-          throw notByteException;
+          markerCharacterValue = (freeVariableValues[markerCharCount]).toString();
         }
       }
 
-      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + makerCharacterValue;
+      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + markerCharacterValue;
       bmArg = bmArg.substring(markerPos+1);
       markerCharCount++;
     }

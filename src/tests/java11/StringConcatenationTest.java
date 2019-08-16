@@ -88,7 +88,6 @@ public class StringConcatenationTest extends TestJPF {
         if (verifyNoPropertyViolation()) {
             float num = 99;
             String actual = "Success is " + num + "% failure.";
-            System.err.println(actual);
             String expected = "Success is 99.0% failure.";
             assertEquals(expected, actual);
         }
