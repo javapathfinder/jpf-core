@@ -1,5 +1,5 @@
 /*
-* Written by Yifan Ning
+* @ Author Yifan Ning
 * An example showing how jpf model checks thread-safe operations on 
 * linked List
 */
