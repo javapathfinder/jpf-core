@@ -54,11 +54,22 @@ public class FunctionObjectFactory {
     int markerPos = -1;
     int val;
     int markerCharCount = 0;
-
+    String makerCharacterValue = new String();
     while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
             ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
       val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + env.getStringObject(val);
+
+      try {
+        makerCharacterValue = env.getStringObject(val);
+      }catch (Exception notStringException){
+        try{
+          makerCharacterValue = Byte.toString((env.getByteObject(val)));
+        }catch (Exception notByteException){
+          throw notByteException;
+        }
+      }
+
+      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + makerCharacterValue;
       bmArg = bmArg.substring(markerPos+1);
       markerCharCount++;
     }
