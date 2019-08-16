@@ -82,4 +82,15 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
+
+    @Test
+    public void testStringConcatenationWith_typeFloat() {
+        if (verifyNoPropertyViolation()) {
+            float num = 99;
+            String actual = "Success is " + num + "% failure.";
+            System.err.println(actual);
+            String expected = "Success is 99.0% failure.";
+            assertEquals(expected, actual);
+        }
+    }
 }
