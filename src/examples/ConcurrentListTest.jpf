@@ -1,2 +1,0 @@
-target = ConcurrentListTest
-test_classpath=.

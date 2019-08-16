@@ -1,5 +1,5 @@
 /*
-* @ Author Yifan Ning
+* Written by Yifan Ning
 * An example showing how jpf model checks thread-safe operations on 
 * linked List
 */
@@ -57,10 +57,10 @@ public class ConcurrentList<Item> {
         try {
             Node temp = sentinel.next;
             while (temp != sentinel) {
-                //System.out.print(String.valueOf(temp.item) + " ");
+                System.out.print(String.valueOf(temp.item) + " ");
                 temp = temp.next;
             }
-            //System.out.println(" ");
+            System.out.println(" ");
         }
         finally {
             lock.unlock();
