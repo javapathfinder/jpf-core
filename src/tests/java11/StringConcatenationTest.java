@@ -62,4 +62,14 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
+
+    @Test
+    public void testStringConcatenationWith_typeInt() {
+        if (verifyNoPropertyViolation()) {
+            int num = 20;
+            String actual = "10+" + num + " = 30";
+            String expected = "10+20 = 30";
+            assertEquals(expected, actual);
+        }
+    }
 }
