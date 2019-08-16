@@ -72,4 +72,14 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
+
+    @Test
+    public void testStringConcatenationWith_typeChar() {
+        if (verifyNoPropertyViolation()) {
+            char ch = '@';
+            String actual = "xyz" + ch + "gmail.com";
+            String expected = "xyz@gmail.com";
+            assertEquals(expected, actual);
+        }
+    }
 }
