@@ -44,6 +44,7 @@ public class DirClassFileContainer extends JVMClassFileContainer {
 
   public DirClassFileContainer(File dir) {
     super(dir.getPath(), getContainerURL(dir));
+
     this.dir = dir;
   }
 

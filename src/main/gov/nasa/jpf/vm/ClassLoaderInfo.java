@@ -454,6 +454,7 @@ public class ClassLoaderInfo
     String typeName = fiClassInfo.getName();
     
     ClassInfo funcObjType = resolvedClasses.get( typeName);
+
     if (funcObjType == null) {
       funcObjType = fiClassInfo.createFuncObjClassInfo(bmi, typeName, samUniqueName, freeVariableTypeNames);
       resolvedClasses.put( typeName, funcObjType);

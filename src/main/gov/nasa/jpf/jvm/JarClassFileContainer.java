@@ -136,7 +136,7 @@ public class JarClassFileContainer extends JVMClassFileContainer {
         }
 
         is = jar.getInputStream(e);
-        
+
         byte[] data = new byte[(int) len];
         FileUtils.getContents(is, data);
 

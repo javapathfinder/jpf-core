@@ -130,13 +130,11 @@ public class DynamicElementInfo extends ElementInfo {
    */
   @Override
   public byte[] getStringBytes(){
-  
     if (!ClassInfo.isStringClassInfo(ci)) {
       throw new JPFException("object is not of type java.lang.String");
     }
 
     int valueFieldRef = getDeclaredReferenceField("value", "java.lang.String");
-
     if (valueFieldRef == MJIEnv.NULL){
       return null;
     }

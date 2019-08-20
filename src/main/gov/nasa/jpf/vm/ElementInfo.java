@@ -986,7 +986,7 @@ public abstract class ElementInfo implements Cloneable {
 
   public int getReferenceField(String fname) {
     FieldInfo fi = getFieldInfo(fname);
-    return getReferenceField( fi);
+    return getReferenceField(fi);
   }
 
 
@@ -1152,10 +1152,6 @@ public abstract class ElementInfo implements Cloneable {
     }
   }
   public int getReferenceField (FieldInfo fi) {
-    // System.err.println("/**********************************/");
-    // System.err.println("fields="+fields);
-    // System.err.println("fi="+fi);
-    // System.err.println("fi.getStorageOffset()="+fi.getStorageOffset());
     if (fi.isReference()){
       return fields.getReferenceValue(fi.getStorageOffset());
     } else {

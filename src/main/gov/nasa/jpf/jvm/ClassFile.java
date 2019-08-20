@@ -91,6 +91,7 @@ public class ClassFile extends BinaryClassSource {
   // the const pool
   int[] cpPos;     // cpPos[i] holds data start index for cp_entry i (0 is unused)
   Object[] cpValue; // cpValue[i] hold the String/Integer/Float/Double associated with corresponding cp_entries
+  
   int[] invokeDynamicIdx; // used to store index value of invokeDynamic instruction.
   int bmCount; 
   int iDCount;
@@ -227,7 +228,7 @@ public class ClassFile extends BinaryClassSource {
 
   //--- the primitive info cpValue
   public String utf8At(int utf8InfoIdx){
-    //System.err.println("cpValue["+utf8InfoIdx+"]="+cpValue[utf8InfoIdx]);
+    //assert data[cpPos[utf8InfoIdx]] == 1 : "not a utf8_info tag";
     return (String) cpValue[utf8InfoIdx];
   }
 
@@ -302,8 +303,8 @@ public class ClassFile extends BinaryClassSource {
     return utf8At( u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+1));
   }
   public String methodDescriptorAt(int methodRefInfoIdx){
-    return utf8At( u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+3));// descriptor #336 ......  #330;#341 i.e 
-                                                                 // u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+3 = u2( cpPos[336]+3)]+3
+    return utf8At( u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+3));
+    // descriptor #336 ......  #330;#341 i.e u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+3 = u2( cpPos[336]+3)]+3
   }
 
   public String methodTypeDescriptorAt (int methodTypeInfoIdx){
@@ -453,7 +454,7 @@ public class ClassFile extends BinaryClassSource {
     int idx = pos;
     pos += 4;
     byte[] data = this.data;
-    
+
     return (data[idx++] <<24) | ((data[idx++]&0xff) << 16) | ((data[idx++]&0xff) << 8) | (data[idx]&0xff);
   }
 
@@ -2077,6 +2078,7 @@ public class ClassFile extends BinaryClassSource {
     int startPos = pos;
     int endPos = pos+codeLength;
     int nextPos;
+
 
     while (pos < endPos){
       pc = pos - startPos;

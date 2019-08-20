@@ -39,7 +39,7 @@ public class URLClassLoaderTest extends LoadUtility {
   public class TestClassLoader extends URLClassLoader {
 
     public TestClassLoader(URL[] urls) {
-      super(urls);
+        super(urls);
     }
 
     public TestClassLoader(URL[] urls, ClassLoader parent) {
@@ -47,8 +47,8 @@ public class URLClassLoaderTest extends LoadUtility {
     }
 
     @Override
-    public Class<?> findClass(String name) throws ClassNotFoundException {
-      return super.findClass(name);
+	public Class<?> findClass(String name) throws ClassNotFoundException {
+        return super.findClass(name);
     }
 
     public Class<?> getLoadedClass(String name) {
@@ -60,7 +60,7 @@ public class URLClassLoaderTest extends LoadUtility {
     }
 
     @Override
-    protected Package[] getPackages() {
+	protected Package[] getPackages() {
       return super.getPackages();
     }
   }
@@ -237,6 +237,7 @@ public class URLClassLoaderTest extends LoadUtility {
       url = cl.findResource(resInterface1);
       expectedUrl = jarUrl + resInterface1;
       assertEquals(url.toString(), expectedUrl);
+
       url = cl.findResource("non_existence_resource");
       assertNull(url);
 
@@ -354,7 +355,7 @@ public class URLClassLoaderTest extends LoadUtility {
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+	protected Class<?> findClass(String name) throws ClassNotFoundException {
       return super.findClass(name);
     }
 

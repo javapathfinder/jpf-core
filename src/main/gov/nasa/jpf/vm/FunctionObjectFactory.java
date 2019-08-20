@@ -17,21 +17,21 @@
  */
 package gov.nasa.jpf.vm;
 
-/*
+/**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  */
 public class FunctionObjectFactory {
   
-  public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName,
-                               BootstrapMethodInfo bmi, String[] freeVariableTypeNames, Object[] freeVariableValues) {
+  public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName,BootstrapMethodInfo bmi,
+                                         String[] freeVariableTypeNames, Object[] freeVariableValues) {
     
     ClassLoaderInfo cli = bmi.enclosingClass.getClassLoaderInfo();
     ClassInfo funcObjType = cli.getResolvedFuncObjType(bsIdx, fiClassInfo, samUniqueName, bmi, freeVariableTypeNames);
     
     funcObjType.registerClass(ti);
+
     ElementInfo ei;
     Heap heap = ti.getHeap();
-
 
     if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
       String concatenatedString =  makeConcatWithStrings(ti, freeVariableValues, bmi);
