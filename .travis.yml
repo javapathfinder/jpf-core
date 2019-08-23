@@ -1,5 +1,7 @@
 language: java
 
+jdk:
+  - oraclejdk11
 
 script:
   - ./gradlew check
@@ -13,12 +15,3 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-addons:
-  apt:
-    packages:
-      - oracle-java11-installer
-      - oracle-java11-set-default
-
-env:
-  global:
-    - JAVA_HOME=/usr/lib/jvm/java-11-oracle

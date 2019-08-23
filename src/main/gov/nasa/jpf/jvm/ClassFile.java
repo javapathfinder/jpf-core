@@ -20,6 +20,7 @@ package gov.nasa.jpf.jvm;
 
 import java.io.File;
 
+import java.util.*;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.util.BailOut;
 import gov.nasa.jpf.util.BinaryClassSource;
@@ -56,6 +57,11 @@ public class ClassFile extends BinaryClassSource {
   public static final int REF_NEW_INVOKESPECIAL = 8;
   public static final int REF_INVOKEINTERFACE = 9;
 
+  //for debugging
+  public String className = null;//not used 
+
+  public ArrayList<String> classNames  = new ArrayList<String>(); 
+
   // used to store types in cpValue[]
   public static enum CpInfo {
     Unused_0,                 // 0
@@ -86,13 +92,20 @@ public class ClassFile extends BinaryClassSource {
   int[] cpPos;     // cpPos[i] holds data start index for cp_entry i (0 is unused)
   Object[] cpValue; // cpValue[i] hold the String/Integer/Float/Double associated with corresponding cp_entries
   
+  int[] invokeDynamicIdx; // used to store index value of invokeDynamic instruction.
+  int bmCount; 
+  int iDCount;
   //--- ctors
+
   public ClassFile (byte[] data, int offset){
     super(data,offset);
   }
 
   public ClassFile (byte[] data){
     super(data,0);
+    invokeDynamicIdx = new int[50];
+    bmCount=0;
+    iDCount=0;
   }
 
   public ClassFile (String typeName, byte[] data){
@@ -285,17 +298,26 @@ public class ClassFile extends BinaryClassSource {
   public String methodClassNameAt(int methodRefInfoIdx){
     return (String) cpValue[ u2(cpPos[methodRefInfoIdx]+1)];
   }
+
   public String methodNameAt(int methodRefInfoIdx){
     return utf8At( u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+1));
   }
   public String methodDescriptorAt(int methodRefInfoIdx){
     return utf8At( u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+3));
+    // descriptor #336 ......  #330;#341 i.e u2( cpPos[ u2(cpPos[methodRefInfoIdx]+3)]+3 = u2( cpPos[336]+3)]+3
   }
 
   public String methodTypeDescriptorAt (int methodTypeInfoIdx){
     return utf8At( u2(cpPos[methodTypeInfoIdx]+1));
   }
   
+
+
+  public String getBmArgString(int cpIdx){
+    return utf8At( u2( cpPos[cpIdx]+1));
+  }
+
+
   public String interfaceMethodClassNameAt(int ifcMethodRefInfoIdx){
     return (String) cpValue[ u2(cpPos[ifcMethodRefInfoIdx]+1)];
   }
@@ -653,9 +675,9 @@ public class ClassFile extends BinaryClassSource {
     pos = p;    
   }
   private void setBootstrapMethod (ClassFileReader reader, Object tag, int idx, 
-                                   int refKind, String cls, String mth, String descriptor, int[] cpArgs){
+                                   int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
     int p = pos;
-    reader.setBootstrapMethod( this, tag, idx, refKind, cls, mth, descriptor, cpArgs);
+    reader.setBootstrapMethod( this, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
     pos = p;    
   }
   private void setBootstrapMethodsDone (ClassFileReader reader, Object tag){
@@ -1486,9 +1508,12 @@ public class ClassFile extends BinaryClassSource {
       
       String clsName = methodClassNameAt(mrefIdx);
       String mthName = methodNameAt(mrefIdx);
-      String descriptor = methodDescriptorAt(mrefIdx);
-      
-      setBootstrapMethod(reader, tag, i, refKind, clsName, mthName, descriptor, bmArgs);
+      String parameters = methodDescriptorAt(mrefIdx);
+      String descriptor= callSiteDescriptor(invokeDynamicIdx[iDCount]); 
+      // invokeDynamicIdx[iDCount] = CP index value of invokeDynamic.
+      iDCount ++;
+
+      setBootstrapMethod(reader, tag, i, refKind, clsName, mthName, parameters, descriptor, bmArgs);
     }
     
     setBootstrapMethodsDone( reader, tag);
@@ -2685,6 +2710,8 @@ public class ClassFile extends BinaryClassSource {
           break;
         case 186: // invokedynamic
           cpIdx = readU2(); // CP index of bootstrap method
+          invokeDynamicIdx[bmCount] = cpIdx; // Storing CP index bootstrap method
+          bmCount++;
           readUByte();  // 0
           readUByte(); //  0
           reader.invokedynamic(cpIdx);

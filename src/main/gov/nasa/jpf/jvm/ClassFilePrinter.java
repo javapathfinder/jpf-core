@@ -386,8 +386,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
   }
   
   @Override
-  public void setBootstrapMethod (ClassFile cf, Object tag, int idx, 
-                                  int refKind, String cls, String mth, String descriptor, int[] cpArgs){
+  public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
     String refTypeName = cf.getRefTypeName(refKind);
     pw.printf("%s[%d]: %s %s.%s%s\n", indent, idx, refTypeName, cls, mth, descriptor);
     incIndent();

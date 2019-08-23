@@ -118,7 +118,8 @@ public class INVOKEDYNAMIC extends Instruction {
       
       Object[] freeVariableValues = frame.getArgumentsValues(ti, freeVariableTypes);
       
-      funcObjRef = funcObjFactory.getFunctionObject(bootstrapMethodIndex, ti, fiClassInfo, samMethodName, bmi, freeVariableTypeNames, freeVariableValues);
+      funcObjRef = funcObjFactory.getFunctionObject(bootstrapMethodIndex, ti, fiClassInfo, samMethodName, bmi,
+              freeVariableTypeNames, freeVariableValues);
       lastFuncObj = ti.getHeap().get(funcObjRef);
     }
     

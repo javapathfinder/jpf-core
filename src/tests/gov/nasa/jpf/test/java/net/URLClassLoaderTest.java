@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf.test.java.net;
@@ -31,7 +31,7 @@ import org.junit.Test;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
- * 
+ *
  * test of java.lang.ClassLoader API
  */
 public class URLClassLoaderTest extends LoadUtility {
@@ -45,7 +45,7 @@ public class URLClassLoaderTest extends LoadUtility {
     public TestClassLoader(URL[] urls, ClassLoader parent) {
       super(urls, parent);
     }
-    
+
     @Override
 	public Class<?> findClass(String name) throws ClassNotFoundException {
         return super.findClass(name);
@@ -65,6 +65,9 @@ public class URLClassLoaderTest extends LoadUtility {
     }
   }
 
+  public String checkUrl( String url){
+    return url.replace("\\","/");
+  }
   @Test
   public void testConstructor_NullPointerException() {
     if (verifyUnhandledException("java.lang.NullPointerException")) {
@@ -72,7 +75,7 @@ public class URLClassLoaderTest extends LoadUtility {
     }
   }
 
-  @Test 
+  @Test
   public void testConstructorEmptyURLs () {
     if (verifyNoPropertyViolation()) {
       URLClassLoader cl = new URLClassLoader(new URL[0]);
@@ -125,7 +128,7 @@ public class URLClassLoaderTest extends LoadUtility {
 
   @Test
   public void testSystemLoaderLoadClass() throws ClassNotFoundException {
-   if (verifyNoPropertyViolation()) {
+    if (verifyNoPropertyViolation()) {
       URL[] urls = new URL[0];
       ClassLoader systemCl = ClassLoader.getSystemClassLoader();
       ClassLoader parent = new TestClassLoader(urls);
@@ -208,11 +211,13 @@ public class URLClassLoaderTest extends LoadUtility {
       String resClass1 = pkg + "/Class1.class";
       URL url = cl.findResource(resClass1);
       String expectedUrl = dirUrl + "/" + resClass1;
+      expectedUrl = checkUrl(expectedUrl);
       assertEquals(url.toString(), expectedUrl);
 
       String resInterface1 = pkg + "/Interface1.class";
       url = cl.findResource(resInterface1);
       expectedUrl = dirUrl + "/" + resInterface1;
+      expectedUrl = checkUrl(expectedUrl);
       assertEquals(url.toString(), expectedUrl);
 
       url = cl.findResource("non_existence_resource");
@@ -222,6 +227,7 @@ public class URLClassLoaderTest extends LoadUtility {
       assertNull(url);
 
       // create a url from jar
+      jarUrl = checkUrl(jarUrl);
       urls[0] = new URL(jarUrl);
       cl =  new URLClassLoader(urls);
       url = cl.findResource(resClass1);
@@ -343,22 +349,22 @@ public class URLClassLoaderTest extends LoadUtility {
     public Custom (URL[] urls) {
       super(urls);
     }
-    
+
     public Custom(URL[] urls, ClassLoader parent) {
       super(urls, parent);
     }
-    
+
     @Override
 	protected Class<?> findClass(String name) throws ClassNotFoundException {
       return super.findClass(name);
     }
-    
+
     @Override
-	public Class<?> loadClass(String name) throws ClassNotFoundException {
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
       return super.loadClass(name);
     }
   }
-    
+
   @Test
   public void testClassResolution() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
@@ -383,7 +389,7 @@ public class URLClassLoaderTest extends LoadUtility {
 
       c = cl5.loadClass(cname);  // delegates to cl4 (Custom)
       assertEquals(c.getClassLoader(), cl4);
-      
+
       Class<?> c4 = cl4.loadClass(cname);
       assertSame(c, c4);
 
@@ -419,7 +425,7 @@ public class URLClassLoaderTest extends LoadUtility {
       try {
         loader.delegateTofindSystemClass(cname);
       } catch(ClassNotFoundException e) {
-        
+
       }
     }
     movePkgBack();
@@ -505,7 +511,7 @@ public class URLClassLoaderTest extends LoadUtility {
       try {
         m.invoke(null, new Object[0]);
         fail("Should have thrown java.lang.ArithmeticException: division by zero");
-        
+
       } catch (InvocationTargetException ite) {
         Throwable cause = ite.getCause();
         assertTrue( cause instanceof ArithmeticException && cause.getMessage().equals("division by zero"));

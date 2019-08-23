@@ -53,6 +53,27 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
     return fieldOffset__Ljava_lang_reflect_Field_2__I(env, unsafeRef, fieldRef);
   }
 
+  @MJI
+  public void registerNatives____V(MJIEnv env, int clsObjRef) {}
+
+  @MJI
+  public int addressSize0____I (MJIEnv env, int objRef) {
+      return 0;
+  }
+
+  @MJI
+  public boolean isBigEndian0____Z (MJIEnv env, int objRef) {
+      return true;
+  }
+
+  @MJI
+  public boolean unalignedAccess0____Z (MJIEnv env, int objRef) {
+      return true;
+  }
+
+  @MJI
+  public void storeFence____V (MJIEnv env, int objRef) {}
+
   /**
    * NativePeer method for {@link jdk.internal.misc.Unsafe#objectFieldOffset(java.lang.Class, java.lang.String)}
    */

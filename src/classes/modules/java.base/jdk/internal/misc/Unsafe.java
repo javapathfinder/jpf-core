@@ -37,6 +37,12 @@ public class Unsafe {
     //return new Unsafe();
   }
 
+  private static native void registerNatives();
+  private native int addressSize0();
+  private native boolean isBigEndian0();
+  private native boolean unalignedAccess0();
+  public native void storeFence();
+  
   // field offsets are completely useless between VMs, we just return
   // a numeric id for the corresponding FieldInfo here
   public native int fieldOffset (Field f);

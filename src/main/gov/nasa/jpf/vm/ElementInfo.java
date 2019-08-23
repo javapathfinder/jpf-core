@@ -981,12 +981,12 @@ public abstract class ElementInfo implements Cloneable {
 
   public int getDeclaredReferenceField(String fname, String clsBase) {
     FieldInfo fi = getDeclaredFieldInfo(clsBase, fname);
-    return getReferenceField( fi);
+    return getReferenceField(fi);
   }
 
   public int getReferenceField(String fname) {
     FieldInfo fi = getFieldInfo(fname);
-    return getReferenceField( fi);
+    return getReferenceField(fi);
   }
 
 

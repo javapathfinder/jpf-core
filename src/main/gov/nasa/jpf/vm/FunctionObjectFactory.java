@@ -22,23 +22,65 @@ package gov.nasa.jpf.vm;
  */
 public class FunctionObjectFactory {
   
-  public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi, 
+  public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName,BootstrapMethodInfo bmi,
                                          String[] freeVariableTypeNames, Object[] freeVariableValues) {
     
     ClassLoaderInfo cli = bmi.enclosingClass.getClassLoaderInfo();
-    
     ClassInfo funcObjType = cli.getResolvedFuncObjType(bsIdx, fiClassInfo, samUniqueName, bmi, freeVariableTypeNames);
     
     funcObjType.registerClass(ti);
 
+    ElementInfo ei;
     Heap heap = ti.getHeap();
-    ElementInfo ei = heap.newObject(funcObjType, ti);
-    
+
+    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
+      String concatenatedString =  makeConcatWithStrings(ti, freeVariableValues, bmi);
+      // Creating a newString for Concatenated string (example, "Hello," + "World");
+      ei = heap.newString(concatenatedString,ti);
+      freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
+      freeVariableTypeNames[0] = "String";
+    }else {
+      ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
+    }
+
     setFuncObjFields(ei, bmi, freeVariableTypeNames, freeVariableValues);
     
     return ei.getObjectRef();
   }
-  
+
+  public String makeConcatWithStrings( ThreadInfo ti, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
+    MJIEnv env = new MJIEnv(ti);
+    String concatenatedString = new String();
+    String bmArg = bmi.getBmArg();
+    int markerPos = -1;
+    int val;
+    int markerCharCount = 0;
+    String markerCharacterValue = new String();
+    while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
+            ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
+      //val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+
+      try {
+        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+        markerCharacterValue = env.getStringObject(val);
+      }catch (Exception notStringException){
+        try{
+          val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+          markerCharacterValue = Byte.toString((env.getByteObject(val)));
+        }catch (Exception notByteException){
+          markerCharacterValue = (freeVariableValues[markerCharCount]).toString();
+        }
+      }
+
+      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + markerCharacterValue;
+      bmArg = bmArg.substring(markerPos+1);
+      markerCharCount++;
+    }
+    concatenatedString = concatenatedString + bmArg;
+
+    return concatenatedString;
+  }
+
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
     Fields fields = funcObj.getFields();
     
@@ -64,7 +106,10 @@ public class FunctionObjectFactory {
         if(freeVarValues[i] == null) {
           fields.setReferenceValue(i, MJIEnv.NULL); 
         } else {
-          int val = ((ElementInfo)freeVarValues[i]).getObjectRef();
+          int val = ((ElementInfo)freeVarValues[i]).getObjectRef() + 1;
+          // + 1 because when object is created ( i.e GenericHeap.createObject(...)) the value of objRef is initialized
+          // to the NamedField value in ElementInfo. But the value needed here is the value of arrayField which
+          // NamedField value +1. This is because both array and object fields are created in GenericHeap.newString().
           fields.setReferenceValue(i, val);
         }
       }
