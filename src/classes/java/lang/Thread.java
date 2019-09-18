@@ -48,6 +48,10 @@ public class Thread implements Runnable {
   String name;
   int priority;
   boolean isDaemon;
+  /*
+   * Thread ID
+   */
+  long tid;
   
   // this is an explicit thread state that gets set on a call of interrupt(), but
   // only if the thread is not blocked. If it is, we only change the status.
