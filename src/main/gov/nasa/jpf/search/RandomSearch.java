@@ -66,13 +66,7 @@ public class RandomSearch extends Search {
             return;
           }
         }
-
-//        if (isEndState()){
-//          return;
-//        }
-
         depth++;
-        //System.out.println("path " + paths + ", depth " + depth);
       } else { // no next state or reached depth limit
         // <2do> we could check for more things here. If the last insn wasn't
         // the main return, or a System.exit() call, we could flag a JPFException
@@ -86,7 +80,6 @@ public class RandomSearch extends Search {
         depth = 1;
         vm.restoreState(init_state);
         vm.resetNextCG();
-
       }
     }
     notifySearchFinished();
