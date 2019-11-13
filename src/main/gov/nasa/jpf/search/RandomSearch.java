@@ -29,7 +29,8 @@ import gov.nasa.jpf.vm.RestorableVMState;
  * going forward() until there is no next state then it restarts the search 
  * until it hits a certain number of paths executed
  *
- * <2do> this needs to be updated & tested
+ * To explore different paths, cg.randomize_choices shouldn't be set to NONE
+ *
  */
 public class RandomSearch extends Search {
   int path_limit = 0;
@@ -55,7 +56,7 @@ public class RandomSearch extends Search {
     
     notifySearchStarted();
     while (!done) {
-      if ((depth < depthLimit) && forward()) {
+      if (!isEndState() && (depth < depthLimit) && forward()) {
         notifyStateAdvanced();
 
         if (currentError != null){
@@ -65,13 +66,7 @@ public class RandomSearch extends Search {
             return;
           }
         }
-
-        if (isEndState()){
-          return;
-        }
-
         depth++;
-
       } else { // no next state or reached depth limit
         // <2do> we could check for more things here. If the last insn wasn't
         // the main return, or a System.exit() call, we could flag a JPFException

@@ -47,4 +47,21 @@ public class StatelessTest extends TestJPF {
       assert Verify.getCounter(0) == 6;
     }
   }
+
+
+  @Test public void testStatelessRandomSearch () {
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+    if (verifyNoPropertyViolation("+search.class=.search.RandomSearch", "+search.RandomSearch.path_limit = 10", "+cg.randomize_choices = FIXED_SEED")){
+      int d = 0;
+      Verify.incrementCounter(0);
+    }
+    if (!isJPFRun()){
+      if (Verify.getCounter(0) != 11){ // path variable will be incremented to limit + 1
+        fail("wrong number of paths");
+      }
+    }
+  }
+
 }
