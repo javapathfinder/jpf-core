@@ -1771,7 +1771,9 @@ public class Config extends Properties {
     
     if (ids.length > 0){
       keyPrefix = keyPrefix + '.';
-      T[] arr = (T[]) Array.newInstance(type, ids.length);
+      T[] newInstance = (T[]) Array.newInstance(type, ids.length);
+	T[] arr = newInstance;
+	
       
       for(int i = 0; i < ids.length; i++){
         String key = keyPrefix + ids[i];
