@@ -44,10 +44,6 @@ public class Simulation extends Search {
 
   @Override
   public void search () {
-    int    depth = 0;
-
-    depth++;
-
     if (hasPropertyTermination()) {
       return;
     }
@@ -64,8 +60,6 @@ public class Simulation extends Search {
             return;
           }
         }
-
-        depth++;
 
       } else { // no next state
 
