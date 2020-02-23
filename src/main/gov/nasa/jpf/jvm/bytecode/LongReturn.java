@@ -104,7 +104,7 @@ public abstract class LongReturn extends JVMReturnInstruction {
     return frame.getNextLongOperandAttr(type, prev);
   }
   @Override
-  public Iterator returnAttrIterator (ThreadInfo ti){
+  public Iterator<?> returnAttrIterator (ThreadInfo ti){
     StackFrame frame = ti.getTopFrame();
     return frame.longOperandAttrIterator();
   }
