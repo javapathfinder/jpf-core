@@ -1048,7 +1048,6 @@ public class Config extends Properties {
     if (loader != null && loader instanceof JPFClassLoader){
       JPFClassLoader jpfCl = (JPFClassLoader)loader;
             
-      ArrayList<String> list = new ArrayList<String>();
       String[] cp = getCompactStringArray("native_classpath");
       cp = FileUtils.expandWildcards(cp);
       for (String e : cp) {
