@@ -450,8 +450,7 @@ public class ClassLoaderInfo
    * and contains a method that captures the behavior of the lambda expression.
    */
   public ClassInfo getResolvedFuncObjType (int bsIdx, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi, String[] freeVariableTypeNames) {
-    //String typeName = bmi.enclosingClass.getName() + "$$Lambda$" + bsIdx;
-    String typeName = fiClassInfo.getName();
+    String typeName = bmi.enclosingClass.getName() + "$" + bsIdx;
     
     ClassInfo funcObjType = resolvedClasses.get( typeName);
 
