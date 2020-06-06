@@ -15,19 +15,21 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package jdk.internal.misc;
+
+package java.base.jdk.internal.access;
 
 /**
- * <2do> this is not supported yet
+ * same as the others - we need to model it in case somebody uses Java 5,
+ * or an earlier Java 6 version on OS X
  */
-public interface JavaNioAccess {
+public interface JavaAWTAccess {
   
-  interface BufferPool {
-    String getName();
-    long getCount();
-    long getTotalCapacity();
-    long getMemoryUsed();
-  }
+  // don't know about these yet
+  public Object get();
+  public void put(Object k, Object v);
+  public void remove(Object k);
+  
+  public boolean isDisposed();
+  public boolean isMainAppContext();
 
-  BufferPool getDirectBufferPool();
 }

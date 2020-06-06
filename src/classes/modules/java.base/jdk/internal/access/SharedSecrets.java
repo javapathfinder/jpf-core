@@ -15,13 +15,15 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package jdk.internal.misc;
+package java.base.jdk.internal.access;
 
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.ObjectInputFilter;
 import java.io.ObjectInputStream;
 import java.util.jar.JarFile;
+import jdk.internal.access.*;
+import jdk.internal.misc.Unsafe;
 
 /**
  * This is a backdoor mechanism in Java 6 to allow (some sort of)

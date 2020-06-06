@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package jdk.internal.misc;
+package java.base.jdk.internal.access;
 
 import java.io.FileDescriptor;
 
