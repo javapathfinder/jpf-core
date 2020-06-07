@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package java.base.jdk.internal.access;
+package jdk.internal.access;
 
 /**
  * this is a placeholder for a Java 6 class, which we only have here to

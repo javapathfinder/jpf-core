@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package java.base.jdk.internal.access;
+package jdk.internal.access;
 
 /**
  * same as the others - we need to model it in case somebody uses Java 5,

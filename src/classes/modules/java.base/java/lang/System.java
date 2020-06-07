@@ -23,8 +23,8 @@ import java.nio.channels.Channel;
 import java.util.Map;
 import java.util.Properties;
 
-import java.base.jdk.internal.access.JavaLangAccess;
-import java.base.jdk.internal.access.SharedSecrets;
+import jdk.internal.access.JavaLangAccess;
+import jdk.internal.access.SharedSecrets;
 import sun.nio.ch.Interruptible;
 import jdk.internal.reflect.ConstantPool;
 import sun.reflect.annotation.AnnotationType;

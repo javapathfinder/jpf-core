@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package java.base.jdk.internal.access;
+package jdk.internal.access;
 
 /**
  * <2do> this is not supported yet

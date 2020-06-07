@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package java.base.jdk.internal.access;
+package jdk.internal.access;
 
 import java.net.URLClassLoader;
 import jdk.internal.loader.URLClassPath;
