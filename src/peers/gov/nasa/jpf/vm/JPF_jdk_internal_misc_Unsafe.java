@@ -106,7 +106,6 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   /**
    * NativePeer method for {@link jdk.internal.misc.Unsafe#compareAndSetObject(java.lang.Object, long, java.lang.Object, java.lang.Object)}
    */
-
   @MJI
   public boolean compareAndSetObject__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z(MJIEnv env, int unsafeRef, int oRef, long offset, int expectedRef, int xRef) {
     int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, oRef, offset);
