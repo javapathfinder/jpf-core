@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-package jdk.internal.misc;
+package jdk.internal.access;
+
+import java.net.URLClassLoader;
+import jdk.internal.loader.URLClassPath;
 
 /**
  * this is a placeholder for a Java 6 class, which we only have here to
@@ -26,7 +29,6 @@ package jdk.internal.misc;
  *
  * <2do> THIS IS GOING AWAY AS SOON AS WE OFFICIALLY SWITCH TO JAVA 6
  */
-public interface JavaIODeleteOnExitAccess extends Runnable {
-  @Override
-  public void run();
+public interface JavaNetAccess {
+    URLClassPath getURLClassPath (URLClassLoader ucl);
 }

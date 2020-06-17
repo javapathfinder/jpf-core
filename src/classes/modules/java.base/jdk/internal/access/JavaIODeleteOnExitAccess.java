@@ -16,10 +16,7 @@
  * limitations under the License.
  */
 
-package jdk.internal.misc;
-
-//import java.io.Console;
-import java.nio.charset.Charset;
+package jdk.internal.access;
 
 /**
  * this is a placeholder for a Java 6 class, which we only have here to
@@ -29,8 +26,7 @@ import java.nio.charset.Charset;
  *
  * <2do> THIS IS GOING AWAY AS SOON AS WE OFFICIALLY SWITCH TO JAVA 6
  */
-public interface JavaIOAccess {
-    //public Console console(); // not in Java 1.5, so we skip for now
-    public Runnable consoleRestoreHook();
-    public Charset charset();
+public interface JavaIODeleteOnExitAccess extends Runnable {
+  @Override
+  public void run();
 }

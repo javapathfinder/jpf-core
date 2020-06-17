@@ -14,8 +14,8 @@ def getCurrentVersion() {
 
 version = currentVersion
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = 12
+targetCompatibility = 12
 
 repositories {
     mavenCentral()

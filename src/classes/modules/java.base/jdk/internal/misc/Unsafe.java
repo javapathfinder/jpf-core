@@ -93,6 +93,18 @@ public class Unsafe {
     return getObject(obj, (long) offset);
   }
 
+  public native Object getReference(Object obj, long l);
+  public native Object getReferenceVolatile(Object obj, long l);
+
+  public final Object getReferenceAcquire(Object o, long offset) {
+    return getReferenceVolatile(o, offset);
+  }
+
+  public Object getReference(Object obj, int offset) {
+    return getReference(obj, (long) offset);
+  }
+
+
   public native void putObject(Object obj, long l, Object obj1);
   public native void putObjectVolatile(Object obj, long l, Object obj1);
   

@@ -107,12 +107,12 @@ public class JPF_java_util_Random extends NativePeer {
   }
   
   private static void setNativeSeed (Random rand, long seed) {
-    AtomicLong al = (AtomicLong) unsafe.getObject(rand, seedFieldOffset);
+    AtomicLong al = (AtomicLong) unsafe.getReference(rand, seedFieldOffset);
     al.set(seed);
   }
 
   private static long getNativeSeed (Random rand){
-    AtomicLong al = (AtomicLong) unsafe.getObject(rand, seedFieldOffset);
+    AtomicLong al = (AtomicLong) unsafe.getReference(rand, seedFieldOffset);
     return al.longValue();
   }
 
