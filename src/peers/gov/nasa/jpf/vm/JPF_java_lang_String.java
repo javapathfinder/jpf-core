@@ -261,7 +261,7 @@ public class JPF_java_lang_String extends NativePeer {
 
       // now get the char array data, but be aware they are stored as ints
       ElementInfo eiVal = env.getElementInfo(vref);
-      char[] values = eiVal.asCharArray();
+      byte[] values = eiVal.asByteArray();
 
       for (int i = 0; i < values.length; i++) {
         h = 31 * h + values[i];
