@@ -48,10 +48,6 @@ public class FunctionObjectFactory {
 
     System.err.println("ElementInfo: " + ei.fields);
     System.err.println("Free variable type names: " + Arrays.toString(freeVariableTypeNames));
-    for (int i = 0; i < freeVariableValues.length; i++) {
-      ElementInfo x = (ElementInfo) freeVariableValues[i];
-      System.err.println("Free variable " + i + ": " + heap.get(x.objRef).asString());
-    }
     System.err.println("Free variable values: " + Arrays.toString(freeVariableValues));
     System.err.println();
 
