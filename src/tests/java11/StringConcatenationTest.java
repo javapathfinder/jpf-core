@@ -106,4 +106,20 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(actual, expected);
         }
     }
+
+    @Test
+    public void testStringConcatenationWith_mixedTypes() {
+        if (verifyNoPropertyViolation()) {
+            char ch = '@';
+            byte b = 10;
+            String name = "xyz";
+            char dot = '.';
+            int num = 10;
+            String provider = "gmail";
+            String topLevelDomain = "com";
+            String actual = name + b + num + ch + provider + dot + topLevelDomain;
+            String expected = "xyz1010@gmail.com";
+            assertEquals(expected, actual);
+        }
+    }
 }

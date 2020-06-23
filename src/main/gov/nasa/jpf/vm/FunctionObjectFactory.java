@@ -58,6 +58,7 @@ public class FunctionObjectFactory {
     if (bmi.getBmType() != BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
       setFuncObjFields(ei, bmi, freeVariableTypeNames, freeVariableValues);
     }
+
     return ei.getObjectRef();
   }
 
