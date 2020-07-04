@@ -18,12 +18,49 @@
 package gov.nasa.jpf.vm;
 
 import javax.swing.text.Element;
+import java.lang.invoke.*;
 import java.util.Arrays;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  */
 public class FunctionObjectFactory {
+
+  public static Class<?> parseType(String className) {
+    switch (className) {
+      case "byte":
+        return byte.class;
+      case "short":
+        return short.class;
+      case "int":
+        return int.class;
+      case "long":
+        return long.class;
+      case "float":
+        return float.class;
+      case "double":
+        return double.class;
+      case "char":
+        return char.class;
+      case "boolean":
+        return boolean.class;
+      default:
+        try {
+          return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+          e.printStackTrace();
+        }
+    }
+    return null;
+  }
+
+  public static Class<?>[] getPTypes (String[] typeNames) {
+    Class<?>[] pTypes = new Class<?>[typeNames.length];
+    for (int i = 0; i < typeNames.length; i++) {
+      pTypes[i] = parseType(typeNames[i]);
+    }
+    return pTypes;
+  }
   
   public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi,
                                          String[] freeVariableTypeNames, Object[] freeVariableValues) {
@@ -37,7 +74,7 @@ public class FunctionObjectFactory {
     Heap heap = ti.getHeap();
 
     if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
-      String concatenatedString =  makeConcatWithStrings(ti, freeVariableValues, bmi);
+      String concatenatedString =  makeConcatWithStrings(ti, freeVariableTypeNames, freeVariableValues, bmi);
       // Creating a newString for Concatenated string (example, "Hello," + "World");
       ei = heap.newString(concatenatedString,ti);
       freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
@@ -46,11 +83,6 @@ public class FunctionObjectFactory {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
 
-    System.err.println("ElementInfo: " + ei.fields);
-    System.err.println("Free variable type names: " + Arrays.toString(freeVariableTypeNames));
-    System.err.println("Free variable values: " + Arrays.toString(freeVariableValues));
-    System.err.println();
-
     if (bmi.getBmType() != BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
       setFuncObjFields(ei, bmi, freeVariableTypeNames, freeVariableValues);
     }
@@ -58,42 +90,59 @@ public class FunctionObjectFactory {
     return ei.getObjectRef();
   }
 
-  public String makeConcatWithStrings( ThreadInfo ti, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
-    MJIEnv env = new MJIEnv(ti);
-    String concatenatedString = new String();
-    String bmArg = bmi.getBmArg();
-    System.err.println("Concatenated string: " + concatenatedString);
-    System.err.println("Bootstrap Method argument: " + bmArg);
-    int markerPos = -1;
-    int val;
-    int markerCharCount = 0;
-    String markerCharacterValue = new String();
-    while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
-            ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
-      //val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-
-      try {
-        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-        markerCharacterValue = env.getStringObject(val);
-      }catch (Exception notStringException){
-        try{
-          val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-          markerCharacterValue = Byte.toString((env.getByteObject(val)));
-        }catch (Exception notByteException){
-          markerCharacterValue = (freeVariableValues[markerCharCount]).toString();
-        }
-      }
-
-      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + markerCharacterValue;
-      System.err.println("Concatenated string: " + concatenatedString);
-      bmArg = bmArg.substring(markerPos+1);
-      System.err.println("Bootstrap Method argument: " + bmArg);
-      markerCharCount++;
+  public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
+    MethodType mt = MethodType.methodType(String.class, getPTypes(freeVariableTypeNames));
+    MethodHandles.Lookup lookup = MethodHandles.lookup();
+    String name = "";
+    CallSite cs = null;
+    try {
+      cs = StringConcatFactory.makeConcat(lookup, name, mt);
+    } catch (StringConcatException e) {
+      e.printStackTrace();
     }
-    concatenatedString = concatenatedString + bmArg;
-    System.err.println("Concatenated string: " + concatenatedString);
-    System.err.println();
-    return concatenatedString;
+    MethodHandle target = cs.getTarget();
+    Object result = null;
+    try {
+      result = target.invoke(freeVariableValues);
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+    }
+    return (String) result;
+//    MJIEnv env = new MJIEnv(ti);
+//    String concatenatedString = new String();
+//    String bmArg = bmi.getBmArg();
+//    System.err.println("Concatenated string: " + concatenatedString);
+//    System.err.println("Bootstrap Method argument: " + bmArg);
+//    int markerPos = -1;
+//    int val;
+//    int markerCharCount = 0;
+//    String markerCharacterValue = new String();
+//    while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
+//            ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
+//      //val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+//
+//      try {
+//        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+//        markerCharacterValue = env.getStringObject(val);
+//      }catch (Exception notStringException){
+//        try{
+//          val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
+//          markerCharacterValue = Byte.toString((env.getByteObject(val)));
+//        }catch (Exception notByteException){
+//          markerCharacterValue = (freeVariableValues[markerCharCount]).toString();
+//        }
+//      }
+//
+//      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + markerCharacterValue;
+//      System.err.println("Concatenated string: " + concatenatedString);
+//      bmArg = bmArg.substring(markerPos+1);
+//      System.err.println("Bootstrap Method argument: " + bmArg);
+//      markerCharCount++;
+//    }
+//    concatenatedString = concatenatedString + bmArg;
+//    System.err.println("Concatenated string: " + concatenatedString);
+//    System.err.println();
+//    return concatenatedString;
   }
 
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
