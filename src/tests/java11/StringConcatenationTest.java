@@ -124,21 +124,21 @@ public class StringConcatenationTest extends TestJPF {
         }
     }
 
-    @Test
-    public void testStrConcatOnHostJVM() throws Throwable {
-        if (verifyNoPropertyViolation()) {
-            MethodType mt;
-            MethodHandle mh;
-            MethodHandles.Lookup lookup = MethodHandles.lookup();
-            mt = MethodType.methodType(String.class, char.class, char.class, int.class, String.class);
-            System.out.println("mt: " + mt);
-            CallSite cs = StringConcatFactory.makeConcat(lookup, "foo", mt);
-            System.err.println("cs: " + cs);
-            MethodHandle target = cs.getTarget();
-            System.err.println("target: " + target);
-            Object result = target.invoke('a', 'b', 10, "hello");
-            System.err.println("Expected concatenated string: ab; result: " + result);
-            assertEquals("ab", (String) result);
-        }
-    }
+//    @Test
+//    public void testStrConcatOnHostJVM() throws Throwable {
+//        if (verifyNoPropertyViolation()) {
+//            MethodType mt;
+//            MethodHandle mh;
+//            MethodHandles.Lookup lookup = MethodHandles.lookup();
+//            mt = MethodType.methodType(String.class, char.class, char.class, int.class, String.class);
+//            System.out.println("mt: " + mt);
+//            CallSite cs = StringConcatFactory.makeConcat(lookup, "foo", mt);
+//            System.err.println("cs: " + cs);
+//            MethodHandle target = cs.getTarget();
+//            System.err.println("target: " + target);
+//            Object result = target.invoke('a', 'b', 10, "hello");
+//            System.err.println("Expected concatenated string: ab; result: " + result);
+//            assertEquals("ab", (String) result);
+//        }
+//    }
 }

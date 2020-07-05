@@ -26,7 +26,7 @@ import java.util.Arrays;
  */
 public class FunctionObjectFactory {
 
-  public static Class<?> parseType(String className) {
+  private static Class<?> parseType(String className) {
     switch (className) {
       case "byte":
         return byte.class;
@@ -54,12 +54,40 @@ public class FunctionObjectFactory {
     return null;
   }
 
-  public static Class<?>[] getPTypes (String[] typeNames) {
+  private static Class<?>[] getPTypes (String[] typeNames) {
     Class<?>[] pTypes = new Class<?>[typeNames.length];
     for (int i = 0; i < typeNames.length; i++) {
       pTypes[i] = parseType(typeNames[i]);
     }
     return pTypes;
+  }
+
+  private static Object parseElementInfo (MJIEnv env, ElementInfo ei) {
+    int eiRef = ei.getObjectRef();
+    System.err.println("Reference: " + eiRef);
+    try {
+      env.getByteObject(eiRef);
+      System.err.println("Byte: " + env.getByteObject(eiRef));
+      return null;
+    } catch (Exception e) {
+      System.err.println("Not a byte");
+    }
+    try {
+      env.getByteArrayObject(eiRef);
+      System.err.println("Byte array: " + Arrays.toString(env.getByteArrayObject(eiRef)));
+      return null;
+    } catch (Exception e) {
+      System.err.println("Not a byte array");
+    }
+    try {
+      env.getStringObject(eiRef);
+      System.err.println("String: " + env.getStringObject(eiRef));
+      return null;
+    } catch (Exception e) {
+      System.err.println("Not a string");
+    }
+    System.err.println("Not of any type considered");
+    return null;
   }
   
   public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi,
@@ -91,6 +119,7 @@ public class FunctionObjectFactory {
   }
 
   public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
+    MJIEnv env = new MJIEnv(ti);
     MethodType mt = MethodType.methodType(String.class, getPTypes(freeVariableTypeNames));
     MethodHandles.Lookup lookup = MethodHandles.lookup();
     String name = "";
@@ -102,8 +131,23 @@ public class FunctionObjectFactory {
     }
     MethodHandle target = cs.getTarget();
     Object result = null;
+    //Try to convert DynamicElementInfo types to Java types.
+    Object[] convFreeVarVals = new Object[freeVariableValues.length];
+    for (int i = 0; i < freeVariableValues.length; i++) {
+      if (freeVariableValues[i] instanceof ElementInfo) {
+        System.err.println();
+        System.err.println("Index: " + i);
+        convFreeVarVals[i] = parseElementInfo(env, (ElementInfo) freeVariableValues[i]);
+      } else {
+        System.err.println();
+        System.err.println("Index: " + i);
+        System.err.println("Not an ElementInfo");
+        System.err.println("Type: " + freeVariableValues[i].getClass());
+        convFreeVarVals[i] = freeVariableValues[i];
+      }
+    }
     try {
-      result = target.invoke(freeVariableValues);
+      result = target.invokeWithArguments(convFreeVarVals);
     } catch (Throwable throwable) {
       throwable.printStackTrace();
     }
