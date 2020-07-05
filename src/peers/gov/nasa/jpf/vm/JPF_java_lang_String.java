@@ -496,4 +496,10 @@ public class JPF_java_lang_String extends NativePeer {
     String result = String.valueOf(d);
     return env.newString(result);
   }
+
+  @MJI
+  public static void checkBoundsOffCount__III__V(MJIEnv env, int objref, int offset, int count, int length) {
+    if (offset < 0 || count < 0 || offset > length - count)
+        throw new StringIndexOutOfBoundsException("offset " + offset + ", count " + count + ", length " + length);
+  }
 }

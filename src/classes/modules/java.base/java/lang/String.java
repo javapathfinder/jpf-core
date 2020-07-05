@@ -466,4 +466,6 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
   void _getChars(int start, int end, char[] buffer, int index) {
     System.arraycopy(value, start, buffer, index, end - start);
   }
+
+  native public static void checkBoundsOffCount(int offset, int count, int length);
 }
