@@ -64,28 +64,15 @@ public class FunctionObjectFactory {
 
   private static Object parseElementInfo (MJIEnv env, ElementInfo ei) {
     int eiRef = ei.getObjectRef();
-    System.err.println("Reference: " + eiRef);
     try {
-      env.getByteObject(eiRef);
-      System.err.println("Byte: " + env.getByteObject(eiRef));
-      return null;
-    } catch (Exception e) {
-      System.err.println("Not a byte");
-    }
+      return env.getByteArrayObject(eiRef);
+    } catch (Exception e) {}
     try {
-      env.getByteArrayObject(eiRef);
-      System.err.println("Byte array: " + Arrays.toString(env.getByteArrayObject(eiRef)));
-      return null;
-    } catch (Exception e) {
-      System.err.println("Not a byte array");
-    }
+      return env.getByteObject(eiRef);
+    } catch (Exception e) {}
     try {
-      env.getStringObject(eiRef);
-      System.err.println("String: " + env.getStringObject(eiRef));
-      return null;
-    } catch (Exception e) {
-      System.err.println("Not a string");
-    }
+      return env.getStringObject(eiRef);
+    } catch (Exception e) {}
     System.err.println("Not of any type considered");
     return null;
   }
@@ -135,14 +122,8 @@ public class FunctionObjectFactory {
     Object[] convFreeVarVals = new Object[freeVariableValues.length];
     for (int i = 0; i < freeVariableValues.length; i++) {
       if (freeVariableValues[i] instanceof ElementInfo) {
-        System.err.println();
-        System.err.println("Index: " + i);
         convFreeVarVals[i] = parseElementInfo(env, (ElementInfo) freeVariableValues[i]);
       } else {
-        System.err.println();
-        System.err.println("Index: " + i);
-        System.err.println("Not an ElementInfo");
-        System.err.println("Type: " + freeVariableValues[i].getClass());
         convFreeVarVals[i] = freeVariableValues[i];
       }
     }
