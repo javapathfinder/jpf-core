@@ -121,17 +121,8 @@ public class FunctionObjectFactory {
 
   public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
     MJIEnv env = new MJIEnv(ti);
-    MethodType mt = MethodType.methodType(String.class, getPTypes(freeVariableTypeNames));
-    CallSite cs = null;
-    //Think about expanding the scope of the try block
-    try {
-      cs = StringConcatFactory.makeConcat(MethodHandles.lookup(), "", mt);
-    } catch (StringConcatException e) {
-      e.printStackTrace();
-    }
-    MethodHandle target = cs.getTarget();
-    Object result = null;
-    //Try to convert DynamicElementInfo types to Java types.
+    MethodType concatType = MethodType.methodType(String.class, getPTypes(freeVariableTypeNames));
+    //Convert ElementInfo types to JVM types.
     Object[] convFreeVarVals = new Object[freeVariableValues.length];
     for (int i = 0; i < freeVariableValues.length; i++) {
       if (freeVariableValues[i] instanceof ElementInfo) {
@@ -140,12 +131,17 @@ public class FunctionObjectFactory {
         convFreeVarVals[i] = freeVariableValues[i];
       }
     }
+    //Get the recipe
+    String recipe = bmi.getBmArg();
     try {
-      result = target.invokeWithArguments(convFreeVarVals);
-    } catch (Throwable throwable) {
-      throwable.printStackTrace();
+      CallSite cs = StringConcatFactory.makeConcatWithConstants(MethodHandles.lookup(), "", concatType, recipe, new Object[0]);
+      MethodHandle target = cs.getTarget();
+      Object result = target.invokeWithArguments(convFreeVarVals);
+      return (String) result;
+    } catch (Throwable e) {
+      e.printStackTrace();
+      return null;
     }
-    return (String) result;
 //    MJIEnv env = new MJIEnv(ti);
 //    String concatenatedString = new String();
 //    String bmArg = bmi.getBmArg();
