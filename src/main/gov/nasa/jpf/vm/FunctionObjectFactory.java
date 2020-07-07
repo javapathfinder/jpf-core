@@ -17,15 +17,17 @@
  */
 package gov.nasa.jpf.vm;
 
-import javax.swing.text.Element;
 import java.lang.invoke.*;
-import java.util.Arrays;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  */
 public class FunctionObjectFactory {
-
+  /**
+   * ADD DOCUMENTATION!!
+   * @param className
+   * @return
+   */
   private static Class<?> parseType(String className) {
     switch (className) {
       case "byte":
@@ -54,6 +56,11 @@ public class FunctionObjectFactory {
     return null;
   }
 
+  /**
+   * ADD DOCS!!!
+   * @param typeNames
+   * @return
+   */
   private static Class<?>[] getPTypes (String[] typeNames) {
     Class<?>[] pTypes = new Class<?>[typeNames.length];
     for (int i = 0; i < typeNames.length; i++) {
@@ -62,7 +69,14 @@ public class FunctionObjectFactory {
     return pTypes;
   }
 
-  private static Object parseElementInfo (MJIEnv env, ElementInfo ei) {
+  /**
+   * ADD DOCUMENTATION
+   * @param env
+   * @param ei
+   * @return
+   */
+  //Throw an Exception instead of printing an error message
+  private static Object derefElementInfo(MJIEnv env, ElementInfo ei) {
     int eiRef = ei.getObjectRef();
     try {
       return env.getByteArrayObject(eiRef);
@@ -108,11 +122,10 @@ public class FunctionObjectFactory {
   public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
     MJIEnv env = new MJIEnv(ti);
     MethodType mt = MethodType.methodType(String.class, getPTypes(freeVariableTypeNames));
-    MethodHandles.Lookup lookup = MethodHandles.lookup();
-    String name = "";
     CallSite cs = null;
+    //Think about expanding the scope of the try block
     try {
-      cs = StringConcatFactory.makeConcat(lookup, name, mt);
+      cs = StringConcatFactory.makeConcat(MethodHandles.lookup(), "", mt);
     } catch (StringConcatException e) {
       e.printStackTrace();
     }
@@ -122,7 +135,7 @@ public class FunctionObjectFactory {
     Object[] convFreeVarVals = new Object[freeVariableValues.length];
     for (int i = 0; i < freeVariableValues.length; i++) {
       if (freeVariableValues[i] instanceof ElementInfo) {
-        convFreeVarVals[i] = parseElementInfo(env, (ElementInfo) freeVariableValues[i]);
+        convFreeVarVals[i] = derefElementInfo(env, (ElementInfo) freeVariableValues[i]);
       } else {
         convFreeVarVals[i] = freeVariableValues[i];
       }
