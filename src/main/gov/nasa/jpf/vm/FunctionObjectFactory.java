@@ -46,6 +46,8 @@ public class FunctionObjectFactory {
         return char.class;
       case "boolean":
         return boolean.class;
+      case "String":
+        return String.class;
       default:
         try {
           return Class.forName(className);
