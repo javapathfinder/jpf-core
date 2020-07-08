@@ -18,6 +18,7 @@
 package gov.nasa.jpf.vm;
 
 import java.lang.invoke.*;
+import java.util.Arrays;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -31,20 +32,28 @@ public class FunctionObjectFactory {
   private static Class<?> parseType(String className) {
     switch (className) {
       case "byte":
+      case "java.lang.Byte":
         return byte.class;
       case "short":
+      case "java.lang.Short":
         return short.class;
       case "int":
+      case "java.lang.Integer":
         return int.class;
       case "long":
+      case "java.lang.Long":
         return long.class;
       case "float":
+      case "java.lang.Float":
         return float.class;
       case "double":
+      case "java.lang.Double":
         return double.class;
       case "char":
+      case "java.lang.Character":
         return char.class;
       case "boolean":
+      case "java.lang.Boolean":
         return boolean.class;
       case "String":
         return String.class;
@@ -77,20 +86,37 @@ public class FunctionObjectFactory {
    * @param ei
    * @return
    */
-  //Throw an Exception instead of printing an error message
   private static Object derefElementInfo(MJIEnv env, ElementInfo ei) {
-    int eiRef = ei.getObjectRef();
-    try {
-      return env.getByteArrayObject(eiRef);
-    } catch (Exception e) {}
-    try {
-      return env.getByteObject(eiRef);
-    } catch (Exception e) {}
-    try {
-      return env.getStringObject(eiRef);
-    } catch (Exception e) {}
-    System.err.println("Not of any type considered");
-    return null;
+    String name = ei.getClassInfo().getName();
+    int objRef = ei.getObjectRef();
+    switch (name) {
+      case "java.lang.Byte":
+        Byte byteObject = env.getByteObject(objRef);
+        return byteObject.byteValue();
+      case "java.lang.Short":
+        Short shortObject = env.getShortObject(objRef);
+        return shortObject.shortValue();
+      case "java.lang.Integer":
+        Integer integerObject = env.getIntegerObject(objRef);
+        return integerObject.intValue();
+      case "java.lang.Long":
+        Long longObject = env.getLongObject(objRef);
+        return longObject.longValue();
+      case "java.lang.Float":
+        Float floatObject = env.getFloatObject(objRef);
+        return floatObject.floatValue();
+      case "java.lang.Double":
+        Double doubleObject = env.getDoubleObject(objRef);
+        return doubleObject.doubleValue();
+      case "java.lang.Character":
+        Character charObject = env.getCharObject(objRef);
+        return charObject.charValue();
+      case "java.lang.Boolean":
+        Boolean boolObject = env.getBooleanObject(objRef);
+        return boolObject.booleanValue();
+      default:
+        return env.getStringObject(objRef);
+    }
   }
   
   public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi,
@@ -114,6 +140,7 @@ public class FunctionObjectFactory {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
 
+
     if (bmi.getBmType() != BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
       setFuncObjFields(ei, bmi, freeVariableTypeNames, freeVariableValues);
     }
@@ -123,7 +150,8 @@ public class FunctionObjectFactory {
 
   public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
     MJIEnv env = new MJIEnv(ti);
-    MethodType concatType = MethodType.methodType(String.class, getPTypes(freeVariableTypeNames));
+    System.err.println(Arrays.toString(freeVariableTypeNames));
+    Class<?>[] pTypes = getPTypes(freeVariableTypeNames);
     //Convert ElementInfo types to JVM types.
     Object[] convFreeVarVals = new Object[freeVariableValues.length];
     for (int i = 0; i < freeVariableValues.length; i++) {
@@ -133,7 +161,7 @@ public class FunctionObjectFactory {
         convFreeVarVals[i] = freeVariableValues[i];
       }
     }
-    //Get the recipe
+    MethodType concatType = MethodType.methodType(String.class, pTypes);
     String recipe = bmi.getBmArg();
     try {
       CallSite cs = StringConcatFactory.makeConcatWithConstants(MethodHandles.lookup(), "", concatType, recipe, new Object[0]);
