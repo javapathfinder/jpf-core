@@ -1,13 +1,12 @@
 package java11;
 
-import org.junit.*;
 import gov.nasa.jpf.util.test.TestJPF;
-import java.lang.invoke.*;
+import org.junit.Test;
 
 public class StringConcatenationTest extends TestJPF {
     @Test
-    public void testStringConcatenation_firstStringAsBmArg(){
-        if(verifyNoPropertyViolation()) {
+    public void testStringConcatenation_firstStringAsBmArg() {
+        if (verifyNoPropertyViolation()) {
             String world = "world!";
             String actual = "Hello, " + world;
             String expected = "Hello, world!";
@@ -16,8 +15,8 @@ public class StringConcatenationTest extends TestJPF {
     }
 
     @Test
-    public void testStringConcatenation_SecondStringAsBmArg(){
-        if(verifyNoPropertyViolation()) {
+    public void testStringConcatenation_SecondStringAsBmArg() {
+        if (verifyNoPropertyViolation()) {
             String world = "world, ";
             String actual = world + "Hello!";
             String expected = "world, Hello!";
@@ -37,7 +36,7 @@ public class StringConcatenationTest extends TestJPF {
     }
 
     @Test
-    public void testStringConcatenationWithEmptyString(){
+    public void testStringConcatenationWithEmptyString() {
         if (verifyNoPropertyViolation()) {
             String[] strings = {"The", "weather", "will", "be", "sunny", "tomorrow"};
             String actual = "";
@@ -128,8 +127,8 @@ public class StringConcatenationTest extends TestJPF {
     public void testStringConcatenationWith_wrappedPrimitiveTypes() {
         java.lang.Integer two = new Integer(2);
         java.lang.Integer four = new Integer(4);
-        String actual = two + "cool" + four + "school";
-        String expected = "2cool4school";
+        String actual = two + (four + "");
+        String expected = "24";
         assertEquals(expected, actual);
     }
 }

@@ -6,19 +6,18 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf.vm;
 
 import java.lang.invoke.*;
-import java.util.Arrays;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -26,53 +25,49 @@ import java.util.Arrays;
 public class FunctionObjectFactory {
   /**
    * ADD DOCUMENTATION!!
+   *
    * @param className
    * @return
    */
   private static Class<?> parseType(String className) {
     switch (className) {
       case "byte":
-      case "java.lang.Byte":
         return byte.class;
       case "short":
-      case "java.lang.Short":
         return short.class;
       case "int":
-      case "java.lang.Integer":
         return int.class;
       case "long":
-      case "java.lang.Long":
         return long.class;
       case "float":
-      case "java.lang.Float":
         return float.class;
       case "double":
-      case "java.lang.Double":
         return double.class;
       case "char":
-      case "java.lang.Character":
         return char.class;
       case "boolean":
-      case "java.lang.Boolean":
         return boolean.class;
       case "String":
-        return String.class;
+        //This is not how this case should be handled, but there seems to be inconsistencies in how
+        //JPF treats this label
+        return Object.class;
       default:
         try {
           return Class.forName(className);
         } catch (ClassNotFoundException e) {
           e.printStackTrace();
+          return null;
         }
     }
-    return null;
   }
 
   /**
    * ADD DOCS!!!
+   *
    * @param typeNames
    * @return
    */
-  private static Class<?>[] getPTypes (String[] typeNames) {
+  private static Class<?>[] getPTypes(String[] typeNames) {
     Class<?>[] pTypes = new Class<?>[typeNames.length];
     for (int i = 0; i < typeNames.length; i++) {
       pTypes[i] = parseType(typeNames[i]);
@@ -82,6 +77,7 @@ public class FunctionObjectFactory {
 
   /**
    * ADD DOCUMENTATION
+   *
    * @param env
    * @param ei
    * @return
@@ -115,28 +111,39 @@ public class FunctionObjectFactory {
         Boolean boolObject = env.getBooleanObject(objRef);
         return boolObject.booleanValue();
       default:
-        return env.getStringObject(objRef);
+        //This block is structured in this unsatisfying way due to the limitations of JPF dereferencing
+        //This is likely where all subsequent errors in string concatenation will reside
+        try {
+          return env.getStringObject(objRef);
+        } catch (Exception e) {
+          try {
+            return ei.toString();
+          } catch (Exception ee) {
+            ee.printStackTrace();
+            return null;
+          }
+        }
     }
   }
-  
+
   public int getFunctionObject(int bsIdx, ThreadInfo ti, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi,
-                                         String[] freeVariableTypeNames, Object[] freeVariableValues) {
-    
+                               String[] freeVariableTypeNames, Object[] freeVariableValues) {
+
     ClassLoaderInfo cli = bmi.enclosingClass.getClassLoaderInfo();
     ClassInfo funcObjType = cli.getResolvedFuncObjType(bsIdx, fiClassInfo, samUniqueName, bmi, freeVariableTypeNames);
-    
+
     funcObjType.registerClass(ti);
 
     ElementInfo ei;
     Heap heap = ti.getHeap();
 
-    if(bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION){
-      String concatenatedString =  makeConcatWithStrings(ti, freeVariableTypeNames, freeVariableValues, bmi);
+    if (bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
+      String concatenatedString = makeConcatWithStrings(ti, freeVariableTypeNames, freeVariableValues, bmi);
       // Creating a newString for Concatenated string (example, "Hello," + "World");
-      ei = heap.newString(concatenatedString,ti);
+      ei = heap.newString(concatenatedString, ti);
       freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
       freeVariableTypeNames[0] = "String";
-    }else {
+    } else {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
 
@@ -148,16 +155,16 @@ public class FunctionObjectFactory {
     return ei.getObjectRef();
   }
 
-  public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi ){
+  public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi) {
     MJIEnv env = new MJIEnv(ti);
-    System.err.println(Arrays.toString(freeVariableTypeNames));
     Class<?>[] pTypes = getPTypes(freeVariableTypeNames);
-    //Convert ElementInfo types to JVM types.
     Object[] convFreeVarVals = new Object[freeVariableValues.length];
     for (int i = 0; i < freeVariableValues.length; i++) {
       if (freeVariableValues[i] instanceof ElementInfo) {
+        //Dereference composite types
         convFreeVarVals[i] = derefElementInfo(env, (ElementInfo) freeVariableValues[i]);
       } else {
+        //Copy primitive types
         convFreeVarVals[i] = freeVariableValues[i];
       }
     }
@@ -211,30 +218,30 @@ public class FunctionObjectFactory {
 
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
     Fields fields = funcObj.getFields();
-    
-    for(int i = 0; i<freeVarTypeNames.length; i++) {
+
+    for (int i = 0; i < freeVarTypeNames.length; i++) {
       String typeName = freeVarTypeNames[i];
       if (typeName.equals("byte")) {
-        fields.setByteValue(i, (Byte)freeVarValues[i]);
+        fields.setByteValue(i, (Byte) freeVarValues[i]);
       } else if (typeName.equals("char")) {
-        fields.setCharValue(i, (Character)freeVarValues[i]);
+        fields.setCharValue(i, (Character) freeVarValues[i]);
       } else if (typeName.equals("short")) {
-        fields.setShortValue(i, (Short)freeVarValues[i]);
+        fields.setShortValue(i, (Short) freeVarValues[i]);
       } else if (typeName.equals("int")) {
-        fields.setIntValue(i, (Integer)freeVarValues[i]);
+        fields.setIntValue(i, (Integer) freeVarValues[i]);
       } else if (typeName.equals("float")) {
-        fields.setFloatValue(i, (Float)freeVarValues[i]);
+        fields.setFloatValue(i, (Float) freeVarValues[i]);
       } else if (typeName.equals("long")) {
-        fields.setLongValue(i, (Long)freeVarValues[i]);
+        fields.setLongValue(i, (Long) freeVarValues[i]);
       } else if (typeName.equals("double")) {
-        fields.setDoubleValue(i, (Double)freeVarValues[i]);
+        fields.setDoubleValue(i, (Double) freeVarValues[i]);
       } else if (typeName.equals("boolean")) {
-        fields.setBooleanValue(i, (Boolean)freeVarValues[i]);
+        fields.setBooleanValue(i, (Boolean) freeVarValues[i]);
       } else {
-        if(freeVarValues[i] == null) {
-          fields.setReferenceValue(i, MJIEnv.NULL); 
+        if (freeVarValues[i] == null) {
+          fields.setReferenceValue(i, MJIEnv.NULL);
         } else {
-          int val = ((ElementInfo)freeVarValues[i]).getObjectRef() + 1;
+          int val = ((ElementInfo) freeVarValues[i]).getObjectRef() + 1;
           // + 1 because when object is created ( i.e GenericHeap.createObject(...)) the value of objRef is initialized
           // to the NamedField value in ElementInfo. But the value needed here is the value of arrayField which
           // NamedField value +1. This is because both array and object fields are created in GenericHeap.newString().
