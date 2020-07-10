@@ -122,13 +122,4 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
-
-    @Test
-    public void testStringConcatenationWith_wrappedPrimitiveTypes() {
-        java.lang.Integer two = new Integer(2);
-        java.lang.Integer four = new Integer(4);
-        String actual = two + (four + "");
-        String expected = "24";
-        assertEquals(expected, actual);
-    }
 }

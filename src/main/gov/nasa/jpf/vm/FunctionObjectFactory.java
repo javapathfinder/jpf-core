@@ -24,10 +24,10 @@ import java.lang.invoke.*;
  */
 public class FunctionObjectFactory {
   /**
-   * ADD DOCUMENTATION!!
+   * Return JVM class objects from JPF class labels
    *
-   * @param className
-   * @return
+   * @param className name of the class
+   * @return the class object associated with the input
    */
   private static Class<?> parseType(String className) {
     switch (className) {
@@ -62,10 +62,10 @@ public class FunctionObjectFactory {
   }
 
   /**
-   * ADD DOCS!!!
+   * Map the function parseType across the input array typeNames and return the result
    *
-   * @param typeNames
-   * @return
+   * @param typeNames array of class labels
+   * @return array of class objects corresponding to the labels
    */
   private static Class<?>[] getPTypes(String[] typeNames) {
     Class<?>[] pTypes = new Class<?>[typeNames.length];
@@ -76,11 +76,11 @@ public class FunctionObjectFactory {
   }
 
   /**
-   * ADD DOCUMENTATION
+   * "Dereference" the the JPF ElementInfo object in the MJIEnv environment as return the wrapped object to JVM
    *
-   * @param env
-   * @param ei
-   * @return
+   * @param env MJIEnv environment
+   * @param ei  referenced ElementInfo object
+   * @return JVM representation of the wrapped ElementInfo object
    */
   private static Object derefElementInfo(MJIEnv env, ElementInfo ei) {
     String name = ei.getClassInfo().getName();
@@ -147,7 +147,8 @@ public class FunctionObjectFactory {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
 
-
+    //It does not make sense to call setFuncObjFields in the case of string concatenation since the String object
+    //in the JPF heap has only three fields. This call will fail for any concatenation with more than three variables.
     if (bmi.getBmType() != BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
       setFuncObjFields(ei, bmi, freeVariableTypeNames, freeVariableValues);
     }
@@ -155,6 +156,16 @@ public class FunctionObjectFactory {
     return ei.getObjectRef();
   }
 
+  /**
+   * Concatenate the given inputs in the JVM according to the recipe given by the BootstrapMethodInfo object using
+   * the bootstrap method StringConcatFactory.makeConcatWithConstants and return the resulting string
+   *
+   * @param ti                    ThreadInfo object
+   * @param freeVariableTypeNames string representation of the input variable types
+   * @param freeVariableValues    representation of the input variable values
+   * @param bmi                   JPF representation of bootstrap method parameters from the constant pool
+   * @return concatenated string
+   */
   public String makeConcatWithStrings(ThreadInfo ti, String[] freeVariableTypeNames, Object[] freeVariableValues, BootstrapMethodInfo bmi) {
     MJIEnv env = new MJIEnv(ti);
     Class<?>[] pTypes = getPTypes(freeVariableTypeNames);
@@ -179,41 +190,6 @@ public class FunctionObjectFactory {
       e.printStackTrace();
       return null;
     }
-//    MJIEnv env = new MJIEnv(ti);
-//    String concatenatedString = new String();
-//    String bmArg = bmi.getBmArg();
-//    System.err.println("Concatenated string: " + concatenatedString);
-//    System.err.println("Bootstrap Method argument: " + bmArg);
-//    int markerPos = -1;
-//    int val;
-//    int markerCharCount = 0;
-//    String markerCharacterValue = new String();
-//    while (( markerPos = bmArg.indexOf(Character.toString((char)1) )) != -1 ||
-//            ( markerPos = bmArg.indexOf(Character.toString((char)2) )) != -1) {
-//      //val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-//
-//      try {
-//        val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-//        markerCharacterValue = env.getStringObject(val);
-//      }catch (Exception notStringException){
-//        try{
-//          val = ((ElementInfo)freeVariableValues[markerCharCount]).getObjectRef();
-//          markerCharacterValue = Byte.toString((env.getByteObject(val)));
-//        }catch (Exception notByteException){
-//          markerCharacterValue = (freeVariableValues[markerCharCount]).toString();
-//        }
-//      }
-//
-//      concatenatedString = concatenatedString + bmArg.substring(0, markerPos) + markerCharacterValue;
-//      System.err.println("Concatenated string: " + concatenatedString);
-//      bmArg = bmArg.substring(markerPos+1);
-//      System.err.println("Bootstrap Method argument: " + bmArg);
-//      markerCharCount++;
-//    }
-//    concatenatedString = concatenatedString + bmArg;
-//    System.err.println("Concatenated string: " + concatenatedString);
-//    System.err.println();
-//    return concatenatedString;
   }
 
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
