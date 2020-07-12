@@ -1,12 +1,12 @@
 package java11;
 
-import org.junit.*;
 import gov.nasa.jpf.util.test.TestJPF;
+import org.junit.Test;
 
 public class StringConcatenationTest extends TestJPF {
     @Test
-    public void testStringConcatenation_firstStringAsBmArg(){
-        if(verifyNoPropertyViolation()) {
+    public void testStringConcatenation_firstStringAsBmArg() {
+        if (verifyNoPropertyViolation()) {
             String world = "world!";
             String actual = "Hello, " + world;
             String expected = "Hello, world!";
@@ -15,8 +15,8 @@ public class StringConcatenationTest extends TestJPF {
     }
 
     @Test
-    public void testStringConcatenation_SecondStringAsBmArg(){
-        if(verifyNoPropertyViolation()) {
+    public void testStringConcatenation_SecondStringAsBmArg() {
+        if (verifyNoPropertyViolation()) {
             String world = "world, ";
             String actual = world + "Hello!";
             String expected = "world, Hello!";
@@ -36,7 +36,7 @@ public class StringConcatenationTest extends TestJPF {
     }
 
     @Test
-    public void testStringConcatenationWithEmptyString(){
+    public void testStringConcatenationWithEmptyString() {
         if (verifyNoPropertyViolation()) {
             String[] strings = {"The", "weather", "will", "be", "sunny", "tomorrow"};
             String actual = "";
@@ -89,6 +89,36 @@ public class StringConcatenationTest extends TestJPF {
             float num = 99;
             String actual = "Success is " + num + "% failure.";
             String expected = "Success is 99.0% failure.";
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
+    public void testStringConcatenationWith_multipleStrings() {
+        if (verifyNoPropertyViolation()) {
+            String a = "This ";
+            String b = "is ";
+            String c = "a ";
+            String d = "test ";
+            String e = "string.";
+            String actual = a + b + c + d + e;
+            String expected = "This is a test string.";
+            assertEquals(actual, expected);
+        }
+    }
+
+    @Test
+    public void testStringConcatenationWith_mixedTypes() {
+        if (verifyNoPropertyViolation()) {
+            Character ch = new Character('@');
+            byte b = 10;
+            String name = "xyz";
+            char dot = '.';
+            int num = 10;
+            String provider = "gmail";
+            String topLevelDomain = "com";
+            String actual = name + b + num + ch + provider + dot + topLevelDomain;
+            String expected = "xyz1010@gmail.com";
             assertEquals(expected, actual);
         }
     }
