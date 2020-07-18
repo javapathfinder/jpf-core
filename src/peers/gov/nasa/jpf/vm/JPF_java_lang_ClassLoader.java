@@ -292,4 +292,17 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);
     cl.clearAssertionStatus();
   }
+  
+  @MJI
+  public int getDefinedPackage__Ljava_lang_String_2__Ljava_lang_Package_2 (MJIEnv env, int objRef, int rString0) {
+    int rPackage = MJIEnv.NULL;
+    return rPackage;
+  }
+
+  @MJI
+  public int getDefinedPackages_____3Ljava_lang_Package_2 (MJIEnv env, int objRef) {
+    int rPackage = MJIEnv.NULL;
+    return rPackage;
+  }
+ 
 }
