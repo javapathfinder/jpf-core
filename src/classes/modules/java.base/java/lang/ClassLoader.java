@@ -279,4 +279,8 @@ public abstract class ClassLoader {
       return iterator.next();
     }
   }
+
+  public native final Package getDefinedPackage(final String name);
+
+  public native final Package[] getDefinedPackages();
 }
