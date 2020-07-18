@@ -75,4 +75,11 @@ out/
 # JIRA plugin
 atlassian-ide-plugin.xml
 /.idea/
+<<<<<<< HEAD
 /test.bat
+=======
+
+#local files
+local
+temp.ser
+>>>>>>> Add local files to git ignore
