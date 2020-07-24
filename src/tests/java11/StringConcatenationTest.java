@@ -84,6 +84,16 @@ public class StringConcatenationTest extends TestJPF {
     }
 
     @Test
+    public void testStringConcatenationWith_typeDouble() {
+        if (verifyNoPropertyViolation()) {
+            double d = 17.4;
+            String actual = "d has value " + d;
+            String expected = "d has value 17.4";
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
     public void testStringConcatenationWith_typeFloat() {
         if (verifyNoPropertyViolation()) {
             float num = 99;

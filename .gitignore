@@ -75,3 +75,4 @@ out/
 # JIRA plugin
 atlassian-ide-plugin.xml
 /.idea/
+/test.bat

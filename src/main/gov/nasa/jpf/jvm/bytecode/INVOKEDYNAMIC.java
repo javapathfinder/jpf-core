@@ -47,6 +47,7 @@ public class INVOKEDYNAMIC extends Instruction {
   // the first captured variable always represents "this"
   String[] freeVariableTypeNames;
   byte[] freeVariableTypes;
+  int freeVariableSize;
   
   String functionalInterfaceName;
   
@@ -64,6 +65,7 @@ public class INVOKEDYNAMIC extends Instruction {
     freeVariableTypeNames = Types.getArgumentTypeNames(descriptor);
     freeVariableTypes = Types.getArgumentTypes(descriptor);
     functionalInterfaceName = Types.getReturnTypeSignature(descriptor);
+    freeVariableSize = Types.getArgumentsSize(descriptor);
   }
 
   @Override
@@ -123,7 +125,7 @@ public class INVOKEDYNAMIC extends Instruction {
       lastFuncObj = ti.getHeap().get(funcObjRef);
     }
     
-    frame.pop(freeVariableTypes.length);
+    frame.pop(freeVariableSize);
     frame.pushRef(funcObjRef);
     
     return getNext(ti);
