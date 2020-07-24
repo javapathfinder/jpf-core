@@ -254,12 +254,17 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     int pkgRef = env.newObject(pkgClass);
     ElementInfo ei = env.getModifiableElementInfo(pkgRef);
 
-    System.err.println("**************************************************************************");
-    System.err.println("pkgRef: "+pkgRef);
-    System.err.println("ei: "+ei);
-    
-    ei.setReferenceField("pkgName", env.newString(pkgName));
-    ei.setReferenceField("loader", cl.getClassLoaderObjectRef());
+    ei.setReferenceField("name", env.newString(pkgName));
+    // the classloader is set to module in NamedPackage (superclass of Package)
+    ei.setReferenceField("module", cl.getClassLoaderObjectRef());
+
+    // get current system class loader and intialize class info for VersionInfo (inner class of Package class)
+    ClassLoaderInfo sysLoader = ClassLoaderInfo.getCurrentSystemClassLoader();
+    ClassInfo VersionInfoClass = sysLoader.getInitializedClassInfo("java.lang.Package$VersionInfo", env.getThreadInfo());
+
+    int VersionInfoRef = env.newObject(VersionInfoClass);
+    ei = env.getModifiableElementInfo(VersionInfoRef);
+
     // the rest of the fields set to some dummy value
     ei.setReferenceField("specTitle", env.newString("spectitle"));
     ei.setReferenceField("specVersion", env.newString("specversion"));
