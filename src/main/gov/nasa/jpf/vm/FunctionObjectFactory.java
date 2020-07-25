@@ -47,17 +47,9 @@ public class FunctionObjectFactory {
         return char.class;
       case "boolean":
         return boolean.class;
-      case "String":
-        //This is not how this case should be handled, but there seems to be inconsistencies in how
-        //JPF treats this label
-        return Object.class;
+      //This is not how this case should be handled, but there seems to be inconsistencies in how JPF treats this label
       default:
-        try {
-          return Class.forName(className);
-        } catch (ClassNotFoundException e) {
-          e.printStackTrace();
-          return null;
-        }
+        return Object.class;
     }
   }
 
