@@ -254,10 +254,6 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     int pkgRef = env.newObject(pkgClass);
     ElementInfo ei = env.getModifiableElementInfo(pkgRef);
 
-    System.err.println("**************************************************************************");
-    System.err.println("pkgRef: "+pkgRef);
-    System.err.println("ei: "+ei);
-    
     ei.setReferenceField("pkgName", env.newString(pkgName));
     ei.setReferenceField("loader", cl.getClassLoaderObjectRef());
     // the rest of the fields set to some dummy value
