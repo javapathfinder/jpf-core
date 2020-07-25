@@ -1660,9 +1660,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   }
   
   public boolean hasInnerClass (String innerName){
-    System.err.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>  InnerClassNames  <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     for (int i=0; i<innerClassNames.length; i++){
-      System.err.println(innerClassNames[i]);
       if (innerClassNames[i].equals(innerName)){
         return true;
       }
