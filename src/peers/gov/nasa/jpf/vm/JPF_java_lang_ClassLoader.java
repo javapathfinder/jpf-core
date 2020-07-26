@@ -229,6 +229,7 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     return pkgArr;
   }
 
+  @Deprecated( since = "java 9")
   @MJI
   public int getPackage__Ljava_lang_String_2__Ljava_lang_Package_2 (MJIEnv env, int objRef, int nameRef) {
     ClassLoaderInfo sysLoader = ClassLoaderInfo.getCurrentSystemClassLoader();
@@ -303,9 +304,24 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
   }
   
   @MJI
-  public int getDefinedPackage__Ljava_lang_String_2__Ljava_lang_Package_2 (MJIEnv env, int objRef, int rString0) {
-    int rPackage = MJIEnv.NULL;
-    return rPackage;
+  public int getDefinedPackage__Ljava_lang_String_2__Ljava_lang_Package_2 (MJIEnv env, int objRef, int nameRef) {
+    ClassLoaderInfo sysLoader = ClassLoaderInfo.getCurrentSystemClassLoader();
+
+    ClassInfo pkgClass = null; 
+    try {
+      pkgClass = sysLoader.getInitializedClassInfo(pkg_class_name, env.getThreadInfo());
+    } catch (ClinitRequired x){
+      env.handleClinitRequest(x.getRequiredClassInfo());
+      return MJIEnv.NULL;
+    }
+
+    ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);
+    String pkgName = env.getStringObject(nameRef);
+    if(cl.getPackages().get(pkgName)!=null) {
+      return createPackageObject(env, pkgClass, pkgName, cl);
+    } else {
+      return MJIEnv.NULL;
+    }
   }
 
   @MJI
