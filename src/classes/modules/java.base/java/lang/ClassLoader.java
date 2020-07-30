@@ -103,19 +103,28 @@ public abstract class ClassLoader {
 
   @SuppressWarnings({"unchecked","rawtypes"})
   public Enumeration<URL> getResources(String name) throws IOException {
-    Collection<URL> collection = new ArrayList<>();
+    Vector<URL> collection = new Vector<>();
 
-    if (parent == null) {
-      getSystemClassLoader().getResourcesURL(name).asIterator()
-              .forEachRemaining(collection::add);
-    } else {
-      parent.getResources(name).asIterator()
-              .forEachRemaining(collection::add);
+    if (parent == null) {     
+    Enumeration<URL> urls = getSystemClassLoader().getResourcesURL(name);
+
+    while (urls.hasMoreElements()) {
+      collection.add(urls.nextElement());
     }
-    findResources(name).asIterator()
-            .forEachRemaining(collection::add);
+    } else {
+    Enumeration<URL> resources = parent.getResources(name);
 
-    return new EnumerationAdapter<>(collection);
+    while (resources.hasMoreElements()) {
+      collection.add(resources.nextElement());
+    }
+    }
+    Enumeration<URL> resources = findResources(name);
+
+    while (resources.hasMoreElements()) {
+    collection.add(resources.nextElement());
+    }
+
+   return collection.elements();
   }
 
   /**
