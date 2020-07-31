@@ -138,7 +138,7 @@ public class ClassLoaderTest extends TestJPF {
     assertNull(classLoader.getResource("not_existing_resource"));
     assertNotNull(classLoader.getResource("DiningPhil.class"));
     assertNull(classLoader.getResource("ClassLoader.class"));
-    assertNotNull(classLoader.getResource("java/lang/ClassLoader.class"));
+    assertNotNull(classLoader.getResource("modules/java.base/java/lang/ClassLoader.class"));
   }
 
   private void testGetResourcesImpl(ClassLoader classLoader) throws IOException{
@@ -153,7 +153,7 @@ public class ClassLoaderTest extends TestJPF {
     assertFalse(e.hasMoreElements());
 
     // It should find at least two resources: 1. model class, 2. JDK class
-    e = classLoader.getResources("java/lang/ClassLoader.class");
+    e = classLoader.getResources("modules/java.base/java/lang/ClassLoader.class");
     assertTrue(e.hasMoreElements());
     assertNotNull(e.nextElement());
     assertTrue(e.hasMoreElements());

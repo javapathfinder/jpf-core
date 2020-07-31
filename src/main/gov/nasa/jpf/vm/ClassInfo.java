@@ -1882,6 +1882,16 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return innerClassNames;
   }
   
+  // get class info of matched inner class
+  public ClassInfo getInnerClassInfo(String innerClassName) {
+    for (int i=0; i<innerClassNames.length; i++){
+      if(innerClassNames[i].equals(innerClassName))
+        return classLoader.getResolvedClassInfo(innerClassNames[i]);
+    }
+
+    return null;
+  }
+
   public ClassInfo[] getInnerClassInfos(){
     ClassInfo[] innerClassInfos = new ClassInfo[innerClassNames.length];
     

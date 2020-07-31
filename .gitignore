@@ -76,3 +76,7 @@ out/
 atlassian-ide-plugin.xml
 /.idea/
 /test.bat
+
+#local files
+local
+temp.ser

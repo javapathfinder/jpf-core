@@ -229,6 +229,7 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     return pkgArr;
   }
 
+  @Deprecated( since = "java 9")
   @MJI
   public int getPackage__Ljava_lang_String_2__Ljava_lang_Package_2 (MJIEnv env, int objRef, int nameRef) {
     ClassLoaderInfo sysLoader = ClassLoaderInfo.getCurrentSystemClassLoader();
@@ -254,8 +255,17 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     int pkgRef = env.newObject(pkgClass);
     ElementInfo ei = env.getModifiableElementInfo(pkgRef);
 
-    ei.setReferenceField("pkgName", env.newString(pkgName));
-    ei.setReferenceField("loader", cl.getClassLoaderObjectRef());
+    ei.setReferenceField("name", env.newString(pkgName));
+    // the classloader is set to module in NamedPackage (superclass of Package)
+    ei.setReferenceField("module", cl.getClassLoaderObjectRef());
+
+    // get current system class loader and intialize class info for VersionInfo (inner class of Package class)
+    ClassLoaderInfo sysLoader = ClassLoaderInfo.getCurrentSystemClassLoader();
+    ClassInfo VersionInfoClass = sysLoader.getInitializedClassInfo("java.lang.Package$VersionInfo", env.getThreadInfo());
+
+    int VersionInfoRef = env.newObject(VersionInfoClass);
+    ei = env.getModifiableElementInfo(VersionInfoRef);
+
     // the rest of the fields set to some dummy value
     ei.setReferenceField("specTitle", env.newString("spectitle"));
     ei.setReferenceField("specVersion", env.newString("specversion"));
@@ -292,4 +302,32 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);
     cl.clearAssertionStatus();
   }
+  
+  @MJI
+  public int getDefinedPackage__Ljava_lang_String_2__Ljava_lang_Package_2 (MJIEnv env, int objRef, int nameRef) {
+    ClassLoaderInfo sysLoader = ClassLoaderInfo.getCurrentSystemClassLoader();
+
+    ClassInfo pkgClass = null; 
+    try {
+      pkgClass = sysLoader.getInitializedClassInfo(pkg_class_name, env.getThreadInfo());
+    } catch (ClinitRequired x){
+      env.handleClinitRequest(x.getRequiredClassInfo());
+      return MJIEnv.NULL;
+    }
+
+    ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);
+    String pkgName = env.getStringObject(nameRef);
+    if(cl.getPackages().get(pkgName)!=null) {
+      return createPackageObject(env, pkgClass, pkgName, cl);
+    } else {
+      return MJIEnv.NULL;
+    }
+  }
+
+  @MJI
+  public int getDefinedPackages_____3Ljava_lang_Package_2 (MJIEnv env, int objRef) {
+    int rPackage = MJIEnv.NULL;
+    return rPackage;
+  }
+ 
 }
