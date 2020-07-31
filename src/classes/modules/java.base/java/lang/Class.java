@@ -125,6 +125,10 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   public URL getResource (String rname) {
     String resolvedName = getResolvedName(rname);
+
+    if (resolvedName.startsWith("java/") || resolvedName.startsWith("jdk/") || resolvedName.startsWith("sun/"))
+      resolvedName = "modules/java.base/" + resolvedName;
+      
     return getClassLoader().getResource(resolvedName);
   }
 
