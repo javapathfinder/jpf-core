@@ -127,9 +127,13 @@ public class JVMClassInfo extends ClassInfo {
         clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
 
         if(!clsName.equals(JVMClassInfo.this.getName())) {
-          enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+          if (ResolvedClasses.resolvedClasses.containsKey(clsName))
+            enclosingLambdaCls = (JVMClassInfo) ResolvedClasses.resolvedClasses.get(clsName);
+          else
+            enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
         } else {
           enclosingLambdaCls = JVMClassInfo.this;
+          ResolvedClasses.resolvedClasses.put(clsName, enclosingLambdaCls);
         }
 
         assert (enclosingLambdaCls!=null);
