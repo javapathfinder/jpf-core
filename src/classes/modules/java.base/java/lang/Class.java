@@ -127,6 +127,8 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   public native String getModuleNameFromClassFileURL();
 
+  public native boolean isJPFClass();
+
   public URL getResource (String rname) {
     String resolvedName = getResolvedName(rname);
 

@@ -971,4 +971,9 @@ public class JPF_java_lang_Class extends NativePeer {
     
     return env.newString(module.getName());
   }
+
+  @MJI
+  public boolean isJPFClass____Z (MJIEnv env, int objRef) {
+    return env.getReferredClassInfo(objRef).isJPFClass;
+  }
 }
