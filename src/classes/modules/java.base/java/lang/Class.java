@@ -123,7 +123,9 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   private native String getResolvedName (String rname);
 
-  public native Module getModuleName();
+  public native String getModuleName();
+
+  public native String getModuleNameFromClassFileURL();
 
   public URL getResource (String rname) {
     String resolvedName = getResolvedName(rname);
