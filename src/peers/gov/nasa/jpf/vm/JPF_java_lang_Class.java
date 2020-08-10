@@ -943,4 +943,17 @@ public class JPF_java_lang_Class extends NativePeer {
 
     return env.newString(rname);
   }
+
+  @MJI
+  public int getModuleName____Ljava_lang_Module_2 (MJIEnv env, int objRef) {
+    // class name excludes ".class" file extension, hence class name length + 7
+    final int classNamelength = env.getReferredClassInfo(objRef).getName().length() + 7 ;
+    
+    String classFileURL = env.getReferredClassInfo(objRef).getClassFileUrl();
+    //remove class name from class URL
+    classFileURL = classFileURL.substring(0, classFileURL.length() - classNamelength );
+
+    //return module name from classFileURL
+    return env.newString(classFileURL.substring(classFileURL.lastIndexOf('/') + 1));
+  }
 }
