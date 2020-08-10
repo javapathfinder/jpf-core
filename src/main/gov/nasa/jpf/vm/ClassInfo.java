@@ -250,8 +250,10 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
   /** actions to be taken when an object of this type is gc'ed */
   protected ImmutableList<ReleaseAction> releaseActions; 
-          
   
+  // To know if class is loaded from JVM or is JPF class      
+  protected boolean isJPFClass = false;
+
   static boolean init (Config config) {
 
     ClassInfo.config = config;
