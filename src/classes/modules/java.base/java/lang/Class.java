@@ -139,7 +139,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
       else
         resolvedName = moduleName + "/" + resolvedName;
     }
-      
+
     return getClassLoader().getResource(resolvedName);
   }
 
