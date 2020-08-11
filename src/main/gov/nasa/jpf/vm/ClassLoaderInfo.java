@@ -94,7 +94,9 @@ public class ClassLoaderInfo
 
   protected ClassLoaderInfo parent;
 
-  
+  // To know if class is loaded from JVM or is JPF class
+  protected boolean isJPFClass = false;
+
   static class ClMemento implements Memento<ClassLoaderInfo> {
     // note that we don't have to store the invariants (gid, parent, isSystemClassLoader)
     ClassLoaderInfo cl;
@@ -352,12 +354,16 @@ public class ClassLoaderInfo
             try {
               log.info("loading class ", typeName, " from ",  url);
               ci = match.createClassInfo(this);
-              
+
             } catch (ClassParseException cpx){
               throw new ClassInfoException( "error parsing class", this, "java.lang.NoClassDefFoundError", typeName, cpx);
             }
-            
+            // to know whether class was loaded from JVM or is JPF class
+            ci.isJPFClass = isJPFClass;
             loadedClasses.put( url, ci);
+
+            // set false once class is loaded
+            isJPFClass = false;
           }
           
         } else { // no match found
@@ -667,6 +673,10 @@ public class ClassLoaderInfo
       // match not found in the classpath
       // try to load from the run-time image
       match = new JRTClassFileContainer().getMatch(typeName);
+    } else {
+      // set isJPFClass true if match is found in classpath
+      // i.e, not loaded from the run-time image
+      isJPFClass = true;
     }
 
     return match;

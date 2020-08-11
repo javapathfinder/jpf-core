@@ -65,6 +65,10 @@ public class JVMClassInfo extends ClassInfo {
    * (a) it can set ClassInfo fields, (b) it can extend ClassFileReaderAdapter, and (c) we don't clutter JVMClassInfo with
    * fields that are only temporarily used during parsing
    */
+
+  // To store partially resolved classes in setBootstrapMethod
+  protected static HashMap resolvedClasses = new HashMap<String, JVMClassInfo>();
+
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
     protected JVMCodeBuilder cb;
@@ -127,9 +131,13 @@ public class JVMClassInfo extends ClassInfo {
         clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
 
         if(!clsName.equals(JVMClassInfo.this.getName())) {
-          enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+          if (JVMClassInfo.resolvedClasses.containsKey(clsName))
+            enclosingLambdaCls = (JVMClassInfo) JVMClassInfo.resolvedClasses.get(clsName);
+          else
+            enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
         } else {
           enclosingLambdaCls = JVMClassInfo.this;
+          JVMClassInfo.resolvedClasses.put(clsName, enclosingLambdaCls);
         }
 
         assert (enclosingLambdaCls!=null);

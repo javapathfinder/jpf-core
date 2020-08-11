@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import gov.nasa.jpf.Config;
@@ -942,5 +943,37 @@ public class JPF_java_lang_Class extends NativePeer {
     }
 
     return env.newString(rname);
+  }
+
+  @MJI
+  public int getModuleNameFromClassFileURL____Ljava_lang_String_2 (MJIEnv env, int objRef) {
+    // class name excludes ".class" file extension, hence class name length + 7
+    final int classNamelength = env.getReferredClassInfo(objRef).getName().length() + 7;
+
+    String classFileURL = env.getReferredClassInfo(objRef).getClassFileUrl();
+    //remove class name from class URL
+    classFileURL = classFileURL.substring(0, classFileURL.length() - classNamelength );
+
+    //return module name from classFileURL
+    return env.newString(classFileURL.substring(classFileURL.lastIndexOf('/') + 1));
+  }
+
+  @MJI
+  public int getModuleName____Ljava_lang_String_2 (MJIEnv env, int objRef) {
+    String className = env.getReferredClassInfo(objRef).getName();
+    Module module;
+
+    try {
+      module = Class.forName(className).getModule();
+    } catch (ClassNotFoundException e) {
+      return MJIEnv.NULL;
+    }
+
+    return env.newString(module.getName());
+  }
+
+  @MJI
+  public boolean isJPFClass____Z (MJIEnv env, int objRef) {
+    return env.getReferredClassInfo(objRef).isJPFClass;
   }
 }
