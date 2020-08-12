@@ -153,6 +153,15 @@ public abstract class VirtualInvocation extends InstanceInvocation {
   public MethodInfo getInvokedMethod (ThreadInfo ti, int objRef) {
 
     if (objRef != MJIEnv.NULL) {
+      //First check if the method to be called is private
+      ClassInfo privateCi = ti.getPC().getMethodInfo().getClassInfo();
+      MethodInfo privateMi = privateCi.getMethod(mname, false);
+      if (privateMi != null && privateMi.isPrivate()) {
+        invokedMethod = privateMi;
+        lastCalleeCi = privateCi;
+        return invokedMethod;
+      }
+
       lastObj = objRef;
 
       ClassInfo cci = ti.getClassInfo(objRef);
