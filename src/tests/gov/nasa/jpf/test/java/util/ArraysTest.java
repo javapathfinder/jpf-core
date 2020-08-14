@@ -59,4 +59,24 @@ public class ArraysTest extends TestJPF {
         assertTrue(Arrays.equals(arr1, arr2));
       }
     }
+
+    @Test
+    public void testByteArrayEquals() {
+        if (verifyNoPropertyViolation()) {
+            byte[] arr1 = {1, 1, 'a', '/'};
+            byte[] arr2 = {1, 1, 'a', '/'};
+
+            assertTrue(Arrays.equals(arr1, arr2));
+        }
+    } 
+
+    @Test
+    public void testBooleanArrayEquals() {
+      if (verifyNoPropertyViolation()) {
+        boolean[] arr1 = {true, true, false};
+        boolean[] arr2 = {true, true, false};
+
+        assertTrue(Arrays.equals(arr1, arr2));
+      }
+    }
 }

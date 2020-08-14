@@ -1011,5 +1011,43 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
     }
   }
 
+  @MJI
+  public long getLongUnaligned__Ljava_lang_Object_2J__J(MJIEnv env, int unsafeRef, int objRef, long fieldOffset) {
+    /**
+     * Fetches a value of an array based on the array type.
+     * The host JVM implementation of this method fetches a value at some byte offset into a given Java object. 
+     * But the fieldOffSet (offset) value passed to this method is always the index of a an array value.
+     * Hence, fetching the array value based on offset fails to work as expected.
+     */
+    final String arrType = env.getElementInfo(objRef).getFields().getClass().getName();
+
+    switch (arrType) {
+      case "gov.nasa.jpf.vm.FloatArrayFields":
+        return (long) getFloat__Ljava_lang_Object_2J__F(env, unsafeRef, objRef, fieldOffset);
+
+      case "gov.nasa.jpf.vm.DoubleArrayFields":
+        return (long) getDouble__Ljava_lang_Object_2J__D(env, unsafeRef, objRef, fieldOffset);
+
+      case "gov.nasa.jpf.vm.LongArrayFields":
+        return getLong__Ljava_lang_Object_2J__J(env, unsafeRef, objRef, fieldOffset);
+
+      case "gov.nasa.jpf.vm.IntArrayFields":
+        return (long) getInt__Ljava_lang_Object_2J__I(env, unsafeRef, objRef, fieldOffset);
+
+      case "gov.nasa.jpf.vm.BooleanArrayFields":
+        return env.newBoolean(getBoolean__Ljava_lang_Object_2J__Z(env, unsafeRef, objRef, fieldOffset));
+
+      case "gov.nasa.jpf.vm.CharArrayFields":
+        return env.newCharacter(getChar__Ljava_lang_Object_2J__C(env, unsafeRef, objRef, fieldOffset));
+
+      case "gov.nasa.jpf.vm.ShortArrayFields":
+        return env.newShort(getShort__Ljava_lang_Object_2J__S(env, unsafeRef, objRef, fieldOffset));
+
+      case "gov.nasa.jpf.vm.ByteArrayFields":
+        return env.newByte(getByte__Ljava_lang_Object_2J__B(env, unsafeRef, objRef, fieldOffset));
+    }
+
+    throw new JPFException("Unsafe.getLongUnaligned: Array of type " + arrType + " not found");
+  }
 }
 
