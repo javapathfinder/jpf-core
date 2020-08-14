@@ -39,4 +39,14 @@ public class ArraysTest extends TestJPF {
         assertTrue(Arrays.equals(arr1, arr2));
       }
     }
+
+    @Test
+    public void testDoubleArrayEquals() {
+      if (verifyNoPropertyViolation()) {
+        double[] arr1 = {1.0, 2.0};
+        double[] arr2 = {1.0, 2.0};
+
+        assertTrue(Arrays.equals(arr1, arr2));
+      }
+    }
 }
