@@ -96,6 +96,9 @@ public class JPF_java_lang_reflect_Constructor extends NativePeer {
        if (ci.isAbstract()){
         env.throwException("java.lang.InstantiationException");
         return MJIEnv.NULL;
+      } else if (miCallee.isPrivate() && !ci.isCallerEnclosingClass(env.getCallerStackFrame().getClassName())) {
+        env.throwException("java.lang.IllegalAccessException");
+        return MJIEnv.NULL;
       }
 
       int objRef = env.newObjectOfUncheckedClass( ci);
