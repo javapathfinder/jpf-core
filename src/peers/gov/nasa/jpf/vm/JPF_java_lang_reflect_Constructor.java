@@ -92,11 +92,16 @@ public class JPF_java_lang_reflect_Constructor extends NativePeer {
 
     if (frame == null) { // first time
       ClassInfo ci = miCallee.getClassInfo();
+      ClassInfo callerClassInfo = env.getCallerStackFrame().getClassInfo();
 
        if (ci.isAbstract()){
         env.throwException("java.lang.InstantiationException");
         return MJIEnv.NULL;
-      } else if (miCallee.isPrivate() && !ci.isCallerEnclosingClass(env.getCallerStackFrame().getClassName())) {
+      } else if (miCallee.isPrivate() && !ci.isCallerEnclosingClass(callerClassInfo.getName())) {
+        env.throwException("java.lang.IllegalAccessException");
+        return MJIEnv.NULL;
+      } else if (miCallee.isProtected() && (!ci.isCallerSamePackage(callerClassInfo.getPackageName())
+                                            || !ci.isCallerSuperClass(callerClassInfo.getName()))) {
         env.throwException("java.lang.IllegalAccessException");
         return MJIEnv.NULL;
       }

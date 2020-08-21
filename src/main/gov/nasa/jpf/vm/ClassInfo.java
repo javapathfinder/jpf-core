@@ -1602,6 +1602,25 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return false;
   }
 
+  public boolean isCallerSamePackage(String callerPkgName) {
+    return callerPkgName.equals(this.getPackageName());
+  }
+
+  public boolean isCallerSuperClass(String callerClassName) {
+    ClassInfo superClassInfo = this.superClass;
+    String superClassName = null;
+
+    while (superClass != null) {
+      superClassName = superClassInfo.getName();
+      if (callerClassName.equals(superClassName))
+        return true;
+
+      superClassInfo = superClassInfo.superClass;
+    }
+
+    return false;
+  }
+
   boolean hasRefField (int ref, Fields fv) {
     ClassInfo c = this;
 
