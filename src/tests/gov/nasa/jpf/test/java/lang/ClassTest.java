@@ -163,15 +163,23 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       }
     }
   }
-  
-  static class InAccessible {
-    private InAccessible() {}
+
+  static class NestMate {
+    private NestMate() {}
   }
-  
+
+  @Test 
+  public void testNewInstanceNestMateAccess () throws ReflectiveOperationException {
+    if (verifyNoPropertyViolation()){
+      Class<?> clazz = NestMate.class;
+      clazz.getDeclaredConstructor().newInstance();
+    }
+  }
+
   @Test 
   public void testNewInstanceFailAccess () throws ReflectiveOperationException {
     if (verifyUnhandledException("java.lang.IllegalAccessException")){
-      Class<?> clazz = InAccessible.class;
+      Class<?> clazz = TestNewInstance.InAccessible.class;
       clazz.getDeclaredConstructor().newInstance();
     }
   }
@@ -582,4 +590,11 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       assertNull(c.getResource("not_existing_resources"));
     }
   }  
+}
+
+class TestNewInstance {
+  static class InAccessible {
+    private InAccessible() {
+    }
+  }
 }
