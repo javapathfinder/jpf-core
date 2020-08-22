@@ -1610,7 +1610,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     ClassInfo superClassInfo = this.superClass;
     String superClassName = null;
 
-    while (superClass != null) {
+    while (superClassInfo != null) {
       superClassName = superClassInfo.getName();
       if (callerClassName.equals(superClassName))
         return true;
