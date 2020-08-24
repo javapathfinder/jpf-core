@@ -1584,6 +1584,42 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return superClass == null && !isObjectClassInfo();
   }
 
+  /**
+   * checks whether the caller class is an enclosing class of 'this' class
+   */
+  public boolean isCallerEnclosingClass(String callerClassName) {
+    ClassInfo enclosingClass = this.getEnclosingClassInfo();
+    String enclosingClsName = null;
+
+    while (enclosingClass != null) {
+      enclosingClsName = enclosingClass.getName();
+      if (callerClassName.equals(enclosingClsName))
+        return true;
+
+      enclosingClass = enclosingClass.getEnclosingClassInfo();
+    }
+
+    return false;
+  }
+
+  public boolean isCallerSamePackage(String callerPkgName) {
+    return callerPkgName.equals(this.getPackageName());
+  }
+
+  public boolean isCallerSuperClass(String callerClassName) {
+    ClassInfo superClassInfo = this.superClass;
+    String superClassName = null;
+
+    while (superClassInfo != null) {
+      superClassName = superClassInfo.getName();
+      if (callerClassName.equals(superClassName))
+        return true;
+
+      superClassInfo = superClassInfo.superClass;
+    }
+
+    return false;
+  }
 
   boolean hasRefField (int ref, Fields fv) {
     ClassInfo c = this;

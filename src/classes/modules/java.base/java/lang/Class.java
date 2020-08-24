@@ -260,6 +260,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   public native Class<? super T> getSuperclass ();
 
+  @Deprecated(since = "9")
   public native T newInstance () throws InstantiationException,
                                       IllegalAccessException;
 

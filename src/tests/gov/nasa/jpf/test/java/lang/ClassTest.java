@@ -37,6 +37,7 @@ package gov.nasa.jpf.test.java.lang;
 
 import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.Verify;
+import gov.nasa.jpf.test.test_classes.class_test.*;
 
 import java.io.Serializable;
 import java.lang.annotation.Inherited;
@@ -163,19 +164,69 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       }
     }
   }
-  
-  static class InAccessible {
-    private InAccessible() {}
+
+  static class PrivateNestMate {
+    boolean assertData = true;
+
+    private PrivateNestMate() {}
   }
-  
+
   @Test 
-  public void testNewInstanceFailAccess () throws ReflectiveOperationException {
-    if (verifyUnhandledException("java.lang.IllegalAccessException")){
-      Class<?> clazz = InAccessible.class;
+  public void testPrivateNestMateNewInstanceAccess () throws ReflectiveOperationException {
+    if (verifyNoPropertyViolation()) {
+      Class<?> clazz = PrivateNestMate.class;
+      PrivateNestMate clazzInstance = (PrivateNestMate) clazz.getDeclaredConstructor().newInstance();
+      assertTrue(clazzInstance.assertData);
+    }
+  }
+
+  static class ProtectedNestMate {
+    boolean assertData = true;
+
+    protected ProtectedNestMate() {}
+  }
+
+  @Test 
+  public void testProtectedNestMateNewInstanceAccess () throws ReflectiveOperationException {
+    if (verifyNoPropertyViolation()) {
+      Class<?> clazz = ProtectedNestMate.class;
+      ProtectedNestMate clazzInstance = (ProtectedNestMate) clazz.getDeclaredConstructor().newInstance();
+      assertTrue(clazzInstance.assertData);
+    }
+  }
+
+  @Test 
+  public void testPrivateConstructorNewInstanceFailAccess () throws ReflectiveOperationException {
+    if (verifyUnhandledException("java.lang.IllegalAccessException")) {
+      Class<?> clazz = TestNewInstance.Private.class;
       clazz.getDeclaredConstructor().newInstance();
     }
   }
-  
+
+  @Test 
+  public void testProtectedConstructorNewInstanceAccess () throws ReflectiveOperationException {
+    if (verifyNoPropertyViolation()) {
+      Class<?> clazz = TestNewInstance.Protected.class;
+      TestNewInstance.Protected clazzInstance = (TestNewInstance.Protected) 
+                                                  clazz.getDeclaredConstructor().newInstance();
+      assertTrue(clazzInstance.assertData);
+
+      //protected constructor of class in different package which extends ClassTest 
+      Class<?> diffPkgSubClazz = DiffPkgProtectedSubClass.class;
+      DiffPkgProtectedSubClass diffPkgSubClazzInst = (DiffPkgProtectedSubClass) 
+                                                      diffPkgSubClazz.getDeclaredConstructor().newInstance();
+      assertTrue(diffPkgSubClazzInst.assertData);
+    }
+  }
+
+  @Test 
+  public void testProtectedConstructorNewInstanceFailAccess () throws ReflectiveOperationException {
+    if (verifyUnhandledException("java.lang.IllegalAccessException")) {
+      Class<?> clazz = DiffPkgProtectedClass.class;
+      clazz.getDeclaredConstructor().newInstance();
+    }
+  }
+
   static abstract class AbstractClass {
   }
     
@@ -582,4 +633,20 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       assertNull(c.getResource("not_existing_resources"));
     }
   }  
+}
+
+class TestNewInstance {
+  static class Protected {
+    boolean assertData = true;
+
+    protected Protected() {
+    }
+  }
+
+  static class Private {
+    boolean assertData = true;
+
+    private Private() {
+    }
+  }
 }
