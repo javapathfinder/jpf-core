@@ -80,6 +80,9 @@ public class ClassFile extends BinaryClassSource {
     InvokeDynamic             // 18
   }
 
+  //ignore this change just to get codeguru running
+  String codeGuru = "blah";
+	
   // <2do> this is going away
   String requestedTypeName; // the type name that caused this classfile to be loaded
 
