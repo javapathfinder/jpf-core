@@ -79,6 +79,7 @@ public class ClassFile extends BinaryClassSource {
     InvokeDynamic             // 18
   }
 
+	String blah = "blah";
   // <2do> this is going away
   String requestedTypeName; // the type name that caused this classfile to be loaded
 
