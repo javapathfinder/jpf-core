@@ -238,7 +238,7 @@ test {
                                  "${result.failedTestCount} failed",
                                  "${result.skippedTestCount} skipped"]
 
-            println "Summary: " + summaryFields.join(", ")
+            println ("Summary: " + summaryFields.join(", "))
         }
     }
 }
