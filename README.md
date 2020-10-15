@@ -27,7 +27,7 @@ There is a constant effort to update and add JPF documentation on the wiki.
 If you would like to contribute in that, please, contact us at
 java-pathfinder@googlegroups.com.
 
-Contributions are welcomed and we encourage you to get involved with the
+All Contributions are welcomed in our community and we encourage you to get involved with the
 community.
 
 Happy Verification
