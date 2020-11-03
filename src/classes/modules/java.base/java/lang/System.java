@@ -183,7 +183,12 @@ public class System {
     }
   }
 
-  public static String setProperty (String key, String value){
+  //The peer maps this method to the native system.
+  public static String lineSeparator() {
+    return "\n";
+  }
+
+  public static String setProperty(String key, String value) {
     String oldVal = properties.getProperty(key);
     properties.put(key,value);
     return oldVal;

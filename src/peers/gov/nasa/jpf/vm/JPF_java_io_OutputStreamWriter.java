@@ -75,9 +75,11 @@ public class JPF_java_io_OutputStreamWriter extends NativePeer {
   public int encode__Ljava_lang_String_2II_3B__I (MJIEnv env, int objref,
                                          int sref, int off, int len,
                                          int bref){
-    int cref = env.getReferenceField(sref, "value");
-    
-    return encode___3CII_3B__I(env,objref,cref,off,len,bref);
+    String sValue = env.getStringObject(sref);
+    char[] chars = sValue.toCharArray();
+    int cref = env.newCharArray(chars);
+
+    return encode___3CII_3B__I(env, objref, cref, off, len, bref);
   }
   
   @MJI

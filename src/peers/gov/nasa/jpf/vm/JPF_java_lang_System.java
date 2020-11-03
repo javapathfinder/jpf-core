@@ -83,10 +83,15 @@ public class JPF_java_lang_System extends NativePeer {
   public int createSystemOut____Ljava_io_PrintStream_2 (MJIEnv env, int clsObjRef){
     return createPrintStream(env,clsObjRef);
   }
-  
+
   @MJI
-  public int createSystemErr____Ljava_io_PrintStream_2 (MJIEnv env, int clsObjRef){
-    return createPrintStream(env,clsObjRef);
+  public int createSystemErr____Ljava_io_PrintStream_2(MJIEnv env, int clsObjRef) {
+    return createPrintStream(env, clsObjRef);
+  }
+
+  @MJI
+  public int lineSeparator____Ljava_lang_String_2(MJIEnv env, int objRef) {
+    return env.newString(System.lineSeparator());
   }
   
   int getProperties (MJIEnv env, Properties p){
