@@ -10,9 +10,9 @@ All the latest developments, changes, documentation can be found on our
 
 ## Building and Installing
 
-If you are having problems installing and running JPF, please look at [How
+If you are having problems installing and running JPF, please look at the [How
 to install
-JPF using the link provided](https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF) guide.
+JPF](https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF) guide.
 
 
 We have documented on the wiki a lot of common problems that might occur during the installation and
