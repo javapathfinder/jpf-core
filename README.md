@@ -15,8 +15,8 @@ to install
 JPF](https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF) guide.
 
 
-We have documented on the wiki a lot of common problems during the install and
-build processes reported by users.  If you are facing any issue, please, make
+We have documented on the wiki a lot of common problems that might occur during the installation and
+build processes as reported by the users.  If you are facing any issue, please, make
 sure that we have not addressed it in documentation. Otherwise, feel free to
 contact us at java-pathfinder@googlegroups.com or open an issue on the Issue
 Tracker.
