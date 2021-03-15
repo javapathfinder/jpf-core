@@ -20,11 +20,11 @@ package jdk.internal.misc;
 import java.lang.reflect.Field;
 
 /**
- * Unsafe = unwanted. See comments in the native peer. We only have it because
- * it is required by java.util.concurrent.
- *
- * Note that in the real world, this class is only callable from the system library,
- * not application code
+ * Unsafe = unwanted. See comments in the native peer. We only have it because it is required by
+ * java.util.concurrent and with java 11 in jdk.internal.util.ArraysSupport
+ * <p>
+ * Note that in the real world, this class is only callable from the system library, not application
+ * code
  */
 
 public class Unsafe {
@@ -38,32 +38,129 @@ public class Unsafe {
   }
 
   private static native void registerNatives();
+
   private native int addressSize0();
+
   private native boolean isBigEndian0();
+
   private native boolean unalignedAccess0();
+
   public native void storeFence();
-  
+
+  public final boolean isBigEndian() {
+    return true;
+  }
+
+
+  //We need those to make ArraysSupport work nicely
+  public static final int ARRAY_BOOLEAN_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(boolean[].class);
+  /**
+   * The value of {@code arrayIndexScale(byte[].class)}
+   */
+  public static final int ARRAY_BYTE_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(byte[].class);
+
+  /**
+   * The value of {@code arrayIndexScale(short[].class)}
+   */
+  public static final int ARRAY_SHORT_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(short[].class);
+
+  /**
+   * The value of {@code arrayIndexScale(char[].class)}
+   */
+  public static final int ARRAY_CHAR_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(char[].class);
+
+  /**
+   * The value of {@code arrayIndexScale(int[].class)}
+   */
+  public static final int ARRAY_INT_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(int[].class);
+
+  /**
+   * The value of {@code arrayIndexScale(long[].class)}
+   */
+  public static final int ARRAY_LONG_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(long[].class);
+
+  /**
+   * The value of {@code arrayIndexScale(float[].class)}
+   */
+  public static final int ARRAY_FLOAT_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(float[].class);
+
+  /**
+   * The value of {@code arrayIndexScale(double[].class)}
+   */
+  public static final int ARRAY_DOUBLE_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(double[].class);
+
+  public static final int ARRAY_OBJECT_INDEX_SCALE
+      = theUnsafe.arrayIndexScale(Object[].class);
+
+  public static final int ARRAY_BOOLEAN_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(boolean[].class);
+
+  public static final int ARRAY_BYTE_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(byte[].class);
+
+  public static final int ARRAY_SHORT_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(short[].class);
+
+  public static final int ARRAY_CHAR_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(char[].class);
+
+  public static final int ARRAY_INT_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(int[].class);
+
+  public static final int ARRAY_LONG_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(long[].class);
+
+  public static final int ARRAY_FLOAT_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(float[].class);
+
+  public static final int ARRAY_DOUBLE_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(double[].class);
+
+  public static final int ARRAY_OBJECT_BASE_OFFSET
+      = theUnsafe.arrayBaseOffset(Object[].class);
+
+  public final long getLongUnaligned(Object o, long offset) {
+    return getLong(o, offset);
+  }
+
   // field offsets are completely useless between VMs, we just return
   // a numeric id for the corresponding FieldInfo here
-  public native int fieldOffset (Field f);
-  public native long objectFieldOffset (Field f);
+  public native int fieldOffset(Field f);
+
+  public native long objectFieldOffset(Field f);
+
   public native long objectFieldOffset(Class<?> c, String name);
 
   public final native boolean compareAndSetInt(Object o, long offset, int expected, int x);
+
   public final native boolean compareAndSetLong(Object o, long offset, long expected, long x);
+
   public final native boolean compareAndSetObject(Object o, long offset, Object expected, Object x);
 
   // those do the usual CAS magic
-  public native boolean compareAndSwapObject (Object oThis, long offset, Object expect, Object update);
-  public native boolean compareAndSwapInt (Object oThis, long offset, int expect, int update);
-  public native boolean compareAndSwapLong (Object oThis, long offset, long expect, long update);
+  public native boolean compareAndSwapObject(Object oThis, long offset, Object expect,
+      Object update);
+
+  public native boolean compareAndSwapInt(Object oThis, long offset, int expect, int update);
+
+  public native boolean compareAndSwapLong(Object oThis, long offset, long expect, long update);
 
   // that looks like some atomic conditional wait
-  public native void park (boolean isAbsolute, long timeout);
-  public native void unpark (Object thread);
+  public native void park(boolean isAbsolute, long timeout);
+
+  public native void unpark(Object thread);
 
   // various accessors
   public native int getInt(Object obj, long l);
+
   public native int getIntVolatile(Object obj, long l);
 
   @Deprecated
