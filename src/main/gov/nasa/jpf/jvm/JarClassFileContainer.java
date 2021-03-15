@@ -116,13 +116,11 @@ public class JarClassFileContainer extends JVMClassFileContainer {
   public ClassFileMatch getMatch(String clsName) throws ClassParseException {
     String classEntryURL = getClassEntryURL(clsName);
 
-    if(clsName.startsWith("java."))
-     classEntryURL = "modules" + "/" +classEntryURL;
-    
-    if(clsName.startsWith("java."))
-      classEntryURL = "modules" + '/' + classEntryURL;
+    if (classEntryURL.startsWith("java.")) {
+      classEntryURL = "modules" + "/" + classEntryURL;
+    }
 
-    if (pathPrefix != null){
+    if (pathPrefix != null) {
       classEntryURL = pathPrefix + classEntryURL;
     }
 
@@ -142,7 +140,9 @@ public class JarClassFileContainer extends JVMClassFileContainer {
 
         byte[] data = new byte[(int) len];
         FileUtils.getContents(is, data);
-
+        if (clsName.contains("$&$")) {
+          clsName = clsName.split("\\$&\\$")[1];
+        }
         return new JVMClassFileMatch(clsName, getClassURL(clsName), data);
 
       } catch (IOException iox) {
