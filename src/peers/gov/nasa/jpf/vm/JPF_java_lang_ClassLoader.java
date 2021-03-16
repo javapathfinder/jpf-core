@@ -17,19 +17,8 @@
  */
 package gov.nasa.jpf.vm;
 
-import java.util.Map;
-
 import gov.nasa.jpf.annotation.MJI;
-import gov.nasa.jpf.vm.ClassPath;
-import gov.nasa.jpf.vm.ClassInfo;
-import gov.nasa.jpf.vm.ClassLoaderInfo;
-import gov.nasa.jpf.vm.ClassInfoException;
-import gov.nasa.jpf.vm.ClinitRequired;
-import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.Heap;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.NativePeer;
-import gov.nasa.jpf.vm.ThreadInfo;
+import java.util.Map;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -67,13 +56,21 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     ei.setReferenceField("parent", parentRef);
   }
 
+  //<2do> For a more complete ClassLoader landscape, this PlatformClassLoader might be seperated from
+  // the system classloader. But JPF hacks already class loading significant, so I think it is not to bad for now.
   @MJI
-  public int getSystemClassLoader____Ljava_lang_ClassLoader_2 (MJIEnv env, int clsObjRef) {
+  public int getPlatformClassLoader____Ljava_lang_ClassLoader_2(MJIEnv env, int clsObjRef) {
+    return getSystemClassLoader____Ljava_lang_ClassLoader_2(env, clsObjRef);
+  }
+
+  @MJI
+  public int getSystemClassLoader____Ljava_lang_ClassLoader_2(MJIEnv env, int clsObjRef) {
     return ClassLoaderInfo.getCurrentSystemClassLoader().getClassLoaderObjectRef();
   }
 
   @MJI
-  public int getResource0__Ljava_lang_String_2__Ljava_lang_String_2 (MJIEnv env, int objRef, int resRef){
+  public int getResource0__Ljava_lang_String_2__Ljava_lang_String_2(MJIEnv env, int objRef,
+      int resRef) {
     String rname = env.getStringObject(resRef);
 
     ClassLoaderInfo cl = env.getClassLoaderInfo(objRef);

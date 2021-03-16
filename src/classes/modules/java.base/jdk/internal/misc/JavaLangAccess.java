@@ -18,8 +18,8 @@
 
 package jdk.internal.misc;
 
-import sun.nio.ch.Interruptible;
 import jdk.internal.reflect.ConstantPool;
+import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
 
 /**
@@ -44,8 +44,10 @@ public interface JavaLangAccess {
     void blockedOn(Thread t, Interruptible b);
 
     void registerShutdownHook(int slot, Runnable r);
-    
+
     int getStackTraceDepth(Throwable t);
-    
+
     StackTraceElement getStackTraceElement(Throwable t, int i);
+
+    Module defineUnnamedModule(ClassLoader loader);
 }

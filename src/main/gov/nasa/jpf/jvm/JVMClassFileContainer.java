@@ -18,13 +18,11 @@
 
 package gov.nasa.jpf.jvm;
 
-import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.vm.AnnotationInfo;
 import gov.nasa.jpf.vm.ClassFileContainer;
 import gov.nasa.jpf.vm.ClassFileMatch;
 import gov.nasa.jpf.vm.ClassLoaderInfo;
 import gov.nasa.jpf.vm.ClassParseException;
-
 import java.io.File;
 
 /**
@@ -101,14 +99,23 @@ public abstract class JVMClassFileContainer extends ClassFileContainer {
     if (moduleName == null) {
       return typeName.replace('.', File.separatorChar) + ".class";
     }
+    //Strip eventual module prefix
+    if (typeName.contains("$&$")) {
+      typeName = typeName.split("\\$&\\$")[1];
+    }
     return moduleName + File.separator + typeName.replace('.', File.separatorChar) + ".class";
   }
 
   /**
    * @return the module name for the given typeName. Returns null if the module is an unnamed module
    * or the Class object associated with the given typeName is not found.
+   *
+   * It is possible to hint the loader with the module name using $&$ as separator between module and class.
    */
   static String getModuleName(String typeName) {
+    if (typeName.contains("$&$")) {
+      return typeName.split("\\$&\\$")[0];
+    }
     try {
       return Class.forName(typeName.split("\\$")[0]).getModule().getName();
     } catch (ClassNotFoundException e) {

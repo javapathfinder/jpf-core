@@ -22,11 +22,10 @@ import java.io.PrintStream;
 import java.nio.channels.Channel;
 import java.util.Map;
 import java.util.Properties;
-
 import jdk.internal.misc.JavaLangAccess;
 import jdk.internal.misc.SharedSecrets;
-import sun.nio.ch.Interruptible;
 import jdk.internal.reflect.ConstantPool;
+import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
 
 
@@ -95,14 +94,21 @@ public class System {
 	public void registerShutdownHook(int slot, Runnable r) {
         throw new UnsupportedOperationException("JavaLangAccess.registerShutdownHook() not supported yet");
       }
+
       @Override
-	public int getStackTraceDepth(Throwable t) {
+      public int getStackTraceDepth(Throwable t) {
         return t.getStackTraceDepth();
       }
+
       @Override
-	public StackTraceElement getStackTraceElement(Throwable t, int i) {
+      public StackTraceElement getStackTraceElement(Throwable t, int i) {
         StackTraceElement[] st = t.getStackTrace();
         return st[i];
+      }
+
+      @Override
+      public Module defineUnnamedModule(ClassLoader loader) {
+        return new Module(loader);
       }
     };
   }

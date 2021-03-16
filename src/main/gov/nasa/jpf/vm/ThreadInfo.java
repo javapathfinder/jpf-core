@@ -17,7 +17,6 @@
  */
 package gov.nasa.jpf.vm;
 
-import gov.nasa.jpf.vm.bytecode.ReturnInstruction;
 import gov.nasa.jpf.Config;
 import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.JPFException;
@@ -30,10 +29,10 @@ import gov.nasa.jpf.util.IntVector;
 import gov.nasa.jpf.util.JPFLogger;
 import gov.nasa.jpf.util.Predicate;
 import gov.nasa.jpf.util.StringSetMatcher;
+import gov.nasa.jpf.vm.bytecode.ReturnInstruction;
 import gov.nasa.jpf.vm.choice.BreakGenerator;
-
-import java.io.PrintWriter;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1801,14 +1800,17 @@ public class ThreadInfo extends InfoObject
       ClassInfo ci = null;
       try {
         ci = ClassLoaderInfo.getCurrentResolvedClassInfo(cname);
-      } catch(ClassInfoException cie) {
+      } catch (ClassInfoException cie) {
         // the non-system class loader couldn't find the class, 
-        if(cie.getExceptionClass().equals("java.lang.ClassNotFoundException") &&
-                        !ClassLoaderInfo.getCurrentClassLoader().isSystemClassLoader()) {
+        if (cie.getExceptionClass().equals("java.lang.ClassNotFoundException") &&
+            !ClassLoaderInfo.getCurrentClassLoader().isSystemClassLoader()) {
           ci = ClassLoaderInfo.getSystemResolvedClassInfo(cname);
         } else {
           throw cie;
         }
+      } catch (LoadOnJPFRequired e) {
+        this.env.repeatInvocation();
+        return null;
       }
       return createAndThrowException(ci, details);
       

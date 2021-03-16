@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -148,9 +147,11 @@ public abstract class ClassLoader {
     return null;
   }
 
-  public native static ClassLoader getSystemClassLoader ();
+  public native static ClassLoader getSystemClassLoader();
 
-  public static URL getSystemResource(String name){
+  public native static ClassLoader getPlatformClassLoader();
+
+  public static URL getSystemResource(String name) {
     return getSystemClassLoader().getResource(name);
   }
 

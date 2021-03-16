@@ -172,8 +172,13 @@ public abstract class VirtualInvocation extends InstanceInvocation {
 
         if (invokedMethod == null) {
           invokedMethod = cci.getDefaultMethod(mname);
-                    
-          if (invokedMethod == null){
+
+          if (invokedMethod == null) {
+            // We might be looking for a method with signature Object instead of specific class.
+            invokedMethod = cci.getMethod(generalizeName(mname), true);
+          }
+
+          if (invokedMethod == null) {
             lastObj = MJIEnv.NULL;
             lastCalleeCi = null;
           }
@@ -189,14 +194,20 @@ public abstract class VirtualInvocation extends InstanceInvocation {
     return invokedMethod;
   }
 
+  protected String generalizeName(String mname) {
+    return mname.replaceAll("(L(:?[^;]*);)", "Ljava/lang/Object;");
+  }
+
+  ;
+
   @Override
-  public Object getFieldValue (String id, ThreadInfo ti){
+  public Object getFieldValue(String id, ThreadInfo ti) {
     int objRef = getCalleeThis(ti);
     ElementInfo ei = ti.getElementInfo(objRef);
 
     Object v = ei.getFieldValueObject(id);
 
-    if (v == null){ // try a static field
+    if (v == null) { // try a static field
       v = ei.getClassInfo().getStaticFieldValueObject(id);
     }
 

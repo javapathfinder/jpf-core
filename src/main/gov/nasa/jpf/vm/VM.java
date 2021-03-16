@@ -23,13 +23,11 @@ import gov.nasa.jpf.JPFConfigException;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.JPFListenerException;
 import gov.nasa.jpf.jvm.ClassFile;
-import gov.nasa.jpf.vm.FinalizerThreadInfo;
 import gov.nasa.jpf.search.Search;
 import gov.nasa.jpf.util.IntTable;
 import gov.nasa.jpf.util.JPFLogger;
 import gov.nasa.jpf.util.Misc;
 import gov.nasa.jpf.util.Predicate;
-
 import java.io.PrintWriter;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -413,6 +411,7 @@ public abstract class VM {
     startupClasses.add("java.lang.ref.WeakReference");
     startupClasses.add("java.lang.Enum");
     startupClasses.add("gov.nasa.jpf.FinalizerThread");
+    startupClasses.add("java.lang.invoke.VarHandle");
 
     // we could be more fancy and use wildcard patterns and the current classpath
     // to specify extra classes, but this could be VERY expensive. Projected use

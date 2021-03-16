@@ -29,26 +29,30 @@ import sun.nio.ch.Interruptible;
 public class Thread implements Runnable {
 
   public interface UncaughtExceptionHandler {
+
     // note this doesn't stop the thread from being terminated
-    void uncaughtException (Thread t, Throwable x);
+    void uncaughtException(Thread t, Throwable x);
   }
-  
+
   static int nameThreadNum; // to construct the default thread name  
 
   public static final int MIN_PRIORITY = 1;
   public static final int NORM_PRIORITY = 5;
   public static final int MAX_PRIORITY = 10;
 
+  public static long counter = 0;
+  private final long tid = ++counter;
+
   // don't rename this - it's used by ThreadGoup.uncaughtException()
   private static volatile UncaughtExceptionHandler defaultUncaughtExceptionHandler; // null by default
-  
+
   // initialized in init(), except of the main thread (which gets explicitly initialized by the VM)
   ThreadGroup group;
   Runnable target;
   String name;
   int priority;
   boolean isDaemon;
-  
+
   // this is an explicit thread state that gets set on a call of interrupt(), but
   // only if the thread is not blocked. If it is, we only change the status.
   // this gets cleared by calling interrupted()
