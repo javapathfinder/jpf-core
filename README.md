@@ -1,5 +1,5 @@
 # Java Pathfinder (JPF)
-[![Build Status](https://travis-ci.org/javapathfinder/jpf-core.svg?branch=master)](https://travis-ci.org/javapathfinder/jpf-core)
+![build master](https://github.com/javapathfinder/jpf-core/actions/workflows/simple_build.yml/badge.svg)
 
 An extensible software model checking framework for Java bytecode programs
 
