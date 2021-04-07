@@ -1,4 +1,4 @@
-name: Simple grade build
+name: baseline build
 
 on:
   push:
