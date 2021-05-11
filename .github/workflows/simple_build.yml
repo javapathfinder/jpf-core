@@ -24,3 +24,5 @@ jobs:
         distribution: 'adopt'
     - name: Build with Gradle
       run: ./gradlew check
+    - name: Run PolDet test
+      run: ./gradlew testPolDet
