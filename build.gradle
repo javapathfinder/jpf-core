@@ -1,4 +1,5 @@
 apply plugin: "java"
+apply plugin: "maven-publish"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -9,7 +10,7 @@ repositories {
 
 buildscript {
     repositories {
-	maven {
+        maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
@@ -34,10 +35,10 @@ def gitDetails = versionDetails()
 
 ext.manifestCommonAttrbutes = manifest {
     attributes(
-        "Built-By": System.getProperty("user.name"),
-        "Implementation-Vendor": "NASA Ames Research Center",
-        "Specification-Version": gitDetails.lastTag,
-        "Implementation-Version": gitDetails.gitHashFull
+            "Built-By": System.getProperty("user.name"),
+            "Implementation-Vendor": "NASA Ames Research Center",
+            "Specification-Version": gitDetails.lastTag,
+            "Implementation-Version": gitDetails.gitHashFull
     )
 }
 
@@ -158,8 +159,8 @@ task createRunJpfJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Implementation-Title": "Java Pathfinder core launch system",
-            "Main-Class": "gov.nasa.jpf.tool.RunJPF"
+                "Implementation-Title": "Java Pathfinder core launch system",
+                "Main-Class": "gov.nasa.jpf.tool.RunJPF"
         )
         from manifestCommonAttrbutes
     }
@@ -192,8 +193,8 @@ task createRunTestJar(type: Jar) {
     }
     manifest {
         attributes(
-            "Implementation-Title": "Java Pathfinder test launch system",
-            "Main-Class": "gov.nasa.jpf.tool.RunTest"
+                "Implementation-Title": "Java Pathfinder test launch system",
+                "Main-Class": "gov.nasa.jpf.tool.RunTest"
         )
         from manifestCommonAttrbutes
     }
@@ -238,7 +239,7 @@ test {
                                  "${result.failedTestCount} failed",
                                  "${result.skippedTestCount} skipped"]
 
-            println ("Summary: " + summaryFields.join(", "))
+            println("Summary: " + summaryFields.join(", "))
         }
     }
 }
@@ -265,4 +266,22 @@ task runPolDet(type: Exec) {
     commandLine 'java', '-jar', "${buildDir}/RunJPF.jar", "+classpath=${JPFClasspath}", "PolDetMain", project.findProperty("testClass") ?: ""
 }
 
+publishing {
+    publications {
+        jpfCore(MavenPublication) {
+            groupId = 'gov.nasa'
+            artifactId = 'jpf-core'
+            artifact createJpfJar
+        }
+        jpfAnnotation(MavenPublication) {
+            groupId = 'gov.nasa'
+            artifactId = 'jpf-annotations'
+            artifact createAnnotationsJar
+        }
+    }
+}
+
+
 defaultTasks "buildJars"
+
+
