@@ -278,6 +278,11 @@ publishing {
             artifactId = 'jpf-annotations'
             artifact createAnnotationsJar
         }
+        jpfClasses(MavenPublication) {
+            groupId = 'gov.nasa'
+            artifactId = 'jpf-classes'
+            artifact createJpfClassesJar
+        }
     }
 }
 
