@@ -432,6 +432,44 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     }
   }
 
+  // explore flipping nBit bits in the lowest len bits of v
+  @MJI
+  public static long getBitFlip__JII__J (MJIEnv env, int clsObjRef, long v, int nBit, int len) {
+    assert (nBit <= len);
+    int last = -1;
+    for (int i = 0; i < nBit; ++i) {
+      int p = getInt__II__I(env, clsObjRef, last+1, len-nBit+i);
+      v ^= (1l << p);
+      last = p;
+    }
+    return v;
+  }
+
+  @MJI
+  public static long getBitFlip__JI__J (MJIEnv env, int clsObjRef, long v, int nBit) {
+    return getBitFlip__JII__J(env, clsObjRef, v, nBit, 64);
+  }
+
+  @MJI
+  public static int getBitFlip__II__I (MJIEnv env, int clsObjRef, int v, int nBit) {
+    return (int) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 32);
+  }
+
+  @MJI
+  public static short getBitFlip__SI__S (MJIEnv env, int clsObjRef, short v, int nBit) {
+    return (short) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 16);
+  }
+
+  @MJI
+  public static char getBitFlip__CI__C (MJIEnv env, int clsObjRef, char v, int nBit) {
+    return (char) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 16);
+  }
+
+  @MJI
+  public static byte getBitFlip__BI__B (MJIEnv env, int clsObjRef, byte v, int nBit) {
+    return (byte) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 8);
+  }
+
   static int getIntFromList (MJIEnv env, int[] values){
     ThreadInfo ti = env.getThreadInfo();
     SystemState ss = env.getSystemState();

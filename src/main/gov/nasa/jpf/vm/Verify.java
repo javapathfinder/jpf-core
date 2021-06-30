@@ -347,7 +347,31 @@ public class Verify {
   public static void addObjectAttribute (Object o, int val) {}
   public static int[] getObjectAttributes (Object o) { return new int[0]; }
 
-  
+
+  public static long getBitFlip (long v, int nBit, int len) {
+      return v;
+  }
+
+  public static long getBitFlip (long v, int nBit) {
+      return getBitFlip(v, nBit, 64);
+  }
+
+  public static int getBitFlip (int v, int nBit) {
+      return (int) getBitFlip((long)v, nBit, 32);
+  }
+
+  public static short getBitFlip (short v, int nBit) {
+      return (short) getBitFlip((long)v, nBit, 16);
+  }
+
+  public static char getBitFlip (char v, int nBit) {
+      return (char) getBitFlip((long)v, nBit, 16);
+  }
+
+  public static byte getBitFlip (byte v, int nBit) {
+      return (byte) getBitFlip((long)v, nBit, 8);
+  }
+
   /**
    * this is the new boolean choice generator. Since there's no real
    * heuristic involved with boolean values, we skip the id (it's a
