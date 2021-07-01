@@ -113,6 +113,16 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
           isInitialized = false;
         }
       });
+
+      // initialize the binomial coefficients by Pascal's triangle
+      binomial = new int[65][65];
+      binomial[0][0] = binomial[1][0] = binomial[1][1] = 1;
+      for (int i = 2; i <= 64; ++i) {
+        binomial[i][0] = binomial[i][i] = 1;
+        for (int j = 1; j < i; ++j) {
+          binomial[i][j] = binomial[i-1][j] + binomial[i-1][j-1];
+        }
+      }
     }
     return true;
   }
@@ -432,15 +442,25 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     }
   }
 
+  // store the binomial coefficients
+  // some coefficients may exceed MAX_INT, but JPF cannot handle a large number like MAX_INT of states anyhow
+  static int[][] binomial;
+
   // explore flipping nBit bits in the lowest len bits of v
   @MJI
   public static long getBitFlip__JII__J (MJIEnv env, int clsObjRef, long v, int nBit, int len) {
     assert (nBit <= len);
-    int last = -1;
-    for (int i = 0; i < nBit; ++i) {
-      int p = getInt__II__I(env, clsObjRef, last+1, len-nBit+i);
-      v ^= (1l << p);
-      last = p;
+    if (binomial[len][nBit] < 0 || binomial[len][nBit] > (int)1e9) {
+      throw new RuntimeException("Too many choices of bit flipping for JPF to explore");
+    }
+    int choice = getInt__II__I(env, clsObjRef, 0, binomial[len][nBit]-1);
+    for (int i = len-1; i >= 0; --i) {
+      // decide whether to flip the i-th bit or not
+      if (choice >= binomial[i][nBit]) {
+        v ^= (1l << i);
+        choice -= binomial[i][nBit];
+        nBit--;
+      }
     }
     return v;
   }

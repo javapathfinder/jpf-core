@@ -349,27 +349,34 @@ public class Verify {
 
 
   public static long getBitFlip (long v, int nBit, int len) {
-      return v;
+    assert (nBit <= len);
+    int last = -1;
+    for (int i = 0; i < nBit; ++i) {
+      int p = getInt(last+1, len-nBit+i);
+      v ^= (1l << p);
+      last = p;
+    }
+    return v;
   }
 
   public static long getBitFlip (long v, int nBit) {
-      return getBitFlip(v, nBit, 64);
+    return getBitFlip(v, nBit, 64);
   }
 
   public static int getBitFlip (int v, int nBit) {
-      return (int) getBitFlip((long)v, nBit, 32);
+    return (int) getBitFlip((long)v, nBit, 32);
   }
 
   public static short getBitFlip (short v, int nBit) {
-      return (short) getBitFlip((long)v, nBit, 16);
+    return (short) getBitFlip((long)v, nBit, 16);
   }
 
   public static char getBitFlip (char v, int nBit) {
-      return (char) getBitFlip((long)v, nBit, 16);
+    return (char) getBitFlip((long)v, nBit, 16);
   }
 
   public static byte getBitFlip (byte v, int nBit) {
-      return (byte) getBitFlip((long)v, nBit, 8);
+    return (byte) getBitFlip((long)v, nBit, 8);
   }
 
   /**
