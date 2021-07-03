@@ -348,6 +348,9 @@ public class Verify {
   public static int[] getObjectAttributes (Object o) { return new int[0]; }
 
 
+  /**
+   * a bit flip generator that returns variable v with nBit bits flipped in v's lowest len bits
+   */
   public static long getBitFlip (long v, int nBit, int len) {
     assert (nBit <= len);
     int last = -1;
@@ -359,22 +362,37 @@ public class Verify {
     return v;
   }
 
+  /**
+   * flip nBit bits of a long variable
+   */
   public static long getBitFlip (long v, int nBit) {
     return getBitFlip(v, nBit, 64);
   }
 
+  /**
+   * flip nBit bits of an int variable
+   */
   public static int getBitFlip (int v, int nBit) {
     return (int) getBitFlip((long)v, nBit, 32);
   }
 
+  /**
+   * flip nBit bits of a short variable
+   */
   public static short getBitFlip (short v, int nBit) {
     return (short) getBitFlip((long)v, nBit, 16);
   }
 
+  /**
+   * flip nBit bits of a char variable
+   */
   public static char getBitFlip (char v, int nBit) {
     return (char) getBitFlip((long)v, nBit, 16);
   }
 
+  /**
+   * flip nBit bits of a byte variable
+   */
   public static byte getBitFlip (byte v, int nBit) {
     return (byte) getBitFlip((long)v, nBit, 8);
   }

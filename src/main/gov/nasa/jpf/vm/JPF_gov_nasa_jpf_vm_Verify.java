@@ -78,6 +78,13 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
   static int nextBitSet;
 
   static PrintStream out;
+
+  /**
+   * store the binomial coefficients
+   * the coefficients are used to decode a number in [0, C(n, k)) to a k-combination of n elements
+   * used in getBitFlip__JII__J to generate a set of k bits to flip in a total of n bits
+   */
+  static int[][] binomial;
   
   public static boolean init (Config conf) {
 
@@ -114,12 +121,18 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
         }
       });
 
-      // initialize the binomial coefficients by Pascal's triangle
-      binomial = new int[65][65];
+      /**
+       * initialize the binomial coefficients by Pascal's triangle
+       * allow up to 7 bits to flip to avoid state explosion that JPF cannot handle
+       */
+      binomial = new int[65][8];
       binomial[0][0] = binomial[1][0] = binomial[1][1] = 1;
       for (int i = 2; i <= 64; ++i) {
-        binomial[i][0] = binomial[i][i] = 1;
-        for (int j = 1; j < i; ++j) {
+        binomial[i][0] = 1;
+        if (i < 8) {
+          binomial[i][i] = 1;
+        }
+        for (int j = 1; j < i && j < 8; ++j) {
           binomial[i][j] = binomial[i-1][j] + binomial[i-1][j-1];
         }
       }
@@ -442,20 +455,25 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     }
   }
 
-  // store the binomial coefficients
-  // some coefficients may exceed MAX_INT, but JPF cannot handle a large number like MAX_INT of states anyhow
-  static int[][] binomial;
 
-  // explore flipping nBit bits in the lowest len bits of v
+  /**
+   * explore flipping nBit bits in the lowest len bits of a long variable v
+   * allow up to 7 bits to flip to avoid state explosion
+   */
   @MJI
   public static long getBitFlip__JII__J (MJIEnv env, int clsObjRef, long v, int nBit, int len) {
     assert (nBit <= len);
-    if (binomial[len][nBit] < 0 || binomial[len][nBit] > (int)1e9) {
-      throw new RuntimeException("Too many choices of bit flipping for JPF to explore");
+    if (nBit > 7) {
+      throw new RuntimeException("Too many bits to flip (more than 7)");
     }
     int choice = getInt__II__I(env, clsObjRef, 0, binomial[len][nBit]-1);
+
+    /**
+     * decode out a set of nBit bits from the generated number recursively
+     * Since in all C(i, nBit) combinations, C(i-1, nBit-1) combinations do not select the i-th bit,
+     * whether to flip the i-th bit is decided by comparing the number with C(i-1, nBit-1)
+     */
     for (int i = len-1; i >= 0; --i) {
-      // decide whether to flip the i-th bit or not
       if (choice >= binomial[i][nBit]) {
         v ^= (1l << i);
         choice -= binomial[i][nBit];
@@ -465,26 +483,41 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     return v;
   }
 
+  /**
+   * flip nBit (up to 7) bits of a long variable
+   */
   @MJI
   public static long getBitFlip__JI__J (MJIEnv env, int clsObjRef, long v, int nBit) {
     return getBitFlip__JII__J(env, clsObjRef, v, nBit, 64);
   }
 
+  /**
+   * flip nBit (up to 7) bits of an int variable
+   */
   @MJI
   public static int getBitFlip__II__I (MJIEnv env, int clsObjRef, int v, int nBit) {
     return (int) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 32);
   }
 
+  /**
+   * flip nBit (up to 7) bits of a short variable
+   */
   @MJI
   public static short getBitFlip__SI__S (MJIEnv env, int clsObjRef, short v, int nBit) {
     return (short) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 16);
   }
 
+  /**
+   * flip nBit (up to 7) bits of a char variable
+   */
   @MJI
   public static char getBitFlip__CI__C (MJIEnv env, int clsObjRef, char v, int nBit) {
     return (char) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 16);
   }
 
+  /**
+   * flip nBit (up to 7) bits of a byte variable
+   */
   @MJI
   public static byte getBitFlip__BI__B (MJIEnv env, int clsObjRef, byte v, int nBit) {
     return (byte) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 8);
