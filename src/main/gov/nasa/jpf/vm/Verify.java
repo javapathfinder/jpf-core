@@ -398,6 +398,27 @@ public class Verify {
   }
 
   /**
+   * flip nBit bits of a double variable
+   */
+  public static double getBitFlip (double v, int nBit) {
+    return Double.longBitsToDouble(getBitFlip(Double.doubleToLongBits(v), nBit));
+  }
+
+  /**
+   * flip nBit bits of a float variable
+   */
+  public static float getBitFlip (float v, int nBit) {
+    return Float.intBitsToFloat(getBitFlip(Float.floatToIntBits(v), nBit));
+  }
+
+  /**
+   * flip a boolean variable
+   */
+  public static boolean getBitFlip (boolean v) {
+    return !v;
+  }
+
+  /**
    * this is the new boolean choice generator. Since there's no real
    * heuristic involved with boolean values, we skip the id (it's a
    * hardwired "boolean")

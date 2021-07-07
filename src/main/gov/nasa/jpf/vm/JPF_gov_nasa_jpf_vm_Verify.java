@@ -523,6 +523,22 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     return (byte) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 8);
   }
 
+  /**
+   * flip nBit (up to 7) bits of a double variable
+   */
+  @MJI
+  public static double getBitFlip__DI__D (MJIEnv env, int clsObjRef, double v, int nBit) {
+      return Double.longBitsToDouble(getBitFlip__JI__J(env, clsObjRef, Double.doubleToLongBits(v), nBit));
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a float variable
+   */
+  @MJI
+  public static float getBitFlip__FI__F (MJIEnv env, int clsObjRef, float v, int nBit) {
+      return Float.intBitsToFloat(getBitFlip__II__I(env, clsObjRef, Float.floatToIntBits(v), nBit));
+  }
+
   static int getIntFromList (MJIEnv env, int[] values){
     ThreadInfo ti = env.getThreadInfo();
     SystemState ss = env.getSystemState();
