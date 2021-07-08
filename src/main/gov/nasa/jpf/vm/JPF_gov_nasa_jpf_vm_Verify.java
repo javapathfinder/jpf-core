@@ -85,6 +85,8 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
    * used in getBitFlip__JII__J to generate a set of k bits to flip in a total of n bits
    */
   static int[][] binomial;
+
+  static boolean binomialInitialized;
   
   public static boolean init (Config conf) {
 
@@ -120,11 +122,16 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
           isInitialized = false;
         }
       });
+    }
+    return true;
+  }
 
-      /**
-       * initialize the binomial coefficients by Pascal's triangle
-       * allow up to 7 bits to flip to avoid state explosion that JPF cannot handle
-       */
+  /**
+   * initialize the binomial coefficients by Pascal's triangle
+   * allow up to 7 bits to flip to avoid state explosion that JPF cannot handle
+   */
+  public static void initializeBinomial () {
+    if (!binomialInitialized) {
       binomial = new int[65][8];
       binomial[0][0] = binomial[1][0] = binomial[1][1] = 1;
       for (int i = 2; i <= 64; ++i) {
@@ -136,10 +143,9 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
           binomial[i][j] = binomial[i-1][j] + binomial[i-1][j-1];
         }
       }
+      binomialInitialized = true;
     }
-    return true;
   }
-
   
   public static final int NO_VALUE = -1;
   
@@ -462,10 +468,13 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
    */
   @MJI
   public static long getBitFlip__JII__J (MJIEnv env, int clsObjRef, long v, int nBit, int len) {
-    assert (nBit <= len);
-    if (nBit > 7) {
-      throw new RuntimeException("Too many bits to flip (more than 7)");
+    if (nBit < 0 || nBit > 7) {
+      throw new JPFException("Invalid number of bits to flip: should be between 1 and 7");
     }
+    if (nBit > len) {
+      throw new JPFException("Invalid number of bits to flip: should not exceed the number of bits");
+    }
+    initializeBinomial();
     int choice = getInt__II__I(env, clsObjRef, 0, binomial[len][nBit]-1);
 
     /**

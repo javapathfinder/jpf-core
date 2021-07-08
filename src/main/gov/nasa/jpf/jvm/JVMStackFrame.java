@@ -18,10 +18,16 @@
 
 package gov.nasa.jpf.jvm;
 
+import gov.nasa.jpf.annotation.BitFlip;
+import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.util.FixedBitSet;
+import gov.nasa.jpf.vm.AnnotationInfo;
 import gov.nasa.jpf.vm.MethodInfo;
+import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.StackFrame;
 import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.Types;
+import static gov.nasa.jpf.vm.JPF_gov_nasa_jpf_vm_Verify.*;
 
 /**
  * a stackframe that is used for executing Java bytecode, supporting both
@@ -69,6 +75,65 @@ public class JVMStackFrame extends StackFrame {
 
       if (!miCallee.isStatic()) {
         thisRef = calleeSlots[0];
+      }
+
+      // inject bit flips for parameters annotated @BitFlip
+      byte[] argTypes = mi.getArgumentTypes();
+      int n = argTypes.length;
+      for (int i = n-1, off = 0; i >= 0; --i) {
+        int nBit = 0;
+        AnnotationInfo[] annotations = mi.getParameterAnnotations(i);
+        if (annotations != null) {
+          for (AnnotationInfo a : annotations) {
+            if ("gov.nasa.jpf.annotation.BitFlip".equals(a.getName())) {
+              System.out.println(a.getName());
+              nBit = a.getValueAsInt("value");
+            }
+          }
+        }
+        if (nBit < 0 || nBit > 7) {
+          throw new JPFException("Invalid number of bits to flip: should be between 1 and 7");
+        }
+        switch (argTypes[i]) {
+          case Types.T_ARRAY:
+          case Types.T_REFERENCE:
+            // cannot handle arrays and object arguments now
+            off++;
+            break;
+          case Types.T_LONG:
+          case Types.T_DOUBLE:
+            if (nBit > 0) {
+              setLongLocalVariable(top-off-1, getBitFlip__JI__J(ti.getMJIEnv(), 0, peekLong(off), nBit));
+            }
+            off += 2;
+            break;
+          case Types.T_BOOLEAN:
+            if (nBit > 0) {
+              setLocalVariable(top-off, peek(off)^1);
+            }
+            off++;
+            break;
+          case Types.T_INT:
+          case Types.T_FLOAT:
+            if (nBit > 0) {
+              setLocalVariable(top-off, getBitFlip__II__I(ti.getMJIEnv(), 0, peek(off), nBit));
+            }
+            off++;
+            break;
+          case Types.T_SHORT:
+            if (nBit > 0) {
+              setLocalVariable(top-off, (int)getBitFlip__SI__S(ti.getMJIEnv(), 0, (short)peek(off), nBit));
+            }
+            off++;
+            break;
+          case Types.T_BYTE:
+          case Types.T_CHAR:
+            if (nBit > 0) {
+              setLocalVariable(top-off, (int)getBitFlip__BI__B(ti.getMJIEnv(), 0, (byte)peek(off), nBit));
+            }
+            off++;
+            break;
+        }
       }
     }
   }
