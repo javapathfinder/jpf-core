@@ -86,8 +86,6 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
    */
   static int[][] binomial;
 
-  static boolean binomialInitialized;
-  
   public static boolean init (Config conf) {
 
     if (!isInitialized){
@@ -126,24 +124,24 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     return true;
   }
 
+  static {
+    initializeBinomial();
+  }
   /**
    * initialize the binomial coefficients by Pascal's triangle
    * allow up to 7 bits to flip to avoid state explosion that JPF cannot handle
    */
   public static void initializeBinomial () {
-    if (!binomialInitialized) {
-      binomial = new int[65][8];
-      binomial[0][0] = binomial[1][0] = binomial[1][1] = 1;
-      for (int i = 2; i <= 64; ++i) {
-        binomial[i][0] = 1;
-        if (i < 8) {
-          binomial[i][i] = 1;
-        }
-        for (int j = 1; j < i && j < 8; ++j) {
-          binomial[i][j] = binomial[i-1][j] + binomial[i-1][j-1];
-        }
+    binomial = new int[65][8];
+    binomial[0][0] = binomial[1][0] = binomial[1][1] = 1;
+    for (int i = 2; i <= 64; ++i) {
+      binomial[i][0] = 1;
+      if (i < 8) {
+        binomial[i][i] = 1;
       }
-      binomialInitialized = true;
+      for (int j = 1; j < i && j < 8; ++j) {
+        binomial[i][j] = binomial[i-1][j] + binomial[i-1][j-1];
+      }
     }
   }
   
@@ -474,8 +472,17 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     if (nBit > len) {
       throw new JPFException("Invalid number of bits to flip: should not exceed the number of bits");
     }
-    initializeBinomial();
-    int choice = getInt__II__I(env, clsObjRef, 0, binomial[len][nBit]-1);
+    ThreadInfo ti = env.getThreadInfo();
+    SystemState ss = env.getSystemState();
+
+    int choice;
+    if (!ti.isFirstStepInsn()) { // first time around
+      IntChoiceGenerator cg = new IntIntervalGenerator( "verifyGetBitFlip(JII)", 0, binomial[len][nBit]-1);
+      choice = registerChoiceGenerator(env,ss,ti,cg,0);
+
+    } else {
+      choice = getNextChoice(ss, "verifyGetBitFlip(JII)", IntChoiceGenerator.class, Integer.class);
+    }
 
     /**
      * decode out a set of nBit bits from the generated number recursively
