@@ -18,18 +18,10 @@
 
 package gov.nasa.jpf.listener;
 
-import gov.nasa.jpf.Config;
-import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.ListenerAdapter;
 import gov.nasa.jpf.JPFException;
-import gov.nasa.jpf.jvm.bytecode.ARETURN;
-import gov.nasa.jpf.jvm.bytecode.ASTORE;
 import gov.nasa.jpf.jvm.bytecode.JVMInvokeInstruction;
-import gov.nasa.jpf.jvm.bytecode.PUTFIELD;
-import gov.nasa.jpf.jvm.bytecode.PUTSTATIC;
-import gov.nasa.jpf.jvm.bytecode.RETURN;
-import gov.nasa.jpf.report.ConsolePublisher;
-import gov.nasa.jpf.report.Publisher;
+import gov.nasa.jpf.jvm.bytecode.JVMReturnInstruction;
 import gov.nasa.jpf.vm.AnnotationInfo;
 import gov.nasa.jpf.vm.choice.IntIntervalGenerator;
 import gov.nasa.jpf.vm.ClassInfo;
@@ -38,23 +30,12 @@ import gov.nasa.jpf.vm.FieldInfo;
 import gov.nasa.jpf.vm.Instruction;
 import gov.nasa.jpf.vm.IntChoiceGenerator;
 import gov.nasa.jpf.vm.LocalVarInfo;
-import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.MethodInfo;
 import gov.nasa.jpf.vm.StackFrame;
 import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
-import gov.nasa.jpf.vm.bytecode.FieldInstruction;
-import gov.nasa.jpf.vm.bytecode.InstanceFieldInstruction;
-import gov.nasa.jpf.vm.bytecode.InstanceInvokeInstruction;
-import gov.nasa.jpf.vm.bytecode.InstructionInterface;
-import gov.nasa.jpf.vm.bytecode.InvokeInstruction;
-import gov.nasa.jpf.vm.bytecode.LocalVariableInstruction;
-import gov.nasa.jpf.vm.bytecode.ReturnInstruction;
-import gov.nasa.jpf.vm.bytecode.ReturnValueInstruction;
-import gov.nasa.jpf.vm.bytecode.WriteInstruction;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +67,7 @@ public class BitFlipListener extends ListenerAdapter {
 
   public void bitFlip (StackFrame frame, int off, int len, int nBit, int choice, String key) {
     long v = (len <= 32) ? (long)frame.peek(off) : frame.peekLong(off);
-    v ^= lastFlippedBits.containsKey(key) ? lastFlippedBits.get(key) : 0;
+    v ^= lastFlippedBits.get(key);
     long flippedBits = 0;
     for (int i = len-1; i >= 0; --i) {
       if (choice >= binomial[i][nBit]) {
@@ -168,6 +149,7 @@ public class BitFlipListener extends ListenerAdapter {
         }
         if (!ti.isFirstStepInsn()) {
           IntChoiceGenerator cg = new IntIntervalGenerator(key, 0, binomial[len][nBit]-1);
+          lastFlippedBits.put(key, 0l);
           if (ss.setNextChoiceGenerator(cg)) {
             ti.skipInstruction(insnToExecute);
           }
@@ -177,6 +159,9 @@ public class BitFlipListener extends ListenerAdapter {
           if (cg != null) {
             int choice = cg.getNextChoice();
             bitFlip(ti.getTopFrame(), offset, len, nBit, choice, key);
+            if (!cg.hasMoreChoices()) {
+              lastFlippedBits.put(key, 0l);
+            }
           }
         }
       }
