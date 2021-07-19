@@ -988,6 +988,31 @@ public class Types {
       return 1;
     }
   }
+
+  /**
+   * what would be the info size in bits
+   */
+  public static int getTypeSizeInBits (byte typeCategory) {
+    switch (typeCategory) {
+      case T_LONG:
+      case T_DOUBLE:
+        return 64;
+      case Types.T_BOOLEAN:
+        return 1;
+      case Types.T_ARRAY:
+      case Types.T_REFERENCE:
+      case Types.T_INT:
+      case Types.T_FLOAT:
+        return 32;
+      case Types.T_SHORT:
+        return 16;
+      case Types.T_BYTE:
+      case Types.T_CHAR:
+        return 8;
+    }
+
+    throw new JPFException("invalid type type category id: " + typeCategory);
+  }
   
   public static String asTypeName (String type) {
     if (type.startsWith("[") || type.endsWith(";")) {

@@ -65,25 +65,23 @@ public class BitFlipListener extends ListenerAdapter {
     }
   }
 
-  public void bitFlip (StackFrame frame, int off, int len, int nBit, int choice, String key) {
-    long v = (len <= 32) ? (long)frame.peek(off) : frame.peekLong(off);
-    v ^= lastFlippedBits.get(key);
-    long flippedBits = 0;
+  /**
+   * return a long variable representing the bits to flip
+   * first flip the last flipped bit back
+   */
+  public long getBitsToFlip (int len, int nBit, int choice, String key) {
+    long bitsToFlip = 0;
     for (int i = len-1; i >= 0; --i) {
       if (choice >= binomial[i][nBit]) {
-        v ^= (1l << i);
-        flippedBits ^= (1l << i);
+        bitsToFlip ^= (1l << i);
         choice -= binomial[i][nBit];
         nBit--;
       }
     }
-    lastFlippedBits.put(key, flippedBits);
-    int top = frame.getTopPos();
-    if (len <= 32) {
-      frame.setLocalVariable(top-off, (int)v);
-    } else {
-      frame.setLongLocalVariable(top-off-1, v);
-    }
+    long tmp = lastFlippedBits.get(key);
+    lastFlippedBits.put(key, bitsToFlip);
+    bitsToFlip ^= tmp;
+    return bitsToFlip;
   }
 
   /**
@@ -123,30 +121,7 @@ public class BitFlipListener extends ListenerAdapter {
       if (idx != -1) {
         String key = mi.getFullName() + ":ParameterBitFlip";
         SystemState ss = vm.getSystemState();
-        int len = -1;
-        switch (argTypes[idx]) {
-          case Types.T_LONG:
-          case Types.T_DOUBLE:
-            len = 64;
-            break;
-          case Types.T_BOOLEAN:
-            len = 1;
-            break;
-          // cannot handle arrays and object parameters properly now
-          case Types.T_ARRAY:
-          case Types.T_REFERENCE:
-          case Types.T_INT:
-          case Types.T_FLOAT:
-            len = 32;
-            break;
-          case Types.T_SHORT:
-            len = 16;
-            break;
-          case Types.T_BYTE:
-          case Types.T_CHAR:
-            len = 8;
-            break;
-        }
+        int len = Types.getTypeSizeInBits(argTypes[idx]);
         if (!ti.isFirstStepInsn()) {
           IntChoiceGenerator cg = new IntIntervalGenerator(key, 0, binomial[len][nBit]-1);
           lastFlippedBits.put(key, 0l);
@@ -158,7 +133,8 @@ public class BitFlipListener extends ListenerAdapter {
           IntChoiceGenerator cg = (IntChoiceGenerator) ss.getChoiceGenerator(key);
           if (cg != null) {
             int choice = cg.getNextChoice();
-            bitFlip(ti.getTopFrame(), offset, len, nBit, choice, key);
+            long bitsToFlip = getBitsToFlip(len, nBit, choice, key);
+            ti.getTopFrame().bitFlip(offset, Types.getTypeSize(argTypes[idx]), bitsToFlip);
             if (!cg.hasMoreChoices()) {
               lastFlippedBits.put(key, 0l);
             }
