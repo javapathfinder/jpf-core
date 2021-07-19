@@ -83,6 +83,78 @@ public class BitFlipTest extends TestJPF {
     }
   }
 
+  @BitFlip
+  int instanceField;
+
+  @Test
+  public void testInstanceFieldBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
+      System.out.println("@BitFlip annotation for instance field test");
+      instanceField = 0;
+      System.out.print("instanceField = ");
+      System.out.println(instanceField);
+      int seen = Verify.getCounter(0);
+      assert ((seen & instanceField) == 0);
+      seen |= instanceField;
+      Verify.setCounter(0, seen);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  @BitFlip
+  static int staticField;
+
+  @Test
+  public void testStaticFieldBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
+      System.out.println("@BitFlip annotation for static field test");
+      staticField = 0;
+      System.out.print("staticField = ");
+      System.out.println(staticField);
+      int seen = Verify.getCounter(0);
+      assert ((seen & staticField) == 0);
+      seen |= staticField;
+      Verify.setCounter(0, seen);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  /*
+   * Local variable annotations not working now with JPF!
+  @Test
+  public void testLocalVariableBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
+      System.out.println("@BitFlip annotation for local variable test");
+      @BitFlip int d = 0;
+      System.out.print("d = ");
+      System.out.println(d);
+      int seen = Verify.getCounter(0);
+      assert ((seen & d) == 0);
+      seen |= d;
+      Verify.setCounter(0, seen);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+  */
+
   @Test
   public void testBitFlipAPI() {
 

@@ -1005,13 +1005,41 @@ public class Types {
       case Types.T_FLOAT:
         return 32;
       case Types.T_SHORT:
+      case Types.T_CHAR:
         return 16;
       case Types.T_BYTE:
-      case Types.T_CHAR:
         return 8;
     }
 
     throw new JPFException("invalid type type category id: " + typeCategory);
+  }
+
+  public static int getTypeSizeInBits (String signature) {
+    switch (signature.charAt(0)) {
+      case 'V':
+        return 0;
+
+      case 'Z':
+        return 1;
+      case 'B':
+        return 8;
+
+      case 'S':
+      case 'C':
+        return 16;
+
+      case 'L':
+      case '[':
+      case 'F':
+      case 'I':
+        return 32;
+
+      case 'D':
+      case 'J':
+        return 64;
+    }
+
+    throw new JPFException("invalid type string: " + signature);
   }
   
   public static String asTypeName (String type) {

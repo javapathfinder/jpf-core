@@ -20,9 +20,18 @@ package gov.nasa.jpf.listener;
 
 import gov.nasa.jpf.ListenerAdapter;
 import gov.nasa.jpf.JPFException;
+import gov.nasa.jpf.jvm.bytecode.ArrayStoreInstruction;
+import gov.nasa.jpf.jvm.bytecode.ASTORE;
 import gov.nasa.jpf.jvm.bytecode.JVMInvokeInstruction;
+import gov.nasa.jpf.jvm.bytecode.JVMLocalVariableInstruction;
 import gov.nasa.jpf.jvm.bytecode.JVMReturnInstruction;
+import gov.nasa.jpf.jvm.bytecode.LSTORE;
+import gov.nasa.jpf.jvm.bytecode.DSTORE;
+import gov.nasa.jpf.jvm.bytecode.FSTORE;
+import gov.nasa.jpf.jvm.bytecode.ISTORE;
 import gov.nasa.jpf.vm.AnnotationInfo;
+import gov.nasa.jpf.vm.bytecode.StoreInstruction;
+import gov.nasa.jpf.vm.bytecode.WriteInstruction;
 import gov.nasa.jpf.vm.choice.IntIntervalGenerator;
 import gov.nasa.jpf.vm.ClassInfo;
 import gov.nasa.jpf.vm.ElementInfo;
@@ -84,6 +93,28 @@ public class BitFlipListener extends ListenerAdapter {
     return bitsToFlip;
   }
 
+  public void flip (VM vm, ThreadInfo ti, Instruction insnToExecute, String key, int offset, int size, int len, int nBit) {
+    SystemState ss = vm.getSystemState();
+    if (!ti.isFirstStepInsn()) {
+      IntChoiceGenerator cg = new IntIntervalGenerator(key, 0, binomial[len][nBit]-1);
+      lastFlippedBits.put(key, 0l);
+      if (ss.setNextChoiceGenerator(cg)) {
+        ti.skipInstruction(insnToExecute);
+      }
+    }
+    else {
+      IntChoiceGenerator cg = (IntChoiceGenerator) ss.getChoiceGenerator(key);
+      if (cg != null) {
+        int choice = cg.getNextChoice();
+        long bitsToFlip = getBitsToFlip(len, nBit, choice, key);
+        ti.getTopFrame().bitFlip(offset, size, bitsToFlip);
+        if (!cg.hasMoreChoices()) {
+          lastFlippedBits.put(key, 0l);
+        }
+      }
+    }
+  }
+
   /**
    * inject bit flips for parameters annotated with @BitFlip
    * permit to inject bit flips to only one parameter
@@ -92,54 +123,57 @@ public class BitFlipListener extends ListenerAdapter {
   public void executeInstruction (VM vm, ThreadInfo ti, Instruction insnToExecute) {
     if (insnToExecute instanceof JVMInvokeInstruction) {
       MethodInfo mi = ((JVMInvokeInstruction) insnToExecute).getInvokedMethod();
-      int idx = -1, offset = -1, nBit = -1;
-
       byte[] argTypes = mi.getArgumentTypes();
       int n = argTypes.length;
       for (int i = n-1, off = 0; i >= 0; --i) {
-        int value = 0;
+        int nBit = 0;
+        int size = Types.getTypeSize(argTypes[i]);
+        int len = Types.getTypeSizeInBits(argTypes[i]);
         AnnotationInfo[] annotations = mi.getParameterAnnotations(i);
         if (annotations != null) {
-          for (AnnotationInfo a : annotations) {
-            if ("gov.nasa.jpf.annotation.BitFlip".equals(a.getName())) {
-              value = a.getValueAsInt("value");
+          for (AnnotationInfo ai : annotations) {
+            if ("gov.nasa.jpf.annotation.BitFlip".equals(ai.getName())) {
+              nBit = ai.getValueAsInt("value");
             }
           }
         }
-        if (value < 0 || value > 7) {
-          throw new JPFException("Invalid number of bits to flip: should be between 1 and 7");
+        if (nBit < 0 || nBit > 7 || nBit > len) {
+          throw new JPFException("Invalid number of bits to flip: should be between 1 and 7, and not exceed type length");
         }
-        if (value > 0) {
-          idx = i;
-          offset = off;
-          nBit = value;
+        if (nBit > 0) {
+          String key = mi.getFullName() + ":ParameterBitFlip";
+          flip(vm, ti, insnToExecute, key, off, size, len, nBit);
           break;
         }
-        off += Types.getTypeSize(argTypes[i]);
+        off += size;
       }
-
-      if (idx != -1) {
-        String key = mi.getFullName() + ":ParameterBitFlip";
-        SystemState ss = vm.getSystemState();
-        int len = Types.getTypeSizeInBits(argTypes[idx]);
-        if (!ti.isFirstStepInsn()) {
-          IntChoiceGenerator cg = new IntIntervalGenerator(key, 0, binomial[len][nBit]-1);
-          lastFlippedBits.put(key, 0l);
-          if (ss.setNextChoiceGenerator(cg)) {
-            ti.skipInstruction(insnToExecute);
-          }
+    }
+    // local variable annotations not working in JPF!
+    else if (insnToExecute instanceof WriteInstruction || insnToExecute instanceof StoreInstruction && !(insnToExecute instanceof ArrayStoreInstruction)) {
+      String signature = "", key = "";
+      AnnotationInfo ai = null;
+      if (insnToExecute instanceof WriteInstruction) {
+        FieldInfo fi = ((WriteInstruction) insnToExecute).getFieldInfo();
+        signature = fi.getSignature();
+        ai = fi.getAnnotation("gov.nasa.jpf.annotation.BitFlip");
+        key = fi.getFullName() + ":FieldBitFlip";
+      }
+      else {
+        JVMLocalVariableInstruction insn = (JVMLocalVariableInstruction) insnToExecute;
+        LocalVarInfo lv = insn.getLocalVarInfo();
+        if (lv == null) return;
+        signature = lv.getSignature();
+        ai = lv.getAnnotation("gov.nasa.jpf.annotation.BitFlip");
+        key = insn.getVariableId() + ":LocalVariableBitFlip";
+      }
+      if (ai != null) {
+        int nBit = ai.getValueAsInt("value");
+        int size = Types.getTypeSize(signature);
+        int len = Types.getTypeSizeInBits(signature);
+        if (nBit < 0 || nBit > 7 || nBit > len) {
+          throw new JPFException("Invalid number of bits to flip: should be between 1 and 7, and not exceed type length");
         }
-        else {
-          IntChoiceGenerator cg = (IntChoiceGenerator) ss.getChoiceGenerator(key);
-          if (cg != null) {
-            int choice = cg.getNextChoice();
-            long bitsToFlip = getBitsToFlip(len, nBit, choice, key);
-            ti.getTopFrame().bitFlip(offset, Types.getTypeSize(argTypes[idx]), bitsToFlip);
-            if (!cg.hasMoreChoices()) {
-              lastFlippedBits.put(key, 0l);
-            }
-          }
-        }
+        flip(vm, ti, insnToExecute, key, 0, size, len, nBit);
       }
     }
   }
