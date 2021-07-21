@@ -23,6 +23,7 @@ import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.Verify;
 
 import org.junit.Test;
+import org.junit.Ignore;
 
 /**
  * regression test for getBitFlip API and BitFlipListener
@@ -131,8 +132,7 @@ public class BitFlipTest extends TestJPF {
     }
   }
 
-  /*
-   * Local variable annotations not working now with JPF!
+  @Ignore("Local variable annotations not working now in JPF.")
   @Test
   public void testLocalVariableBitFlip() {
 
@@ -153,7 +153,6 @@ public class BitFlipTest extends TestJPF {
       assert Verify.getCounter(0) == -1;
     }
   }
-  */
 
   @Test
   public void testBitFlipAPI() {
