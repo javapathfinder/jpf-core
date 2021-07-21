@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * An annotation used to specify fields/parameters to perform bit flipping exploration
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.LOCAL_VARIABLE })
+@Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE_USE })
 public @interface BitFlip {
   int value() default 1;
 }

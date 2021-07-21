@@ -132,7 +132,6 @@ public class BitFlipTest extends TestJPF {
     }
   }
 
-  @Ignore("Local variable annotations not working now in JPF.")
   @Test
   public void testLocalVariableBitFlip() {
 

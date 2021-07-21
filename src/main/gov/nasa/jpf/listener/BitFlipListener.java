@@ -163,7 +163,7 @@ public class BitFlipListener extends ListenerAdapter {
         LocalVarInfo lv = insn.getLocalVarInfo();
         if (lv == null) return;
         signature = lv.getSignature();
-        ai = lv.getAnnotation("gov.nasa.jpf.annotation.BitFlip");
+        ai = lv.getTypeAnnotation("gov.nasa.jpf.annotation.BitFlip");
         key = insn.getVariableId() + ":LocalVariableBitFlip";
       }
       if (ai != null) {
