@@ -30,20 +30,23 @@ import org.junit.Ignore;
  */
 public class BitFlipTest extends TestJPF {
 
-  public static int fooStatic(@BitFlip int bar) {
-    return bar;
-  }
-
-  public int fooInstance(@BitFlip int bar) {
-    return bar;
-  }
-
   public static void main(String[] args) {
     runTestsOfThisClass(args);
   }
 
+  public void checkBitFlip(int data) {
+    int seen = Verify.getCounter(0);
+    assert ((seen & data) == 0);
+    seen |= data;
+    Verify.setCounter(0, seen);
+  }
+
+  public static int staticMethod1(@BitFlip int bar) {
+    return bar;
+  }
+
   @Test
-  public void testStaticMethodParameterBitFlip() {
+  public void testAnnotatedStaticMethodParameterBitFlip() {
 
     if (!isJPFRun()){
       Verify.resetCounter(0);
@@ -51,20 +54,46 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
       System.out.println("@BitFlip annotation for static method parameters test");
-      int d = fooStatic(0);
+      int d = staticMethod1(0);
       System.out.print("d = ");
       System.out.println(d);
-      int seen = Verify.getCounter(0);
-      assert ((seen & d) == 0);
-      seen |= d;
-      Verify.setCounter(0, seen);
+      checkBitFlip(d);
     } else {
       assert Verify.getCounter(0) == -1;
     }
   }
 
+  public static int staticMethod2(int bar) {
+    return bar;
+  }
+
   @Test
-  public void testInstanceMethodParameterBitFlip() {
+  public void testCommandLineSpecifiedStaticMethodParameterBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
+                "+bitflip.params=foo",
+                "+bitflip.foo.method=gov.nasa.jpf.test.mc.data.BitFlipTest.staticMethod2(int)",
+                "+bitflip.foo.name=bar")){
+      System.out.println("command line specified bit flip for static method parameters test");
+      int d = staticMethod2(0);
+      System.out.print("d = ");
+      System.out.println(d);
+      checkBitFlip(d);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  public int instanceMethod1(@BitFlip int bar) {
+    return bar;
+  }
+
+  @Test
+  public void testAnnotatedInstanceMethodParameterBitFlip() {
 
     if (!isJPFRun()){
       Verify.resetCounter(0);
@@ -72,23 +101,46 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
       System.out.println("@BitFlip annotation for instance method parameters test");
-      int d = fooInstance(0);
+      int d = instanceMethod1(0);
       System.out.print("d = ");
       System.out.println(d);
-      int seen = Verify.getCounter(0);
-      assert ((seen & d) == 0);
-      seen |= d;
-      Verify.setCounter(0, seen);
+      checkBitFlip(d);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  public int instanceMethod2(int bar) {
+    return bar;
+  }
+
+  @Test
+  public void testCommandLineSpecifiedInstanceMethodParameterBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
+                "+bitflip.params=foo",
+                "+bitflip.foo.method=gov.nasa.jpf.test.mc.data.BitFlipTest.instanceMethod2(int)",
+                "+bitflip.foo.name=bar",
+                "+bitflip.foo.nbit=1")){
+      System.out.println("command line specified bit flip for instance method parameters test");
+      int d = instanceMethod2(0);
+      System.out.print("d = ");
+      System.out.println(d);
+      checkBitFlip(d);
     } else {
       assert Verify.getCounter(0) == -1;
     }
   }
 
   @BitFlip
-  int instanceField;
+  int annotatedInstanceField;
 
   @Test
-  public void testInstanceFieldBitFlip() {
+  public void testAnnotatedInstanceFieldBitFlip() {
 
     if (!isJPFRun()){
       Verify.resetCounter(0);
@@ -96,23 +148,42 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
       System.out.println("@BitFlip annotation for instance field test");
+      annotatedInstanceField = 0;
+      System.out.print("annotatedInstanceField = ");
+      System.out.println(annotatedInstanceField);
+      checkBitFlip(annotatedInstanceField);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  int instanceField;
+
+  @Test
+  public void testCommandLineSpecifiedInstanceFieldBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
+                "+bitflip.fields=foo",
+                "+bitflip.foo.field=gov.nasa.jpf.test.mc.data.BitFlipTest.instanceField")){
+      System.out.println("command line specified bit flip for instance field test");
       instanceField = 0;
       System.out.print("instanceField = ");
       System.out.println(instanceField);
-      int seen = Verify.getCounter(0);
-      assert ((seen & instanceField) == 0);
-      seen |= instanceField;
-      Verify.setCounter(0, seen);
+      checkBitFlip(instanceField);
     } else {
       assert Verify.getCounter(0) == -1;
     }
   }
 
   @BitFlip
-  static int staticField;
+  static int annotatedStaticField;
 
   @Test
-  public void testStaticFieldBitFlip() {
+  public void testAnnotatedStaticFieldBitFlip() {
 
     if (!isJPFRun()){
       Verify.resetCounter(0);
@@ -120,20 +191,40 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
       System.out.println("@BitFlip annotation for static field test");
+      annotatedStaticField = 0;
+      System.out.print("annotatedStaticField = ");
+      System.out.println(annotatedStaticField);
+      checkBitFlip(annotatedStaticField);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  static int staticField;
+
+  @Test
+  public void testCommandLineSpecifiedStaticFieldBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
+                "+bitflip.fields=foo",
+                "+bitflip.foo.field=gov.nasa.jpf.test.mc.data.BitFlipTest.staticField",
+                "+bitflip.foo.nbit=1")){
+      System.out.println("command line specified bit flip for static field test");
       staticField = 0;
       System.out.print("staticField = ");
       System.out.println(staticField);
-      int seen = Verify.getCounter(0);
-      assert ((seen & staticField) == 0);
-      seen |= staticField;
-      Verify.setCounter(0, seen);
+      checkBitFlip(staticField);
     } else {
       assert Verify.getCounter(0) == -1;
     }
   }
 
   @Test
-  public void testLocalVariableBitFlip() {
+  public void testAnnotatedLocalVariableBitFlip() {
 
     if (!isJPFRun()){
       Verify.resetCounter(0);
@@ -144,10 +235,28 @@ public class BitFlipTest extends TestJPF {
       @BitFlip int d = 0;
       System.out.print("d = ");
       System.out.println(d);
-      int seen = Verify.getCounter(0);
-      assert ((seen & d) == 0);
-      seen |= d;
-      Verify.setCounter(0, seen);
+      checkBitFlip(d);
+    } else {
+      assert Verify.getCounter(0) == -1;
+    }
+  }
+
+  @Test
+  public void testCommandLineSpecifiedLocalVariableBitFlip() {
+
+    if (!isJPFRun()){
+      Verify.resetCounter(0);
+    }
+
+    if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
+                "+bitflip.localvars=bar",
+                "+bitflip.bar.method=gov.nasa.jpf.test.mc.data.BitFlipTest.testCommandLineSpecifiedLocalVariableBitFlip()",
+                "+bitflip.bar.name=d")){
+      System.out.println("command line specified bit flip for local variable test");
+      int d = 0;
+      System.out.print("d = ");
+      System.out.println(d);
+      checkBitFlip(d);
     } else {
       assert Verify.getCounter(0) == -1;
     }
@@ -165,10 +274,7 @@ public class BitFlipTest extends TestJPF {
       int d = Verify.getBitFlip(0, 1);
       System.out.print("d = ");
       System.out.println(d);
-      int seen = Verify.getCounter(0);
-      assert ((seen & d) == 0);
-      seen |= d;
-      Verify.setCounter(0, seen);
+      checkBitFlip(d);
     } else {
       assert Verify.getCounter(0) == -1;
     }

@@ -18,6 +18,8 @@
 
 package gov.nasa.jpf.listener;
 
+import gov.nasa.jpf.Config;
+import gov.nasa.jpf.JPF;
 import gov.nasa.jpf.ListenerAdapter;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.jvm.bytecode.ArrayStoreInstruction;
@@ -29,6 +31,9 @@ import gov.nasa.jpf.jvm.bytecode.LSTORE;
 import gov.nasa.jpf.jvm.bytecode.DSTORE;
 import gov.nasa.jpf.jvm.bytecode.FSTORE;
 import gov.nasa.jpf.jvm.bytecode.ISTORE;
+import gov.nasa.jpf.util.FieldSpec;
+import gov.nasa.jpf.util.JPFLogger;
+import gov.nasa.jpf.util.MethodSpec;
 import gov.nasa.jpf.vm.AnnotationInfo;
 import gov.nasa.jpf.vm.bytecode.StoreInstruction;
 import gov.nasa.jpf.vm.bytecode.WriteInstruction;
@@ -45,17 +50,133 @@ import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class BitFlipListener extends ListenerAdapter {
 
+  static JPFLogger log = JPF.getLogger("gov.nasa.jpf.listener.BitFlipListener");
+
+  public static class FieldBitFlip {
+    public FieldSpec fieldSpec;
+    public int nBit;
+    FieldBitFlip (FieldSpec fieldSpec, int nBit) {
+      this.fieldSpec = fieldSpec;
+      this.nBit = nBit;
+    }
+  }
+
+  public static class ParamBitFlip {
+    public MethodSpec mthSpec;
+    public String name;
+    public int nBit;
+    ParamBitFlip (MethodSpec mthSpec, String name, int nBit) {
+      this.mthSpec = mthSpec;
+      this.name = name;
+      this.nBit = nBit;
+    }
+  }
+
+  public static class LocalVarBitFlip {
+    public MethodSpec mthSpec;
+    public String name;
+    public int nBit;
+    LocalVarBitFlip (MethodSpec mthSpec, String name, int nBit) {
+      this.mthSpec = mthSpec;
+      this.name = name;
+      this.nBit = nBit;
+    }
+  }
+
   static HashMap<String, Long> lastFlippedBits;
+  static List<FieldBitFlip> fieldWatchList;
+  static List<ParamBitFlip> paramWatchList;
+  static List<LocalVarBitFlip> localVarWatchList;
   static int[][] binomial;
   static {
     initializeBinomial();
     lastFlippedBits = new HashMap<>();
+    fieldWatchList = new ArrayList<>();
+    paramWatchList = new ArrayList<>();
+    localVarWatchList = new ArrayList<>();
   }
+
+  public BitFlipListener (Config conf) {
+    String[] fieldIds = conf.getCompactTrimmedStringArray("bitflip.fields");
+    for (String id : fieldIds) {
+      addToFieldWatchList(conf, id);
+    }
+
+    String[] paramsIds = conf.getCompactTrimmedStringArray("bitflip.params");
+    for (String id : paramsIds) {
+      addToParamWatchList(conf, id);
+    }
+
+    String[] localVarIds = conf.getCompactTrimmedStringArray("bitflip.localvars");
+    for (String id : localVarIds) {
+      addToLocalVarWatchList(conf, id);
+    }
+  }
+
+  protected void addToFieldWatchList (Config conf, String id) {
+    String keyPrefix = "bitflip." + id;
+    String fs = conf.getString(keyPrefix + ".field");
+    if (fs != null) {
+      FieldSpec fieldSpec = FieldSpec.createFieldSpec(fs);
+      if (fieldSpec != null) {
+        int nBit = conf.getInt(keyPrefix + ".nbit", 1);
+        fieldWatchList.add(new FieldBitFlip(fieldSpec, nBit));
+      } else {
+        log.warning("malformed field specification for", keyPrefix);
+      }
+    } else {
+      log.warning("missing field specification for ", keyPrefix);
+    }
+  }
+
+  protected void addToParamWatchList (Config conf, String id) {
+    String keyPrefix = "bitflip." + id;
+    String ms = conf.getString(keyPrefix + ".method");
+    if (ms != null) {
+      MethodSpec mthSpec = MethodSpec.createMethodSpec(ms);
+      if (mthSpec != null) {
+        String name = conf.getString(keyPrefix + ".name");
+        if (name != null) {
+          int nBit = conf.getInt(keyPrefix + ".nbit", 1);
+          paramWatchList.add(new ParamBitFlip(mthSpec, name, nBit));
+        } else {
+          log.warning("missing parameter name for", keyPrefix);
+        }
+      } else {
+        log.warning("malformed method specification for", keyPrefix);
+      }
+    } else {
+      log.warning("missing method specification for ", keyPrefix);
+    }
+  }
+
+  protected void addToLocalVarWatchList (Config conf, String id) {
+    String keyPrefix = "bitflip." + id;
+    String ms = conf.getString(keyPrefix + ".method");
+    if (ms != null) {
+      MethodSpec mthSpec = MethodSpec.createMethodSpec(ms);
+      if (mthSpec != null) {
+        String name = conf.getString(keyPrefix + ".name");
+        if (name != null) {
+          int nBit = conf.getInt(keyPrefix + ".nbit", 1);
+          localVarWatchList.add(new LocalVarBitFlip(mthSpec, name, nBit));
+        } else {
+          log.warning("missing parameter name for", keyPrefix);
+        }
+      } else {
+        log.warning("malformed method specification for", keyPrefix);
+      }
+    } else {
+      log.warning("missing method specification for ", keyPrefix);
+    }
+  }
+
   /**
    * initialize the binomial coefficients by Pascal's triangle
    * allow up to 7 bits to flip to avoid state explosion that JPF cannot handle
@@ -116,18 +237,20 @@ public class BitFlipListener extends ListenerAdapter {
   }
 
   /**
-   * inject bit flips for parameters annotated with @BitFlip
-   * permit to inject bit flips to only one parameter
+   * inject bit flips into specified fields, parameters and local variables
+   * support both annotations and command line argument
+   * if both present, the command line argument supresses the annotation
    */
   @Override
   public void executeInstruction (VM vm, ThreadInfo ti, Instruction insnToExecute) {
+    // parameters
     if (insnToExecute instanceof JVMInvokeInstruction) {
       MethodInfo mi = ((JVMInvokeInstruction) insnToExecute).getInvokedMethod();
+      LocalVarInfo[] args = mi.getArgumentLocalVars();
+      if (args == null) return;
       byte[] argTypes = mi.getArgumentTypes();
-      int n = argTypes.length;
-      for (int i = n-1, off = 0; i >= 0; --i) {
+      for (int i = argTypes.length-1, j = args.length-1, off = 0; i >= 0; --i, --j) {
         int nBit = 0;
-        int size = Types.getTypeSize(argTypes[i]);
         int len = Types.getTypeSizeInBits(argTypes[i]);
         AnnotationInfo[] annotations = mi.getParameterAnnotations(i);
         if (annotations != null) {
@@ -137,9 +260,15 @@ public class BitFlipListener extends ListenerAdapter {
             }
           }
         }
+        for (ParamBitFlip pbf : paramWatchList) {
+          if (pbf.mthSpec.matches(mi) && pbf.name.equals(args[j].getName())) {
+            nBit = pbf.nBit;
+          }
+        }
         if (nBit < 0 || nBit > 7 || nBit > len) {
           throw new JPFException("Invalid number of bits to flip: should be between 1 and 7, and not exceed type length");
         }
+        int size = Types.getTypeSize(argTypes[i]);
         if (nBit > 0) {
           String key = mi.getFullName() + ":ParameterBitFlip";
           flip(vm, ti, insnToExecute, key, off, size, len, nBit);
@@ -148,26 +277,48 @@ public class BitFlipListener extends ListenerAdapter {
         off += size;
       }
     }
-    // local variable annotations not working in JPF!
-    else if (insnToExecute instanceof WriteInstruction || insnToExecute instanceof StoreInstruction && !(insnToExecute instanceof ArrayStoreInstruction)) {
-      String signature = "", key = "";
-      AnnotationInfo ai = null;
-      if (insnToExecute instanceof WriteInstruction) {
-        FieldInfo fi = ((WriteInstruction) insnToExecute).getFieldInfo();
-        signature = fi.getSignature();
-        ai = fi.getAnnotation("gov.nasa.jpf.annotation.BitFlip");
-        key = fi.getFullName() + ":FieldBitFlip";
-      }
-      else {
-        JVMLocalVariableInstruction insn = (JVMLocalVariableInstruction) insnToExecute;
-        LocalVarInfo lv = insn.getLocalVarInfo();
-        if (lv == null) return;
-        signature = lv.getSignature();
-        ai = lv.getTypeAnnotation("gov.nasa.jpf.annotation.BitFlip");
-        key = insn.getVariableId() + ":LocalVariableBitFlip";
-      }
+    // fields
+    else if (insnToExecute instanceof WriteInstruction) {
+      FieldInfo fi = ((WriteInstruction) insnToExecute).getFieldInfo();
+      int nBit = 0;
+      AnnotationInfo ai = fi.getAnnotation("gov.nasa.jpf.annotation.BitFlip");
       if (ai != null) {
-        int nBit = ai.getValueAsInt("value");
+        nBit = ai.getValueAsInt("value");
+      }
+      for (FieldBitFlip fbf : fieldWatchList) {
+        if (fbf.fieldSpec.matches(fi)) {
+          nBit = fbf.nBit;
+        }
+      }
+      String signature = fi.getSignature();
+      int len = Types.getTypeSizeInBits(signature);
+      if (nBit < 0 || nBit > 7 || nBit > len) {
+        throw new JPFException("Invalid number of bits to flip: should be between 1 and 7, and not exceed type length");
+      }
+      if (nBit > 0) {
+        String key = fi.getFullName() + ":FieldBitFlip";
+        int size = Types.getTypeSize(signature);
+        flip(vm, ti, insnToExecute, key, 0, size, len, nBit);
+      }
+    }
+    // local variables (not including arrays and objects)
+    else if (insnToExecute instanceof StoreInstruction && !(insnToExecute instanceof ArrayStoreInstruction)) {
+      JVMLocalVariableInstruction insn = (JVMLocalVariableInstruction) insnToExecute;
+      LocalVarInfo lv = insn.getLocalVarInfo();
+      if (lv == null) return;
+      int nBit = 0;
+      AnnotationInfo ai = lv.getTypeAnnotation("gov.nasa.jpf.annotation.BitFlip");
+      if (ai != null) {
+        nBit = ai.getValueAsInt("value");
+      }
+      for (LocalVarBitFlip lvbp : localVarWatchList) {
+        if (lvbp.mthSpec.matches(insn.getMethodInfo()) && lvbp.name.equals(lv.getName())) {
+          nBit = lvbp.nBit;
+        }
+      }
+      if (nBit > 0) {
+        String signature = lv.getSignature();
+        String key = insn.getVariableId() + ":LocalVariableBitFlip";
         int size = Types.getTypeSize(signature);
         int len = Types.getTypeSizeInBits(signature);
         if (nBit < 0 || nBit > 7 || nBit > len) {
