@@ -1,20 +1,20 @@
 /*
- * Copyright (C) 2014, United States Government, as represented by the
- * Administrator of the National Aeronautics and Space Administration.
- * All rights reserved.
+ * Copyright (C) 2021 Pu Yi
  *
- * The Java Pathfinder core (jpf-core) platform is licensed under the
- * Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
- * limitations under the License.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You can find a copy of the GNU General Public License at
+ * <http://www.gnu.org/licenses/>.
  */
+
 
 package gov.nasa.jpf.listener;
 
@@ -54,6 +54,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author Pu Yi <lukeyi@pku.edu.cn>
+ *
+ * The JPF Listener that injects bit flips for specified fields, parameters, and local variables
+ *
+ * For fields and local variables, the listener injects bit flips each time they are written
+ * For parameters, the listener injects bit flips each time the method is invoked
+ */
 public class BitFlipListener extends ListenerAdapter {
 
   static JPFLogger log = JPF.getLogger("gov.nasa.jpf.listener.BitFlipListener");
@@ -93,6 +101,12 @@ public class BitFlipListener extends ListenerAdapter {
   static List<FieldBitFlip> fieldWatchList;
   static List<ParamBitFlip> paramWatchList;
   static List<LocalVarBitFlip> localVarWatchList;
+
+  /**
+   * store the binomial coefficients
+   * the coefficients are used to decode a number in [0, C(n, k)) to a k-combination of n elements
+   * used in getBitFlip__JII__J to generate a set of k bits to flip in a total of n bits
+   */
   static int[][] binomial;
   static {
     initializeBinomial();
@@ -102,6 +116,10 @@ public class BitFlipListener extends ListenerAdapter {
     localVarWatchList = new ArrayList<>();
   }
 
+  /**
+   * parse the command line arguments
+   * add the command line specified fields, parameters, and local variables to the watch list
+   */
   public BitFlipListener (Config conf) {
     String[] fieldIds = conf.getCompactTrimmedStringArray("bitflip.fields");
     for (String id : fieldIds) {
@@ -197,10 +215,15 @@ public class BitFlipListener extends ListenerAdapter {
 
   /**
    * return a long variable representing the bits to flip
-   * first flip the last flipped bit back
+   * flip the last flipped bit back at first
    */
   public long getBitsToFlip (int len, int nBit, int choice, String key) {
     long bitsToFlip = 0;
+    /**
+     * decode out a set of nBit bits from the choice value
+     * Since in all C(i, nBit) combinations, C(i-1, nBit-1) combinations do not select the i-th bit,
+     * whether to flip the i-th bit is decided by comparing the number with C(i-1, nBit-1)
+     */
     for (int i = len-1; i >= 0; --i) {
       if (choice >= binomial[i][nBit]) {
         bitsToFlip ^= (1l << i);
@@ -238,7 +261,7 @@ public class BitFlipListener extends ListenerAdapter {
 
   /**
    * inject bit flips into specified fields, parameters and local variables
-   * support both annotations and command line argument
+   * support both annotations and command line arguments
    * if both present, the command line argument supresses the annotation
    */
   @Override
@@ -272,6 +295,7 @@ public class BitFlipListener extends ListenerAdapter {
         if (nBit > 0) {
           String key = mi.getFullName() + ":ParameterBitFlip";
           flip(vm, ti, insnToExecute, key, off, size, len, nBit);
+          // TODO: allow bit flips of several parameters in one method
           break;
         }
         off += size;

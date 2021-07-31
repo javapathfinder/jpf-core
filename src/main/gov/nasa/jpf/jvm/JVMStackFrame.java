@@ -20,7 +20,6 @@ package gov.nasa.jpf.jvm;
 
 import gov.nasa.jpf.util.FixedBitSet;
 import gov.nasa.jpf.vm.MethodInfo;
-import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.StackFrame;
 import gov.nasa.jpf.vm.ThreadInfo;
 
@@ -50,6 +49,7 @@ public class JVMStackFrame extends StackFrame {
     StackFrame caller = ti.getTopFrame();
     MethodInfo miCallee = mi;
     int nArgSlots = miCallee.getArgumentsSize();
+    
     if (nArgSlots > 0){
       int[] calleeSlots = slots;
       FixedBitSet calleeRefs = isRef;

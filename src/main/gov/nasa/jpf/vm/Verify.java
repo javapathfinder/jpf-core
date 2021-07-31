@@ -350,6 +350,7 @@ public class Verify {
 
   /**
    * a bit flip generator that returns variable v with nBit bits flipped in v's lowest len bits
+   * note that the JPF does not execute the following getBitFlip methods, but execute their native methods
    */
   public static long getBitFlip (long v, int nBit, int len) {
     assert (nBit <= len);

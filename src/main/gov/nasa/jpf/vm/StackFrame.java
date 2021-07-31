@@ -2266,6 +2266,9 @@ public abstract class StackFrame implements Cloneable {
     return getOperandAttr();
   }
   
+  /**
+   * inject the bit flip(s) in the operand stack
+   */
   public void bitFlip (int off, int typeSize, long bitsToFlip) {
     int top = getTopPos();
     if (typeSize == 1) {
