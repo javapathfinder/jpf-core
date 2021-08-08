@@ -105,7 +105,7 @@ public class BitFlipListener extends ListenerAdapter {
   /**
    * store the binomial coefficients
    * the coefficients are used to decode a number in [0, C(n, k)) to a k-combination of n elements
-   * used in getBitFlip__JII__J to generate a set of k bits to flip in a total of n bits
+   * used to generate a set of k bits to flip in a total of n bits
    */
   static int[][] binomial;
   static {

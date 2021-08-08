@@ -41,7 +41,7 @@ public class BitFlipTest extends TestJPF {
     Verify.setCounter(0, seen);
   }
 
-  public static int staticMethod1(@BitFlip int bar) {
+  public static int staticMethodWithAnnotatedParameter(@BitFlip int bar) {
     return bar;
   }
 
@@ -54,7 +54,7 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
       System.out.println("@BitFlip annotation for static method parameters test");
-      int d = staticMethod1(0);
+      int d = staticMethodWithAnnotatedParameter(0);
       System.out.print("d = ");
       System.out.println(d);
       checkBitFlip(d);
@@ -63,7 +63,7 @@ public class BitFlipTest extends TestJPF {
     }
   }
 
-  public static int staticMethod2(int bar) {
+  public static int staticMethod(int bar) {
     return bar;
   }
 
@@ -76,10 +76,10 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
                 "+bitflip.params=foo",
-                "+bitflip.foo.method=gov.nasa.jpf.test.mc.data.BitFlipTest.staticMethod2(int)",
+                "+bitflip.foo.method=gov.nasa.jpf.test.mc.data.BitFlipTest.staticMethod(int)",
                 "+bitflip.foo.name=bar")){
       System.out.println("command line specified bit flip for static method parameters test");
-      int d = staticMethod2(0);
+      int d = staticMethod(0);
       System.out.print("d = ");
       System.out.println(d);
       checkBitFlip(d);
@@ -88,7 +88,7 @@ public class BitFlipTest extends TestJPF {
     }
   }
 
-  public int instanceMethod1(@BitFlip int bar) {
+  public int instanceMethodWithAnnotatedParameter(@BitFlip int bar) {
     return bar;
   }
 
@@ -101,7 +101,7 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
       System.out.println("@BitFlip annotation for instance method parameters test");
-      int d = instanceMethod1(0);
+      int d = instanceMethodWithAnnotatedParameter(0);
       System.out.print("d = ");
       System.out.println(d);
       checkBitFlip(d);
@@ -110,7 +110,7 @@ public class BitFlipTest extends TestJPF {
     }
   }
 
-  public int instanceMethod2(int bar) {
+  public int instanceMethod(int bar) {
     return bar;
   }
 
@@ -123,11 +123,11 @@ public class BitFlipTest extends TestJPF {
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener",
                 "+bitflip.params=foo",
-                "+bitflip.foo.method=gov.nasa.jpf.test.mc.data.BitFlipTest.instanceMethod2(int)",
+                "+bitflip.foo.method=gov.nasa.jpf.test.mc.data.BitFlipTest.instanceMethod(int)",
                 "+bitflip.foo.name=bar",
                 "+bitflip.foo.nbit=1")){
       System.out.println("command line specified bit flip for instance method parameters test");
-      int d = instanceMethod2(0);
+      int d = instanceMethod(0);
       System.out.print("d = ");
       System.out.println(d);
       checkBitFlip(d);
@@ -400,7 +400,7 @@ public class BitFlipTest extends TestJPF {
   }
 
   @Test
-  public void testFlipTwoBits() {
+  public void testFlipTwoBitsInOneVariable() {
 
     if (!isJPFRun()){
       for (int i = 0; i < (32 * 31) / 2; ++i) {
@@ -409,6 +409,7 @@ public class BitFlipTest extends TestJPF {
     }
 
     if (verifyNoPropertyViolation("+listener=gov.nasa.jpf.listener.BitFlipListener")){
+      System.out.println("flip two bits in one variable test");
       @BitFlip(2) int d;
       d = 0;
       System.out.print("d = ");
