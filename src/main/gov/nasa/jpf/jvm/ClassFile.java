@@ -196,6 +196,7 @@ public class ClassFile extends BinaryClassSource {
     ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR };
 
 
+   // 
   protected String internStdAttrName(int cpIdx, String name, String[] stdNames){
     for (int i=0; i<stdNames.length; i++){
       if (stdNames[i] == name) return name;
@@ -1342,10 +1343,12 @@ public class ClassFile extends BinaryClassSource {
    * pos is at localVarCount
    */
   public void parseLocalVarTableAttr(ClassFileReader reader, Object tag){
+    
     int localVarCount = readU2();
     setLocalVarTableCount(reader, tag, localVarCount);
     
     for (int i=0; i<localVarCount; i++){
+
       int startPc = readU2();
       int length = readU2();
       int cpIdx = readU2();

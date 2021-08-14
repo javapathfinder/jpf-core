@@ -26,10 +26,8 @@ import gov.nasa.jpf.vm.ThreadList;
 public class Error {
 
   int            id;
-  
   Property       property;
   private String errorMessage;
-  
   private Path   path;
   ThreadList     threadList;
   
