@@ -353,70 +353,63 @@ public class Verify {
    * note that the JPF does not execute the following getBitFlip methods, but execute their native methods
    */
   public static long getBitFlip (long v, int nBit, int len) {
-    assert (nBit <= len);
-    int last = -1;
-    for (int i = 0; i < nBit; ++i) {
-      int p = getInt(last+1, len-nBit+i);
-      v ^= (1l << p);
-      last = p;
-    }
-    return v;
+    return 0l;
   }
 
   /**
    * flip nBit bits of a long variable
    */
   public static long getBitFlip (long v, int nBit) {
-    return getBitFlip(v, nBit, 64);
+    return 0l;
   }
 
   /**
    * flip nBit bits of an int variable
    */
   public static int getBitFlip (int v, int nBit) {
-    return (int) getBitFlip((long)v, nBit, 32);
+    return 0;
   }
 
   /**
    * flip nBit bits of a short variable
    */
   public static short getBitFlip (short v, int nBit) {
-    return (short) getBitFlip((long)v, nBit, 16);
+    return (short) 0;
   }
 
   /**
    * flip nBit bits of a char variable
    */
   public static char getBitFlip (char v, int nBit) {
-    return (char) getBitFlip((long)v, nBit, 16);
+    return 0;
   }
 
   /**
    * flip nBit bits of a byte variable
    */
   public static byte getBitFlip (byte v, int nBit) {
-    return (byte) getBitFlip((long)v, nBit, 8);
+    return 0;
   }
 
   /**
    * flip nBit bits of a double variable
    */
   public static double getBitFlip (double v, int nBit) {
-    return Double.longBitsToDouble(getBitFlip(Double.doubleToLongBits(v), nBit));
+    return 0.0;
   }
 
   /**
    * flip nBit bits of a float variable
    */
   public static float getBitFlip (float v, int nBit) {
-    return Float.intBitsToFloat(getBitFlip(Float.floatToIntBits(v), nBit));
+    return 0.0f;
   }
 
   /**
    * flip a boolean variable
    */
   public static boolean getBitFlip (boolean v) {
-    return !v;
+    return true;
   }
 
   /**
