@@ -21,6 +21,8 @@ import gov.nasa.jpf.annotation.NeverBreak;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.function.Supplier;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 /**
  * model of java.lang.ThreadLocal, which avoids global shared objects
@@ -99,6 +101,25 @@ public class ThreadLocal<T> {
     public static <S> ThreadLocal<S> withInitial(Supplier<? extends S> supplier) {
       return new SuppliedThreadLocal<>(supplier);
     }
+    @Test
+    class threadSafeFormatter{
+      public static ThreadLocal<SimpleDateFormat> df = ThreadLocal.withInitial(() 
+          -> new SimpleDateFormat("yyyy-MM-dd"));
+  }
+  
+  public class App  {
+      public static void main(String[] args) throws Exception {
+          threadSafeFormatter tf = new threadSafeFormatter();
+          Thread t1 = new Thread();
+          t1.start();
+      }
+  
+      public static String birthDate(int userId){
+          Date birthdDate = new Date(userId);
+          final SimpleDateFormat df = threadSafeFormatter.df.get();
+          return df.format(birthdDate);
+      }
+  }
   
     // we need to preserve the modifiers since this might introduce races (supplier could be shared)
     private final Supplier<? extends E> sup;
