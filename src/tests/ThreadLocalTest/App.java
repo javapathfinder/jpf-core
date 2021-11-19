@@ -18,4 +18,3 @@ public class App  {
         return df.format(birthdDate);
     }
 }
-System.out.println(" line break ");
