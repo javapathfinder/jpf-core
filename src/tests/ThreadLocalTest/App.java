@@ -1,5 +1,4 @@
-import java.sql.Date;
-import java.text.SimpleDateFormat;
+
 
 class threadSafeFormatter{
     public static ThreadLocal<SimpleDateFormat> df = ThreadLocal.withInitial(() 
@@ -19,3 +18,4 @@ public class App  {
         return df.format(birthdDate);
     }
 }
+System.out.println(" line break ");
