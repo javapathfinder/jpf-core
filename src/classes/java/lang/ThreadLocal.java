@@ -21,8 +21,7 @@ import gov.nasa.jpf.annotation.NeverBreak;
 import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.function.Supplier;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
+
 
 /**
  * model of java.lang.ThreadLocal, which avoids global shared objects
