@@ -22,6 +22,7 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+
 /**
  * model of java.lang.ThreadLocal, which avoids global shared objects
  * that can otherwise considerably contribute to the state space
@@ -96,7 +97,10 @@ public class ThreadLocal<T> {
   // Java 8 provides this as an internal type to be used from lib classes
   // ?? why is this not done with overridden initialValue() within the concrete ThreadLocal class
   static final class SuppliedThreadLocal<E> extends ThreadLocal<E> {
-
+    public static <S> ThreadLocal<S> withInitial(Supplier<? extends S> supplier) {
+      return new SuppliedThreadLocal<>(supplier);
+    }
+  
     // we need to preserve the modifiers since this might introduce races (supplier could be shared)
     private final Supplier<? extends E> sup;
 
