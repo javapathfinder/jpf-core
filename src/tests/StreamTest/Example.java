@@ -11,6 +11,7 @@ public class Example {
         .range(0, 10)
         .forEach(Example::doSomthing);
     }
+    
     private static void doSomthing(int i) {
     }
 }
