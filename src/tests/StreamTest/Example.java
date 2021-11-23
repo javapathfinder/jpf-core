@@ -3,9 +3,14 @@ import java.util.stream.*;
 
 public class Example {
     public static void main(String[] args) throws IOException {
-        //Integer stream will print the numbers from 0 to 9
+        for (int i = 0; i < 10; i++) {
+            doSomthing(i);
+        }
+        //Integer stream
         IntStream
         .range(0, 10)
-        .forEach(System.out::print);
+        .forEach(Example::doSomthing);
+    }
+    private static void doSomthing(int i) {
     }
 }
