@@ -8,7 +8,7 @@ public class Example {
         }
         //Integer stream
         IntStream
-        .range(0, 10)
+        .range(0, 1)
         .forEach(Example::doSomthing);
     }
     
