@@ -4,7 +4,7 @@ public class StreamTest {
     public static void testing(){
         Stream stram = new Stream();
         int x = stram.testing();
-        assertEquals(x, 3);
+        assertEquals(3, x);
 
 
     }
