@@ -12,8 +12,6 @@ public class Stream
         List<Integer> primes = stream.filter(Stream::isPrime)
                 .boxed()
                 .collect(Collectors.toList());
-
-        System.out.println(primes);
     }
 
     public static boolean isPrime(int i)
