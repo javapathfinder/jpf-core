@@ -1,11 +1,12 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StreamTest {
-    public static void testing(){
-        Stream stram = new Stream();
-        int x = stram.testing();
-        assertEquals(3, x);
-
-
+    @Test
+    public void testing() {
+        Stream stream = new Stream();
+        stream.isPrime(2);
+        assertEquals(2,2);
     }
 }
