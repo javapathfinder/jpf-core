@@ -1,3 +1,4 @@
+package java8;
 
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
