@@ -1,8 +1,8 @@
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import gov.nasa.jpf.util.test.TestJPF;
+import org.junit.Test;
 
-public class StreamTest {
+public class StreamTest extends TestJPF {
     @Test
     public void testing() {
         Stream stream = new Stream();
