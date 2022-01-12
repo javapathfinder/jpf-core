@@ -13,7 +13,7 @@ public class StreamTest {
                     .collect(Collectors.toList());
     }
 
-    @Test
+@Test
 public void multipleWordsToUppercase() {
     List<String> input = Arrays.asList("a", "b", "hello");
     List<String> result = allToUpperCase(input);
