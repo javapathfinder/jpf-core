@@ -20,4 +20,11 @@ public void multipleWordsToUppercase() {
     List<String> result = allToUpperCase(input);
     assertEquals(asList("A", "B", "HELLO"), result);
     }
+    private void assertEquals(Object asList, List<String> result) {
+    }
+    
+    
+    private Object asList(String string, String string2, String string3) {
+        return null;
+    }
 }
