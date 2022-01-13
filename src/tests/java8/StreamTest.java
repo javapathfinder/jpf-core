@@ -3,9 +3,9 @@ package java8;
 import gov.nasa.jpf.util.test.TestJPF;
 import java.util.function.Supplier;
 import org.junit.Test;
-import java.util.List
-import java.util.stream;
-import java.util.map;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StreamTest {
     public static List<String> allToUpperCase(List<String> words) {
