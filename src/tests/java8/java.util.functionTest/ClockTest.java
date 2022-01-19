@@ -1,9 +1,10 @@
+package java8;
 import org.junit.Test;
-
+import gov.nasa.jpf.util.test.TestJPF;
+import org.junit.Test;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.function.Function;
-
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
