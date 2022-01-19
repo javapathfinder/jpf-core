@@ -1,0 +1,63 @@
+import org.junit.Test;
+
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.function.Function;
+
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
+
+
+public class ClockTest {
+
+
+     private Function<String,ZoneId> withZoneId= (timeZoneId -> ZoneId.of(ZoneId.SHORT_IDS.get(timeZoneId)));
+
+
+    @Test
+    public void fixed_clock_test() throws Exception{
+        Instant fixedInstant  = Instant.parse("2014-03-06T21:27:31Z");
+        Clock fixedClock = Clock.fixed(fixedInstant, withZoneId.apply("EST"));
+
+        assertThat(fixedClock.instant(),is(fixedInstant));
+        Thread.sleep(3000l);
+        assertThat(fixedClock.instant(), is(fixedInstant));
+
+    }
+
+
+    @Test
+    public void switch_clock_time_zone_test() throws Exception {
+        Clock eastCoastClock = Clock.system(ZoneId.of("America/New_York"));
+
+        Clock westCoastClock = eastCoastClock.withZone(ZoneId.of("America/Los_Angeles"));
+        LocalTime eastCoastTime = LocalTime.now(eastCoastClock);
+        LocalTime westCoastTime = LocalTime.now(westCoastClock);
+        Duration timeDifference = Duration.between(eastCoastTime,westCoastTime);
+        assertThat(timeDifference.toHours(),is(-3L));
+
+    }
+
+    @Test
+    public void  change_clock_duration_test() throws Exception {
+        Clock eastCoastStandardTime = Clock.system(withZoneId.apply("EST"));
+        Clock eastCoastDaylightSavingsTime = Clock.offset(eastCoastStandardTime, Duration.of(1,ChronoUnit.HOURS));
+
+        LocalTime est = LocalTime.now(eastCoastStandardTime);
+        LocalTime edt = LocalTime.now(eastCoastDaylightSavingsTime);
+
+        long timeDifference = edt.until(est,ChronoUnit.HOURS);
+        assertThat(timeDifference,is(-1L));
+    }
+
+    @Test
+    public void tick_minute_clock_test() throws Exception {
+        Clock clock = Clock.tickMinutes(withZoneId.apply("EST"));
+        LocalTime lt = LocalTime.now(clock);
+        Thread.sleep(3000L);
+        LocalTime lt2 = LocalTime.now(clock);
+        long timeDifference = lt.until(lt2,ChronoUnit.SECONDS);
+        //TODO show time difference is either 0 or 60
+        assertThat(timeDifference,is(0L));
+    }
+}
