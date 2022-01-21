@@ -32,11 +32,5 @@ public class LocalDateTimeTest {
         assertThat(eastCoastTime.get(ChronoField.CLOCK_HOUR_OF_DAY) - centralTime.get(ChronoField.CLOCK_HOUR_OF_DAY),is(1));
 
     }
-    private Object is(String string) {
-        return null;
-    }
-    private Object is(int i) {
-        return null;
-    }
 
 }
