@@ -35,5 +35,8 @@ public class LocalDateTimeTest {
     private Object is(String string) {
         return null;
     }
+    private Object is(int i) {
+        return null;
+    }
 
 }
