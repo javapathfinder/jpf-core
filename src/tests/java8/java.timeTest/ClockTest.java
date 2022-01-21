@@ -18,7 +18,6 @@ public class ClockTest {
         Clock fixedClock = Clock.fixed(fixedInstant, withZoneId.apply("EST"));
 
         assertThat(fixedClock.instant(),is(fixedInstant));
-        assertThat(fixedClock.instant(), is(fixedInstant));
 
     }
 
