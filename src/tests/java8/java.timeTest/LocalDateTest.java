@@ -15,13 +15,10 @@ public class LocalDateTest {
     public void test_add_to_date() {
         LocalDate oneMonthFromNow = today.plusDays(30);
         assertTrue(oneMonthFromNow.isEqual(LocalDate.parse("2014-03-29")));
-
         LocalDate nextMonth = today.plusMonths(1);
         assertTrue(nextMonth.isEqual(LocalDate.parse("2014-03-27")));
-
         LocalDate future = today.plus(4, ChronoUnit.WEEKS);
         assertTrue(future.isEqual(LocalDate.parse("2014-03-27")));
-
     }
 
     @Test
