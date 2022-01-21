@@ -49,7 +49,6 @@ public class ClockTest {
     public void tick_minute_clock_test() throws Exception {
         Clock clock = Clock.tickMinutes(withZoneId.apply("EST"));
         LocalTime lt = LocalTime.now(clock);
-        Thread.sleep(3000L);
         LocalTime lt2 = LocalTime.now(clock);
         long timeDifference = lt.until(lt2,ChronoUnit.SECONDS);
         //TODO show time difference is either 0 or 60
