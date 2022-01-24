@@ -51,7 +51,6 @@ public class ClockTest {
         LocalTime lt = LocalTime.now(clock);
         LocalTime lt2 = LocalTime.now(clock);
         long timeDifference = lt.until(lt2,ChronoUnit.SECONDS);
-        //TODO show time difference is either 0 or 60
         assertThat(timeDifference,is(0L));
     }
 }
