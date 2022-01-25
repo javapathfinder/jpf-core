@@ -20,7 +20,7 @@ public class ZipUtilsTest {
   files.add(file);
   files.add(file1);
   files.add(file2);
-  ZipFile.zipFiles(files, fos);
+  ZipFile.zipFile(files, fos);
  }
  
 }
