@@ -22,11 +22,5 @@ public class ZipUtilsTest {
   files.add(file2);
   ZipFile.zipFiles(files, fos);
  }
-
- @Test
- public void unZipFilesTest() throws IOException {
-  File zipFile = new File("C:/Project_Work/samples/src_sample1.zip");
-  File unZipOutputFolder = new File("C:/Project_Work/samples/dest_folder");
-  ZipFile.unZipFiles(zipFile, unZipOutputFolder);
- }
+ 
 }
