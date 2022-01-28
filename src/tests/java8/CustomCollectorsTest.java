@@ -17,6 +17,10 @@ public class CustomCollectorsTest {
        StringBuilder builder = names.stream().collect(CustomCollectors.of(StringBuilder::new, StringBuilder::append));
        assertThat(builder.toString(),is(expectedValue));
     }
+    (expected = RuntimeException.class)
+    private Object is(String expectedValue) {
+        return null;
+    }
 
     @Test(expected = RuntimeException.class)
     public void testOf_parallel() throws Exception {
