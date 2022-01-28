@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Assert;
-import optionalTest.Address;
-import optionalTest.City;
-import optionalTest.Person;
+import java8.Address;
+import java8.City;
+import java8.Person;
 import org.junit.Test;
 
 public class PersonTest {
