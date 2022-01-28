@@ -70,7 +70,7 @@ public class PersonTest {
       .ifPresent(value -> Assert.fail("Should not be here"));
   }
 
-  @.Test
+  @Test
   public void testOptional_Monad_Found() {
     OptMap<String, Person> personMap = new OptMap<>();
     Person person = new Person(new Address(new City(CITY_NAME)));
