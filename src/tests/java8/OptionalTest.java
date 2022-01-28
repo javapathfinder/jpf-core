@@ -46,7 +46,8 @@ public class OptionalTest {
 
         assertThat(upperCasedWords,is(expectedWords));
     }
-    @Test(expected = NullPointerException.class)
+    @Test
+    (expected = NullPointerException.class)
     public void optional_of_with_null_test() {
         Optional<String> option = Optional.of(null);
         assertThat(option.isPresent(), is(false));
@@ -135,7 +136,8 @@ public class OptionalTest {
         assertThat(testObject.category, is("justCreated"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
+    (expected = IllegalStateException.class)
     public void optional_or_else_throw_test() {
         Optional<String> shouldNotBeEmpty = Optional.empty();
         shouldNotBeEmpty.orElseThrow(() -> new IllegalStateException("This should not happen!!!"));
