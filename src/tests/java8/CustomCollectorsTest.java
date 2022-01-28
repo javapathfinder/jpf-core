@@ -22,7 +22,8 @@ public class CustomCollectorsTest {
         return null;
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
+    (expected = RuntimeException.class)
     public void testOf_parallel() throws Exception {
         StringBuilder builder = names.stream().parallel().collect(CustomCollectors.of(StringBuilder::new, StringBuilder::append));
     }
