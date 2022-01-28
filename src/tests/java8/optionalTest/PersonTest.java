@@ -50,6 +50,17 @@ public class PersonTest {
     email1.ifPresent(value -> Assert.assertEquals(EMAIL_ADDR, value));
     Assert.assertEquals(String.format("Optional[%s]", EMAIL_ADDR), email1.toString());
   }
+  @SuppressWarnings("serial")
+  public static class OptMap<T, U> extends HashMap<T, U> {
+    public Optional<U> find(T key) {
+      return Optional.ofNullable(super.get(key));
+    }
+  }
+
+  public static void process(City city) {
+    Assert.assertEquals(CITY_NAME, city.name);
+  }
+
   @Test
   public void testOptional_Monad_NotFound() {
     OptMap<String, Person> personMap = new OptMap<>();
