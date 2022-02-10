@@ -21,11 +21,11 @@ buildscript {
 
 dependencies {
     testImplementation "junit:junit:4.12"
-    testImplementation "org.ow2.asm:asm:7.1"
+    implementation "org.ow2.asm:asm:7.1"
 }
 
 task copyLibs(type: Copy) {
-    from configurations.testImplementation
+    from configurations.runtimeClasspath
     into 'build'
 }
 
