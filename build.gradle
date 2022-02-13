@@ -1,12 +1,17 @@
-plugins {
-  id 'com.gradle.build-scan' version '2.3'
-  id 'java'
+apply plugin: "java"
+apply plugin: "maven-publish"
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "com.gradle:gradle-enterprise-gradle-plugin:3.2.1"
+  }
 }
 
-buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
-}
 
 def getCurrentVersion() {
     "DEVELOPMENT-SNAPSHOT"
