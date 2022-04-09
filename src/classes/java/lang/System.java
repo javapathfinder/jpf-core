@@ -61,6 +61,7 @@ public class System {
         properties.put(kv[i], kv[i+1]);
       }
     }
+    sun.misc.VM.saveAndRemoveProperties(properties);
 
     // this is the Java 6 sun.misc.SharedSecrets backdoor mechanism which I
     // would have prefered not to learn about. It's a mess WRT Java 1.5 / 6 compatibility
