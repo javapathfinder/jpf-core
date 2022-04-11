@@ -2,9 +2,9 @@ name: baseline build
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ java-10-gradle ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ java-10-gradle ]
   workflow_dispatch:
 
 jobs:
