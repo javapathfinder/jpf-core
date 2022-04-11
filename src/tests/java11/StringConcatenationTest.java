@@ -132,4 +132,66 @@ public class StringConcatenationTest extends TestJPF {
             assertEquals(expected, actual);
         }
     }
+	
+	@Test
+	public void testStringConcatenationWith_toString() {
+		if (verifyNoPropertyViolation()) {
+			String begin = "Greetings, ";
+			Person john = new Person("John");
+			String actual = begin + john;
+			String expected = "Greetings, John";
+			assertEquals(expected, actual);
+		}
+	}
+	
+	@Test
+	public void testStringConcatenationWith_toStringNested() {
+		if (verifyNoPropertyViolation()) {
+			String begin = "Greetings, ";
+			Person harold = createRobot("Harold");
+			String actual = begin + harold;
+			String expected = "Greetings, [Robot] Harold";
+			assertEquals(expected, actual);
+		}
+	}
+	
+	private Person createRobot(String name) {
+		return new Robot(name);
+	}
+	
+	private class Person {
+		private String name;
+		
+		private Person(String name) {
+			this.name = name;
+		}
+		
+		public String getType() {
+			return "human";
+		}
+		
+		@Override
+		public String toString() {
+			return name;
+		}
+	}
+	
+	private class Robot extends Person {
+		private String name;
+		
+		private Robot(String name) {
+			super(name);
+			this.name = name;
+		}
+		
+		@Override
+		public String getType() {
+			return "robot";
+		}
+		
+		@Override
+		public String toString() {
+			return "[Robot] " + name;
+		}
+	}
 }
