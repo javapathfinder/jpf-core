@@ -1,0 +1,50 @@
+task generateVersion {
+    group = "JPF Build Resources"
+    description = "Generates the .version file with the current revision hash"
+    doLast {
+        def revision = "git rev-parse HEAD".execute().text
+        new File(".version").withWriter("utf-8") { writer ->
+            writer.writeLine revision
+        }
+    }
+}
+
+task generateBuildInfo {
+    group = "JPF Build Resources"
+    description = "Generates the build.properties file."
+    doLast {
+
+        Properties info = new Properties()
+
+        def status  = "git status --short".execute().text.trim()
+        def revision = "git rev-parse --short HEAD".execute().text.trim()
+        def userName = ["git", "log", "-1", "--format=%an <%ae>"].execute().text.trim()
+        def date = "git log -1 --format=%ci".execute().text.trim()
+
+        info.setProperty("revision", revision)
+        info.setProperty("date", date)
+        info.setProperty("author", userName)
+        info.setProperty("os.arch", System.getProperty("os.arch"))
+        info.setProperty("os.name", System.getProperty("os.name"))
+        info.setProperty("user.country", System.getProperty("user.country"))
+        info.setProperty("java.version", System.getProperty("java.version"))
+
+        def writer = new File("build.properties").newWriter("utf-8")
+        info.store(writer, "JPF core build info")
+        writer.close()
+    }
+}
+
+task copyResources(type: Copy) {
+    group = "JPF Build Resources"
+    description = "Copies .version and build.properties files to the build directory."
+
+    dependsOn generateBuildInfo
+    dependsOn generateVersion
+
+    from "build.properties"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+
+    from ".version"
+    into sourceSets.main.java.outputDir.path + "/gov/nasa/jpf"
+}

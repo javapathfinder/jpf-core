@@ -1,7 +1,9 @@
 local.properties
 .version
+build.properties
 
 ####### General #######
+*.swo
 trace
 activity*.png
 *.class
@@ -11,6 +13,10 @@ activity*.png
 
 ####### Ant #######
 build/
+
+####### Gradle #######
+.gradle/
+reports/
 
 ####### Covers NetBeans IDE #######
 nbproject/private/
@@ -29,14 +35,22 @@ tmp/
 .settings/
 .loadpath
 .recommenders
+.classpath
+.project
 
 ####### Covers JetBrains IDE: IntelliJ #######
+*.iml
+*.ipr
 
 # User-specific stuff:
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
 .idea/ant.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/compiler.xml
+.idea/modules.xml
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
@@ -60,3 +74,9 @@ out/
 
 # JIRA plugin
 atlassian-ide-plugin.xml
+/.idea/
+/test.bat
+
+#local files
+local
+tmp.ser
