@@ -2552,6 +2552,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
       ci.classLoader = cl;
       ci.interfaces = new HashSet<ClassInfo>();
+      ci.allInterfaces = null;
       ci.resolveClass();
 
       ci.id = -1;
