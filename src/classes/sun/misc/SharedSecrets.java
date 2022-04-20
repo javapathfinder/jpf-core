@@ -58,6 +58,7 @@ public class SharedSecrets {
   private static JavaNioAccess javaNioAccess;
   private static JavaAWTAccess javaAWTAccess;
   private static JavaOISAccess javaOISAccess;
+  private static JavaObjectInputStreamReadString javaObjectInputStreamReadString;
   private static JavaObjectInputStreamAccess javaObjectInputStreamAccess;
 
   // (required for EnumSet ops)
@@ -137,6 +138,17 @@ public class SharedSecrets {
     }
 
     return javaIOFileDescriptorAccess;
+  }
+
+  public static JavaObjectInputStreamReadString getJavaObjectInputStreamReadString() {
+    if (javaObjectInputStreamReadString == null) {
+      unsafe.ensureClassInitialized(ObjectInputStream.class);
+    }
+    return javaObjectInputStreamReadString;
+  }
+
+  public static void setJavaObjectInputStreamReadString(JavaObjectInputStreamReadString access) {
+    javaObjectInputStreamReadString = access;
   }
 
   public static JavaObjectInputStreamAccess getJavaObjectInputStreamAccess() {
