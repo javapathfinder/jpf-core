@@ -23,13 +23,13 @@ public class ClockTest {
 
     @Test
     public void switch_clock_time_zone_test() throws Exception {
-        Clock eastCoastClock = Clock.system(ZoneId.of("America/New_York"));
+        ZoneId eastCoastZone = ZoneId.of("America/New_York");
 
-        Clock westCoastClock = eastCoastClock.withZone(ZoneId.of("America/Los_Angeles"));
-        LocalTime eastCoastTime = LocalTime.now(eastCoastClock);
-        LocalTime westCoastTime = LocalTime.now(westCoastClock);
+        ZoneId westCoastZone = ZoneId.of("America/Los_Angeles");
+        ZonedDateTime eastCoastTime = ZonedDateTime.now(eastCoastZone);
+        ZonedDateTime westCoastTime = eastCoastTime.withZoneSameLocal(westCoastZone);
         Duration timeDifference = Duration.between(eastCoastTime,westCoastTime);
-        assertThat(timeDifference.toHours(),is(-3L));
+        assertThat(timeDifference.toHours(),is(3L));
 
     }
 
