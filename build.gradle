@@ -15,7 +15,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath "gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.11.0"
+        classpath group: 'com.dmdirc', name: 'git-version', version: '1.1'
     }
 }
 
@@ -29,16 +29,14 @@ task copyLibs(type: Copy) {
     into 'build'
 }
 
-apply plugin: "com.palantir.git-version"
-version gitVersion()
-def gitDetails = versionDetails()
+apply plugin: "com.dmdirc.git-version"
 
 ext.manifestCommonAttrbutes = manifest {
     attributes(
             "Built-By": System.getProperty("user.name"),
             "Implementation-Vendor": "NASA Ames Research Center",
-            "Specification-Version": gitDetails.lastTag,
-            "Implementation-Version": gitDetails.gitHashFull
+            "Specification-Version": version,
+            "Implementation-Version": version
     )
 }
 
