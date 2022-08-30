@@ -1,4 +1,4 @@
-package java8;
+package java8.functionTest;
 import org.junit.Test;
 import gov.nasa.jpf.util.test.TestJPF;
 import java.util.function.BiFunction;

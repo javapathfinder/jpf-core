@@ -1,4 +1,4 @@
-package java8;
+package java8.timeTest;
 import org.junit.Test;
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
