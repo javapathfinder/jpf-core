@@ -1,4 +1,4 @@
-package java8;
+package java8.timeTest;
 import org.junit.Test;
 import java.time.LocalDate;
 import java.time.Period;
