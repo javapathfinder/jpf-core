@@ -15,7 +15,7 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-
+package PolDet;
 import org.junit.internal.TextListener;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
