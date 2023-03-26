@@ -88,7 +88,7 @@ public abstract class JVMArrayElementInstruction extends  ArrayElementInstructio
 
   @Override
   public ElementInfo peekArrayElementInfo (ThreadInfo ti){
-    int aref = getArrayRef(ti);
+    int aref = peekArrayRef(ti);
     return ti.getElementInfo(aref);
   }
   
