@@ -30,6 +30,8 @@ import org.junit.Test;
 class SharedObject {
   int instanceField;
   int whatEver;
+  int[] instanceArrayField1 = new int[2];
+  int[] instanceArrayField2 = new int[2];
 }
 
 
@@ -261,6 +263,97 @@ public class RaceTest extends TestJPF {
       t2.start();
     }
   }
+
+  public static void writeFirstElem(int[] arr) {
+    arr[0] = 0;
+  }
+
+  @Test
+  public void testInstanceArrayFieldRace() {
+    if (verifyPropertyViolation(PROPERTY, LISTENER)) {
+      SharedObject o = new SharedObject();
+      Thread t1 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(o.instanceArrayField1);
+        }
+      };
+      Thread t2 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(o.instanceArrayField1);
+        }
+      };
+      t1.start();
+      t2.start();
+    }
+  }
+
+  @Test
+  public void testInstanceArrayFieldNoRace() {
+    if (verifyNoPropertyViolation(LISTENER)) {
+      SharedObject o = new SharedObject();
+      Thread t1 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(o.instanceArrayField1);
+        }
+      };
+      Thread t2 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(o.instanceArrayField2);
+        }
+      };
+      t1.start();
+      t2.start();
+    }
+  }
+
+  public static int[] staticArrayField1 = new int[2];
+  public static int[] staticArrayField2 = new int[2];
+
+  @Test
+  public void testStaticArrayFieldRace() {
+    if (verifyPropertyViolation(PROPERTY, LISTENER)) {
+      Thread t1 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(staticArrayField1);
+        }
+      };
+      Thread t2 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(staticArrayField1);
+        }
+      };
+      t1.start();
+      t2.start();
+    }
+  }
+
+  @Test
+  public void testStaticArrayFieldNoRace() {
+    if (verifyNoPropertyViolation(LISTENER)) {
+      Thread t1 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(staticArrayField1);
+        }
+      };
+      Thread t2 = new Thread() {
+        @Override
+        public void run() {
+          writeFirstElem(staticArrayField2);
+        }
+      };
+      t1.start();
+      t2.start();
+    }
+  }
+
+
 
   /*
    * mostly the same as above except of that the race candidates are the same insn instance, i.e. use the same
