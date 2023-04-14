@@ -275,4 +275,26 @@ public class MethodTest extends TestMethodBase {
       assertEquals(42, new Child().foo());
     }
   }
+
+
+  static int sameNameMethodCanary = 0;
+  private void sameNameMethod() {
+    sameNameMethodCanary++;
+    assertEquals(sameNameMethodCanary, 1);
+    new PrivateMethodDispatchCallee().sameNameMethod();
+  }
+
+  static class PrivateMethodDispatchCallee {
+    public void sameNameMethod() {
+      sameNameMethodCanary--;
+    }
+  }
+
+  @Test
+  public void testPrivateMethodDispatch() {
+    if (verifyNoPropertyViolation()) {
+      sameNameMethod();
+    }
+  }
+
 }
