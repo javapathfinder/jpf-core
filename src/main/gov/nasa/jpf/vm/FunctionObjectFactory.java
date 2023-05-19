@@ -18,6 +18,10 @@
 package gov.nasa.jpf.vm;
 
 import java.lang.invoke.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import gov.nasa.jpf.jvm.JVMStackFrame;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -130,11 +134,8 @@ public class FunctionObjectFactory {
     Heap heap = ti.getHeap();
 
     if (bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
-      String concatenatedString = makeConcatWithStrings(ti, freeVariableTypeNames, freeVariableValues, bmi);
-      // Creating a newString for Concatenated string (example, "Hello," + "World");
-      ei = heap.newString(concatenatedString, ti);
-      freeVariableValues[0] = ei; // setting freeVariableValues to ei of new String.
-      freeVariableTypeNames[0] = "String";
+      createConcatStringCall(ti, bmi.getBmArg(), freeVariableTypeNames, freeVariableValues);
+      return MJIEnv.NULL;
     } else {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
@@ -146,6 +147,90 @@ public class FunctionObjectFactory {
     }
 
     return ei.getObjectRef();
+  }
+
+  /**
+   * This function receives invokedynamic's args and 'recipe' arg of BSM
+   * in case of string concat and convert them to proper data format.
+   * Them use these converted data as args and create a new stack frame
+   * to call the helper function java.lang.String.generateStringByConcatenatingArgs
+   * which concats these args to string.
+   *
+   * 'recipe' is in fact a string serves as a template to indicate how the args
+   * are to be concated to form a string. We split it into pieces: containing string
+   * elements and placeholders for the free variables (invokedynamic's args).
+   * Then we create a reference array to hold these pieces in their converted format.
+   * (convert primitive type to Java world String and VM world String to Java world String).
+   * Finally we pass the ref. array as the arg to call the helper function.
+   *
+   * @param ti                    ThreadInfo object
+   * @param recipe                a template indicating how to concat the String
+   * @param freeVariableTypeNames VM world String of the input variable types
+   * @param freeVariableValues    representation of the input variable values (ElementInfo for Java world
+   *                              object, boxed VM world object for Java world primitive)
+   * @return concatenated string
+   */
+  public void createConcatStringCall(ThreadInfo ti,
+                                     String recipe,
+                                     String[] freeVariableTypeNames,
+                                     Object[] freeVariableValues) {
+    final String freeVariablePlaceholder = "";
+    List<String> args = new ArrayList<>();
+    int startIdx = 0;
+    // 1. Split recipe into pieces, leave placeholders
+    // for free variables (invokedynamic's args)
+    for (int i = 0; i < (int) recipe.length(); i++) {
+      char ch = recipe.charAt(i);
+      // '\u0002' in recipe is a placeholder for BSM static args.
+      // It is rarely used except String literals containing some
+      // special chars (\u0001 or \u0002) are to be concated.
+      // We don't support BSM static args in case of string concat yet.
+      assert ch != '\u0002' : "We don't support BSM static args for string concat yet";
+      if (ch == '\u0001') {
+        if (startIdx != i) {
+          args.add(recipe.substring(startIdx, i));
+        }
+        startIdx = i + 1;
+        args.add(freeVariablePlaceholder);
+      }
+    }
+    if (startIdx != recipe.length()) {
+      args.add(recipe.substring(startIdx));
+    }
+
+    // 2. Prepare for the arg for the helper function
+    ElementInfo argArrObj = ti.getHeap().newArray("Ljava/lang/Object;", args.size(), ti);
+    int freeVarIdx = 0;
+    int argIdx = 0;
+    for (String arg : args) {
+      if (arg.equals(freeVariablePlaceholder)) {
+        String fVarTypeName = freeVariableTypeNames[freeVarIdx];
+        ElementInfo argObj = null;
+        if (Types.isBasicType(fVarTypeName)) {
+          String basicTypesString = freeVariableValues[freeVarIdx].toString();
+          argObj = ti.getHeap().newString(basicTypesString, ti);
+        } else {
+          argObj = (ElementInfo) freeVariableValues[freeVarIdx];
+        }
+        if (argObj == null) {
+          argArrObj.asReferenceArray()[argIdx] = MJIEnv.NULL;
+        } else {
+          argArrObj.asReferenceArray()[argIdx] = argObj.objRef;
+        }
+        freeVarIdx++;
+      } else {
+        argArrObj.asReferenceArray()[argIdx] = ti.getHeap().newString(arg, ti).objRef;
+      }
+      argIdx++;
+    }
+
+    // 3. Create a new stack frame to call the helper function
+    ClassInfo stringCI = ti.resolveReferencedClass("java.lang.String");
+    MethodInfo concatMtd = stringCI.getMethod("generateStringByConcatenatingArgs",
+        "([Ljava/lang/Object;)Ljava/lang/String;", false);
+    JVMStackFrame concatStackFrame = new JVMStackFrame(concatMtd);
+    concatStackFrame.setLocalReferenceVariable(0, argArrObj.objRef);
+    ti.pushFrame(concatStackFrame);
   }
 
   /**

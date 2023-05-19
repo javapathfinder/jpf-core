@@ -468,4 +468,24 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
   }
 
   native public static void checkBoundsOffCount(int offset, int count, int length);
+
+
+  // This private method is NOT part of the String API.
+  // It is meant to be used ONLY in FunctionObjectFactory
+  // for invokedynamic's String concatenation.
+  //
+  // Any further modifications of this function MUST NOT use any
+  // string concatenation operations in it, otherwise it can
+  // trap into infinite recursion.
+  private static String generateStringByConcatenatingArgs(Object[] args) {
+    // We use StringBuilder just like what OpenJDK does before JDK 9.
+    // More importantly, unlike StringBuffer, StringBuilder
+    // doesn't involves any synchronization operations, which prevent JPF
+    // from generating unnecessary state transitions.
+    StringBuilder builder = new StringBuilder();
+    for (Object arg : args) {
+      builder.append(arg);
+    }
+    return builder.toString();
+  }
 }

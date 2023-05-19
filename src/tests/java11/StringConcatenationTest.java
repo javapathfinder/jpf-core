@@ -36,6 +36,17 @@ public class StringConcatenationTest extends TestJPF {
     }
 
     @Test
+    public void testStringConcatenationWith_null() {
+        if (verifyNoPropertyViolation()) {
+            String tomorrow = "tomorrow";
+            Object unknown = null;
+            String actual = "The weather will be " + unknown + " " + tomorrow + ".";
+            String expected = "The weather will be null tomorrow.";
+            assertEquals(expected, actual);
+        }
+    }
+
+    @Test
     public void testStringConcatenationWithEmptyString() {
         if (verifyNoPropertyViolation()) {
             String[] strings = {"The", "weather", "will", "be", "sunny", "tomorrow"};

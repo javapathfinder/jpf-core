@@ -128,6 +128,16 @@ public class INVOKEDYNAMIC extends Instruction {
     frame.pop(freeVariableSize);
     frame.pushRef(funcObjRef);
     
-    return getNext(ti);
+    if (funcObjRef == MJIEnv.NULL) {
+      // In case of string concat, we return a null ref as a dummy arg.
+      // It is here only to be popped at the helper function's
+      // (java.lang.String.generateStringByConcatenatingArgs) return.
+      // We continue execution from the newly created stack frame (in the helper function).
+      return ti.getPC();
+    } else {
+      // In other cases (for lambda expr), this return value shouldn't be null.
+      // We continue execution from the following bytecode.
+      return getNext(ti);
+    }
   }
 }
