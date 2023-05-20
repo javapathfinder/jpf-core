@@ -237,8 +237,23 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       clazz.getDeclaredConstructor().newInstance();
     }
   }
-  
-  
+
+  static class NoDefaultCtor {
+
+    int i;
+
+    public NoDefaultCtor(int i) {
+      this.i = i;
+    }
+  }
+
+  @Test
+  public void testNoDefaultConstructor() throws ReflectiveOperationException {
+    if (verifyUnhandledException("java.lang.InstantiationException")) {
+      NoDefaultCtor.class.newInstance();
+    }
+  }
+
   @Test 
   public void testIsAssignableFrom () {
     if (verifyNoPropertyViolation()) {
