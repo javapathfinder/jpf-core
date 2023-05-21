@@ -224,7 +224,15 @@ public class JPF_java_lang_Class extends NativePeer {
     DirectCallStackFrame frame = ti.getReturnedDirectCall();
     
     ClassInfo ci = env.getReferredClassInfo(robj);   // what are we
-    MethodInfo miCtor = ci.getMethod("<init>()V", true); // note there always is one since something needs to call Object()
+    MethodInfo miCtor = ci.getMethod("<init>()V", false);
+
+    // According to Java SE 8 API Specification,
+    // If 'the class has no nullary constructor', this method
+    // should throws java.lang.InstantiationException
+    if (miCtor == null) {
+      env.throwException("java.lang.InstantiationException", ci.getName());
+      return MJIEnv.NULL;
+    }
 
     if (frame == null){ // first time around
       if(ci.isAbstract()){ // not allowed to instantiate
