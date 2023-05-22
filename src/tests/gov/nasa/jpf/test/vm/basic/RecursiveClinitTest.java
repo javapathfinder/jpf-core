@@ -64,9 +64,9 @@ public class RecursiveClinitTest extends TestJPF {
   @Test
   public void testNewInstance (){
     if (verifyNoPropertyViolation()) {
-      System.out.println("main now calling Derived.class.newInstance()");
+      System.out.println("main now calling Derived.class.getConstructor(int.class).newInstance(1)");
       try {
-        Derived.class.newInstance();
+        Derived.class.getConstructor(int.class).newInstance(1);
       } catch (Throwable t) {
         fail("instantiation failed with " + t);
       }
