@@ -41,7 +41,17 @@ public class RuntimeTest extends TestJPF {
     }
 
     if (!isJPFRun()) {
-      if (Verify.getCounter(0) != 2) {
+      // During initialization, JPF initializes some system classes,
+      // including java.lang.System.
+      //
+      // Since OpenJDK 9, java.lang.System's class initialization
+      // will indirectly triggers class initialization of
+      // j.u.c.ConcurrentHashMap, which contains a call to
+      // Runtime.availableProcessors().
+      //
+      // Consequently, during the whole execution of this test case, there are
+      // two calls to availableProcessors(), thus generating (2 * 2) states.
+      if (Verify.getCounter(0) != 4) {
         fail("wrong number of backtracks: " + Verify.getCounter(0));
       }
     }
