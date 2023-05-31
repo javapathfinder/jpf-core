@@ -94,4 +94,62 @@ public class ProxyTest extends TestJPF {
       assertTrue( res == 42);
     }
   }
+
+  @Test
+  public void testProxyCache() {
+    if (verifyNoPropertyViolation()){
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+      String proxyClassName = ifc.getClass().getName();
+
+      for (int i = 0; i < 10; i++) {
+        ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                           new Class[] { Ifc.class },
+                                           handler);
+        assertEquals(ifc.getClass().getName(), proxyClassName);
+      }
+      System.out.println(proxyClassName);
+    }
+  }
+
+  @Test
+  public void testProxyCreationInCaseOfChoiceGenerator() {
+    if (verifyNoPropertyViolation()){
+      new Thread(() -> {
+        MyHandler handler = new MyHandler(42);
+        Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                               new Class[] { Ifc.class },
+                                               handler);
+      }).start();
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+    }
+  }
+
+  @Test
+  public void testIsProxyClass() {
+    if (verifyNoPropertyViolation()){
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+      assertTrue(Proxy.isProxyClass(ifc.getClass()));
+      assertFalse(Proxy.isProxyClass(this.getClass()));
+    }
+  }
+
+  @Test
+  public void testGetInvocationHandler() {
+    if (verifyNoPropertyViolation()){
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+      assertTrue(handler == Proxy.getInvocationHandler(ifc));
+    }
+  }
 }
