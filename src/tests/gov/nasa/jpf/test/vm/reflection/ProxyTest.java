@@ -96,7 +96,7 @@ public class ProxyTest extends TestJPF {
   }
 
   @Test
-  public void testProxyCache() {
+  public void testProxyName() {
     if (verifyNoPropertyViolation()){
       MyHandler handler = new MyHandler(42);
       Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
@@ -110,7 +110,12 @@ public class ProxyTest extends TestJPF {
                                            handler);
         assertEquals(ifc.getClass().getName(), proxyClassName);
       }
-      System.out.println(proxyClassName);
+
+      String interfaceName = Ifc.class.getName();
+      String packageName = interfaceName.substring(0, interfaceName.lastIndexOf('.'));
+      String desiredProxyClsName = packageName + ".$Proxy$"
+          + Integer.toHexString(Ifc.class.getName().hashCode());
+      assertEquals(proxyClassName, desiredProxyClsName);
     }
   }
 
