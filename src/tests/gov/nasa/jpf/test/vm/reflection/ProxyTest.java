@@ -180,4 +180,36 @@ public class ProxyTest extends TestJPF {
       assertTrue(handler == Proxy.getInvocationHandler(ifc));
     }
   }
+
+  interface F {
+    int add(int a, int b);
+  }
+
+  interface G {
+    String concat(String s1, String s2);
+  }
+
+  public static class SimpleHandler implements InvocationHandler {
+
+    @Override
+    public Object invoke (Object proxy, Method mtd, Object[] args){
+      if (mtd.getName().equals("add")) {
+        int a = (int) args[0] +  (int) args[1];
+        return a;
+      } else if (mtd.getName().equals("concat")) {
+        String s = (String) args[0] + (String) args[1];
+        return s;
+      }
+      return null;
+    }
+  }
+
+  @Test
+  public void testProxyInvocation() {
+    SimpleHandler h = new SimpleHandler();
+    Object fg = Proxy.newProxyInstance(F.class.getClassLoader(), new Class[] { F.class, G.class }, h);
+    assertEquals(((F) fg).add(1, 2), 3);
+    assertEquals(((G) fg).concat("a", "b"), "ab");
+  }
+
 }
