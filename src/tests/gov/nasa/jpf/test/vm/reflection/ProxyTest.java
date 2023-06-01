@@ -119,19 +119,42 @@ public class ProxyTest extends TestJPF {
     }
   }
 
+  static class NewThread extends Thread {
+
+    Ifc ifc = null;
+
+    @Override
+    public void run() {
+        MyHandler handler = new MyHandler(42);
+        ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                           new Class[] { Ifc.class },
+                                           handler);
+    }
+  }
+
   @Test
   public void testProxyCreationInCaseOfChoiceGenerator() {
     if (verifyNoPropertyViolation()){
-      new Thread(() -> {
-        MyHandler handler = new MyHandler(42);
-        Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
-                                               new Class[] { Ifc.class },
-                                               handler);
-      }).start();
+      NewThread t = new NewThread();
+      t.start();
       MyHandler handler = new MyHandler(42);
       Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
                                              new Class[] { Ifc.class },
                                              handler);
+
+      try {
+        t.join();
+      } catch (InterruptedException ie) {
+        ie.printStackTrace();
+      }
+      Ifc ifcInOtherThread = t.ifc;
+      assertEquals(ifc.getClass().getName(), ifcInOtherThread.getClass().getName());
+
+      String interfaceName = Ifc.class.getName();
+      String packageName = interfaceName.substring(0, interfaceName.lastIndexOf('.'));
+      String desiredProxyClsName = packageName + ".$Proxy$"
+          + Integer.toHexString(Ifc.class.getName().hashCode());
+      assertEquals(ifc.getClass().getName(), desiredProxyClsName);
     }
   }
 
