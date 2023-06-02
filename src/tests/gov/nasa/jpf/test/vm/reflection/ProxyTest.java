@@ -94,4 +94,122 @@ public class ProxyTest extends TestJPF {
       assertTrue( res == 42);
     }
   }
+
+  @Test
+  public void testProxyName() {
+    if (verifyNoPropertyViolation()){
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+      String proxyClassName = ifc.getClass().getName();
+
+      for (int i = 0; i < 10; i++) {
+        ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                           new Class[] { Ifc.class },
+                                           handler);
+        assertEquals(ifc.getClass().getName(), proxyClassName);
+      }
+
+      String interfaceName = Ifc.class.getName();
+      String packageName = interfaceName.substring(0, interfaceName.lastIndexOf('.'));
+      String desiredProxyClsName = packageName + ".$Proxy$"
+          + Integer.toHexString(Ifc.class.getName().hashCode());
+      assertEquals(proxyClassName, desiredProxyClsName);
+    }
+  }
+
+  static class NewThread extends Thread {
+
+    Ifc ifc = null;
+
+    @Override
+    public void run() {
+        MyHandler handler = new MyHandler(42);
+        ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                           new Class[] { Ifc.class },
+                                           handler);
+    }
+  }
+
+  @Test
+  public void testProxyCreationInCaseOfChoiceGenerator() {
+    if (verifyNoPropertyViolation()){
+      NewThread t = new NewThread();
+      t.start();
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+
+      try {
+        t.join();
+      } catch (InterruptedException ie) {
+        ie.printStackTrace();
+      }
+      Ifc ifcInOtherThread = t.ifc;
+      assertEquals(ifc.getClass().getName(), ifcInOtherThread.getClass().getName());
+
+      String interfaceName = Ifc.class.getName();
+      String packageName = interfaceName.substring(0, interfaceName.lastIndexOf('.'));
+      String desiredProxyClsName = packageName + ".$Proxy$"
+          + Integer.toHexString(Ifc.class.getName().hashCode());
+      assertEquals(ifc.getClass().getName(), desiredProxyClsName);
+    }
+  }
+
+  @Test
+  public void testIsProxyClass() {
+    if (verifyNoPropertyViolation()){
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+      assertTrue(Proxy.isProxyClass(ifc.getClass()));
+      assertFalse(Proxy.isProxyClass(this.getClass()));
+    }
+  }
+
+  @Test
+  public void testGetInvocationHandler() {
+    if (verifyNoPropertyViolation()){
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
+                                             new Class[] { Ifc.class },
+                                             handler);
+      assertTrue(handler == Proxy.getInvocationHandler(ifc));
+    }
+  }
+
+  interface F {
+    int add(int a, int b);
+  }
+
+  interface G {
+    String concat(String s1, String s2);
+  }
+
+  public static class SimpleHandler implements InvocationHandler {
+
+    @Override
+    public Object invoke (Object proxy, Method mtd, Object[] args){
+      if (mtd.getName().equals("add")) {
+        int a = (int) args[0] +  (int) args[1];
+        return a;
+      } else if (mtd.getName().equals("concat")) {
+        String s = (String) args[0] + (String) args[1];
+        return s;
+      }
+      return null;
+    }
+  }
+
+  @Test
+  public void testProxyInvocation() {
+    SimpleHandler h = new SimpleHandler();
+    Object fg = Proxy.newProxyInstance(F.class.getClassLoader(), new Class[] { F.class, G.class }, h);
+    assertEquals(((F) fg).add(1, 2), 3);
+    assertEquals(((G) fg).concat("a", "b"), "ab");
+  }
+
 }
