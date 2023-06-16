@@ -95,6 +95,19 @@ public class ClassFile extends BinaryClassSource {
   // Map index of bootstrap method to constant pool index of invokedynamic.
   // We store this info because we need to get the call site descriptor of
   // an invokedynamic when its corresponding BSM is parsed later.
+  //
+  // For each invokedynamic instruction, there is a bootstrap method in the class file (not 1-1).
+  // And there is also a CONSTANT_InvokeDynamic_info structure in the constant pool
+  // of the class file for each invokedynamic (not 1-1). It is roughly in the following form:
+  //              (bootstrap_method_index, call_site_descriptor)
+  // This information can be got when we parse the invokedynamic instruction.
+  // We also need it when we later parse bootstrap method because we need the
+  // call site descriptor. Thus, a Map is used to store the mapping of:
+  // bootstrap method index => constant pool index of CONSTANT_InvokeDynamic_info structure
+  //
+  // Later, when we parse bootstrap method, we can get constant pool index of
+  // that structure and use callSiteDescriptor() function to parse call site descriptor
+  // from that structure.
   Map<Integer, Integer> bsmIdxToIndyCpIdx= new HashMap<>();
 
   //--- ctors
