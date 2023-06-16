@@ -786,6 +786,9 @@ public class JVMClassInfo extends ClassInfo {
     int modifiers = fiMethod.getModifiers() & (~Modifier.ABSTRACT);
     int nLocals = fiMethod.getArgumentsSize();
     int nOperands = this.nInstanceFields + nLocals;
+    if (bootstrapMethod.getLambdaRefKind() == ClassFile.REF_NEW_INVOKESPECIAL) {
+      nOperands += 1;
+    }
 
     MethodInfo mi = new MethodInfo(fiMethod.getName(), fiMethod.getSignature(), modifiers, nLocals, nOperands);
     mi.linkToClass(this);
@@ -999,6 +1002,7 @@ public class JVMClassInfo extends ClassInfo {
       break;
     case ClassFile.REF_NEW_INVOKESPECIAL:
       cb.new_(calleeClass);
+      cb.dup();
       cb.invokespecial(calleeClass, calleeName, calleeSig);
       break;
     case ClassFile.REF_INVOKESPECIAL:
