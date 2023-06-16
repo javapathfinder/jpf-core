@@ -91,10 +91,12 @@ public class ClassFile extends BinaryClassSource {
   // the const pool
   int[] cpPos;     // cpPos[i] holds data start index for cp_entry i (0 is unused)
   Object[] cpValue; // cpValue[i] hold the String/Integer/Float/Double associated with corresponding cp_entries
-  
-  int[] invokeDynamicIdx; // used to store index value of invokeDynamic instruction.
-  int bmCount; 
-  int iDCount;
+
+  // Map index of bootstrap method to constant pool index of invokedynamic.
+  // We store this info because we need to get the call site descriptor of
+  // an invokedynamic when its corresponding BSM is parsed later.
+  Map<Integer, Integer> bsmIdxToIndyCpIdx= new HashMap<>();
+
   //--- ctors
 
   public ClassFile (byte[] data, int offset){
@@ -103,9 +105,6 @@ public class ClassFile extends BinaryClassSource {
 
   public ClassFile (byte[] data){
     super(data,0);
-    invokeDynamicIdx = new int[50];
-    bmCount=0;
-    iDCount=0;
   }
 
   public ClassFile (String typeName, byte[] data){
@@ -1509,9 +1508,7 @@ public class ClassFile extends BinaryClassSource {
       String clsName = methodClassNameAt(mrefIdx);
       String mthName = methodNameAt(mrefIdx);
       String parameters = methodDescriptorAt(mrefIdx);
-      String descriptor= callSiteDescriptor(invokeDynamicIdx[iDCount]); 
-      // invokeDynamicIdx[iDCount] = CP index value of invokeDynamic.
-      iDCount ++;
+      String descriptor= callSiteDescriptor(bsmIdxToIndyCpIdx.get(i));
 
       setBootstrapMethod(reader, tag, i, refKind, clsName, mthName, parameters, descriptor, bmArgs);
     }
@@ -2709,9 +2706,9 @@ public class ClassFile extends BinaryClassSource {
           reader.invokeinterface(cpIdx, count, zero);
           break;
         case 186: // invokedynamic
-          cpIdx = readU2(); // CP index of bootstrap method
-          invokeDynamicIdx[bmCount] = cpIdx; // Storing CP index bootstrap method
-          bmCount++;
+          cpIdx = readU2(); // CP index of invokedynamic
+          int bsmIdx = bootstrapMethodIndex(cpIdx);
+          bsmIdxToIndyCpIdx.put(bsmIdx, cpIdx);
           readUByte();  // 0
           readUByte(); //  0
           reader.invokedynamic(cpIdx);
