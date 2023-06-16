@@ -311,7 +311,7 @@ public class LambdaTest extends TestJPF{
   }
 
   @Test
-  public void testLoadClassWithManyBootstrapMethods() {
+  public void testLoadingClassWithManyBootstrapMethods() {
     if(verifyNoPropertyViolation()) {
       // java.util.stream.Collectors contains many bootstrap methods
       Collectors.toSet();
