@@ -96,9 +96,11 @@ public class ClassFile extends BinaryClassSource {
   // We store this info because we need to get the call site descriptor of
   // an invokedynamic when its corresponding BSM is parsed later.
   //
-  // For each invokedynamic instruction, there is a bootstrap method in the class file (not 1-1).
+  // For each invokedynamic instruction, there is a bootstrap method in the class file, while
+  // multiple invokedynamic instructions may share one bootstrap method (an n-1 mapping).
   // And there is also a CONSTANT_InvokeDynamic_info structure in the constant pool
-  // of the class file for each invokedynamic (not 1-1). It is roughly in the following form:
+  // of the class file for each invokedynamic, while multiple invokedynamic instructions may
+  // share one such info (an n-1 mapping). The structure is roughly in the following form:
   //              (bootstrap_method_index, call_site_descriptor)
   // This information can be got when we parse the invokedynamic instruction.
   // We also need it when we later parse bootstrap method because we need the
