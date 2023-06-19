@@ -786,6 +786,11 @@ public class JVMClassInfo extends ClassInfo {
     int modifiers = fiMethod.getModifiers() & (~Modifier.ABSTRACT);
     int nLocals = fiMethod.getArgumentsSize();
     int nOperands = this.nInstanceFields + nLocals;
+    // If it is a REF_newInvokeSpecial method handle,
+    // we need one more stack slot to store the dupped object reference
+    if (bootstrapMethod.getLambdaRefKind() == ClassFile.REF_NEW_INVOKESPECIAL) {
+      nOperands += 1;
+    }
 
     MethodInfo mi = new MethodInfo(fiMethod.getName(), fiMethod.getSignature(), modifiers, nLocals, nOperands);
     mi.linkToClass(this);
@@ -986,7 +991,9 @@ public class JVMClassInfo extends ClassInfo {
     
     String calleeClass = miCallee.getClassName(); 
     
-    // adding the bytecode instruction to invoke lambda method
+    // Add the bytecode instruction to invoke lambda method.
+    // Implement bytecode behaviors for method handles.
+    // See https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.5
     switch (bootstrapMethod.getLambdaRefKind()) {
     case ClassFile.REF_INVOKESTATIC:
       cb.invokestatic(calleeClass, calleeName, calleeSig);
@@ -999,6 +1006,7 @@ public class JVMClassInfo extends ClassInfo {
       break;
     case ClassFile.REF_NEW_INVOKESPECIAL:
       cb.new_(calleeClass);
+      cb.dup();
       cb.invokespecial(calleeClass, calleeName, calleeSig);
       break;
     case ClassFile.REF_INVOKESPECIAL:

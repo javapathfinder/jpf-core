@@ -45,7 +45,15 @@ public class LambdaTest extends TestJPF{
       (new Thread(r)).start();
     }
   }
-  
+
+  @Test
+  public void testNewSpecialMethodHandle() {
+    if(verifyNoPropertyViolation()) {
+      Supplier s = LambdaTest::new;
+      assertTrue(s.get().getClass() == this.getClass());
+    }
+  }
+
   public interface FI1 {
     void sam();
   }
