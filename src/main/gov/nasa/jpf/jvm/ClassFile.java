@@ -91,10 +91,27 @@ public class ClassFile extends BinaryClassSource {
   // the const pool
   int[] cpPos;     // cpPos[i] holds data start index for cp_entry i (0 is unused)
   Object[] cpValue; // cpValue[i] hold the String/Integer/Float/Double associated with corresponding cp_entries
-  
-  int[] invokeDynamicIdx; // used to store index value of invokeDynamic instruction.
-  int bmCount; 
-  int iDCount;
+
+  // Map index of bootstrap method to constant pool index of invokedynamic.
+  // We store this info because we need to get the call site descriptor of
+  // an invokedynamic when its corresponding BSM is parsed later.
+  //
+  // For each invokedynamic instruction, there is a bootstrap method in the class file, while
+  // multiple invokedynamic instructions may share one bootstrap method (an n-1 mapping).
+  // And there is also a CONSTANT_InvokeDynamic_info structure in the constant pool
+  // of the class file for each invokedynamic, while multiple invokedynamic instructions may
+  // share one such info (an n-1 mapping). The structure is roughly in the following form:
+  //              (bootstrap_method_index, call_site_descriptor)
+  // This information can be got when we parse the invokedynamic instruction.
+  // We also need it when we later parse bootstrap method because we need the
+  // call site descriptor. Thus, a Map is used to store the mapping of:
+  // bootstrap method index => constant pool index of CONSTANT_InvokeDynamic_info structure
+  //
+  // Later, when we parse bootstrap method, we can get constant pool index of
+  // that structure and use callSiteDescriptor() function to parse call site descriptor
+  // from that structure.
+  Map<Integer, Integer> bsmIdxToIndyCpIdx= new HashMap<>();
+
   //--- ctors
 
   public ClassFile (byte[] data, int offset){
@@ -103,9 +120,6 @@ public class ClassFile extends BinaryClassSource {
 
   public ClassFile (byte[] data){
     super(data,0);
-    invokeDynamicIdx = new int[50];
-    bmCount=0;
-    iDCount=0;
   }
 
   public ClassFile (String typeName, byte[] data){
@@ -1509,9 +1523,7 @@ public class ClassFile extends BinaryClassSource {
       String clsName = methodClassNameAt(mrefIdx);
       String mthName = methodNameAt(mrefIdx);
       String parameters = methodDescriptorAt(mrefIdx);
-      String descriptor= callSiteDescriptor(invokeDynamicIdx[iDCount]); 
-      // invokeDynamicIdx[iDCount] = CP index value of invokeDynamic.
-      iDCount ++;
+      String descriptor= callSiteDescriptor(bsmIdxToIndyCpIdx.get(i));
 
       setBootstrapMethod(reader, tag, i, refKind, clsName, mthName, parameters, descriptor, bmArgs);
     }
@@ -2709,9 +2721,9 @@ public class ClassFile extends BinaryClassSource {
           reader.invokeinterface(cpIdx, count, zero);
           break;
         case 186: // invokedynamic
-          cpIdx = readU2(); // CP index of bootstrap method
-          invokeDynamicIdx[bmCount] = cpIdx; // Storing CP index bootstrap method
-          bmCount++;
+          cpIdx = readU2(); // CP index of invokedynamic
+          int bsmIdx = bootstrapMethodIndex(cpIdx);
+          bsmIdxToIndyCpIdx.put(bsmIdx, cpIdx);
           readUByte();  // 0
           readUByte(); //  0
           reader.invokedynamic(cpIdx);
