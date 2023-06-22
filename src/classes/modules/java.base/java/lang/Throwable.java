@@ -139,4 +139,12 @@ public class Throwable {
   int getStackTraceDepth(){
     return (snapshot.length / 2); // snapshot stores the methodId and pc for each StackFrame 
   }
+
+  public final synchronized void addSuppressed(Throwable exception) {
+    if(exception == this)
+      throw new IllegalArgumentException(exception);
+
+    if(exception == null)
+      throw new NullPointerException();
+  }
 }
