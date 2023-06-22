@@ -19,36 +19,22 @@
 package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.annotation.MJI;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.NativePeer;
 
 import java.text.DateFormat;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
  * this is just the minimal support for DateFormat.parse(String)
  */
 public class JPF_java_text_DateFormat extends NativePeer {
-
   DateFormat getInstance (MJIEnv env, int objref) {
     Format fmt = JPF_java_text_Format.getInstance(env,objref);
     assert fmt instanceof SimpleDateFormat;
 
     return (DateFormat)fmt;
-  }
-
-  @MJI
-  public void setTimeZone__Ljava_util_TimeZone_2__V(MJIEnv env, int objref,int timeZoneRef) {
-    String timeZoneId = env.getStringField(timeZoneRef, "ID");
-    TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
-    DateFormat fmt = getInstance(env,objref);
-    fmt.setTimeZone(timeZone);
-    int calendarRef = env.getReferenceField(objref, "calendar");
-    env.setReferenceField(calendarRef, "zone", timeZoneRef);
   }
 
   @MJI

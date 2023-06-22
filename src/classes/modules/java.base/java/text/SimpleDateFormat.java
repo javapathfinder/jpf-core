@@ -31,6 +31,7 @@ public class SimpleDateFormat extends DateFormat {
 
   // see DecimalFormat comments why we use explicit init0()'s
 
+  private Calendar calendar;
   private native void init0();
   private native void init0(String pattern);
   private native void init0(int timeStyle, int dateStyle);
@@ -48,9 +49,12 @@ public class SimpleDateFormat extends DateFormat {
     initializeCalendar();
   }
 
-  public SimpleDateFormat (String pattern, Locale locale) {
-    // <2do> bluntly ignoring locale for now
-    this(pattern);
+  public SimpleDateFormat(String pattern, Locale locale) {
+    if(pattern == null) {
+      throw new NullPointerException();
+    }
+    init0(pattern);
+    initializeCalendar(locale);
   }
 
   SimpleDateFormat (int timeStyle, int dateStyle, Locale locale){
@@ -62,7 +66,7 @@ public class SimpleDateFormat extends DateFormat {
   // it is final, and hence the compiler can do a INVOKE_SPECIAL
   native String format0 (long dateTime);
 
-  @Override
+
   public StringBuffer format (Date date, StringBuffer sb, FieldPosition pos) {
     String s = format0(date.getTime());
     sb.append(s);
@@ -72,8 +76,6 @@ public class SimpleDateFormat extends DateFormat {
     return sb;
   }
 
-
-  @Override
   public Date parse (String arg0, ParsePosition arg1) {
     // TODO Auto-generated method stub
     return null;
@@ -85,6 +87,14 @@ public class SimpleDateFormat extends DateFormat {
     }
   }
 
+  private void initializeCalendar(Locale locale) {
+    if(calendar == null) {
+      calendar = Calendar.getInstance(TimeZone.getDefault(), locale);
+    }
+  }
+  public TimeZone getTimeZone() {
+    return Calendar.getInstance().getTimeZone();
+  }
+
   native public void applyPattern(String pattern);
-  
 }
