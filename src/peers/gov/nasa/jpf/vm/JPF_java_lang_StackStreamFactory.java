@@ -33,10 +33,11 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
   public static class AbstractStackWalker extends NativePeer {
 
     // There may be multiple StackWalkers traversing stacks, and the stack
-    // frames are not fetched at once (fetchStackFrames() may be called multiple
+    // frames are not fetched only once (fetchStackFrames() may be called multiple
     // times to fetch frames incrementally). This HashMap is used to record
-    // where to continue fetching frames (From a key to the `StackFrame` to
-    // start fetching next time).
+    // where to continue fetching frames (we use hash code of the next frame
+    // to fetch after we fetch the first batch in callStackWalk() as the key
+    // and the `StackFrame` to start fetching next time as the value).
     //
     // Generation of entry:
     //     The key is generated at the start of traversal, i.e., when
@@ -118,6 +119,10 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
       StackFrame curFrame = getFirstNonStackWalkerFrame(ti);
       for (;!isBottomFrame(curFrame);
            curFrame = curFrame.getPrevious()) {
+        // Since direct call frames are JPF's implementation details
+        // and have not java level correspondence, and we mainly use
+        // JDK library to implement StackWalker, which don't expect
+        // to see them, we should hide these frames.
         if (curFrame.isDirectCallFrame()) {
           continue;
         }
@@ -132,6 +137,9 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
       int nextStartFrameId = 1;
       if (!isBottomFrame(curFrame)) {
         StackFrame nextStartFrame = curFrame.getPrevious();
+        // Use hash code of the first frame of the remaining frame
+        // batches as the key, since we may not need this key-value
+        // pair if we don't have remaining batches.
         nextStartFrameId = nextStartFrame.hashCode();
         nextStartFrames.put(nextStartFrameId, nextStartFrame);
       }
@@ -190,6 +198,7 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
       StackFrame curFrame = nextStartFrames.get(nextStartFrameId);
       for (;!isBottomFrame(curFrame);
            curFrame = curFrame.getPrevious()) {
+        // Hide JPF's implementation details from JDK library
         if (curFrame.isDirectCallFrame()) {
           continue;
         }
