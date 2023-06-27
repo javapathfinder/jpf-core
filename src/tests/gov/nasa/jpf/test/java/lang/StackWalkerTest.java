@@ -102,17 +102,22 @@ public class StackWalkerTest extends TestJPF {
 
   @Test
   public void testStackWalkerInCaseOfChoiceGenerator() {
+    Object lock = this;
     if (verifyNoPropertyViolation()){
       Thread t1 = new Thread() {
         @Override
         public void run() {
-          callIt();
+          synchronized (lock) {
+            callIt();
+          }
         }
       };
       Thread t2 = new Thread() {
         @Override
         public void run() {
-          callIt();
+          synchronized (lock) {
+            callIt();
+          }
         }
       };
       t1.start();
