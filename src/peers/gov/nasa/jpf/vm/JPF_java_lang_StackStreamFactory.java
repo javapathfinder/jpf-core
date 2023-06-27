@@ -117,8 +117,7 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
       int[] frameRefArray = frameBufObj.asReferenceArray();
       int idx = 0;
       StackFrame curFrame = getFirstNonStackWalkerFrame(ti);
-      for (;!isBottomFrame(curFrame);
-           curFrame = curFrame.getPrevious()) {
+      for (; !isBottomFrame(curFrame); curFrame = curFrame.getPrevious()) {
         // Since direct call frames are JPF's implementation details
         // and have not java level correspondence, and we mainly use
         // JDK library to implement StackWalker, which don't expect
@@ -196,8 +195,7 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
       int[] frameRefArray = frameBufObj.asReferenceArray();
       int idx = 0;
       StackFrame curFrame = nextStartFrames.get(nextStartFrameId);
-      for (;!isBottomFrame(curFrame);
-           curFrame = curFrame.getPrevious()) {
+      for (; !isBottomFrame(curFrame); curFrame = curFrame.getPrevious()) {
         // Hide JPF's implementation details from JDK library
         if (curFrame.isDirectCallFrame()) {
           continue;
