@@ -153,7 +153,7 @@ public class StackWalkerTest extends TestJPF {
           .map(StackTraceElement::getMethodName)
           .collect(Collectors.toList()))
           .get(0);
-      assertTrue(thisMethodName.equals("testToStackTrace"));
+      assertTrue(thisMethodName.equals("testToStackTraceElement"));
     }
   }
 
