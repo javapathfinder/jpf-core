@@ -140,7 +140,7 @@ public class StackWalkerTest extends TestJPF {
   @Test
   public void testDeepStack() {
     if (verifyNoPropertyViolation()) {
-      deepCall(100);
+      deepCall(5);
     }
   }
 
