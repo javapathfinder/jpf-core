@@ -59,6 +59,9 @@ public class StackFrameInfo implements StackFrame {
 
   @Override
   public MethodType getMethodType() {
+    if (methodType == null) {
+      methodType = MethodType.fromMethodDescriptorString(descriptor, null);
+    }
     return methodType;
   }
 

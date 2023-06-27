@@ -21,6 +21,7 @@ import gov.nasa.jpf.util.test.TestJPF;
 
 import org.junit.Test;
 
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
@@ -153,6 +154,19 @@ public class StackWalkerTest extends TestJPF {
           .collect(Collectors.toList()))
           .get(0);
       assertTrue(thisMethodName.equals("testToStackTrace"));
+    }
+  }
+
+  @Test
+  public void testGetMethodType() {
+    if (verifyNoPropertyViolation()) {
+      StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+      MethodType thisMethodType = walker.walk(s -> s
+          .limit(1)
+          .map(StackWalker.StackFrame::getMethodType)
+          .collect(Collectors.toList()))
+          .get(0);
+      assertTrue(thisMethodType.equals(MethodType.fromMethodDescriptorString("()V", null)));
     }
   }
 }

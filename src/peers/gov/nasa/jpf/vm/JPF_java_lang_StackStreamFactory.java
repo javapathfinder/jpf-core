@@ -85,7 +85,7 @@ public class JPF_java_lang_StackStreamFactory extends NativePeer {
       ElementInfo frameInfoObj = env.getHeap().newObject(frameInfoCls, env.getThreadInfo());
       frameInfoObj.setReferenceField("declaringClass", declaringClsObjRef);
       frameInfoObj.setReferenceField("methodName", methodNameRef);
-      // TODO: set methodType
+      // It is easier to compute 'methodType' in Java code, so it is not set here.
       frameInfoObj.setReferenceField("descriptor", descriptorRef);
       frameInfoObj.setIntField("bci", bci);
       frameInfoObj.setReferenceField("fileName", fileNameRef);
