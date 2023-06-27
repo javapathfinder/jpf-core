@@ -145,7 +145,7 @@ public class StackWalkerTest extends TestJPF {
   }
 
   @Test
-  public void testToStackTrace() {
+  public void testToStackTraceElement() {
     if (verifyNoPropertyViolation()) {
       StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
       String thisMethodName = walker.walk(s -> s
