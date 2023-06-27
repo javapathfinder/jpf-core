@@ -98,7 +98,9 @@ public class StackFrameInfo implements StackFrame {
 
   @Override
   public StackTraceElement toStackTraceElement() {
-    // TODO
-    return null;
+    return new StackTraceElement(declaringClass.getName(),
+                                 methodName,
+                                 fileName,
+                                 lineNumber);
   }
 }

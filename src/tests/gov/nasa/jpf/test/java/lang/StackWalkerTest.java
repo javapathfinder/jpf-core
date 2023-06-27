@@ -142,4 +142,17 @@ public class StackWalkerTest extends TestJPF {
       deepCall(100);
     }
   }
+
+  @Test
+  public void testToStackTrace() {
+    if (verifyNoPropertyViolation()) {
+      StackWalker walker = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+      String thisMethodName = walker.walk(s -> s
+          .map(StackWalker.StackFrame::toStackTraceElement)
+          .map(StackTraceElement::getMethodName)
+          .collect(Collectors.toList()))
+          .get(0);
+      assertTrue(thisMethodName.equals("testToStackTrace"));
+    }
+  }
 }
