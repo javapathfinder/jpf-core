@@ -125,7 +125,7 @@ public abstract class JVMClassFileContainer extends ClassFileContainer {
       // Here we try to load the class on the underlying JVM (OpenJDK) to
       // query its module name. But for gov.nasa.jpf.SerializationConstructor,
       // OpenJDK will see it inheriting a final class (j.l.r.Constructor) and throw
-      // java.lang.VerifyError. Since we know it doesn't have module name, we can
+      // java.lang.VerifyError. Since we know it doesn't have a module name, we can
       // directly return null instead of loading it on the underlying OpenJDK
       // and doing the query.
       if (typeName.equals("gov.nasa.jpf.SerializationConstructor")) {
