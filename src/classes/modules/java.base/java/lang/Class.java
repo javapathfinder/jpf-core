@@ -74,7 +74,9 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
    * to be set during <clinit> of the corresponding class
    */
   private boolean isPrimitive;
-  
+
+  transient ClassValue.ClassValueMap classValueMap;
+
   private Class() {}
 
   public native boolean isArray ();
@@ -161,6 +163,15 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
       return null;
     }
 
+  }
+
+  public String getPackageName() {
+    int idx = name.lastIndexOf('.');
+    if (idx >= 0){
+      return name.substring(0,idx);
+    } else {
+      return "";
+    }
   }
 
   //--- enum support ()
