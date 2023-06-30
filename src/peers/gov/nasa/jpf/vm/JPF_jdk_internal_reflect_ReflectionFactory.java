@@ -20,6 +20,7 @@ package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.annotation.MJI;
 
+// Similar to JPF_sun_reflect_ReflectionFactory
 public class JPF_jdk_internal_reflect_ReflectionFactory extends NativePeer {
 
   @MJI
