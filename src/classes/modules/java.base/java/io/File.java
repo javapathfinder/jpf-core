@@ -35,6 +35,7 @@ import java.net.URL;
  */
 public class File
 {
+
   public static final String separator = System.getProperty("file.separator");
   public static final char separatorChar = separator.charAt(0);
   public static final String pathSeparator = System.getProperty("path.separator");

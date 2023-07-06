@@ -488,4 +488,18 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
     }
     return builder.toString();
   }
+
+
+	/**
+	 * StringIndexOutOfBoundsException  if {@code index} is
+	 * negative or greater than or equal to {@code length}.
+	 *
+	 * Added to support SAXParserTest
+	 */
+  static void checkIndex(int index, int length) {
+	  if (index < 0 || index >= length) {
+	    throw new StringIndexOutOfBoundsException("index " + index + ",length " + length);
+		}
+  }
+
 }
