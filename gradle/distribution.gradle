@@ -2,12 +2,12 @@ task srcDist(type: Zip) {
     group = "JPF Distribution"
     description = "Builds the source distribution."
 
-    baseName = project.name
-    version = project.version
-    classifier = "src"
-    extension = "zip"
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    archiveClassifier = "src"
+    archiveExtension = "zip"
 
-    destinationDir = buildDir
+    destinationDirectory = buildDir
     includeEmptyDirs = false
 
     from projectDir
@@ -28,11 +28,11 @@ task dist(type: Zip) {
     group = "JPF Distribution"
     description = "Builds binary distribution."
 
-    baseName = project.name
-    version = project.version
-    extension = "zip"
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    archiveExtension = "zip"
 
-    destinationDir = buildDir
+    destinationDirectory = buildDir
     includeEmptyDirs = false
 
     from projectDir
