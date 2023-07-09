@@ -39,7 +39,7 @@ public class ObjectStreamTest extends TestJPF {
     Y a = new Y(-42);
 
     @Override
-	public String toString() {
+    public String toString() {
       return "X{q=\""+q+"\",a="+a+'}';
     }
   }
@@ -61,7 +61,7 @@ public class ObjectStreamTest extends TestJPF {
     }
 
     @Override
-	public String toString() {
+    public String toString() {
       return "Y{z="+z+",b="+b+",c="+c+",s="+s+",i="+i+",l="+l+",f="+f+",d="+d+ '}';
     }
   }
@@ -95,7 +95,7 @@ public class ObjectStreamTest extends TestJPF {
         X x = (X) o;
         assert x.a.i == -42;
       } catch (Throwable t){
-        //t.printStackTrace();
+        t.printStackTrace();
         fail("serialization readback failed: " + t);
       }
 

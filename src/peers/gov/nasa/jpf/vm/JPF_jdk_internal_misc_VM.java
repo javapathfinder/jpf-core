@@ -30,4 +30,12 @@ public class JPF_jdk_internal_misc_VM extends NativePeer {
   public void initialize____V (MJIEnv env, int clsObjRef){
     // nothing here yet
   }
+
+  @MJI
+  public void initializeFromArchive(MJIEnv env,
+                                    int clsObjRef,
+                                    int cRef) {
+    // We don't support CDS so we don't need to implement it,
+    // which doesn't affect our correctness.
+  }
 }

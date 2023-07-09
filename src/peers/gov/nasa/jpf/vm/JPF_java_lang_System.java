@@ -177,6 +177,7 @@ public class JPF_java_lang_System extends NativePeer {
         "file.separator",
         "user.name",
         "user.dir",
+        "user.home",
         "user.timezone",
         "user.country",
         "java.home",
