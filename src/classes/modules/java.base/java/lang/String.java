@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -30,12 +30,12 @@ import java.util.regex.Pattern;
 /**
  * MJI adapter for java.lang.String, based on jdk 1.7.0_07 source.
  * Adapted by frank.
- * 
+ *
  * We have to model java.lang.String since it changed its implementation between
  * Java 1.6 and Java 1.7, and JPF is initializing string objects internally without
  * doing roundtrips (for performance reasons), i.e. we need to be able to rely
  * on fields of the String implementation.
- * 
+ *
  * The silver lining is that most methods are now native and don't appear in
  * traces anymore. Spending a lot of JPF cycles (instruction.execute()) on
  * String is just not worth it in terms of potential properties.
@@ -89,7 +89,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	public String(char value[], boolean share) {
 		this(value, 0, value.length, null);
 	}
-	
+
 	public String(char value[], int offset, int count) {
 		String proxy=init(value,offset,count);
 		this.value=proxy.value;
@@ -290,7 +290,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	}
 
   native static boolean equals0 (char[] a, char[] b, int len);
-  
+
   /**
    * we can't turn this into a native method at top level since it would require a bunch
    * of round trips
@@ -457,11 +457,11 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
   /*
    * methods to be compatible with Harmony/Android, which now has modified
    * versions of the old (offset based) String
-   * 
+   *
    * NOTE - if the changes get too large we have to create Android specific
    * models and peers
    */
-  
+
   // used internally by Android's java.lang.AbstractStringBuffer
   void _getChars(int start, int end, char[] buffer, int index) {
     System.arraycopy(value, start, buffer, index, end - start);
@@ -489,17 +489,17 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
     return builder.toString();
   }
 
-
-	/**
-	 * StringIndexOutOfBoundsException  if {@code index} is
-	 * negative or greater than or equal to {@code length}.
-	 *
-	 * Added to support SAXParserTest
-	 */
+  /**
+   * StringIndexOutOfBoundsException  if {@code index} is
+   * negative or greater than or equal to {@code length}.
+   *
+   * Added to support SAXParserTest
+   */
   static void checkIndex(int index, int length) {
-	  if (index < 0 || index >= length) {
-	    throw new StringIndexOutOfBoundsException("index " + index + ",length " + length);
-		}
+    if (index < 0 || index >= length) {
+      throw new StringIndexOutOfBoundsException("index " + index + ",length " + length);
+    }
   }
 
 }
+
