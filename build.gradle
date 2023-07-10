@@ -42,12 +42,13 @@ task compileModules(type: JavaCompile) {
     dependsOn compileTestJava
     source = fileTree(dir: 'src/classes/modules')
     classpath = files('build/annotations','build/classes','build/main')
-    options.compilerArgs = [  
+    options.compilerArgs = [
         '--module-source-path', file('src/classes/modules'),
         '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
         '--add-reads', 'java.base=ALL-UNNAMED',
         '--patch-module', "java.base=" + file('src/classes/modules/java.base'),
         '--patch-module', "java.logging=" + file('src/classes/modules/java.logging'),
+        '--patch-module', "java.xml=" + file('src/classes/modules/java.xml'),
     ]
     destinationDir = file('build/classes/modules')
 }
