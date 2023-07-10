@@ -60,7 +60,7 @@ public class JPF_java_util_TimeZone extends NativePeer {
   public int getTimeZone__Ljava_lang_String_2__Ljava_util_TimeZone_2 (MJIEnv env, int clsObjRef, int idRef){
     String id = env.getStringObject(idRef);
     TimeZone tz = TimeZone.getTimeZone(id);
-    
+
     int rawOffset = tz.getRawOffset();
     String realId = tz.getID(); // could have been changed if id was unknown
     if (!realId.equals(id)){
@@ -70,7 +70,7 @@ public class JPF_java_util_TimeZone extends NativePeer {
     int tzRef = env.newObject("java.util.TimeZone");
     env.setReferenceField(tzRef, "ID", idRef);
     env.setIntField(tzRef, "rawOffset", rawOffset);
-    
+
     return tzRef;
   }
   
@@ -186,6 +186,4 @@ public class JPF_java_util_TimeZone extends NativePeer {
     int sref = env.newString(s);
     return sref;
   }
-  
 }
-

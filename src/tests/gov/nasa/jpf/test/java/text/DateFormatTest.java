@@ -20,6 +20,7 @@ package gov.nasa.jpf.test.java.text;
 import gov.nasa.jpf.util.test.TestJPF;
 
 import java.text.DateFormat;
+import java.text.FieldPosition;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -70,10 +71,14 @@ public class DateFormatTest extends TestJPF {
       DateFormat df = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
       TimeZone timeZone = TimeZone.getTimeZone("GMT");
       df.setTimeZone(timeZone);
-      assertEquals(timeZone, df.getTimeZone());
+      String timeZoneDisplayName = timeZone.getDisplayName();
+      String dfDisplayName = df.getTimeZone().getDisplayName();
+      assertEquals(timeZoneDisplayName, dfDisplayName);
       timeZone = TimeZone.getTimeZone("PDT");
       df.setTimeZone(timeZone);
-      assertEquals(timeZone, df.getTimeZone());
+      timeZoneDisplayName = timeZone.getDisplayName();
+      dfDisplayName = df.getTimeZone().getDisplayName();
+      assertEquals(timeZoneDisplayName, dfDisplayName);
     }
   }
 
@@ -86,12 +91,10 @@ public class DateFormatTest extends TestJPF {
       Calendar calendar = new GregorianCalendar(timeZone);
       calendar.set(2010, 10, 10, 10, 10, 10);
       String time = "10:10"; // some Locales don't include the seconds
-      String dft = df.format(calendar.getTime()); 
-      assertTrue(dft.contains(time));
+      assertTrue(df.format(calendar.getTime(), new StringBuffer(), new FieldPosition(0)).toString().contains(time));
       df.setTimeZone(TimeZone.getTimeZone("EST"));
       time = "5:10";  // some Locales don't include the seconds
-      dft = df.format(calendar.getTime());
-      assertTrue(dft.contains(time));
+      assertTrue(df.format(calendar.getTime(), new StringBuffer(), new FieldPosition(0)).toString().contains(time));
     }
   }
 }

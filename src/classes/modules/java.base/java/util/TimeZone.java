@@ -18,7 +18,6 @@
 package java.util;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * a concrete TimeZone that forwards to the host VM. This is required to avoid Java version compatibility
@@ -111,8 +110,12 @@ public class TimeZone implements Serializable, Cloneable {
   public boolean inDaylightTime (Date date) {
     return inDaylightTime(date.getTime());
   }
-  private native boolean inDaylightTime (long time); 
 
+  public boolean hasSameRules(TimeZone other) {
+    return other != null && getRawOffset() == other.getRawOffset() && useDaylightTime() == other.useDaylightTime();
+  }
+
+  private native boolean inDaylightTime (long time); 
 
   public native boolean useDaylightTime();
 
@@ -127,7 +130,7 @@ public class TimeZone implements Serializable, Cloneable {
   public String getDisplayName (Locale locale) {
     return getDisplayName( false, LONG, locale);    
   }
-  public String getDisplayName (boolean daylight, int style){
+  public String getDisplayName (boolean daylight, int style) {
     return getDisplayName( daylight, style, Locale.getDefault());    
   }
   public native String getDisplayName (boolean daylight, int style, Locale locale);
