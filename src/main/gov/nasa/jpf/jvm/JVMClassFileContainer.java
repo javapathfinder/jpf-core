@@ -117,6 +117,20 @@ public abstract class JVMClassFileContainer extends ClassFileContainer {
       return typeName.split("\\$&\\$")[0];
     }
     try {
+      // In support of jdk.internal.reflect.ReflectionFactory,
+      // we use a model class java.lang.reflect.Constructor (which is non-final
+      // in our implementation but is final in OpenJDK's implementation)
+      // and define gov.nasa.jpf.SerializationConstructor as a subclass of it.
+      //
+      // Here we try to load the class on the underlying JVM (OpenJDK) to
+      // query its module name. But for gov.nasa.jpf.SerializationConstructor,
+      // OpenJDK will see it inheriting a final class (j.l.r.Constructor) and throw
+      // java.lang.VerifyError. Since we know it doesn't have a module name, we can
+      // directly return null instead of loading it on the underlying OpenJDK
+      // and doing the query.
+      if (typeName.equals("gov.nasa.jpf.SerializationConstructor")) {
+        return null;
+      }
       return Class.forName(typeName.split("\\$")[0]).getModule().getName();
     } catch (ClassNotFoundException e) {
       return null;
