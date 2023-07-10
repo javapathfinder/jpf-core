@@ -983,18 +983,25 @@ public class JVMClassInfo extends ClassInfo {
       cb.getfield(fi.getName(), callerCi.getName(), Types.getTypeSignature(fi.getSignature(), false));
     }
 
+    // Add the bytecode instruction to invoke lambda method.
+    // Implement bytecode behaviors for method handles.
+    // See https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.5
+
     // adding bytecode instructions to load input parameters of the lambda expression
+    String calleeClass = miCallee.getClassName();
+    int lambdaRefKind = bootstrapMethod.getLambdaRefKind();
+    if (lambdaRefKind == ClassFile.REF_NEW_INVOKESPECIAL) {
+      cb.new_(calleeClass);
+      // The new instance is the first argument to the constructor, so we load it before loading any other arguments.
+      cb.dup();
+    }
+
     n = miDirectCall.getArgumentsSize();
     for(int i=1; i<n; i++) {
       cb.aload(i);
     }
-    
-    String calleeClass = miCallee.getClassName(); 
-    
-    // Add the bytecode instruction to invoke lambda method.
-    // Implement bytecode behaviors for method handles.
-    // See https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-5.html#jvms-5.4.3.5
-    switch (bootstrapMethod.getLambdaRefKind()) {
+
+    switch (lambdaRefKind) {
     case ClassFile.REF_INVOKESTATIC:
       cb.invokestatic(calleeClass, calleeName, calleeSig);
       break;
@@ -1005,10 +1012,6 @@ public class JVMClassInfo extends ClassInfo {
       cb.invokevirtual(calleeClass, calleeName, calleeSig);
       break;
     case ClassFile.REF_NEW_INVOKESPECIAL:
-      cb.new_(calleeClass);
-      cb.dup();
-      cb.invokespecial(calleeClass, calleeName, calleeSig);
-      break;
     case ClassFile.REF_INVOKESPECIAL:
       cb.invokespecial(calleeClass, calleeName, calleeSig);
       break;
