@@ -48,7 +48,6 @@ task compileModules(type: JavaCompile) {
         '--add-reads', 'java.base=ALL-UNNAMED',
         '--patch-module', "java.base=" + file('src/classes/modules/java.base'),
         '--patch-module', "java.logging=" + file('src/classes/modules/java.logging'),
-        '--patch-module', "java.xml=" + file('src/classes/modules/java.xml'),
     ]
     destinationDir = file('build/classes/modules')
 }

@@ -382,32 +382,4 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public Module getModule() {
     return module;
   }
-
-  /**
-   * Return fully qualified package name
-   * Added to support SAXParserTest
-   *
-   * @return fully qualified package name
-   */
-  public String getPackageName() {
-    String packageName = this.packageName;
-    if (packageName == null) {
-      Class<?> cls = this;
-      while (cls.isArray()) {
-        cls = cls.getComponentType();
-      }
-      if (cls.isPrimitive()) {
-        packageName = "java.lang";
-      } else {
-        String clsName = cls.getName();
-        int dot = clsName.lastIndexOf('.');
-        packageName = (dot != -1) ? clsName.substring(0, dot).intern() : "";
-      }
-      this.packageName = packageName;
-    }
-    return packageName;
-  }
-
-  private transient String packageName;
-
 }
