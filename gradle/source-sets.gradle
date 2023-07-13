@@ -1,36 +1,36 @@
 sourceSets {
     annotations {
         java.srcDirs = ["src/annotations"]
-        java.outputDir = file("${buildDir}/annotations")
+        java.destinationDirectory = file("${buildDir}/annotations")
     }
     main {
         java.srcDirs = ["src/main"]
-        java.outputDir = file("${buildDir}/main")
+        java.destinationDirectory = file("${buildDir}/main")
         compileClasspath += sourceSets.annotations.output
     }
     examples {
         java.srcDirs = ["src/examples"]
-        java.outputDir = file("${buildDir}/examples")
+        java.destinationDirectory = file("${buildDir}/examples")
         compileClasspath += sourceSets.main.output
     }
     classes {
         java.srcDirs = ["src/classes/gov", "src/classes/org"]
-        java.outputDir = file("${buildDir}/classes")
+        java.destinationDirectory = file("${buildDir}/classes")
         compileClasspath += sourceSets.main.output + sourceSets.annotations.output
     }
     modules {
         java.srcDirs = ["src/classes/modules"]
-        java.outputDir = file("${buildDir}/classes")
+        java.destinationDirectory = file("${buildDir}/classes")
         compileClasspath += sourceSets.classes.output + sourceSets.main.output + sourceSets.annotations.output
     }
     peers {
         java.srcDirs = ["src/peers"]
-        java.outputDir = file("${buildDir}/peers")
+        java.destinationDirectory = file("${buildDir}/peers")
         compileClasspath += sourceSets.main.output + sourceSets.annotations.output
     }
     test {
         java.srcDirs = ["src/tests"]
-        java.outputDir = file("${buildDir}/tests")
+        java.destinationDirectory = file("${buildDir}/tests")
         compileClasspath += sourceSets.annotations.output + sourceSets.classes.output + sourceSets.peers.output
         runtimeClasspath += compileClasspath
     }
@@ -43,6 +43,7 @@ compilePeersJava.options.compilerArgs += [
 compileClassesJava.options.compilerArgs += [
         '--patch-module', 'java.base=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.base',
         '--patch-module', 'java.logging=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.logging',
+        '--patch-module', 'java.xml=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.xml',
         '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
         '--add-reads', 'java.base=ALL-UNNAMED'
 ]
@@ -50,6 +51,7 @@ compileClassesJava.options.compilerArgs += [
 compileModulesJava.options.compilerArgs += [
         '--patch-module', 'java.base=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.base',
         '--patch-module', 'java.logging=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.logging',
+        '--patch-module', 'java.xml=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.xml',
         '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
         '--add-reads', 'java.base=ALL-UNNAMED',
         '--module-source-path', files(sourceSets.modules.java.srcDirs).asPath

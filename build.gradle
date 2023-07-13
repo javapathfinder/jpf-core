@@ -2,6 +2,11 @@ plugins {
     id 'java'
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 gradleEnterprise {
     buildScan {
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
@@ -15,23 +20,22 @@ def static getCurrentVersion() {
 
 version = currentVersion
 
-sourceCompatibility = 11
-targetCompatibility = 11
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation "junit:junit:4.12"
+    testImplementation('junit:junit:4.13.1')
 }
 
-ext.manifestCommonAttrbutes = manifest {
-    attributes(
-        "Built-By": System.getProperty("user.name"),
-        "Implementation-Vendor": "NASA Ames Research Center",
-        "Implementation-Version": version
-    )
+jar {
+    manifest {
+        attributes(
+                "Built-By": System.getProperty("user.name"),
+                "Implementation-Vendor": "NASA Ames Research Center",
+                "Implementation-Version": version
+        )
+    }
 }
 
 apply from: "gradle/ide-support.gradle"
@@ -39,22 +43,42 @@ apply from: "gradle/distribution.gradle"
 apply from: "gradle/source-sets.gradle"
 apply from: "gradle/build-resources.gradle"
 
-task compileModules(type: JavaCompile) {
-    dependsOn compileTestJava
-    source = fileTree(dir: 'src/classes/modules')
-    classpath = files('build/annotations','build/classes','build/main')
-    options.compilerArgs = [  
-        '--module-source-path', file('src/classes/modules'),
-        '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
-        '--add-reads', 'java.base=ALL-UNNAMED',
-        '--patch-module', "java.base=" + file('src/classes/modules/java.base'),
-        '--patch-module', "java.logging=" + file('src/classes/modules/java.logging'),
-        '--patch-module', "java.xml=" + file('src/classes/modules/java.xml'),
-    ]
-    destinationDir = file('build/classes/modules')
+tasks.named('compileClassesJava') {
+    dependsOn(copyResources)
+}
+tasks.named('compileExamplesJava') {
+    dependsOn(copyResources)
+}
+tasks.named('compileModulesJava') {
+    dependsOn(copyResources)
+}
+tasks.named('compilePeersJava') {
+    dependsOn(copyResources)
+}
+tasks.named('compileTestJava') {
+    dependsOn(copyResources)
+}
+tasks.named('jar') {
+    dependsOn(copyResources)
 }
 
-task compile {
+
+tasks.register('compileModules', JavaCompile) {
+    dependsOn compileTestJava
+    source = fileTree(dir: 'src/classes/modules')
+    classpath = files('build/annotations', 'build/classes', 'build/main')
+    options.compilerArgs = [
+            '--module-source-path', file('src/classes/modules'),
+            '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+            '--add-reads', 'java.base=ALL-UNNAMED',
+            '--patch-module', "java.base=" + file('src/classes/modules/java.base'),
+            '--patch-module', "java.logging=" + file('src/classes/modules/java.logging'),
+            '--patch-module', "java.xml=" + file('src/classes/modules/java.xml'),
+    ]
+    destinationDirectory = file('build/classes/modules')
+}
+
+tasks.register('compile') {
     group = "JPF Build"
     description = "Compiles all JPF core sources."
 
@@ -65,7 +89,7 @@ task compile {
     dependsOn compileModules
 }
 
-task createJpfClassesJar(type: Jar) {
+tasks.register('createJpfClassesJar', Jar) {
     archiveFileName = "jpf-classes.jar"
     destinationDirectory = file("${buildDir}")
 
@@ -75,9 +99,9 @@ task createJpfClassesJar(type: Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from sourceSets.classes.java.outputDir
-    from sourceSets.annotations.java.outputDir
-    from(sourceSets.main.java.outputDir) {
+    from sourceSets.classes.java.destinationDirectory
+    from sourceSets.annotations.java.destinationDirectory
+    from(sourceSets.main.java.destinationDirectory) {
         include "gov/nasa/jpf/JPFShell.class"
         include "gov/nasa/jpf/vm/Verify.class"
         include "gov/nasa/jpf/util/TypeRef.class"
@@ -87,7 +111,7 @@ task createJpfClassesJar(type: Jar) {
     }
 }
 
-task createJpfJar(type: Jar) {
+tasks.register('createJpfJar', Jar) {
     archiveFileName = "jpf.jar"
     destinationDirectory = file("${buildDir}")
 
@@ -97,20 +121,20 @@ task createJpfJar(type: Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from sourceSets.main.java.outputDir
-    from sourceSets.peers.java.outputDir
-    from sourceSets.annotations.java.outputDir
-    from(sourceSets.classes.java.outputDir) {
+    from sourceSets.main.java.destinationDirectory
+    from sourceSets.peers.java.destinationDirectory
+    from sourceSets.annotations.java.destinationDirectory
+    from(sourceSets.classes.java.destinationDirectory) {
         include "org/junit/*.class"
     }
 
     manifest {
         attributes "Implementation-Title": "Java Pathfinder core system"
-        from manifestCommonAttrbutes
+        from jar.manifest
     }
 }
 
-task createAnnotationsJar(type: Jar) {
+tasks.register('createAnnotationsJar', Jar) {
     archiveFileName = "jpf-annotations.jar"
     destinationDirectory = file("${buildDir}")
 
@@ -120,10 +144,10 @@ task createAnnotationsJar(type: Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from sourceSets.annotations.java.outputDir
+    from sourceSets.annotations.java.destinationDirectory
 }
 
-task createClassloaderSpecificTestsJar(type: Jar) {
+tasks.register('createClassloaderSpecificTestsJar', Jar) {
     archiveFileName = "classloader_specific_tests.jar"
     destinationDirectory = file("${buildDir}")
 
@@ -133,12 +157,12 @@ task createClassloaderSpecificTestsJar(type: Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from(sourceSets.test.java.outputDir) {
+    from(sourceSets.test.java.destinationDirectory) {
         include "classloader_specific_tests/*.class"
     }
 }
 
-task createRunJpfJar(type: Jar) {
+tasks.register('createRunJpfJar', Jar) {
     archiveFileName = "RunJPF.jar"
     destinationDirectory = file("${buildDir}")
 
@@ -148,7 +172,7 @@ task createRunJpfJar(type: Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from(sourceSets.main.java.outputDir) {
+    from(sourceSets.main.java.destinationDirectory) {
         include "gov/nasa/jpf/tool/Run.class"
         include "gov/nasa/jpf/tool/RunJPF.class"
         include "gov/nasa/jpf/Config.class"
@@ -169,11 +193,11 @@ task createRunJpfJar(type: Jar) {
                 "Implementation-Title": "Java Pathfinder core launch system",
                 "Main-Class": "gov.nasa.jpf.tool.RunJPF"
         )
-        from manifestCommonAttrbutes
+        from jar.manifest
     }
 }
 
-task createRunTestJar(type: Jar) {
+tasks.register('createRunTestJar', Jar) {
     archiveFileName = "RunTest.jar"
     destinationDirectory = file("${buildDir}")
 
@@ -183,7 +207,7 @@ task createRunTestJar(type: Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from(sourceSets.main.java.outputDir) {
+    from(sourceSets.main.java.destinationDirectory) {
         include "gov/nasa/jpf/tool/Run.class"
         include "gov/nasa/jpf/tool/RunTest.class"
         include "gov/nasa/jpf/tool/RunTest\$Failed.class"
@@ -203,11 +227,11 @@ task createRunTestJar(type: Jar) {
                 "Implementation-Title": "Java Pathfinder test launch system",
                 "Main-Class": "gov.nasa.jpf.tool.RunTest"
         )
-        from manifestCommonAttrbutes
+        from jar.manifest
     }
 }
 
-task buildJars {
+tasks.register('buildJars') {
     group = "JPF Build"
     description = "Generates all core JPF jar files."
 
