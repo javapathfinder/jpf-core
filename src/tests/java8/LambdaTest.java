@@ -19,6 +19,7 @@ package java8;
 
 import gov.nasa.jpf.util.test.TestJPF;
 
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,28 @@ public class LambdaTest extends TestJPF{
     if(verifyNoPropertyViolation()) {
       Supplier s = LambdaTest::new;
       assertTrue(s.get().getClass() == this.getClass());
+    }
+  }
+
+  public static class Concatenator {
+    private final String s1, s2;
+
+    public Concatenator(String s1, String s2) {
+      this.s1 = s1;
+      this.s2 = s2;
+    }
+
+    public String getConcatenation() {
+      return s1 + s2;
+    }
+  }
+
+  @Test
+  public void testNewSpecialMethodHandleWithArguments() {
+    if(verifyNoPropertyViolation()) {
+      BiFunction<String, String, Concatenator> cons = Concatenator::new;
+      Concatenator c = cons.apply("foo", "bar");
+      assertTrue(c.getConcatenation().equals("foobar"));
     }
   }
 
