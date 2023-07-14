@@ -1,13 +1,13 @@
-task srcDist(type: Zip) {
+tasks.register('srcDist', Zip) {
     group = "JPF Distribution"
     description = "Builds the source distribution."
 
-    baseName = project.name
-    version = project.version
-    classifier = "src"
-    extension = "zip"
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    archiveClassifier = "src"
+    archiveExtension = "zip"
 
-    destinationDir = buildDir
+    destinationDirectory = buildDir
     includeEmptyDirs = false
 
     from projectDir
@@ -24,15 +24,15 @@ task srcDist(type: Zip) {
     include "README.md"
 }
 
-task dist(type: Zip) {
+tasks.register('dist', Zip) {
     group = "JPF Distribution"
     description = "Builds binary distribution."
 
-    baseName = project.name
-    version = project.version
-    extension = "zip"
+    archiveBaseName = project.name
+    archiveVersion = project.version
+    archiveExtension = "zip"
 
-    destinationDir = buildDir
+    destinationDirectory = buildDir
     includeEmptyDirs = false
 
     from projectDir
