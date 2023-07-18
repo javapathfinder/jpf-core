@@ -77,6 +77,35 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
     }
   }
   
+  private void testClassForNameArray (String className, Class<?> expectedClass) throws ClassNotFoundException {
+    Class<?> clazz = Class.forName(className);
+    assertNotNull(clazz);
+    assertTrue(clazz.isArray());
+    assertEquals(className, clazz.getName());
+    assertSame(expectedClass, clazz);
+  }
+
+  @Test
+  public void testClassForNamePrimitiveArrays () throws ClassNotFoundException {
+    if (verifyNoPropertyViolation()) {
+      testClassForNameArray("[Z", boolean[].class);
+      testClassForNameArray("[I", int[].class);
+      testClassForNameArray("[C", char[].class);
+      testClassForNameArray("[D", double[].class);
+      testClassForNameArray("[F", float[].class);
+      testClassForNameArray("[I", int[].class);
+      testClassForNameArray("[J", long[].class);
+      testClassForNameArray("[S", short[].class);
+    }
+  }
+
+  @Test
+  public void testClassForNameReferenceArray () throws ClassNotFoundException {
+    if (verifyNoPropertyViolation()) {
+      testClassForNameArray("[L" + clsName + ";", ClassTest[].class);
+    }
+  }
+
   @Test
   public void testClassForNameException () throws ClassNotFoundException {
     if (verifyUnhandledException("java.lang.ClassNotFoundException")) {
