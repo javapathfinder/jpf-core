@@ -188,27 +188,22 @@ public class JPF_java_lang_Class extends NativePeer {
     // class of the method that includes the invocation of Class.forName() 
     ClassInfo cls = mi.getClassInfo();
 
-    String name;
-    // for array type, the component terminal must be resolved
-    if(clsName.charAt(0)=='[') {
-      name = Types.getComponentTerminal(clsName);
-    } else{
-      name = clsName;
-    }
-
-    // make the classloader of the class including the invocation of 
-    // Class.forName() resolve the class with the given name
-    try {
-      cls.resolveReferencedClass(name);
-    } catch(LoadOnJPFRequired lre) {
-      env.repeatInvocation();
-      return MJIEnv.NULL;
+    String typeName = Types.getTypeSignature(clsName, false);
+    if (Types.isReferenceSignature(typeName)) {
+      String t = Types.isArray(typeName) ? Types.getComponentTerminal(typeName) : typeName;
+      try {
+        // make the classloader of the class including the invocation of
+        // Class.forName() resolve the class with the given name
+        cls.resolveReferencedClass(t);
+      } catch (LoadOnJPFRequired lre) {
+        env.repeatInvocation();
+        return MJIEnv.NULL;
+      }
     }
 
     // The class obtained here is the same as the resolved one, except
     // if it represents an array type
-    ClassInfo ci = cls.getClassLoaderInfo().getResolvedClassInfo(clsName);
-
+    ClassInfo ci = cls.getClassLoaderInfo().getResolvedClassInfo(typeName);
     return getClassObject(env, ci);
   }
 
