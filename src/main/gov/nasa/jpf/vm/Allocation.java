@@ -46,7 +46,7 @@ public class Allocation {
       Allocation other = (Allocation)o;
       
       if (other.hash == hash) {
-        if (other.context.equals(context)) {
+        if (other.count == count && other.context.equals(context)) {
           return true;
         }
       }
