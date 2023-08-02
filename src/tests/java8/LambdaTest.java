@@ -218,6 +218,7 @@ public class LambdaTest extends TestJPF{
       s.add("abc");
       List<List<Integer>> l = new ArrayList<>();
       l.add(new ArrayList<>());
+
       FI1 fi = () -> {
         assertEquals(d, 2.0);
         assertEquals(s.getClass().getName(), HashSet.class.getName());
