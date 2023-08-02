@@ -728,7 +728,10 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
    
    int i = 0;
    for(String type: fieldTypesName) {
-     FieldInfo fi = FieldInfo.create("arg" + i++, type, 0);
+     // FieldInfo.create() need type signature instead of
+     // type name, so we need to convert them first
+     String typeSig = Types.getTypeSignature(type, false);
+     FieldInfo fi = FieldInfo.create("arg" + i++, typeSig, 0);
      fi.linkToClass(this, idx, off);
      iFields[idx++] = fi;
      off += fi.getStorageSize();

@@ -785,7 +785,15 @@ public class JVMClassInfo extends ClassInfo {
     MethodInfo fiMethod = funcInterface.getInterfaceAbstractMethod();
     int modifiers = fiMethod.getModifiers() & (~Modifier.ABSTRACT);
     int nLocals = fiMethod.getArgumentsSize();
-    int nOperands = this.nInstanceFields + nLocals;
+    // A field may occupy 1 or 2 operand stack slots.
+    // Since all these fields need to be pushed into operand stack,
+    // we need to calculate their total size first.
+    int fieldsSize = 0;
+    for (String fieldTypeName : fieldTypesName) {
+      String typeSig = Types.getTypeSignature(fieldTypeName, false);
+      fieldsSize += Types.getTypeSize(typeSig);
+    }
+    int nOperands = fieldsSize + nLocals;
     // If it is a REF_newInvokeSpecial method handle,
     // we need one more stack slot to store the dupped object reference
     if (bootstrapMethod.getLambdaRefKind() == ClassFile.REF_NEW_INVOKESPECIAL) {
@@ -979,8 +987,9 @@ public class JVMClassInfo extends ClassInfo {
     for(int i=0; i<n; i++) {
       cb.aload(0);
       FieldInfo fi = callerCi.getInstanceField(i);
-      
-      cb.getfield(fi.getName(), callerCi.getName(), Types.getTypeSignature(fi.getSignature(), false));
+      // FieldInfo.getSignature() returns the signature for a field, and could
+      // be used to generate a field load instruction with correct type info.
+      cb.getfield(fi.getName(), callerCi.getName(), fi.getSignature());
     }
 
     // Add the bytecode instruction to invoke lambda method.

@@ -161,7 +161,33 @@ public class LambdaTest extends TestJPF{
       fi.sam();
     }
   }
-  
+
+  @Test
+  public void testClosureWithLocalsOfDifferentSizes() {
+    if (verifyNoPropertyViolation()) {
+      int i1 = 1;
+      double d2 = 2.0;
+      char c3 = 3;
+      double d4 = 4.0;
+      short s5 = 5;
+      long l6 = 6;
+      long l7 = 7;
+      float f8 = 8.0f;
+
+      FI1 fi = () -> {
+        assertEquals(i1, 1);
+        assertEquals(d2, 2.0);
+        assertEquals(c3, 3);
+        assertEquals(d4, 4.0);
+        assertEquals(s5, 5);
+        assertEquals(l6, 6);
+        assertEquals(l7, 7);
+        assertEquals(f8, 8.0);
+      };
+      fi.sam();
+    }
+  }
+
   static void method(FI1 fi) {
     fi.sam();
   }
