@@ -987,8 +987,9 @@ public class JVMClassInfo extends ClassInfo {
     for(int i=0; i<n; i++) {
       cb.aload(0);
       FieldInfo fi = callerCi.getInstanceField(i);
-      
-      cb.getfield(fi.getName(), callerCi.getName(), Types.getTypeSignature(fi.getSignature(), false));
+      // FieldInfo.getSignature() returns the signature for a field, and could
+      // be used to generate a field load instruction with correct type info.
+      cb.getfield(fi.getName(), callerCi.getName(), fi.getSignature());
     }
 
     // Add the bytecode instruction to invoke lambda method.
