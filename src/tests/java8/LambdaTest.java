@@ -19,6 +19,10 @@ package java8;
 
 import gov.nasa.jpf.util.test.TestJPF;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -183,6 +187,44 @@ public class LambdaTest extends TestJPF{
         assertEquals(l6, 6);
         assertEquals(l7, 7);
         assertEquals(f8, 8.0);
+      };
+      fi.sam();
+    }
+  }
+
+  @Test
+  public void testClosureWithLocalReference() {
+    if (verifyNoPropertyViolation()) {
+      int i1 = 1;
+      double d2 = 2.0;
+      long l3 = 3;
+      String s4 = "abcd";
+
+      FI1 fi = () -> {
+        assertEquals(i1, 1);
+        assertEquals(d2, 2.0);
+        assertEquals(l3, 3);
+        assertEquals(s4, "abcd");
+      };
+      fi.sam();
+    }
+  }
+
+  @Test
+  public void testClosureWithLocalReferenceOfComplexType() {
+    if (verifyNoPropertyViolation()) {
+      double d = 2.0;
+      Set<String> s = new HashSet<>();
+      s.add("abc");
+      List<List<Integer>> l = new ArrayList<>();
+      l.add(new ArrayList<>());
+
+      FI1 fi = () -> {
+        assertEquals(d, 2.0);
+        assertEquals(s.getClass().getName(), HashSet.class.getName());
+        assertTrue(s.contains("abc"));
+        assertEquals(l.getClass().getName(), ArrayList.class.getName());
+        assertEquals(l.size(), 1);
       };
       fi.sam();
     }
