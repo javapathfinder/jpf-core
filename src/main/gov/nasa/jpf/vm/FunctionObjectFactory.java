@@ -296,11 +296,11 @@ public class FunctionObjectFactory {
         if (freeVarValues[i] == null) {
           fields.setReferenceValue(fieldOffset, MJIEnv.NULL);
         } else {
-          int val = ((ElementInfo) freeVarValues[i]).getObjectRef() + 1;
-          // + 1 because when object is created ( i.e GenericHeap.createObject(...)) the value of objRef is initialized
-          // to the NamedField value in ElementInfo. But the value needed here is the value of arrayField which
-          // NamedField value +1. This is because both array and object fields are created in GenericHeap.newString().
-          fields.setReferenceValue(fieldOffset, val);
+          ElementInfo obj = (ElementInfo) freeVarValues[i];
+          if (!obj.getClassInfo().isInstanceOf(freeVarTypeNames[i])) {
+            throw new RuntimeException("Unexpected free variable type for lambda expression");
+          }
+          fields.setReferenceValue(fieldOffset, obj.getObjectRef());
         }
       }
       if (typeName.equals("long") || typeName.equals("double")) {
