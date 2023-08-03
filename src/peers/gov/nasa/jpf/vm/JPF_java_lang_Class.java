@@ -608,7 +608,7 @@ public class JPF_java_lang_Class extends NativePeer {
     return aref;
   }
     
-  int getField (MJIEnv env, int clsRef, int nameRef, boolean isRecursiveLookup) {    
+  int getField (MJIEnv env, int clsRef, int nameRef, boolean isRecursiveLookup, boolean publicOnly) {
     ClassInfo ci = env.getReferredClassInfo( clsRef);
     String fname = env.getStringObject(nameRef);
     FieldInfo fi = null;
@@ -625,7 +625,7 @@ public class JPF_java_lang_Class extends NativePeer {
         }
     }
     
-    if (fi == null) {      
+    if (fi == null || (publicOnly && !fi.isPublic())) {
       env.throwException("java.lang.NoSuchFieldException", fname);
       return MJIEnv.NULL;
       
@@ -643,12 +643,12 @@ public class JPF_java_lang_Class extends NativePeer {
   
   @MJI
   public int getDeclaredField__Ljava_lang_String_2__Ljava_lang_reflect_Field_2 (MJIEnv env, int clsRef, int nameRef) {
-    return getField(env,clsRef,nameRef, false);
+    return getField(env,clsRef,nameRef, false, false);
   }  
  
   @MJI
   public int getField__Ljava_lang_String_2__Ljava_lang_reflect_Field_2 (MJIEnv env, int clsRef, int nameRef) {
-    return getField(env,clsRef,nameRef, true);    
+    return getField(env,clsRef,nameRef, true, true);
   }
 
   @MJI
