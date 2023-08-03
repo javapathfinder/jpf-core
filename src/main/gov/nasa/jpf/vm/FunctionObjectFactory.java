@@ -272,34 +272,41 @@ public class FunctionObjectFactory {
   public void setFuncObjFields(ElementInfo funcObj, BootstrapMethodInfo bmi, String[] freeVarTypeNames, Object[] freeVarValues) {
     Fields fields = funcObj.getFields();
 
+    // Fields.setXXXValue() needs field offset instead of field "index"
+    int fieldOffset = 0;
     for (int i = 0; i < freeVarTypeNames.length; i++) {
       String typeName = freeVarTypeNames[i];
       if (typeName.equals("byte")) {
-        fields.setByteValue(i, (Byte) freeVarValues[i]);
+        fields.setByteValue(fieldOffset, (Byte) freeVarValues[i]);
       } else if (typeName.equals("char")) {
-        fields.setCharValue(i, (Character) freeVarValues[i]);
+        fields.setCharValue(fieldOffset, (Character) freeVarValues[i]);
       } else if (typeName.equals("short")) {
-        fields.setShortValue(i, (Short) freeVarValues[i]);
+        fields.setShortValue(fieldOffset, (Short) freeVarValues[i]);
       } else if (typeName.equals("int")) {
-        fields.setIntValue(i, (Integer) freeVarValues[i]);
+        fields.setIntValue(fieldOffset, (Integer) freeVarValues[i]);
       } else if (typeName.equals("float")) {
-        fields.setFloatValue(i, (Float) freeVarValues[i]);
+        fields.setFloatValue(fieldOffset, (Float) freeVarValues[i]);
       } else if (typeName.equals("long")) {
-        fields.setLongValue(i, (Long) freeVarValues[i]);
+        fields.setLongValue(fieldOffset, (Long) freeVarValues[i]);
       } else if (typeName.equals("double")) {
-        fields.setDoubleValue(i, (Double) freeVarValues[i]);
+        fields.setDoubleValue(fieldOffset, (Double) freeVarValues[i]);
       } else if (typeName.equals("boolean")) {
-        fields.setBooleanValue(i, (Boolean) freeVarValues[i]);
+        fields.setBooleanValue(fieldOffset, (Boolean) freeVarValues[i]);
       } else {
         if (freeVarValues[i] == null) {
-          fields.setReferenceValue(i, MJIEnv.NULL);
+          fields.setReferenceValue(fieldOffset, MJIEnv.NULL);
         } else {
-          int val = ((ElementInfo) freeVarValues[i]).getObjectRef() + 1;
-          // + 1 because when object is created ( i.e GenericHeap.createObject(...)) the value of objRef is initialized
-          // to the NamedField value in ElementInfo. But the value needed here is the value of arrayField which
-          // NamedField value +1. This is because both array and object fields are created in GenericHeap.newString().
-          fields.setReferenceValue(i, val);
+          ElementInfo obj = (ElementInfo) freeVarValues[i];
+          if (!obj.getClassInfo().isInstanceOf(freeVarTypeNames[i])) {
+            throw new RuntimeException("Unexpected free variable type for lambda expression");
+          }
+          fields.setReferenceValue(fieldOffset, obj.getObjectRef());
         }
+      }
+      if (typeName.equals("long") || typeName.equals("double")) {
+        fieldOffset += 2;
+      } else {
+        fieldOffset += 1;
       }
     }
   }
