@@ -34,7 +34,7 @@ public class FinalBreakTest extends TestJPF {
   static class InstanceFinal {
     static InstanceFinal global;
     
-    final int a;
+    public final int a;
     final int b;
     
     InstanceFinal (){
@@ -137,7 +137,7 @@ public class FinalBreakTest extends TestJPF {
   final static Object o2 = new Object();
   
   static class StaticFinal {
-    final static Object a = o1;
+    public final static Object a = o1;
     final static Object b = o1;
   }
 
