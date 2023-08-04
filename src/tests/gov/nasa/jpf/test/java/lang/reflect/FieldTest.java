@@ -99,7 +99,7 @@ public class FieldTest extends TestJPF {
   }
   
   public static class ShortField {
-    short f;
+    public short f;
   }
 
   @Test

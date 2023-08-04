@@ -25,13 +25,13 @@ import org.junit.Test;
 
 public class FieldTest extends TestJPF {
 
-  int instInt = 42;
-  double instDouble = 42.0;
-  double primField = 42.0;
-  Object refField = new Integer(42);
-  int[] arrayField = new int[]{42};
+  public int instInt = 42;
+  public double instDouble = 42.0;
+  public double primField = 42.0;
+  public Object refField = new Integer(42);
+  public int[] arrayField = new int[]{42};
 
-  static int statInt = 43;
+  public static int statInt = 43;
 
   @Test
   public void testInstanceInt() {
