@@ -643,12 +643,16 @@ public class JPF_java_lang_Class extends NativePeer {
   
   @MJI
   public int getDeclaredField__Ljava_lang_String_2__Ljava_lang_reflect_Field_2 (MJIEnv env, int clsRef, int nameRef) {
-    return getField(env,clsRef,nameRef, false, false);
+    // From Java 8 doc: "Returns a Field object that reflects the specified declared field of the class or interface
+    // represented by this Class object." -- Not confined to public fields!
+    return getField(env,clsRef,nameRef, /* isRecursiveLookup = */ false, /* publicOnly = */ false);
   }  
  
   @MJI
   public int getField__Ljava_lang_String_2__Ljava_lang_reflect_Field_2 (MJIEnv env, int clsRef, int nameRef) {
-    return getField(env,clsRef,nameRef, true, true);
+    // From Java 8 doc (emphasis added): "Returns a Field object that reflects the specified **public** member field of
+    // the class or interface represented by this Class object."
+    return getField(env,clsRef,nameRef, /* isRecursiveLookup = */ true, /* publicOnly = */ true);
   }
 
   @MJI
