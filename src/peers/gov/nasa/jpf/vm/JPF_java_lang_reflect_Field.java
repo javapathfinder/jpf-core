@@ -90,51 +90,84 @@ public class JPF_java_lang_reflect_Field extends NativePeer {
     StackFrame frame = ti.getTopFrame(); // this is the Field.get/setX(), so we still have to get down
     return frame.getPrevious();
   }
-  
-  protected boolean isAccessible (MJIEnv env, FieldInfo fi, int fieldRef, int ownerRef){
-    
-    // note that setAccessible() even overrides final
-    ElementInfo fei = env.getElementInfo(fieldRef);
-    if (fei.getBooleanField("isAccessible")){
+
+  // Roughly follows the logic implemented in `sun.reflect.Reflection.verifyMemberAccess` of OpenJDK 8
+  // (https://github.com/openjdk/jdk8u/blob/587090ddc17c073d56f4d3f52b61f6477d6322b0/jdk/src/share/classes/sun/reflect/Reflection.java#L107-L183).
+  protected boolean isAccessible (MJIEnv env, FieldInfo fi,
+                                  ClassInfo ciOwner, // is null iff field is static.
+                                  boolean override) {
+    if (override) {
       return true;
     }
-    
-    if (fi.isFinal()){
+
+    ClassInfo ciField = fi.getClassInfo(); // The class that the field is associated with.
+    boolean isCiFieldPublic = Modifier.isPublic(ciField.getModifiers());
+    if (isCiFieldPublic && fi.isPublic()) { // Public class, public field -- allow!
+      return true;
+    }
+
+    StackFrame frame = getCallerFrame(env);
+    MethodInfo mi = frame.getMethodInfo();
+    ClassInfo ciCaller = mi.getClassInfo();
+    if (ciField == ciCaller) { // Caller accessing a field on its own class.
+      return true;
+    }
+
+    boolean isSameClassPackage = isSameClassPackage(ciCaller, ciField);
+    if (!isCiFieldPublic // The field is associated with a non-public class...
+            && !isSameClassPackage // that is not in the same package as the caller.
+    ) {
+      return false; // Caller can't even access the _class_ that the field is associated with. Deny!
+    }
+
+    if (fi.isPublic()) {
+      return true;
+    }
+
+    boolean isAccessingProtectedFieldOfSuperclass = fi.isProtected() && ciCaller.isInstanceOf(ciField);
+    boolean isAccessingNonPrivateFieldInSamePackage =
+            !fi.isPrivate() // I.e., either package-private or protected.
+                    && isSameClassPackage;
+    if (!isAccessingProtectedFieldOfSuperclass && !isAccessingNonPrivateFieldInSamePackage) {
       return false;
     }
-    
-    if (fi.isPublic()){
-      return true;
-    }
-    
-    // otherwise we have to check object identities and access modifier of the executing method
-    ClassInfo ciDecl = fi.getClassInfo();
-    String declPackage = ciDecl.getPackageName();
-    
-    StackFrame frame = getCallerFrame(env);    
-    MethodInfo mi = frame.getMethodInfo();
-    ClassInfo ciMethod = mi.getClassInfo();
-    String mthPackage = ciMethod.getPackageName();
 
-    if (!fi.isPrivate() && declPackage.equals(mthPackage)) {
-      return true;
-    }
-    
-    if (fi.isStatic()){
-      if (ciDecl == ciMethod){
-        return true;
-      }
-      
-    } else {
-      int thisRef = frame.getCalleeThis(mi);
-      if (thisRef == ownerRef) { // same object
-        return true;
+    // Let `f` reflect a non-static protected field declared on a class outside the caller's package.
+    // For `f.get(obj)` or `f.set(obj)` to be allowed, `obj` must be an instance of the caller class. (JLS 6.6.2)
+    if (fi.isProtected() && ciOwner != null) {
+      if (!isSameClassPackage && !ciOwner.isInstanceOf(ciCaller)) {
+        return false;
       }
     }
-    
-    // <2do> lots of more checks here
-    
-    return false;
+
+    return true;
+  }
+
+  // Roughly follows OpenJDK 8.
+  // https://github.com/openjdk/jdk8u/blob/587090ddc17c073d56f4d3f52b61f6477d6322b0/jdk/src/share/classes/sun/reflect/Reflection.java#L192-L238
+  private static boolean isSameClassPackage(ClassInfo c1, ClassInfo c2) {
+    if (c1.getClassLoaderInfo() != c2.getClassLoaderInfo()) {
+      return false;
+    }
+
+    String name1 = c1.getName();
+    if (name1.charAt(0) == '[') {
+      name1 = Types.getComponentTerminal(name1);
+    }
+
+    String name2 = c2.getName();
+    if (name2.charAt(0) == '[') {
+      name2 = Types.getComponentTerminal(name2);
+    }
+
+    int lastDot1 = name1.lastIndexOf('.'), lastDot2 = name2.lastIndexOf('.');
+    if (lastDot1 == -1 || lastDot2 == -1) {
+      // At least one of the two doesn't have a package; in this case, return true only if _neither_ has a package.
+      return lastDot1 == lastDot2;
+    }
+
+    String package1 = name1.substring(0, lastDot1), package2 = name2.substring(0, lastDot2);
+    return package1.equals(package2);
   }
   
   protected ElementInfo getCheckedElementInfo (MJIEnv env, FieldInfo fi, int objRef, int ownerRef, boolean isWrite){
@@ -156,11 +189,20 @@ public class JPF_java_lang_reflect_Field extends NativePeer {
       return null;
     }
 
-    if ( !isAccessible(env, fi, objRef, ownerRef)){
+    ElementInfo fei = env.getElementInfo(objRef);
+    boolean override = fei.getBooleanField("isAccessible");
+
+    ClassInfo ciOwner = fi.isStatic() ? null : ei.getClassInfo();
+    if ( !isAccessible(env, fi, ciOwner, override)){
       env.throwException("java.lang.IllegalAccessException", "field not accessible: " + fi);
       return null;
     }
-    
+
+    if (isWrite && fi.isFinal() && !override) {
+      env.throwException("java.lang.IllegalAccessException", "field not accessible: " + fi);
+      return null;
+    }
+
     return ei;
   }
   
