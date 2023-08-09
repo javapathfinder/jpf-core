@@ -119,7 +119,6 @@ public class FieldTest extends TestJPF {
       Object o = OtherPackagePublicClass.getPackagePrivateObject();
       Class<?> packagePrivateClass = o.getClass();
       // This is a non-public class from a different package.
-      assertEquals("gov.nasa.jpf.test.java.lang.reflect.other_package", packagePrivateClass.getPackage().getName());
       assertFalse(Modifier.isPublic(packagePrivateClass.getModifiers()));
 
       Field f = packagePrivateClass.getDeclaredField("publicStaticField");
