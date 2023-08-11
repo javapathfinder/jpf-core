@@ -104,4 +104,56 @@ public class ObjectStreamTest extends TestJPF {
     }
   }
 
+  static interface I {
+    long get(long in);
+  }
+
+  static class InstanceWithLambda implements Serializable {
+
+    I inf;
+    int i = 1;
+    long l = 2;
+
+    public InstanceWithLambda() {
+      int localInt = 3;
+      long localLong = 4;
+      inf = (I & Serializable) (in) -> { return in + i + l + localInt + localLong; };
+    }
+  }
+
+  @Test
+  public void testLambdaSerialization() {
+    String fname = "tmp.ser";
+
+    if (!isJPFRun()){
+      try {
+        InstanceWithLambda obj = new InstanceWithLambda();
+        FileOutputStream fos = new FileOutputStream(fname);
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(obj);
+        oos.close();
+      } catch (Throwable t){
+        fail("serialization failed: " + t);
+      }
+    }
+
+    if (verifyNoPropertyViolation()){
+      try {
+        FileInputStream fis = new FileInputStream(fname);
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        Object o = ois.readObject();
+        ois.close();
+
+        assert o instanceof InstanceWithLambda : "wrong object type: " + o.getClass().getName();
+        InstanceWithLambda obj = (InstanceWithLambda) o;
+        assertTrue(obj.inf.get(1) == 11);
+      } catch (Throwable t){
+        t.printStackTrace();
+        fail("serialization readback failed: " + t);
+      }
+
+      File f = new File(fname);
+      f.delete();
+    }
+  }
 }
