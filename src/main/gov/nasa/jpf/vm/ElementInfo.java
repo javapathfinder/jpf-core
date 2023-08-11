@@ -1679,8 +1679,8 @@ public abstract class ElementInfo implements Cloneable {
     
   }
 
-  public boolean instanceOf(String type) {
-    return Types.instanceOf(ci.getType(), type);
+  public boolean instanceOf(String typeSignature) {
+    return Types.instanceOf(ci, typeSignature);
   }
 
   abstract public int getNumberOfFields();
