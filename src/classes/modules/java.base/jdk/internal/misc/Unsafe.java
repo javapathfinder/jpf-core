@@ -47,6 +47,8 @@ public class Unsafe {
 
   public native void storeFence();
 
+  public native void loadFence();
+
   public final boolean isBigEndian() {
     return true;
   }
