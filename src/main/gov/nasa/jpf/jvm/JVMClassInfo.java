@@ -150,7 +150,8 @@ public class JVMClassInfo extends ClassInfo {
         // The check order cannot be reversed since other BSM may not
         // have forth argument in `cpArgs`
         boolean isSerializable = false;
-        if (mth.equals("altMetafactory")) {
+        if (cls.replace('/', '.').equals("java.lang.invoke.LambdaMetafactory")
+            && mth.equals("altMetafactory")) {
           int flags = cf.intAt(cpArgs[3]);
           int FLAG_SERIALIZABLE = 1 << 0;
           if ((flags & FLAG_SERIALIZABLE) != 0) {
