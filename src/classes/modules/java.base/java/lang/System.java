@@ -34,6 +34,7 @@ public class System {
 
   static Properties properties;
 
+  // These are stubs that provide an InputStream instance that has no data available.
   public static InputStream in = new InputStream() {
     public int available() { return 0; }
     public int read() { return -1; }
