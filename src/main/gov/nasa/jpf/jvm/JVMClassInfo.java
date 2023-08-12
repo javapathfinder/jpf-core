@@ -140,6 +140,25 @@ public class JVMClassInfo extends ClassInfo {
           JVMClassInfo.resolvedClasses.put(clsName, enclosingLambdaCls);
         }
 
+        // The following check should be up-to-date
+        // with OpenJDK 11' implementation of
+        // java.lang.invoke.LambdaMetafactory::altMetafactory()
+        //
+        // Check if it is serializable lambda expression. It is if:
+        //   1. bootstrap method is "altMetafactory"
+        //   2. 4-th cp arg value has FLAG_SERIALIZABLE (1 << 0) bit set
+        // The check order cannot be reversed since other BSM may not
+        // have forth argument in `cpArgs`
+        boolean isSerializable = false;
+        if (cls.equals("java/lang/invoke/LambdaMetafactory")
+            && mth.equals("altMetafactory")) {
+          int flags = cf.intAt(cpArgs[3]);
+          int FLAG_SERIALIZABLE = 1 << 0;
+          if ((flags & FLAG_SERIALIZABLE) != 0) {
+            isSerializable = true;
+          }
+        }
+
         assert (enclosingLambdaCls!=null);
 
       	int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
@@ -148,7 +167,8 @@ public class JVMClassInfo extends ClassInfo {
         String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]); 
         
         setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor, null,
-                              BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
+                               isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
+                                              : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
       }
       else {
         // For String Concatenation

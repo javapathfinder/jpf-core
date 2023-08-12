@@ -20,6 +20,8 @@ package java8;
 import gov.nasa.jpf.util.test.TestJPF;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
@@ -414,6 +416,21 @@ public class LambdaTest extends TestJPF{
     if(verifyNoPropertyViolation()) {
       // java.util.stream.Collectors contains many bootstrap methods
       Collectors.toSet();
+    }
+  }
+
+  @Test
+  public void testSerializableLambdaExpression() {
+    if(verifyNoPropertyViolation()) {
+      int[][] arr = { {1, 2}, {3, 1}, {2, 3} };
+      // Comparator.comparingInt() returns a serializable lambda
+      Arrays.sort(arr, Comparator.comparingInt(a -> a[1]));
+      assertEquals(arr[0][0], 3);
+      assertEquals(arr[0][1], 1);
+      assertEquals(arr[1][0], 1);
+      assertEquals(arr[1][1], 2);
+      assertEquals(arr[2][0], 2);
+      assertEquals(arr[2][1], 3);
     }
   }
 }

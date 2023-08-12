@@ -711,7 +711,13 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
    superClassName = "java.lang.Object";
 
-   interfaceNames = new String[]{ funcInterface.name };    
+   interfaceNames = null;
+   if (bootstrapMethod.getBmType() == BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION) {
+     interfaceNames = new String[]{ funcInterface.name, "java.io.Serializable" };
+   } else {
+     interfaceNames = new String[]{ funcInterface.name };
+   }
+
    packageName = enclosingClass.getPackageName();
 
    // creating fields used to capture free variables
