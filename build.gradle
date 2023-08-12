@@ -276,4 +276,26 @@ test {
     }
 }
 
+def PolDetJPFClasspath = "${buildDir}/tests:" + configurations.testRuntimeClasspath.findAll { it.name.endsWith('jar') && (it.name.contains('junit') || it.name.contains('hamcrest')) }.join(":")
+
+tasks.register('testPolDet', Exec) {
+    group = "PolDet@JPF"
+    description = "Run PolDet on example tests."
+
+    dependsOn buildJars
+
+    commandLine 'java', '-jar', "${buildDir}/RunJPF.jar", "+classpath=${PolDetJPFClasspath}", "PolDetMain", "PolDetExamples"
+}
+
+tasks.register('runPolDet', Exec) {
+    group = "PolDet@JPF"
+    description = "Run PolDet on a given test class."
+
+    dependsOn buildJars
+
+    def JPFClasspath = "${PolDetJPFClasspath}:" + project.findProperty("testClasspath") ?: ""
+
+    commandLine 'java', '-jar', "${buildDir}/RunJPF.jar", "+classpath=${JPFClasspath}", "PolDetMain", project.findProperty("testClass") ?: ""
+}
+
 defaultTasks "buildJars"
