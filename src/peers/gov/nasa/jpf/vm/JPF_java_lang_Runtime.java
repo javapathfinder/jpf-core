@@ -62,6 +62,14 @@ public class JPF_java_lang_Runtime extends NativePeer {
   public void gc____V (MJIEnv env, int objref){
     env.gc();
   }
+
+  @MJI
+  public void halt__I__V (MJIEnv env, int clsObjRef, int ret) {
+    // TODO: System.exit should start shutdown handler (once supported)
+    // and call this method (copied code should be removed in System.exit)
+    ThreadInfo ti = env.getThreadInfo();
+    env.getVM().terminateProcess(ti);
+  }
   
   @MJI
   public int availableProcessors____I (MJIEnv env, int objref){
