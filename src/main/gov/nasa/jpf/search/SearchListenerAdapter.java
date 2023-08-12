@@ -19,8 +19,14 @@
 package gov.nasa.jpf.search;
 
 /**
- * a no-action SearchListener which we can use to override only the
- * notifications we are interested in
+ * The {@code SearchListenerAdapter} abstract class instantiates the methods from {@code SearchListener} in order to create an adapter design pattern.
+ * 
+ * <p>Any desired methods will require implementing logic in child classes, however unwanted methods can be left uninstantiated in order to aid in
+ * code readability.
+ * 
+ *  <p>This class is to be used alongside classes that extend {@code Search} class functionality. {@code SearchListenerAdapter} is capable of gauging 
+ *  Search attributes through the implemented methods and can receive information such as depth, configured properties, and other important {@code Search}
+ *  attributes.
  */
 public class SearchListenerAdapter implements SearchListener {
 
