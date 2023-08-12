@@ -758,7 +758,7 @@ public class JPF_java_lang_reflect_Field extends NativePeer {
       
       if (fi.isBooleanField() && valClsName.equals("java.lang.Boolean")) return true;
       else if (fi.isByteField() && valClsName.equals("java.lang.Byte")) return true;
-      else if (fi.isCharField() && valClsName.equals("java.lang.Char")) return true;
+      else if (fi.isCharField() && valClsName.equals("java.lang.Character")) return true;
       else if (fi.isShortField() && valClsName.equals("java.lang.Short")) return true;
       else if (fi.isIntField() && valClsName.equals("java.lang.Integer")) return true;
       else if (fi.isLongField() && valClsName.equals("java.lang.Long")) return true;

@@ -67,6 +67,8 @@ public class Matcher {
   public native boolean matches();
   
   public native boolean find();
+
+  public native boolean find(int start);
   
   public native boolean lookingAt();
   
