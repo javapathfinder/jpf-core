@@ -20,6 +20,8 @@ package gov.nasa.jpf.test.java.lang;
 import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.Verify;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 /**
@@ -147,6 +149,17 @@ public class SystemTest extends TestJPF {
         System.out.println("checking if non-copied dst[0] is still null");
         assertTrue( dst[0] == null);
       }
+    }
+  }
+
+  @Test
+  public void testSystemIn() {
+    try {
+      if (verifyNoPropertyViolation()) {
+        assert(System.in.available() == 0);
+      }
+    } catch (IOException e) {
+      fail(e.getMessage());
     }
   }
 }
