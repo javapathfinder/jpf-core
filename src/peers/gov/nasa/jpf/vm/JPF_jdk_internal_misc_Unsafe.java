@@ -74,6 +74,9 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   @MJI
   public void storeFence____V (MJIEnv env, int objRef) {}
 
+  @MJI
+  public void loadFence____V (MJIEnv env, int objRef) {}
+
   /**
    * NativePeer method for {@link jdk.internal.misc.Unsafe#objectFieldOffset(java.lang.Class, java.lang.String)}
    */

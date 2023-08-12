@@ -22,6 +22,14 @@ import gov.nasa.jpf.annotation.MJI;
 public class JPF_java_lang_invoke_JPFFieldVarHandle extends NativePeer {
 
   @MJI
+  public int get__Ljava_lang_Object_2__I(MJIEnv env, int objRef, int ownerRef) {
+    int fieldIndex = env.getIntField(objRef, "fieldRef");
+    ElementInfo ownerObj = env.getModifiableElementInfo(ownerRef);
+    FieldInfo targetField = ownerObj.getFieldInfo(fieldIndex);
+    return ownerObj.getIntField(targetField);
+  }
+
+  @MJI
   public boolean compareAndSet__Ljava_lang_Object_2II__Z(
       MJIEnv env, int objRef, int absRef, int expected, int update) {
     int filedRef = env.getIntField(objRef, "fieldRef");
@@ -31,6 +39,22 @@ public class JPF_java_lang_invoke_JPFFieldVarHandle extends NativePeer {
 
     if (value == expected) {
       absEi.setIntField(targetField, update);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @MJI
+  public boolean compareAndSet__Ljava_lang_Object_2JJ__Z(
+      MJIEnv env, int objRef, int ownerRef, long expected, long update) {
+    int fieldIndex = env.getIntField(objRef, "fieldRef");
+    ElementInfo ownerObj = env.getModifiableElementInfo(ownerRef);
+    FieldInfo targetField = ownerObj.getFieldInfo(fieldIndex);
+    long value = ownerObj.getLongField(targetField);
+
+    if (value == expected) {
+      ownerObj.setLongField(targetField, update);
       return true;
     } else {
       return false;

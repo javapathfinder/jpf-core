@@ -43,10 +43,14 @@ public class JPFFieldVarHandle extends VarHandle {
     return false;
   }
 
+  public native boolean compareAndSet(Object owner, long expect, long update);
+
   public boolean compareAndSet(Object aqs, Object expect, Object update) {
     //This is implemented in the corresponding peer
     return false;
   }
+
+  public native int get(Object owner);
 
   public void set(Object called, int value) {
     //This is implemented in the corresponding peer
