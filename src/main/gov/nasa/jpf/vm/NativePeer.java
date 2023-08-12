@@ -35,7 +35,7 @@ import java.util.logging.Level;
 /**
  * native peer classes are part of MJI and contain the code that is
  * executed by the host VM (i.e. outside the state-tracked JPF VM). Each
- * class executed by JPF that has native mehods must have a native peer class
+ * class executed by JPF that has native methods must have a native peer class
  * (which is looked up and associated at class loadtime)
  */
 public class NativePeer implements Cloneable {
