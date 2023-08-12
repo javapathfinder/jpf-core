@@ -26,6 +26,22 @@ import org.junit.Test;
 public class RuntimeTest extends TestJPF {
 
   @Test
+  public void testExit() {
+    if (verifyNoPropertyViolation()) {
+      System.exit(1);
+      assert(false);
+    }
+  }
+
+  @Test
+  public void testHalt() {
+    if (verifyNoPropertyViolation()) {
+      Runtime.getRuntime().halt(1);
+      assert(false);
+    }
+  }
+
+  @Test
   public void testAvailableProcessors() {
 
     if (!isJPFRun()) {
