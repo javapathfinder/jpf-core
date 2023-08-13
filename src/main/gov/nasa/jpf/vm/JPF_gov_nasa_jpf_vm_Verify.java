@@ -78,7 +78,14 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
   static int nextBitSet;
 
   static PrintStream out;
-  
+
+  /**
+   * store the binomial coefficients
+   * the coefficients are used to decode a number in [0, C(n, k)) to a k-combination of n elements
+   * used in getBitFlip__JII__J to generate a set of k bits to flip in a total of n bits
+   */
+  static int[][] binomial;
+
   public static boolean init (Config conf) {
 
     if (!isInitialized){
@@ -117,6 +124,26 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     return true;
   }
 
+  static {
+    initializeBinomial();
+  }
+  /**
+   * initialize the binomial coefficients by Pascal's triangle
+   * allow up to 7 bits to flip to avoid state explosion that JPF cannot handle
+   */
+  public static void initializeBinomial () {
+    binomial = new int[65][8];
+    binomial[0][0] = binomial[1][0] = binomial[1][1] = 1;
+    for (int i = 2; i <= 64; ++i) {
+      binomial[i][0] = 1;
+      if (i < 8) {
+        binomial[i][i] = 1;
+      }
+      for (int j = 1; j < i && j < 8; ++j) {
+        binomial[i][j] = binomial[i-1][j] + binomial[i-1][j-1];
+      }
+    }
+  }
   
   public static final int NO_VALUE = -1;
   
@@ -430,6 +457,102 @@ public class JPF_gov_nasa_jpf_vm_Verify extends NativePeer {
     } else {
       return getNextChoice(ss, "verifyGetInt(II)", IntChoiceGenerator.class, Integer.class);
     }
+  }
+
+
+  /**
+   * explore flipping nBit bits in the lowest len bits of a long variable v
+   * allow up to 7 bits to flip to avoid state explosion
+   */
+  @MJI
+  public static long getBitFlip__JII__J (MJIEnv env, int clsObjRef, long v, int nBit, int len) {
+    if (nBit < 0 || nBit > 7) {
+      throw new JPFException("Invalid number of bits to flip: should be between 1 and 7");
+    }
+    if (nBit > len) {
+      throw new JPFException("Invalid number of bits to flip: should not exceed the number of bits");
+    }
+    ThreadInfo ti = env.getThreadInfo();
+    SystemState ss = env.getSystemState();
+
+    int choice;
+    if (!ti.isFirstStepInsn()) { // first time around
+      IntChoiceGenerator cg = new IntIntervalGenerator( "verifyGetBitFlip(JII)", 0, binomial[len][nBit]-1);
+      choice = registerChoiceGenerator(env,ss,ti,cg,0);
+
+    } else {
+      choice = getNextChoice(ss, "verifyGetBitFlip(JII)", IntChoiceGenerator.class, Integer.class);
+    }
+
+    /**
+     * decode out a set of nBit bits from the generated number recursively
+     * Since in all C(i, nBit) combinations, C(i-1, nBit-1) combinations do not select the i-th bit,
+     * whether to flip the i-th bit is decided by comparing the number with C(i-1, nBit-1)
+     */
+    for (int i = len-1; i >= 0; --i) {
+      if (choice >= binomial[i][nBit]) {
+        v ^= (1l << i);
+        choice -= binomial[i][nBit];
+        nBit--;
+      }
+    }
+    return v;
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a long variable
+   */
+  @MJI
+  public static long getBitFlip__JI__J (MJIEnv env, int clsObjRef, long v, int nBit) {
+    return getBitFlip__JII__J(env, clsObjRef, v, nBit, 64);
+  }
+
+  /**
+   * flip nBit (up to 7) bits of an int variable
+   */
+  @MJI
+  public static int getBitFlip__II__I (MJIEnv env, int clsObjRef, int v, int nBit) {
+    return (int) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 32);
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a short variable
+   */
+  @MJI
+  public static short getBitFlip__SI__S (MJIEnv env, int clsObjRef, short v, int nBit) {
+    return (short) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 16);
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a char variable
+   */
+  @MJI
+  public static char getBitFlip__CI__C (MJIEnv env, int clsObjRef, char v, int nBit) {
+    return (char) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 16);
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a byte variable
+   */
+  @MJI
+  public static byte getBitFlip__BI__B (MJIEnv env, int clsObjRef, byte v, int nBit) {
+    return (byte) getBitFlip__JII__J(env, clsObjRef, (long)v, nBit, 8);
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a double variable
+   */
+  @MJI
+  public static double getBitFlip__DI__D (MJIEnv env, int clsObjRef, double v, int nBit) {
+      return Double.longBitsToDouble(getBitFlip__JI__J(env, clsObjRef, Double.doubleToLongBits(v), nBit));
+  }
+
+  /**
+   * flip nBit (up to 7) bits of a float variable
+   */
+  @MJI
+  public static float getBitFlip__FI__F (MJIEnv env, int clsObjRef, float v, int nBit) {
+      return Float.intBitsToFloat(getBitFlip__II__I(env, clsObjRef, Float.floatToIntBits(v), nBit));
   }
 
   static int getIntFromList (MJIEnv env, int[] values){

@@ -179,7 +179,7 @@ public class Verify {
   /**
    * Adds a comment to the error trace, which will be printed and saved.
    */
-  public static void addComment (String s) {}
+  public native static void addComment (String s);
 
   /**
    * Backwards compatibility START
@@ -204,24 +204,24 @@ public class Verify {
     }
   }
 
-  public static void atLabel (String label) {}
+  public native static void atLabel (String label);
 
-  public static void atLabel (int label) {}
+  public native static void atLabel (int label);
 
   /**
    * Marks the beginning of an atomic block.
    * THIS IS EVIL, DON'T USE IT FOR OPTIMIZATION - THAT'S WHAT POR IS FOR!
    * (it's mostly here to support model classes that need to execute atomic)
    */
-  public static void beginAtomic () {}
+  public native static void beginAtomic ();
 
   /**
    * Marks the end of an atomic block.
    * EVIL - see beginAtomic()
    */
-  public static void endAtomic () {}
+  public native static void endAtomic ();
 
-  public static void boring (boolean cond) {}
+  public native static void boring (boolean cond);
 
   public static void busyWait (long duration) {
     // this gets only executed outside of JPF
@@ -250,17 +250,17 @@ public class Verify {
     }
   }
 
-  public static void ignoreIf (boolean cond) {}
+  public native static void ignoreIf (boolean cond);
 
-  public static void instrumentPoint (String label) {}
+  public native static void instrumentPoint (String label);
 
-  public static void instrumentPointDeep (String label) {}
+  public native static void instrumentPointDeep (String label);
 
-  public static void instrumentPointDeepRecur (String label, int depth) {}
+  public native static void instrumentPointDeepRecur (String label, int depth);
 
-  public static void interesting (boolean cond) {}
+  public native static void interesting (boolean cond);
 
-  public static void breakTransition (String reason) {}
+  public native static void breakTransition (String reason);
 
  /** for testing and debugging purposes */
   public static int breakTransition (String reason, int min, int max) {
@@ -271,8 +271,8 @@ public class Verify {
    * simple debugging aids to imperatively print the current path output of the SUT
    * (to be used with vm.path_output)
    */
-  public static void printPathOutput(String msg) {}
-  public static void printPathOutput(boolean cond, String msg) {}
+  public native static void printPathOutput(String msg);
+  public native static void printPathOutput(boolean cond, String msg);
 
   public static void threadPrint (String s) {
     System.out.print( Thread.currentThread().getName());
@@ -322,32 +322,78 @@ public class Verify {
    */
   
   //--- use these if you know there are single attributes
-  public static void setFieldAttribute (Object o, String fieldName, int val) {}
-  public static int getFieldAttribute (Object o, String fieldName) { return 0; }
+  public native static void setFieldAttribute (Object o, String fieldName, int val);
+  public native static int getFieldAttribute (Object o, String fieldName);
   
   //--- use these for multiple attributes
-  public static void addFieldAttribute (Object o, String fieldName, int val) {}
-  public static int[] getFieldAttributes (Object o, String fieldName) { return new int[0]; }
+  public native static void addFieldAttribute (Object o, String fieldName, int val);
+  public native static int[] getFieldAttributes (Object o, String fieldName);
 
-  public static void setLocalAttribute (String varName, int val) {}
-  public static int getLocalAttribute (String varName) { return 0; }
+  public native static void setLocalAttribute (String varName, int val);
+  public native static int getLocalAttribute (String varName);
 
-  public static void addLocalAttribute (String varName, int val) {}
-  public static int[] getLocalAttributes (String varName) { return new int[0]; }
+  public native static void addLocalAttribute (String varName, int val);
+  public native static int[] getLocalAttributes (String varName);
 
-  public static void setElementAttribute (Object arr, int idx, int val){}
-  public static int getElementAttribute (Object arr, int idx) { return 0; }
+  public native static void setElementAttribute (Object arr, int idx, int val);
+  public native static int getElementAttribute (Object arr, int idx);
   
-  public static void addElementAttribute (Object arr, int idx, int val){}
-  public static int[] getElementAttributes (Object arr, int idx) { return new int[0]; }
+  public native static void addElementAttribute (Object arr, int idx, int val);
+  public native static int[] getElementAttributes (Object arr, int idx);
 
-  public static void setObjectAttribute (Object o, int val) {}
-  public static int getObjectAttribute (Object o) { return 0; }
+  public native static void setObjectAttribute (Object o, int val);
+  public native static int getObjectAttribute (Object o);
   
-  public static void addObjectAttribute (Object o, int val) {}
-  public static int[] getObjectAttributes (Object o) { return new int[0]; }
+  public native static void addObjectAttribute (Object o, int val);
+  public native static int[] getObjectAttributes (Object o);
 
-  
+
+  /**
+   * a bit flip generator that returns variable v with nBit bits flipped in v's lowest len bits
+   * note that the JPF does not execute the following getBitFlip methods, but execute their native methods
+   */
+  public native static long getBitFlip (long v, int nBit, int len);
+
+  /**
+   * flip nBit bits of a long variable
+   */
+  public native static long getBitFlip (long v, int nBit);
+
+  /**
+   * flip nBit bits of an int variable
+   */
+  public native static int getBitFlip (int v, int nBit);
+
+  /**
+   * flip nBit bits of a short variable
+   */
+  public native static short getBitFlip (short v, int nBit);
+
+  /**
+   * flip nBit bits of a char variable
+   */
+  public native static char getBitFlip (char v, int nBit);
+
+  /**
+   * flip nBit bits of a byte variable
+   */
+  public native static byte getBitFlip (byte v, int nBit);
+
+  /**
+   * flip nBit bits of a double variable
+   */
+  public native static double getBitFlip (double v, int nBit);
+
+  /**
+   * flip nBit bits of a float variable
+   */
+  public native static float getBitFlip (float v, int nBit);
+
+  /**
+   * flip a boolean variable
+   */
+  public native static boolean getBitFlip (boolean v);
+
   /**
    * this is the new boolean choice generator. Since there's no real
    * heuristic involved with boolean values, we skip the id (it's a
@@ -494,9 +540,7 @@ public class Verify {
     return false;
   }
 
-  public static void storeTrace (String fileName, String comment) {
-    // intercepted in NativePeer
-  }
+  public native static void storeTrace (String fileName, String comment);
 
   public static void storeTraceIf (boolean cond, String fileName, String comment) {
     if (cond) {
@@ -524,39 +568,26 @@ public class Verify {
     return false; // native
   }
   
-  public static void setShared (Object o, boolean isShared) {
-    // native
-  }
+  public native static void setShared (Object o, boolean isShared);
   
-  public static void freezeSharedness (Object o, boolean freeze) {
-    // native
-  }
+  public native static void freezeSharedness (Object o, boolean freeze);
   
-  public static void terminateSearch () {
-    // native
-  }
+  public native static void terminateSearch ();
 
-  public static void setHeuristicSearchValue (int n){
-    // native - to control UserHeuristic
-  }
+  // to control UserHeuristic
+  public native static void setHeuristicSearchValue (int n);
 
-  public static void resetHeuristicSearchValue (){
-    // native - to control UserHeuristic
-  }
+  // to control UserHeuristic
+  public native static void resetHeuristicSearchValue ();
 
-  public static int getHeuristicSearchValue (){
-    // native - to control UserHeuristic
-    return 0;
-  }
+  // to control UserHeuristic
+  public native static int getHeuristicSearchValue ();
 
   public static void setProperties (String... p) {
     // native
   }
 
-  public static String getProperty (String key) {
-    // native
-    return null;
-  }
+  public native static String getProperty (String key);
 
   public static <T> T createFromJSON(Class<T> clazz, String json){
     return null;

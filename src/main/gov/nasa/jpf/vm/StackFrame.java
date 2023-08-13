@@ -2266,6 +2266,18 @@ public abstract class StackFrame implements Cloneable {
     return getOperandAttr();
   }
   
+  /**
+   * inject the bit flip(s) in the operand stack
+   */
+  public void bitFlip (int off, int typeSize, long bitsToFlip) {
+    int top = getTopPos();
+    if (typeSize == 1) {
+      setLocalVariable(top-off, peek(off) ^ (int) bitsToFlip);
+    }
+    else {
+      setLongLocalVariable(top-off-1, peekLong(off) ^ bitsToFlip);
+    }
+  }
   
   // those set the local vars that are normally initialized from call arguments
   public abstract void setArgumentLocal (int idx, int value, Object attr);
