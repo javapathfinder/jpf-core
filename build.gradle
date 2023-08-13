@@ -301,6 +301,7 @@ publishing {
             url = "https://plugins.gradle.org/m2/"
         }
     }
+}
     
 def PolDetJPFClasspath = "${buildDir}/tests:" + configurations.testRuntimeClasspath.findAll { it.name.endsWith('jar') && (it.name.contains('junit') || it.name.contains('hamcrest')) }.join(":")
 
