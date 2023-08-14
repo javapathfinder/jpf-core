@@ -30,25 +30,25 @@ import gov.nasa.jpf.vm.Types;
  * ..., objectref => ..., result
  */
 public class INSTANCEOF extends Instruction implements JVMInstruction {
-  private String type;
+  private String typeSignature;
 
 
   /**
    * typeName is of a/b/C notation
    */
   public INSTANCEOF (String typeName){
-    type = Types.getTypeSignature(typeName, false);
+    typeSignature = Types.getTypeSignature(typeName, false);
   }
 
   @Override
   public Instruction execute (ThreadInfo ti) {
-    if(Types.isReferenceSignature(type)) {
+    if(Types.isReferenceSignature(typeSignature)) {
       String t;
-      if(Types.isArray(type)) {
+      if(Types.isArray(typeSignature)) {
         // retrieve the component terminal
-        t = Types.getComponentTerminal(type);
+        t = Types.getComponentTerminal(typeSignature);
       } else {
-        t = type;
+        t = typeSignature;
       }
 
       // resolve the referenced class
@@ -64,7 +64,7 @@ public class INSTANCEOF extends Instruction implements JVMInstruction {
 
     if (objref == MJIEnv.NULL) {
       frame.push(0);
-    } else if (ti.getElementInfo(objref).instanceOf(type)) {
+    } else if (ti.getElementInfo(objref).instanceOf(typeSignature)) {
       frame.push(1);
     } else {
       frame.push(0);
@@ -74,7 +74,7 @@ public class INSTANCEOF extends Instruction implements JVMInstruction {
   }
   
   public String getType() {
-	  return type;
+	  return typeSignature;
   }
 
   @Override

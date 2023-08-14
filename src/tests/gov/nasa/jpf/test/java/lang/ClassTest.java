@@ -296,7 +296,7 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
   }  
   
   @Test 
-  public void testInstanceOf () {
+  public void testInstanceOfReference () {
     if (verifyNoPropertyViolation()) {
       assert this instanceof Cloneable;
       assert this instanceof TestJPF;
@@ -305,6 +305,52 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       if (this instanceof Runnable) {
         assert false : "negative instanceof test failed";
       }
+    }
+  }
+
+  @Test
+  public void testInstanceOfPrimitiveArray() {
+    int[] intArr = new int[10];
+
+    if (verifyNoPropertyViolation()) {
+      // Every array is an instance of Object, Cloneable, and Serializable.
+      // https://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.10.3
+      assertTrue(intArr instanceof Object);
+      assertTrue(intArr instanceof Cloneable);
+      assertTrue(intArr instanceof Serializable);
+
+      assertTrue(intArr instanceof int[]);
+    }
+  }
+
+  @Test
+  public void testInstanceOfReferenceArray() {
+    Child1[] arr = new Child1[0];
+
+    if (verifyNoPropertyViolation()) {
+      assertTrue(arr instanceof Object);
+      assertTrue(arr instanceof Cloneable);
+      assertTrue(arr instanceof Serializable);
+
+      assertTrue(arr instanceof Child1[]);
+      assertTrue(arr instanceof Parent[]);
+      assertTrue(arr instanceof Object[]);
+      assertFalse(arr instanceof Child2[]);
+    }
+  }
+
+  @Test
+  public void testInstanceOfNestedArray() {
+    int[][] intArr = new int[10][10];
+    Child1[][] child1Arr = new Child1[0][0];
+
+    if (verifyNoPropertyViolation()) {
+      assertTrue(intArr instanceof int[][]);
+
+      assertTrue(child1Arr instanceof Child1[][]);
+      assertTrue(child1Arr instanceof Parent[][]);
+      assertTrue(child1Arr instanceof Object[][]);
+      assertFalse(child1Arr instanceof Child2[][]);
     }
   }
   
