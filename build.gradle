@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 java {
@@ -276,6 +277,32 @@ test {
     }
 }
 
+
+publishing {
+    publications {
+        jpfCore(MavenPublication) {
+            groupId = 'gov.nasa'
+            artifactId = 'jpf-core'
+            artifact createJpfJar
+        }
+        jpfAnnotation(MavenPublication) {
+            groupId = 'gov.nasa'
+            artifactId = 'jpf-annotations'
+            artifact createAnnotationsJar
+        }
+        jpfClasses(MavenPublication) {
+            groupId = 'gov.nasa'
+            artifactId = 'jpf-classes'
+            artifact createJpfClassesJar
+        }
+    }
+    repositories {
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
+    }
+}
+    
 def PolDetJPFClasspath = "${buildDir}/tests:" + configurations.testRuntimeClasspath.findAll { it.name.endsWith('jar') && (it.name.contains('junit') || it.name.contains('hamcrest')) }.join(":")
 
 tasks.register('testPolDet', Exec) {
