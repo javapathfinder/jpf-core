@@ -15,30 +15,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package gov.nasa.jpf.test.java.nio;
 
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.Scanner;
 
-public class ByteBufferTest extends TestJPF {
+public class BufferTest extends TestJPF {
 
-	/**
-	 * This test case checks to see if the missing
-	 * class java.nio.Buffer.<init>(IIII)V issue
-	 * is resolved and fails otherwise
-	 */
-	@Test
-	public void testBufferConstructor() {
-		if (verifyNoPropertyViolation()) {
-			Random random = new Random();
-			byte[] bytes = new byte[8];
-			random.nextBytes(bytes);
-			new Scanner(new String(bytes));
-		}
-	}
+  /**
+   * This test case checks to see if the missing
+   * class java.nio.Buffer.<init>(IIII)V issue
+   * is resolved and fails otherwise
+   */
+  @Test
+  public void testByteBufferConstructor() {
+    if (verifyNoPropertyViolation()) {
+      byte[] bytes1 = "Buffer".getBytes(StandardCharsets.UTF_8);
+      byte[] bytes2 = "testBuffer".getBytes(StandardCharsets.UTF_8);
+
+      ByteBuffer buffer1 = ByteBuffer.wrap(bytes1);
+      ByteBuffer buffer2 = ByteBuffer.wrap(bytes2);
+      buffer2.position(4);
+
+      assertTrue(buffer1.equals(buffer2));
+    }
+  }
+
+  @Test
+  public void testCharBufferConstructor() {
+    if(verifyNoPropertyViolation()) {
+      Random random = new Random();
+      byte[] bytes = new byte[8];
+      random.nextBytes(bytes);
+      new Scanner(new String(bytes));
+    }
+  }
 
 }
