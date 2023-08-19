@@ -60,7 +60,7 @@ public class ServiceLoader<S> implements Iterable<S> {
      * @param classLoader
      */
 
-    private ServiceLoader(Class service, ClassLoader classLoader) {
+    private ServiceLoader(Class<S> service, ClassLoader classLoader) {
         this.service = service;
         this.classLoader = classLoader;
         this.providers = new LinkedHashMap<>();
