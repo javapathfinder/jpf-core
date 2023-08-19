@@ -145,7 +145,7 @@ public class ServiceLoader<S> implements Iterable<S> {
         public LazyIterator() {
             try {
                 String configFile = prefix + service.getName();
-                // ensure classloader is correcltly initialized before use
+                // ensure classloader is correctly initialized before use
                 if(classLoader == null) {
                     classLoader = Thread.currentThread().getContextClassLoader();
                     if(classLoader == null) {
