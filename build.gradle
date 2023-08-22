@@ -26,7 +26,17 @@ repositories {
 }
 
 dependencies {
+    testImplementation 'org.ow2.asm:asm:9.5'
     testImplementation('junit:junit:4.13.1')
+}
+
+configurations {
+    customTestImpl.extendsFrom testImplementation
+}
+
+tasks.register('copyLibs', Copy) {
+    from configurations.customTestImpl
+    into 'build'
 }
 
 jar {
@@ -44,27 +54,36 @@ apply from: "gradle/distribution.gradle"
 apply from: "gradle/source-sets.gradle"
 apply from: "gradle/build-resources.gradle"
 
+compileJava.dependsOn(copyLibs)
+
 tasks.named('compileClassesJava') {
+    dependsOn(copyLibs)
     dependsOn(copyResources)
 }
 tasks.named('compileExamplesJava') {
+    dependsOn(copyLibs)
     dependsOn(copyResources)
 }
 tasks.named('compileModulesJava') {
+    dependsOn(copyLibs)
     dependsOn(copyResources)
 }
 tasks.named('compilePeersJava') {
+    dependsOn(copyLibs)
     dependsOn(copyResources)
 }
 tasks.named('compileTestJava') {
+    dependsOn(copyLibs)
     dependsOn(copyResources)
 }
 tasks.named('jar') {
+    dependsOn(copyLibs)
     dependsOn(copyResources)
 }
 
 
 tasks.register('compileModules', JavaCompile) {
+    dependsOn(copyLibs)
     dependsOn compileTestJava
     source = fileTree(dir: 'src/classes/modules')
     classpath = files('build/annotations', 'build/classes', 'build/main')
@@ -86,6 +105,7 @@ tasks.register('compile') {
     // These are automatic generated tasks from the Java Gradle Plugin.
     // Gradle is able to infer the order of the source sets
     // due to the compileClasspath attribute
+    dependsOn(copyLibs)
     dependsOn compileExamplesJava
     dependsOn compileModules
 }
@@ -97,6 +117,7 @@ tasks.register('createJpfClassesJar', Jar) {
     group = "JPF Jars"
     description = "Creates the ${archiveFileName} file."
 
+    dependsOn(copyLibs)
     dependsOn compile
     dependsOn copyResources
 
@@ -119,6 +140,7 @@ tasks.register('createJpfJar', Jar) {
     group = "JPF Jars"
     description = "Creates the ${archiveFileName} file."
 
+    dependsOn(copyLibs)
     dependsOn compile
     dependsOn copyResources
 
@@ -142,6 +164,7 @@ tasks.register('createAnnotationsJar', Jar) {
     group = "JPF Jars"
     description = "Creates the ${archiveFileName} file."
 
+    dependsOn(copyLibs)
     dependsOn compile
     dependsOn copyResources
 
@@ -155,6 +178,7 @@ tasks.register('createClassloaderSpecificTestsJar', Jar) {
     group = "JPF Jars"
     description = "Creates the ${archiveFileName} file."
 
+    dependsOn(copyLibs)
     dependsOn compile
     dependsOn copyResources
 
@@ -236,6 +260,7 @@ tasks.register('buildJars') {
     group = "JPF Build"
     description = "Generates all core JPF jar files."
 
+    dependsOn(copyLibs)
     dependsOn createClassloaderSpecificTestsJar
     dependsOn createAnnotationsJar
     dependsOn createJpfClassesJar
@@ -302,7 +327,7 @@ publishing {
         }
     }
 }
-    
+
 def PolDetJPFClasspath = "${buildDir}/tests:" + configurations.testRuntimeClasspath.findAll { it.name.endsWith('jar') && (it.name.contains('junit') || it.name.contains('hamcrest')) }.join(":")
 
 tasks.register('testPolDet', Exec) {

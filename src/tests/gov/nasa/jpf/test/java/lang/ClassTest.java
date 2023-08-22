@@ -112,7 +112,16 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       Class<?> clazz = Class.forName("x.y.NonExisting");
     }
   }
+  
+  @Test 
+  public void testClassForNameExceptionForInvalidArrayType () throws ClassNotFoundException {
+    if (verifyUnhandledException("java.lang.ClassNotFoundException")) {
 
+      // Adapted from the Groovy library
+      // This tests how array types are handled properly in Types.java (issue #204)
+      Class<?> clazz = Class.forName("groovy.runtime.metaclass.[Ljava.lang.Object;MetaClass");
+    }
+  }
   
   static class X {
     static {
