@@ -761,7 +761,7 @@ public class Types {
       return typeName;
     }
     
-    int i=typeName.indexOf('[');
+    int i=typeName.indexOf("[]");
     if (i>0){ // the sort of "<type>[]"
       StringBuilder sb = new StringBuilder();
       sb.append('[');
@@ -1070,30 +1070,18 @@ public class Types {
     return (int) (l >> 32);
   }
 
-  public static boolean instanceOf (String type, String ofType) {
-    int bType = getBuiltinTypeFromSignature(type);
-
-    if ((bType == T_ARRAY) && ofType.equals("Ljava.lang.Object;")) {
-      return true;
+  public static boolean instanceOf (ClassInfo ci, String ofTypeSignature) {
+    int bOfType = getBuiltinTypeFromSignature(ofTypeSignature);
+    if (ci.isArray() && bOfType == T_ARRAY) {
+      return instanceOf(ci.getComponentClassInfo(), getArrayElementType(ofTypeSignature));
     }
 
-    int bOfType = getBuiltinTypeFromSignature(ofType);
-
-    if (bType != bOfType) {
-      return false;
+    if (ci.isPrimitive()) {
+      int bType = getBuiltinTypeFromSignature(ci.getSignature());
+      return bType == bOfType;
     }
 
-    switch (bType) {
-    case T_ARRAY:
-      return instanceOf(type.substring(1), ofType.substring(1));
-
-    case T_REFERENCE:
-      ClassInfo ci = ClassLoaderInfo.getCurrentResolvedClassInfo(getTypeName(type));
-      return ci.isInstanceOf(getTypeName(ofType));
-
-    default:
-      return true;
-    }
+    return ci.isInstanceOf(getTypeName(ofTypeSignature));
   }
 
   public static boolean intToBoolean (int i) {

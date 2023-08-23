@@ -1862,6 +1862,11 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
   public static boolean isBuiltinClass (String cname) {
     char c = cname.charAt(0);
+    
+    // The following handles invalid names, e.g., [Ljava.lang.Object;BeanInfo in Groovy
+    if (cname.indexOf(';') != -1 && cname.indexOf(';') != cname.length() - 1) {
+      return false;
+    }
 
     // array class
     if ((c == '[') || cname.endsWith("[]")) {

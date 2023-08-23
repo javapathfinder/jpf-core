@@ -21,10 +21,16 @@ import gov.nasa.jpf.util.test.TestJPF;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Enumeration;
 
 import org.junit.Test;
+
+// ASM 9.5 library for testing the defineClass() method
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
 
 /**
  * test of java.lang.ClassLoader API
@@ -72,6 +78,23 @@ public class ClassLoaderTest extends TestJPF {
       }catch(ClassNotFoundException e) {
         fail(e.getMessage());
       }
+    }
+  }
+  
+  @Test
+  public void testLoadClassNoClassDefFoundError() throws ClassNotFoundException {
+    if (verifyUnhandledException("java.lang.NoClassDefFoundError")) {
+      TestClassLoader classLoader = new TestClassLoader();
+      Class<?> cls = classLoader.loadClass("java/lang/Object");
+    }
+  }
+  
+  @Test
+  public void testLoadClassClassNotFoundException() throws ClassNotFoundException {
+    if (verifyUnhandledException("java.lang.ClassNotFoundException")) {
+      TestClassLoader classLoader = new TestClassLoader();
+      // Adapted from the Groovy library's class resolution
+      Class<?> cls = classLoader.loadClass("[Ljava.lang.Object;BeanInfo;");
     }
   }
 
@@ -166,6 +189,40 @@ public class ClassLoaderTest extends TestJPF {
     assertNotNull(is);
     assertTrue(is.read() > 0);
   }
+  
+  @Test
+  public void testDefineClass() throws IOException {
+    if(verifyNoPropertyViolation()) {
+      TestClassLoader classLoader = new TestClassLoader();
+      Class<?> cls = classLoader.loadMagic();
+      assertNotNull(cls);
+      assertTrue(cls.getName().equals("sun.reflect.GroovyMagic"));
+    }
+  }
+	
+  @Test
+  public void testDefineClassError() {
+    if (verifyUnhandledException("java.lang.LinkageError")) {
+      TestClassLoader classLoader = new TestClassLoader();
+      Class<?> cls = classLoader.loadMagic();
+      Class<?> cls2 = classLoader.loadMagic();
+    }
+  }
+
+
+  @Test
+  public void testDefineClassInstanceOf() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    if (verifyNoPropertyViolation()) {
+      TestClassLoader testClassLoader = new TestClassLoader();
+      testClassLoader.defineClassWithDefaultConstructor("example/MyClass1");
+      Class<?> cls2 = testClassLoader.defineClassWithDefaultConstructor("example/MyClass2");
+      Object obj = cls2.getConstructor().newInstance();
+      boolean objIsInstanceOfObject = obj instanceof Object;
+      assertTrue(objIsInstanceOfObject);
+    }
+  }
+
+
 
   class TestClassLoader extends ClassLoader {
       
@@ -180,6 +237,39 @@ public class ClassLoaderTest extends TestJPF {
     @Override
 	protected Enumeration<URL> findResources(String name) throws IOException {
       return super.findResources(name);
+    }
+    
+	// Adapted from the class SunClassLoader of the Groovy library
+    public Class<?> loadMagic() {
+      ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+      cw.visit(Opcodes.V1_4, Opcodes.ACC_PUBLIC, "sun/reflect/GroovyMagic", null, "java/lang/Object", null);
+      MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+      mv.visitCode();
+      mv.visitMaxs(0,0);
+      mv.visitEnd();
+      cw.visitEnd();
+
+      byte[] bytes = cw.toByteArray();
+	  return defineClass("sun.reflect.GroovyMagic", bytes, 0, bytes.length);
+    }
+
+    // Defines a trivial class with a default constructor.  `name` should have the format `example/MyClass`.
+    public Class<?> defineClassWithDefaultConstructor(String name) {
+      ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+      cw.visit(Opcodes.V1_4, Opcodes.ACC_PUBLIC, name, null, "java/lang/Object", null);
+
+      MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+      mv.visitCode();
+      mv.visitVarInsn(Opcodes.ALOAD, 0);
+      mv.visitMaxs(0, 0);
+      // Invoke super constructor.
+      mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+      mv.visitInsn(Opcodes.RETURN);
+      mv.visitEnd();
+
+      cw.visitEnd();
+      byte[] bytes = cw.toByteArray();
+      return defineClass(name.replace('/', '.'), bytes, 0, bytes.length);
     }
   }
 }
