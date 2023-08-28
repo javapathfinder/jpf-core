@@ -274,7 +274,6 @@ test {
     description = "Runs core regression tests."
 
     dependsOn buildJars
-    finalizedBy jacocoTestReport
 
     forkEvery = 1
     enableAssertions = true
@@ -309,7 +308,6 @@ jacoco {
 }
 
 jacocoTestReport {
-    dependsOn test
     reports {
         xml.required = false
         csv.required = false
