@@ -274,6 +274,7 @@ test {
     description = "Runs core regression tests."
 
     dependsOn buildJars
+    jacoco.enabled = false
 
     forkEvery = 1
     enableAssertions = true
