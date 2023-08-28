@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'jacoco'
 }
 
 java {
@@ -273,6 +274,7 @@ test {
     description = "Runs core regression tests."
 
     dependsOn buildJars
+    finalizedBy jacocoTestReport
 
     forkEvery = 1
     enableAssertions = true
@@ -299,6 +301,19 @@ test {
 
             println "Summary: " + summaryFields.join(", ")
         }
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.9"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = false
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
     }
 }
 
