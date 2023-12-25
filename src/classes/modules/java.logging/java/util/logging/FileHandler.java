@@ -16,10 +16,11 @@
  * limitations under the License.
  */
 
-package java.util.logging;
+package java.logging.java.util.logging;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.logging.StreamHandler;
 
 /**
  * simple stub to avoid execptions when using basic logging
