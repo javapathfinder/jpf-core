@@ -26,8 +26,10 @@ import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.NativePeer;
 import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
+import junit.Test;
 
 import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
+import static org.junit.Assert.assertTrue;
 
 /**
  * we don't want this class! This is a hodgepodge of stuff that shouldn't be in Java, but
@@ -43,10 +45,10 @@ import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
 public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
 
   @MJI
-  public int getUnsafe____Lsun_misc_Unsafe_2 (MJIEnv env, int clsRef) {
+  public int getUnsafe____Ljdk_internal_misc_Unsafe_2 (MJIEnv env, int clsRef) {
     int objRef = env.getStaticReferenceField("jdk.internal.misc.Unsafe", "theUnsafe");
     return objRef;
-  }
+  } 
 
   @MJI
   public long objectFieldOffset__Ljava_lang_reflect_Field_2__J (MJIEnv env, int unsafeRef, int fieldRef) {
@@ -60,7 +62,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   public int addressSize0____I (MJIEnv env, int objRef) {
       return 0;
   }
-
+  
   @MJI
   public boolean isBigEndian0____Z (MJIEnv env, int objRef) {
       return true;
