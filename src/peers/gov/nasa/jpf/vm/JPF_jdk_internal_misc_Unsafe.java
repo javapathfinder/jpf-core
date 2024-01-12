@@ -56,7 +56,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
 
   @MJI
   public void registerNatives____V(MJIEnv env, int clsObjRef) {
-    // No changes here as suggested by the maintainers
+    // No changes here as suggested
   }
   
   @MJI
