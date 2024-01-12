@@ -26,10 +26,9 @@ import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.NativePeer;
 import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
-import junit.Test;
+
 
 import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
-import static org.junit.Assert.assertTrue;
 
 /**
  * we don't want this class! This is a hodgepodge of stuff that shouldn't be in Java, but
@@ -45,22 +44,19 @@ import static org.junit.Assert.assertTrue;
 public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
 
   @MJI
-  public int getUnsafe____Ljdk_internal_misc_Unsafe_2 (MJIEnv env, int clsRef) {
+  public int getUnsafe____Ljdk_internal_misc_Unsafe_2(MJIEnv env, int clsRef) {
     int objRef = env.getStaticReferenceField("jdk.internal.misc.Unsafe", "theUnsafe");
-    return objRef;
-  } 
+    return objRef; 
+}
 
   @MJI
-  public long objectFieldOffset__Ljava_lang_reflect_Field_2__J (MJIEnv env, int unsafeRef, int fieldRef) {
+  public long objectFieldOffset__Ljava_lang_reflect_Field_2__J(MJIEnv env, int unsafeRef, int fieldRef) {
     return fieldOffset__Ljava_lang_reflect_Field_2__I(env, unsafeRef, fieldRef);
   }
 
   @MJI
-  public void registerNatives____V(MJIEnv env, int clsObjRef) {}
-
-  @MJI
-  public int addressSize0____I (MJIEnv env, int objRef) {
-      return 0;
+  public void registerNatives____V(MJIEnv env, int clsObjRef) {
+    // No changes here as suggested by the maintainers
   }
   
   @MJI
