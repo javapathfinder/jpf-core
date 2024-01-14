@@ -46,18 +46,21 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   @MJI
   public int getUnsafe____Ljdk_internal_misc_Unsafe_2(MJIEnv env, int clsRef) {
     int objRef = env.getStaticReferenceField("jdk.internal.misc.Unsafe", "theUnsafe");
-    return objRef; 
-}
+    return objRef;
+  }
 
   @MJI
-  public long objectFieldOffset__Ljava_lang_reflect_Field_2__J(MJIEnv env, int unsafeRef, int fieldRef) {
+  public long objectFieldOffset__Ljava_lang_reflect_Field_2__J (MJIEnv env, int unsafeRef, int fieldRef) {
     return fieldOffset__Ljava_lang_reflect_Field_2__I(env, unsafeRef, fieldRef);
   }
 
   @MJI
-  public void registerNatives____V(MJIEnv env, int clsObjRef) {
-    // No changes here as suggested
+  public int addressSize0____I(MJIEnv env, int objRef) {
+    return 0;
   }
+
+  @MJI
+  public void registerNatives____V(MJIEnv env, int clsObjRef) {}
   
   @MJI
   public boolean isBigEndian0____Z (MJIEnv env, int objRef) {
