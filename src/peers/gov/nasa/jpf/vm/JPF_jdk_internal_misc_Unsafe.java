@@ -27,7 +27,6 @@ import gov.nasa.jpf.vm.NativePeer;
 import gov.nasa.jpf.vm.SystemState;
 import gov.nasa.jpf.vm.ThreadInfo;
 
-
 import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
 
 /**
