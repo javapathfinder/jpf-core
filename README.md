@@ -14,6 +14,7 @@ If you are having problems installing and running JPF, please look at the [How
 to install
 JPF](https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF) guide.
 
+Note that we have transitioned to OpenJDK with the new version of JPF (for Java 11), so unlike branch `java-8`, the new default version for Java 11 no longer compiles using Oracle's JDK.
 
 We have documented on the wiki a lot of common problems during the install and
 build processes reported by users.  If you are facing any issue, please, make
