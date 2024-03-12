@@ -14,6 +14,7 @@ If you are having problems installing and running JPF, please look at the [How
 to install
 JPF](https://github.com/javapathfinder/jpf-core/wiki/How-to-install-JPF) guide.
 
+Note that the version of JPF for Java 8 was developed against Oracle's JDK, so using OpenJDK may result in a few features not working correctly.
 
 We have documented on the wiki a lot of common problems that might occur during the installation and
 build processes as reported by the users.  If you are facing any issue, please, make
