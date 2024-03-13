@@ -183,7 +183,9 @@ public class VarTracker extends ListenerAdapter {
           // how the array ref will be used (we would only need the attr for
           // subsequent xASTOREs)
           frame = ti.getModifiableTopFrame();
-          frame.addOperandAttr(varId);
+          if (frame.getOperandAttr() != null) {
+            frame.addOperandAttr(varId);
+          }
         }
       }
 
