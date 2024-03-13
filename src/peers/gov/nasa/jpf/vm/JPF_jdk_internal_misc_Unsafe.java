@@ -43,7 +43,7 @@ import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
 public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
 
   @MJI
-  public int getUnsafe____Lsun_misc_Unsafe_2 (MJIEnv env, int clsRef) {
+  public int getUnsafe____Ljdk_internal_misc_Unsafe_2(MJIEnv env, int clsRef) {
     int objRef = env.getStaticReferenceField("jdk.internal.misc.Unsafe", "theUnsafe");
     return objRef;
   }
@@ -54,13 +54,13 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   }
 
   @MJI
-  public void registerNatives____V(MJIEnv env, int clsObjRef) {}
-
-  @MJI
-  public int addressSize0____I (MJIEnv env, int objRef) {
-      return 0;
+  public int addressSize0____I(MJIEnv env, int objRef) {
+    return 0;
   }
 
+  @MJI
+  public void registerNatives____V(MJIEnv env, int clsObjRef) {}
+  
   @MJI
   public boolean isBigEndian0____Z (MJIEnv env, int objRef) {
       return true;
