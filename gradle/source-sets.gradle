@@ -37,7 +37,7 @@ sourceSets {
 }
 
 compilePeersJava.options.compilerArgs += [
-        '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED'
+        '--add-exports', 'java.base/jdk.internal.access=ALL-UNNAMED'
 ]
 
 compileClassesJava.options.compilerArgs += [
@@ -58,5 +58,5 @@ compileModulesJava.options.compilerArgs += [
 ]
 
 compileTestJava.options.compilerArgs += [
-        '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED'
+        '--add-exports', 'java.base/jdk.internal.access=ALL-UNNAMED'
 ]

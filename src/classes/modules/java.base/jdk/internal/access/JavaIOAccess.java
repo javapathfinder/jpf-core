@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package jdk.internal.misc;
+package jdk.internal.access;
 
 //import java.io.Console;
 import java.nio.charset.Charset;

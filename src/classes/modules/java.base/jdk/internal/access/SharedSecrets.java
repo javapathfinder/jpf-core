@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
-package jdk.internal.misc;
+package jdk.internal.access;
 
 import java.io.File;
 import java.io.FileDescriptor;

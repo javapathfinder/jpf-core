@@ -16,20 +16,19 @@
  * limitations under the License.
  */
 
-package jdk.internal.misc;
+package jdk.internal.access;
+
+import java.net.URLClassLoader;
+import jdk.internal.loader.URLClassPath;
 
 /**
- * same as the others - we need to model it in case somebody uses Java 5,
- * or an earlier Java 6 version on OS X
+ * this is a placeholder for a Java 6 class, which we only have here to
+ * support both Java 1.5 and 6 with the same set of env/ classes
+ *
+ * see sun.msic.SharedSecrets for details
+ *
+ * <2do> THIS IS GOING AWAY AS SOON AS WE OFFICIALLY SWITCH TO JAVA 6
  */
-public interface JavaAWTAccess {
-  
-  // don't know about these yet
-  public Object get();
-  public void put(Object k, Object v);
-  public void remove(Object k);
-  
-  public boolean isDisposed();
-  public boolean isMainAppContext();
-
+public interface JavaNetAccess {
+    URLClassPath getURLClassPath (URLClassLoader ucl);
 }
