@@ -165,6 +165,11 @@ public class JPF_java_lang_String extends NativePeer {
 
   @MJI
   public boolean equals__Ljava_lang_Object_2__Z (MJIEnv env, int objRef, int argRef) {
+
+    if (!env.isInstanceOf(argRef, "java.lang.String")) {
+      return false;
+    }
+
     if (argRef == MJIEnv.NULL) { 
       return false; 
     }
