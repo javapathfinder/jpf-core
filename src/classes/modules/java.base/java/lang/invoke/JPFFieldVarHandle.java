@@ -20,21 +20,20 @@ package java.lang.invoke;
 
 // We use this a model class in JPF to model the new VarHandle behavior for field replacing longterm the Unsafe implementation.
 // See: http://cr.openjdk.java.net/~psandoz/varhandles/VarHandle-0.1.md for more information on VarHandle.
-public class JPFFieldVarHandle extends VarHandle {
+public class JPFFieldVarHandle {
 
   int fieldRef;
   int classRef;
 
   JPFFieldVarHandle() {
-    super(null);
+
   }
 
   JPFFieldVarHandle(int fieldRef) {
-    super(null);
     this.fieldRef = fieldRef;
   }
 
-  MethodType accessModeTypeUncached(AccessMode accessMode) {
+  MethodType accessModeTypeUncached(VarHandle.AccessMode accessMode) {
     return null;
   }
 
