@@ -284,7 +284,7 @@ test {
     exclude "**/SplitInputStreamTest.class"
     exclude "**/JPF_*.class"
 
-    jvmArgs += ['--add-exports', 'java.base/jdk.internal.access=ALL-UNNAMED', '--add-opens', 'java.base/jdk.internal.access=ALL-UNNAMED', '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
+    jvmArgs += ['--add-exports', 'java.base/jdk.internal.access=ALL-UNNAMED', '--add-opens', 'java.base/jdk.internal.access=ALL-UNNAMED', '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
 
     testLogging {
         events "passed", "skipped", "failed"
