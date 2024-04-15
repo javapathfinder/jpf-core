@@ -17,6 +17,7 @@
  */
 package java.lang.reflect;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Proxy {
@@ -69,7 +70,7 @@ public class Proxy {
       return cachedProxy;
     }
 
-    byte[] proxyClassFile = ProxyGenerator.generateProxyClass(proxyName, interfaces, Modifier.PUBLIC | Modifier.FINAL);
+    byte[] proxyClassFile = ProxyGenerator.generateProxyClass(loader,proxyName, List.of(interfaces), Modifier.PUBLIC | Modifier.FINAL);
     Class<?> proxyClass = defineClass0(loader, proxyName, proxyClassFile, 0, proxyClassFile.length);
     return proxyClass;
   }
