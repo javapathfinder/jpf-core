@@ -106,7 +106,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   public boolean compareAndSetReference__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z(MJIEnv env, int unsafeRef, int oRef, long offset, int expectedRef, int xRef) {
     int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, oRef, offset);
     if (actual == expectedRef) {
-      putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, oRef, offset, xRef);
+      putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, oRef, offset, xRef);
       return true;
     }
     return false;
@@ -158,7 +158,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
                                                                                                              int expectRef, int updateRef) {
     int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, objRef, fieldOffset);
     if (actual == expectRef) {
-      putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, objRef, fieldOffset, updateRef);
+      putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, objRef, fieldOffset, updateRef);
       return true;
     }
     return false;
@@ -299,7 +299,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   }
 
   @MJI
-  public void putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V (MJIEnv env, int unsafeRef,
+  public void putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V (MJIEnv env, int unsafeRef,
                                                                             int objRef, long fieldOffset, int valRef) {
     ElementInfo ei = env.getModifiableElementInfo(objRef);
     
@@ -312,9 +312,9 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   }
   
   @MJI
-  public void putObjectVolatile__Ljava_lang_Object_2JLjava_lang_Object_2__V (MJIEnv env, int unsafeRef,
+  public void putReferenceVolatile__Ljava_lang_Object_2JLjava_lang_Object_2__V (MJIEnv env, int unsafeRef,
       int objRef, long fieldOffset, int valRef) {
-    putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V( env, unsafeRef, objRef, fieldOffset, valRef);
+    putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V( env, unsafeRef, objRef, fieldOffset, valRef);
   }
 
   @MJI
@@ -324,7 +324,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
                                                                                   int objRef,
                                                                                   long fieldOffset,
                                                                                   int valRef) {
-    putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, objRef, fieldOffset, valRef);
+    putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, objRef, fieldOffset, valRef);
   }
   
   @MJI
