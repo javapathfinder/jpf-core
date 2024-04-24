@@ -145,7 +145,9 @@ public class Unsafe {
 
   public final native boolean compareAndSetLong(Object o, long offset, long expected, long x);
 
-  public final native boolean compareAndSetObject(Object o, long offset, Object expected, Object x);
+  public final boolean compareAndSetObject(Object o, long offset, Object expected, Object x) {
+    return compareAndSetReference(o, offset, expected, x);
+  }
 
   // those do the usual CAS magic
   public native boolean compareAndSwapObject(Object oThis, long offset, Object expect,
@@ -194,7 +196,6 @@ public class Unsafe {
 
   public native void putObject(Object obj, long l, Object obj1);
   public native void putObjectVolatile(Object obj, long l, Object obj1);
-  
 
   @Deprecated
   public void putObject(Object obj, int offset, Object obj1) {
@@ -226,6 +227,12 @@ public class Unsafe {
   public byte getByte(Object obj, int offset) {
     return getByte(obj, (long) offset);
   }
+
+  public final Object getReferenceAcquire(Object o, long offset) {
+    return getObject(o,offset);
+  }
+
+  public final native boolean compareAndSetReference(Object o, long offset, Object expected, Object x);
 
   public native void putByte(Object obj, long l, byte byte0);
   public native void putByteVolatile(Object obj, long l, byte byte0);
