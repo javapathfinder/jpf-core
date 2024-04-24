@@ -19,13 +19,6 @@ package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.annotation.MJI;
-import gov.nasa.jpf.vm.ArrayFields;
-import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.FieldInfo;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.NativePeer;
-import gov.nasa.jpf.vm.SystemState;
-import gov.nasa.jpf.vm.ThreadInfo;
 
 import static gov.nasa.jpf.vm.JPF_java_lang_Class.FIELD_CLASSNAME;
 
@@ -107,10 +100,10 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   }
 
   /**
-   * NativePeer method for {@link jdk.internal.misc.Unsafe#compareAndSetObject(java.lang.Object, long, java.lang.Object, java.lang.Object)}
+   * NativePeer method for {@link jdk.internal.misc.Unsafe#compareAndSetReference(java.lang.Object, long, java.lang.Object, java.lang.Object)}
    */
   @MJI
-  public boolean compareAndSetObject__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z(MJIEnv env, int unsafeRef, int oRef, long offset, int expectedRef, int xRef) {
+  public boolean compareAndSetReference__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z(MJIEnv env, int unsafeRef, int oRef, long offset, int expectedRef, int xRef) {
     int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, oRef, offset);
     if (actual == expectedRef) {
       putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, oRef, offset, xRef);
@@ -303,7 +296,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   public int getObjectVolatile__Ljava_lang_Object_2J__Ljava_lang_Object_2 (MJIEnv env, int unsafeRef,
       int objRef, long fieldOffset) {
     return getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2( env, unsafeRef, objRef, fieldOffset);
-  }  
+  }
 
   @MJI
   public void putObject__Ljava_lang_Object_2JLjava_lang_Object_2__V (MJIEnv env, int unsafeRef,
