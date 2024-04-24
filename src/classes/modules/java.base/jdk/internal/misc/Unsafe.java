@@ -194,8 +194,33 @@ public class Unsafe {
     return getObject(obj, (long) offset);
   }
 
-  public native void putObject(Object obj, long l, Object obj1);
-  public native void putObjectVolatile(Object obj, long l, Object obj1);
+  public final void putObject(Object o, long offset, Object x) {
+    putReference(o, offset, x);
+  }
+
+  public final void putObjectOpaque(Object o, long offset, Object x) {
+    putReferenceOpaque(o, offset, x);
+  }
+
+  public final void putObjectRelease(Object o, long offset, Object x) {
+    putReferenceRelease(o, offset, x);
+  }
+  public final void putObjectVolatile(Object o, long offset, Object x) {
+    putReferenceVolatile(o, offset, x);
+  }
+
+  public native void putReference(Object o, long offset, Object x);
+
+
+  public final void putReferenceOpaque(Object o, long offset, Object x) {
+    putReferenceVolatile(o, offset, x);
+  }
+
+  public final void putReferenceRelease(Object o, long offset, Object x) {
+    putReferenceVolatile(o, offset, x);
+  }
+
+  public native void putReferenceVolatile(Object o, long offset, Object x);
 
   @Deprecated
   public void putObject(Object obj, int offset, Object obj1) {
@@ -329,10 +354,6 @@ public class Unsafe {
   public native int arrayBaseOffset(Class<?> clazz);
 
   public native int arrayIndexScale(Class<?> clazz);
-
-  public final void putObjectRelease(Object o, long offset, Object x) {
-    putObjectVolatile(o, offset, x);
-  }
 
   //--- java.nio finally breaks object boundaries  - hello, evil pointer arithmetic
   
