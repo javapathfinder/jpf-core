@@ -600,6 +600,10 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 
 	@Deprecated
 	native public void getBytes(int srcBegin, int srcEnd, byte dst[], int dstBegin);
+	public void getBytes(byte[] dst, int srcPos, int dstBegin, byte coder, int length){
+		getBytes(srcPos,(srcPos+length),dst,dstBegin);
+	}
+
 	native public byte[] getBytes(String charsetName)
 			throws UnsupportedEncodingException;
 
