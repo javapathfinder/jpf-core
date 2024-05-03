@@ -18,12 +18,6 @@
 package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.annotation.MJI;
-import gov.nasa.jpf.vm.CharArrayFields;
-import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.Fields;
-import gov.nasa.jpf.vm.Heap;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.NativePeer;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
@@ -33,7 +27,7 @@ import java.util.Locale;
  */
 public class JPF_java_lang_String extends NativePeer {
 
-  
+
   @MJI
   public int init___3CII__Ljava_lang_String_2 (MJIEnv env, int objRef, int valueRef, int offset, int count) {
     char[] value = env.getCharArrayObject(valueRef);
@@ -108,7 +102,7 @@ public class JPF_java_lang_String extends NativePeer {
     char[] dst = env.getCharArrayObject(dstRef);
     obj.getChars(0, obj.length(), dst, dstBegin);
   }
-  
+
   @SuppressWarnings("deprecation")
   @MJI
   public void getBytes__II_3BI__V (MJIEnv env, int objRef, int srcBegin, int srcEnd, int dstRef, int dstBegin) {
