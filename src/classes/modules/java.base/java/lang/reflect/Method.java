@@ -63,6 +63,18 @@ public final class Method extends AccessibleObject implements Member {
   @Override
   public native String toString();
 
+
+  String toShortSignature(){
+    StringBuilder sb = new StringBuilder();
+    sb.append(getName());
+    Class<?>[] ps = getParameterTypes();
+    for (int i=0; i<ps.length; i++){
+      Class<?> parameter = ps[i];
+      sb.append(parameter.getTypeName());
+    }
+    return sb.toString();
+  }
+
   // for Annotations - return the default value of the annotation member
   // represented by this method
   public native Object getDefaultValue();
