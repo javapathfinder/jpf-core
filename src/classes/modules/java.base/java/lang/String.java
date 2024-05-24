@@ -768,6 +768,24 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		return safeTrim(ba, bb.position(), cs.getClass().getClassLoader() == null);
 	}
 
+	public String repeat(int count){
+		if(count < 0){
+			throw new IllegalArgumentException("count is negative : " + count);
+		}else if(count == 0){
+			return "";
+		}else {
+			int length = value.length;
+			int newLength = length * count;
+			final byte[] newString = new byte[newLength];
+			int i = 0;
+			while (i<newLength){
+				newString[i] = value[(i%length)];
+				i++;
+			}
+			return new String(newString,coder);
+		}
+	}
+
 	private static byte[] safeTrim(byte[] ba, int len, boolean isTrusted) {
 		if (len == ba.length && (isTrusted || System.getSecurityManager() == null)) {
 			return ba;
