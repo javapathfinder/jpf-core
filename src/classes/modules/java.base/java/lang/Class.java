@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import jdk.internal.reflect.ConstantPool;
+import sun.invoke.util.Wrapper;
 import sun.reflect.annotation.AnnotationType;
 
 /**
@@ -57,14 +58,14 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
    // we init this on demand (from MJIEnv) since it's not used too often
   private static Annotation[] emptyAnnotations; // = new Annotation[0];
-  
+
   private String name;
 
   // set by VM
   private transient Module module;
 
   private ClassLoader classLoader;
-  
+
   /**
    * search global id of the corresponding ClassInfo, which factors in the classloader
    */
@@ -95,7 +96,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public native Class<?> getComponentType ();
 
   public native Field[] getFields() throws SecurityException;
-  
+
   public native Field getDeclaredField (String fieldName) throws NoSuchFieldException,
                                                           SecurityException;
 
@@ -110,7 +111,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public native Method[] getDeclaredMethods () throws SecurityException;
 
   public native Method[] getMethods () throws SecurityException;
-    
+
   public native Constructor<?>[] getDeclaredConstructors() throws SecurityException;
 
   public native Constructor<?>[] getConstructors() throws SecurityException;
@@ -182,7 +183,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   T[] getEnumConstantsShared() {
     return getEnumConstants();
   }
-  
+
   // lazy initialized map for field name -> Enum constants
   // <2do> we should move this to the native side, since Enum constants don't change
   private transient Map<String, T> enumConstantDirectory = null;
@@ -229,14 +230,31 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public String getSimpleName () {
     int idx; // <2do> not really - inner classes?
     Class<?> enclosingClass = getEnclosingClass();
-    
+
     if(enclosingClass!=null){
       idx = enclosingClass.getName().length();
     } else{
       idx = name.lastIndexOf('.');
     }
-    
+
     return name.substring(idx+1);
+  }
+
+  public String descriptorString(){
+    if (isPrimitive()){
+      return Wrapper.forPrimitiveType(this).basicTypeString();
+    }
+
+    if (isArray()){
+      return "[" + getComponentType().descriptorString();
+    }else {
+      String name = getName().replace('.', '/');
+
+      StringBuilder s = new StringBuilder(name.length()+2);
+      s.append('L').append(name).append(';');
+
+      return s.toString();
+    }
   }
 
   static native Class<?> getPrimitiveClass (String clsName);
