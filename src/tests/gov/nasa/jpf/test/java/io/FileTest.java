@@ -23,6 +23,8 @@ import gov.nasa.jpf.util.test.TestJPF;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -102,5 +104,19 @@ public class FileTest extends TestJPF {
       assert file.equals(new Object()) == false;
     }
   }
-  
+
+  @Test
+  public void testToURI(){
+    File file = new File("testfile.txt");
+    URI expectedURI = null;
+    try {
+      expectedURI = new URI("file:testfile.txt");
+    } catch (URISyntaxException e) {
+      fail("URISyntaxException thrown while constructing expected URI");
+    }
+
+    URI actualURI = file.toURI();
+    assertNotNull("URI should not be null",actualURI);
+    assertEquals("The URIs should be equal",expectedURI,actualURI);
+  }  
 }
