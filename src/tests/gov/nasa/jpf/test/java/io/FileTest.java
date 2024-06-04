@@ -116,7 +116,6 @@ public class FileTest extends TestJPF {
     }
 
     URI actualURI = file.toURI();
-    assertNotNull("URI should not be null",actualURI);
     assertEquals("The URIs should be equal",expectedURI,actualURI);
   }  
 }
