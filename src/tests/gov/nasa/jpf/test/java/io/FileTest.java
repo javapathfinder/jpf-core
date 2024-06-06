@@ -110,8 +110,8 @@ public class FileTest extends TestJPF {
     File file = new File("testfile.txt");
     URI expectedURI = null;
     try {
-      expectedURI = new URI("file:testfile.txt");
-    } catch (URISyntaxException e) {
+      expectedURI = new File(file.getAbsolutePath()).toURI();
+    } catch (Exception e) {
       fail("URISyntaxException thrown while constructing expected URI");
     }
 
