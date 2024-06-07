@@ -107,15 +107,18 @@ public class FileTest extends TestJPF {
 
   @Test
   public void testToURI(){
-    File file = new File("testfile.txt");
-    URI expectedURI = null;
-    try {
-      expectedURI = new File(file.getAbsolutePath()).toURI();
-    } catch (Exception e) {
-      fail("URISyntaxException thrown while constructing expected URI");
-    }
+    if(verifyNoPropertyViolation()){
+      File file = new File("testfile.txt");
+      URI expectedURI = null;
+      try {
+        expectedURI = new URI("file:" + file.getAbsolutePath());
+      } catch (URISyntaxException e) {
+        fail("URISyntaxException thrown while constructing expected URI");
+      }
 
-    URI actualURI = file.toURI();
-    assertEquals("The URIs should be equal",expectedURI,actualURI);
+      URI actualURI = file.toURI();
+      System.out.println(actualURI);
+      assertEquals("The URIs should be equal",expectedURI,actualURI);
+    }
   }  
 }

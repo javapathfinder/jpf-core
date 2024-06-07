@@ -63,6 +63,7 @@ public class SharedSecrets {
   private static JavaObjectInputStreamAccess javaObjectInputStreamAccess;
   private static JavaObjectInputFilterAccess javaObjectInputFilterAccess;
   private static JavaObjectInputStreamReadString javaObjectInputStreamReadString;
+  private static JavaNetUriAccess javaNetUriAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -206,5 +207,13 @@ public class SharedSecrets {
 
   public static void setJavaObjectInputStreamReadString(JavaObjectInputStreamReadString access) {
     javaObjectInputStreamReadString = access;
+  }
+  
+  public static void setJavaNetUriAccess(JavaNetUriAccess jnua) {
+    javaNetUriAccess = jnua;
+  }
+
+  public static JavaNetUriAccess getJavaNetUriAccess() {
+    return javaNetUriAccess;
   }
 }
