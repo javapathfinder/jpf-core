@@ -88,6 +88,7 @@ tasks.register('compileModules', JavaCompile) {
     dependsOn compileTestJava
     source = fileTree(dir: 'src/classes/modules')
     classpath = files('build/annotations', 'build/classes', 'build/main')
+    options.encoding = 'UTF-8'
     options.compilerArgs = [
             '--module-source-path', file('src/classes/modules'),
             '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',

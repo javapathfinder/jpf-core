@@ -48,9 +48,7 @@ public class BufferTest extends TestJPF {
 
   @Test
   public void testCharBufferConstructorJapanese(){
-//    if(!verifyNoPropertyViolation()){
-//      return;
-//    }
+    if(verifyNoPropertyViolation()){
     String utf8String = "Hello, 世界";
     byte[] utf8Bytes = utf8String.getBytes(StandardCharsets.UTF_8);
 
@@ -62,11 +60,12 @@ public class BufferTest extends TestJPF {
 
     assertTrue(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedUtf8FromUtf8),utf8FromUtf8.equals(utf8Bytes));
     assertFalse(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedLatin1FromUtf8),latin1FromUtf8.equals(utf8Bytes));
+    }
   }
 
   @Test
   public void testCharBufferConstructorSwedishEncodingWithLATIN1() {
-//    if (verifyNoPropertyViolation()) {
+    if (verifyNoPropertyViolation()) {
       String latin1String = "Hello, Åland";
 
       byte[] latin1BytesFromLatin1String = latin1String.getBytes(StandardCharsets.ISO_8859_1);
@@ -80,12 +79,12 @@ public class BufferTest extends TestJPF {
       assertTrue(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromLatin1),utf8FromLatin1.equals(latin1BytesFromLatin1String));
       assertFalse(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromLatin1),latin1FromLatin1.equals(latin1BytesFromLatin1String));
 
-//    }
+    }
   }
 
   @Test
   public void testCharBufferConstructorSwedishEncodingWithUTF(){
-//    if(verifyNoPropertyViolation()){
+    if(verifyNoPropertyViolation()){
       String latin1String = "Hello, Åland";
 
       byte[] utf8BytesFromLatin1String = latin1String.getBytes(StandardCharsets.UTF_8);
@@ -98,7 +97,7 @@ public class BufferTest extends TestJPF {
 
       assertTrue(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromUtf8),utf8FromUtf8.equals(utf8BytesFromLatin1String));
       assertFalse(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromUtf8),latin1FromUtf8.equals(utf8BytesFromLatin1String));
-//    }
+    }
   }
 
   private static String decodeWithScanner(byte[] bytes, Charset charset) {
