@@ -21,8 +21,8 @@ import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Random;
 import java.util.Scanner;
 
 public class BufferTest extends TestJPF {
@@ -47,13 +47,67 @@ public class BufferTest extends TestJPF {
   }
 
   @Test
-  public void testCharBufferConstructor() {
-    if(verifyNoPropertyViolation()) {
-      Random random = new Random();
-      byte[] bytes = new byte[8];
-      random.nextBytes(bytes);
-      new Scanner(new String(bytes));
+  public void testCharBufferConstructorJapanese(){
+//    if(!verifyNoPropertyViolation()){
+//      return;
+//    }
+    String utf8String = "Hello, 世界";
+    byte[] utf8Bytes = utf8String.getBytes(StandardCharsets.UTF_8);
+
+    String decodedUtf8FromUtf8 = decodeWithScanner(utf8Bytes, StandardCharsets.UTF_8);
+    String decodedLatin1FromUtf8 = decodeWithScanner(utf8Bytes, StandardCharsets.ISO_8859_1);
+
+    byte[] utf8FromUtf8 = decodedUtf8FromUtf8.getBytes(StandardCharsets.UTF_8);
+    byte[] latin1FromUtf8 = decodedLatin1FromUtf8.getBytes(StandardCharsets.ISO_8859_1);
+
+    assertTrue(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedUtf8FromUtf8),utf8FromUtf8.equals(utf8Bytes));
+    assertFalse(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedLatin1FromUtf8),latin1FromUtf8.equals(utf8Bytes));
+  }
+
+  @Test
+  public void testCharBufferConstructorSwedishEncodingWithLATIN1() {
+//    if (verifyNoPropertyViolation()) {
+      String latin1String = "Hello, Åland";
+
+      byte[] latin1BytesFromLatin1String = latin1String.getBytes(StandardCharsets.ISO_8859_1);
+
+      String decodedUtf8FromLatin1 = decodeWithScanner(latin1BytesFromLatin1String, StandardCharsets.UTF_8);
+      String decodedLatin1FromLatin1 = decodeWithScanner(latin1BytesFromLatin1String, StandardCharsets.ISO_8859_1);
+
+      byte[] utf8FromLatin1 = decodedUtf8FromLatin1.getBytes(StandardCharsets.UTF_8);
+      byte[] latin1FromLatin1 = decodedLatin1FromLatin1.getBytes(StandardCharsets.ISO_8859_1);
+
+      assertTrue(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromLatin1),utf8FromLatin1.equals(latin1BytesFromLatin1String));
+      assertFalse(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromLatin1),latin1FromLatin1.equals(latin1BytesFromLatin1String));
+
+//    }
+  }
+
+  @Test
+  public void testCharBufferConstructorSwedishEncodingWithUTF(){
+//    if(verifyNoPropertyViolation()){
+      String latin1String = "Hello, Åland";
+
+      byte[] utf8BytesFromLatin1String = latin1String.getBytes(StandardCharsets.UTF_8);
+
+      String decodedUtf8FromUtf8 = decodeWithScanner(utf8BytesFromLatin1String, StandardCharsets.UTF_8);
+      String decodedLatin1FromUtf8 = decodeWithScanner(utf8BytesFromLatin1String, StandardCharsets.ISO_8859_1);
+
+      byte[] utf8FromUtf8 = decodedUtf8FromUtf8.getBytes(StandardCharsets.UTF_8);
+      byte[] latin1FromUtf8 = decodedLatin1FromUtf8.getBytes(StandardCharsets.UTF_8);
+
+      assertTrue(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromUtf8),utf8FromUtf8.equals(utf8BytesFromLatin1String));
+      assertFalse(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromUtf8),latin1FromUtf8.equals(utf8BytesFromLatin1String));
+//    }
+  }
+
+  private static String decodeWithScanner(byte[] bytes, Charset charset) {
+    Scanner scanner = new Scanner(new String(bytes, charset));
+    StringBuilder result = new StringBuilder();
+    while (scanner.hasNextLine()) {
+      result.append(scanner.nextLine());
     }
+    return result.toString();
   }
 
 }
