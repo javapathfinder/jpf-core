@@ -115,4 +115,10 @@ public class CharBuffer extends Buffer {
     return this;
   }
 
+  @Override
+  public CharBuffer position(int newPosition){
+    super.position(newPosition);
+    return this;
+  }
+
 }

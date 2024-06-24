@@ -308,9 +308,18 @@ public class ByteBuffer extends Buffer {
     int thatRem = that.limit() - thatPos;
     if (thisRem < 0 || thisRem != thatRem)
       return false;
-    return BufferMismatch.mismatch(this, thisPos,
+    return mismatch(this, thisPos,
         that, thatPos,
         thisRem) < 0;
+  }
+
+  // This method is written to replace BufferMismatch.mismatch(ByteBuffer a, int aOff, ByteBuffer b, int bOff, int length) in equals(Object ob) in this class
+  private int mismatch(ByteBuffer a, int aOff, ByteBuffer b, int bOff, int length){
+    for (int i = 0; i < length; i++) {
+      if (a.get(aOff + i) != b.get(bOff + i))
+        return i;
+    }
+    return -1;
   }
 
   Object base() {
