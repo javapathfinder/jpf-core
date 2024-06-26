@@ -519,4 +519,17 @@ public class URLClassLoaderTest extends LoadUtility {
     }
     movePkgBack();
   }
+
+  @Test
+  public void getPackageInfo() throws MalformedURLException {
+    movePkgOut();
+     if(verifyNoPropertyViolation())  {
+       URL[] urls = { new URL(dirUrl) };
+       TestClassLoader cl = new TestClassLoader(urls);
+         assertNotNull(cl.getDefinedPackage("java.lang"));
+         assertNotNull(cl.getDefinedPackage("java.lang").getName());
+         assertNotNull(cl.getDefinedPackage("java.lang").toString());
+    }
+    movePkgBack();
+  }
 }
