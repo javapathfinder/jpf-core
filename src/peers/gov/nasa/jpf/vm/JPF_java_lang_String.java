@@ -168,11 +168,12 @@ public class JPF_java_lang_String extends NativePeer {
     if (argRef == MJIEnv.NULL) { 
       return false; 
     }
-
+    if (!env.isInstanceOf(argRef, "java.lang.String")) {
+      return false;  // The object is not a String, so return false
+    }
     String s1 = env.getStringObject(objRef);
     String s2 = env.getStringObject(argRef);
-
-    return s1.compareTo(s2)==0;
+    return s1.equals(s2);
   }
 
   @MJI
