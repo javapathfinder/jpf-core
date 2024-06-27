@@ -527,7 +527,7 @@ public class URLClassLoaderTest extends LoadUtility {
        URL[] urls = { new URL(dirUrl) };
        TestClassLoader cl = new TestClassLoader(urls);
          assertNotNull(cl.getDefinedPackage("java.lang"));
-         assertNotNull(cl.getDefinedPackage("java.lang").getName());
+         assertEquals(cl.getDefinedPackage("java.lang").getName(),"java.lang");
          assertNotNull(cl.getDefinedPackage("java.lang").toString());
     }
     movePkgBack();
