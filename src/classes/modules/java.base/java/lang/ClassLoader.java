@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package java.lang;
@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -41,6 +42,10 @@ public abstract class ClassLoader {
   private int nativeId;
 
   //--- internals
+
+  // This variable is to provide support for definePackage(String,Module) method
+  private ConcurrentHashMap<String, NamedPackage> packages
+    = new ConcurrentHashMap<>();
 
   protected ClassLoader() {
     // constructed on the native side
@@ -293,4 +298,44 @@ public abstract class ClassLoader {
   public native final Package getDefinedPackage(final String name);
 
   public native final Package[] getDefinedPackages();
+
+  /**
+   * some extra implementation to support for Class.getPackage() method
+   */
+  Package definePackage(String name, Module m) {
+    if (name.isEmpty() && m.isNamed()) {
+      throw new InternalError("unnamed package in  " + m);
+    }
+
+    if(packages == null)
+      packages = new ConcurrentHashMap<>();
+
+    // check if Package object is already defined
+    NamedPackage pkg = packages.get(name);
+    if (pkg instanceof Package)
+      return (Package)pkg;
+
+    return (Package)packages.compute(name, (n, p) -> toPackage(n, p, m));
+  }
+
+  private Package toPackage(String name, NamedPackage p, Module m) {
+    // define Package object if the named package is not yet defined
+    if (p == null)
+      return NamedPackage.toPackage(name, m);
+
+    // otherwise, replace the NamedPackage object with Package object
+    if (p instanceof Package)
+      return (Package)p;
+
+    return NamedPackage.toPackage(p.packageName(), p.module());
+  }
+  
+  Package definePackage(Class<?> c) {
+    if (c.isPrimitive() || c.isArray()) {
+      return null;
+    }
+
+    return definePackage(c.getPackageName(), c.getModule());
+  }
 }
+
