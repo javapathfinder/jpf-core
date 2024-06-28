@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package java.lang;
@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Stream;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -40,8 +39,11 @@ public abstract class ClassLoader {
   private int nativeId;
 
   //--- internals
+
+  // This variable is to provide support for definePackage(String,Module) method
   private ConcurrentHashMap<String, NamedPackage> packages
     = new ConcurrentHashMap<>();
+
   protected ClassLoader() {
     // constructed on the native side
   }
@@ -269,11 +271,39 @@ public abstract class ClassLoader {
     throw new UnsupportedOperationException();
   }
 
+  /**
+   * Written as a replacement for the auxiliary class {@link CompoundEnumeration}
+   */
+  final class EnumerationAdapter<E> implements Enumeration<E> {
+    private final Iterator<E> iterator;
+
+    public EnumerationAdapter(Collection<E> collection) {
+      iterator = collection.iterator();
+    }
+
+    @Override
+    public boolean hasMoreElements() {
+      return iterator.hasNext();
+    }
+
+    @Override
+    public E nextElement() {
+      return iterator.next();
+    }
+  }
+
+  public native final Package getDefinedPackage(final String name);
+
+  public native final Package[] getDefinedPackages();
+
+  /**
+   * some extra implementation to support for Class.getPackage() method
+   */
   Package definePackage(String name, Module m) {
     if (name.isEmpty() && m.isNamed()) {
       throw new InternalError("unnamed package in  " + m);
     }
-    
+
     if(packages == null)
       packages = new ConcurrentHashMap<>();
 
@@ -296,29 +326,7 @@ public abstract class ClassLoader {
 
     return NamedPackage.toPackage(p.packageName(), p.module());
   }
-
-  /**
-   * Written as a replacement for the auxiliary class {@link CompoundEnumeration}
-   */
-  final class EnumerationAdapter<E> implements Enumeration<E> {
-    private final Iterator<E> iterator;
-
-    public EnumerationAdapter(Collection<E> collection) {
-      iterator = collection.iterator();
-    }
-
-    @Override
-    public boolean hasMoreElements() {
-      return iterator.hasNext();
-    }
-
-    @Override
-    public E nextElement() {
-      return iterator.next();
-    }
-  }
   
-
   Package definePackage(Class<?> c) {
     if (c.isPrimitive() || c.isArray()) {
       return null;
@@ -326,36 +334,5 @@ public abstract class ClassLoader {
 
     return definePackage(c.getPackageName(), c.getModule());
   }
-
-  //public native final Package getDefinedPackage(final String name);
-  
-  public final Package getDefinedPackage(String name) {
-    System.out.println(name);
-    Objects.requireNonNull(name, "name cannot be null");
-
-    NamedPackage p = packages.get(name);
-    System.out.println(p.packageName());
-    if (p == null)
-      return null;
-
-    return definePackage(name, p.module());
-  }
-  public final Module getModule(String name){
-  
-    NamedPackage p = packages.get(name);
-    return p.module();
-  
-  }; 
-  //public native final Package[] getDefinedPackages();
-  
-  public final Package[] getDefinedPackages() {
-    return packages().toArray(Package[]::new);
-  }
-
-  Stream<Package> packages() {
-    return packages.values().stream()
-      .map(p -> definePackage(p.packageName(), p.module()));
-  }
-  
 }
 
