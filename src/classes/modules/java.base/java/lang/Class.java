@@ -32,6 +32,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import jdk.internal.loader.BootLoader;
 import jdk.internal.reflect.ConstantPool;
 import sun.reflect.annotation.AnnotationType;
 
@@ -144,7 +145,8 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
     return getClassLoader().getResource(resolvedName);
   }
-
+  
+  /*
   public Package getPackage() {
     // very very crude version for now, only supports the package name
     String pkgName = null;
@@ -164,6 +166,19 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
     }
 
   }
+  */
+
+  public Package getPackage() {
+    // very very crude version for now, only supports the package name
+    if (isPrimitive() || isArray()) {
+      return null;
+    }
+    ClassLoader cl = getClassLoader0();
+    return cl != null ? cl.definePackage(this)
+      : BootLoader.definePackage(this);
+  }
+
+  ClassLoader getClassLoader0() { return classLoader; }
 
   public String getPackageName() {
     int idx = name.lastIndexOf('.');

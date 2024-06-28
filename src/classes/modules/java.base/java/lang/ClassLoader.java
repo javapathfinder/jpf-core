@@ -23,10 +23,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.security.ProtectionDomain;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -41,7 +40,8 @@ public abstract class ClassLoader {
   private int nativeId;
 
   //--- internals
-
+  private ConcurrentHashMap<String, NamedPackage> packages
+    = new ConcurrentHashMap<>();
   protected ClassLoader() {
     // constructed on the native side
   }
@@ -269,6 +269,34 @@ public abstract class ClassLoader {
     throw new UnsupportedOperationException();
   }
 
+  Package definePackage(String name, Module m) {
+    if (name.isEmpty() && m.isNamed()) {
+      throw new InternalError("unnamed package in  " + m);
+    }
+    
+    if(packages == null)
+      packages = new ConcurrentHashMap<>();
+
+    // check if Package object is already defined
+    NamedPackage pkg = packages.get(name);
+    if (pkg instanceof Package)
+      return (Package)pkg;
+
+    return (Package)packages.compute(name, (n, p) -> toPackage(n, p, m));
+  }
+
+  private Package toPackage(String name, NamedPackage p, Module m) {
+    // define Package object if the named package is not yet defined
+    if (p == null)
+      return NamedPackage.toPackage(name, m);
+
+    // otherwise, replace the NamedPackage object with Package object
+    if (p instanceof Package)
+      return (Package)p;
+
+    return NamedPackage.toPackage(p.packageName(), p.module());
+  }
+
   /**
    * Written as a replacement for the auxiliary class {@link CompoundEnumeration}
    */
@@ -289,8 +317,45 @@ public abstract class ClassLoader {
       return iterator.next();
     }
   }
+  
 
-  public native final Package getDefinedPackage(final String name);
+  Package definePackage(Class<?> c) {
+    if (c.isPrimitive() || c.isArray()) {
+      return null;
+    }
 
-  public native final Package[] getDefinedPackages();
+    return definePackage(c.getPackageName(), c.getModule());
+  }
+
+  //public native final Package getDefinedPackage(final String name);
+  
+  public final Package getDefinedPackage(String name) {
+    System.out.println(name);
+    Objects.requireNonNull(name, "name cannot be null");
+
+    NamedPackage p = packages.get(name);
+    System.out.println(p.packageName());
+    if (p == null)
+      return null;
+
+    return definePackage(name, p.module());
+  }
+  public final Module getModule(String name){
+  
+    NamedPackage p = packages.get(name);
+    return p.module();
+  
+  }; 
+  //public native final Package[] getDefinedPackages();
+  
+  public final Package[] getDefinedPackages() {
+    return packages().toArray(Package[]::new);
+  }
+
+  Stream<Package> packages() {
+    return packages.values().stream()
+      .map(p -> definePackage(p.packageName(), p.module()));
+  }
+  
 }
+

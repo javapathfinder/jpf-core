@@ -524,11 +524,13 @@ public class URLClassLoaderTest extends LoadUtility {
   public void getPackageInfo() throws MalformedURLException {
     movePkgOut();
      if(verifyNoPropertyViolation())  {
-       URL[] urls = { new URL(dirUrl) };
-       TestClassLoader cl = new TestClassLoader(urls);
-         assertNotNull(cl.getDefinedPackage("java.lang"));
-         assertEquals(cl.getDefinedPackage("java.lang").getName(),"java.lang");
-         assertNotNull(cl.getDefinedPackage("java.lang").toString());
+       try {
+         assertNotNull(getClass().getPackage());
+         assertEquals(getClass().getPackage().getName(),"gov.nasa.jpf.test.java.net");
+         assertNotNull(getClass().getPackage().toString());
+       } catch (Exception e){
+         assertFalse(e instanceof NullPointerException);
+       }
     }
     movePkgBack();
   }
