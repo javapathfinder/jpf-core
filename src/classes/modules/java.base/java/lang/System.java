@@ -17,17 +17,19 @@
  */
 package java.lang;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.nio.channels.Channel;
-import java.util.Map;
-import java.util.Properties;
 import jdk.internal.access.JavaLangAccess;
 import jdk.internal.access.SharedSecrets;
 import jdk.internal.reflect.ConstantPool;
 import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
+
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.nio.channels.Channel;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 
 public class System {
@@ -228,5 +230,68 @@ public class System {
     // just a placeholder (Unix flavor)
     return "lib" + libName + ".so";
   }
+  public static Logger getLogger (String name){
+    return new Logger() {
+      @Override
+      public String getName() {
+        return null;
+      }
+
+      @Override
+      public boolean isLoggable(Level level) {
+        return false;
+      }
+
+      @Override
+      public void log(Level level, ResourceBundle bundle, String msg, Throwable thrown) {
+
+      }
+
+      @Override
+      public void log(Level level, ResourceBundle bundle, String format, Object... params) {
+
+      }
+    };
+  }
+
+  public interface Logger {
+
+    public String getName();
+
+    public enum Level {
+
+    }
+
+    public boolean isLoggable(Level level);
+
+    public default void log(Level level, String msg) {
+
+    }
+
+    public default void log(Level level, Supplier<String> msgSupplier) {
+
+    }
+
+    public default void log(Level level, Object obj) {
+
+    }
+
+    public default void log(Level level, String msg, Throwable thrown) {
+
+    }
+
+    public default void log(Level level, Supplier<String> msgSupplier, Throwable thrown) {
+
+    }
+
+    public default void log(Level level, String format, Object... params) {
+
+    }
+
+    public void log(Level level, ResourceBundle bundle, String msg, Throwable thrown);
+
+    public void log(Level level, ResourceBundle bundle, String format, Object... params);
+  }
+
 
 }
