@@ -143,6 +143,17 @@ public class Unsafe {
 
   public final native boolean compareAndSetInt(Object o, long offset, int expected, int x);
 
+  public final int getAndBitwiseAndInt(Object object, long offset, int mask){
+    int current;
+    do {
+      current = getIntVolatile(object,offset);
+    } while (!weakCompareAndSetInt(object, offset, current, current & mask));
+    return current;
+  }
+
+  private boolean weakCompareAndSetInt(Object object, long offset, int expected, int x) {
+    return compareAndSetInt(object, offset, expected, x);
+  }
   public final native boolean compareAndSetLong(Object o, long offset, long expected, long x);
 
   public final boolean compareAndSetObject(Object o, long offset, Object expected, Object x) {
@@ -174,6 +185,9 @@ public class Unsafe {
 
   public native void putInt(Object obj, long l, int i);
   public native void putIntVolatile(Object obj, long l, int i);
+  public final void putIntOpaque(Object o, long offset, int x) {
+    putIntVolatile(o, offset, x);
+  }
 
   @Deprecated
   public void putInt(Object obj, int offset, int i) {
@@ -239,6 +253,9 @@ public class Unsafe {
 
   public native void putBoolean(Object obj, long l, boolean flag);
   public native void putBooleanVolatile(Object obj, long l, boolean flag);
+  public final void putBooleanOpaque(Object o, long offset, boolean x) {
+    putBooleanVolatile(o,offset,x);
+  }
 
   @Deprecated
   public void putBoolean(Object obj, int offset, boolean flag) {
@@ -261,6 +278,9 @@ public class Unsafe {
 
   public native void putByte(Object obj, long l, byte byte0);
   public native void putByteVolatile(Object obj, long l, byte byte0);
+  public final void putByteOpaque(Object o, long offset, byte x) {
+    putByteVolatile(o, offset, x);
+  }
 
   @Deprecated
   public void putByte(Object obj, int offset, byte byte0) {
@@ -277,6 +297,9 @@ public class Unsafe {
 
   public native void putShort(Object obj, long l, short word0);
   public native void putShortVolatile(Object obj, long l, short word0);
+  public final void putShortOpaque(Object o, long offset, short x) {
+    putShortVolatile(o, offset, x);
+  }
 
   @Deprecated
   public void putShort(Object obj, int offset, short word0) {
@@ -293,6 +316,9 @@ public class Unsafe {
 
   public native void putChar(Object obj, long l, char c);
   public native void putCharVolatile(Object obj, long l, char c);
+  public final void putCharOpaque(Object o, long offset, char x) {
+    putCharVolatile(o, offset, x);
+  }
 
   @Deprecated
   public void putChar(Object obj, int offset, char c) {
@@ -319,6 +345,9 @@ public class Unsafe {
 
   public native float getFloat(Object obj, long l);
   public native float getFloatVolatile(Object obj, long l);
+  public final void putLongOpaque(Object o, long offset, long x) {
+    putLongVolatile(o, offset, x);
+  }
 
   @Deprecated
   public float getFloat(Object obj, int offset) {
@@ -327,6 +356,9 @@ public class Unsafe {
 
   public native void putFloat(Object obj, long l, float f);
   public native void putFloatVolatile(Object obj, long l, float f);
+  public final void putFloatOpaque(Object o, long offset, float x) {
+    putFloatVolatile(o, offset, x);
+  }
 
   @Deprecated
   public void putFloat(Object obj, int offset, float f) {
@@ -343,6 +375,9 @@ public class Unsafe {
 
   public native void putDouble(Object obj, long l, double d);
   public native void putDoubleVolatile(Object obj, long l, double d);
+  public final void putDoubleOpaque(Object o, long offset, double x) {
+    putDoubleVolatile(o, offset, x);
+  }
 
   @Deprecated
   public void putDouble(Object obj, int offset, double d) {
