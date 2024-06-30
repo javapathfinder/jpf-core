@@ -259,7 +259,19 @@ public class System {
     public String getName();
 
     public enum Level {
+      ALL(Integer.MIN_VALUE),
+      TRACE(400),
+      DEBUG(500),
+      INFO(800),
+      WARNING(900),
+      ERROR(1000),
+      OFF(Integer.MAX_VALUE);
 
+      private final int severity;
+
+      private Level(int severity) {
+        this.severity = severity;
+      }
     }
 
     public boolean isLoggable(Level level);
