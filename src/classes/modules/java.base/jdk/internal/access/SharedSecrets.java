@@ -63,6 +63,8 @@ public class SharedSecrets {
   private static JavaObjectInputStreamAccess javaObjectInputStreamAccess;
   private static JavaObjectInputFilterAccess javaObjectInputFilterAccess;
   private static JavaObjectInputStreamReadString javaObjectInputStreamReadString;
+  private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
+  private static JavaLangReflectAccess javaLangReflectAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -206,5 +208,17 @@ public class SharedSecrets {
 
   public static void setJavaObjectInputStreamReadString(JavaObjectInputStreamReadString access) {
     javaObjectInputStreamReadString = access;
+  }
+
+  public static void setJavaSecurityPropertiesAccess(JavaSecurityPropertiesAccess j) {
+    javaSecurityPropertiesAccess = j;
+  }
+
+  public static void setJavaLangReflectAccess(JavaLangReflectAccess j) {
+    javaLangReflectAccess = j;
+  }
+
+  public static JavaLangReflectAccess getJavaLangReflectAccess() {
+    return javaLangReflectAccess;
   }
 }
