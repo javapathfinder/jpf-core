@@ -17,24 +17,18 @@
  */
 package java.lang;
 
+import jdk.internal.reflect.ConstantPool;
+import sun.invoke.util.Wrapper;
+import sun.reflect.annotation.AnnotationType;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.GenericDeclaration;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.*;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-
-import jdk.internal.reflect.ConstantPool;
-import sun.invoke.util.Wrapper;
-import sun.reflect.annotation.AnnotationType;
 
 /**
  * MJI model class for java.lang.Class library abstraction
@@ -410,5 +404,9 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   public Module getModule() {
     return module;
+  }
+
+  public boolean isRecord() {
+    return false;
   }
 }

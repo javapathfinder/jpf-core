@@ -64,4 +64,12 @@ public abstract class Reference<T> {
   public T get () {
     return ref;
   }
+
+  public boolean refersTo(Object o){
+    if (o == null) {
+      return ref == null;
+    } else {
+      return o == ref;
+    }
+  }
 }
