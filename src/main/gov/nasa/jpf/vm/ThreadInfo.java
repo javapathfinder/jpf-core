@@ -2881,14 +2881,10 @@ public class ThreadInfo extends InfoObject
 
       // there was no overridden uncaughtHandler, or we already executed it
       if ("java.lang.ThreadDeath".equals(exceptionName)) { // gracefully shut down
-        unwindToFirstFrame();
         pendingException = null;
-        return top.getPC().getNext(); // the final DIRECTCALLRETURN
-
-      } else { // we have a NoUncaughtPropertyViolation
-        //NoUncaughtExceptionsProperty.setExceptionInfo(pendingException);
-        throw new UncaughtException(this, exceptionObjRef);
       }
+      unwindToFirstFrame();
+      return top.getPC().getNext(); // the final DIRECTCALLRETURN
 
     } else { // we found a matching handler
       
