@@ -276,6 +276,12 @@ public class Unsafe {
 
   public final native boolean compareAndSetReference(Object o, long offset, Object expected, Object x);
 
+  public final boolean weakCompareAndSetReference(Object o, long offset,
+                                                  Object expected,
+                                                  Object x) {
+    return compareAndSetReference(o, offset, expected, x);
+  }
+
   public native void putByte(Object obj, long l, byte byte0);
   public native void putByteVolatile(Object obj, long l, byte byte0);
   public final void putByteOpaque(Object o, long offset, byte x) {
