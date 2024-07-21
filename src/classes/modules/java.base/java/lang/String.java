@@ -595,7 +595,17 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	native public int codePointBefore(int index);
 	native public int codePointCount(int beginIndex, int endIndex);
 	native public int offsetByCodePoints(int index, int codePointOffset);
-	native public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin);
+
+
+	public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin){
+		if (isLatin1()) {
+			StringLatin1.getChars(value, srcBegin, srcEnd, dst, dstBegin);
+		} else {
+			StringUTF16.getChars(value, srcBegin, srcEnd, dst, dstBegin);
+		}
+	}
+
+
 	native void getChars(char dst[], int dstBegin);
 
 	@Deprecated
