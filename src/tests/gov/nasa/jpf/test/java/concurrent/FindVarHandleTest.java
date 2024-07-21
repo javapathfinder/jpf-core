@@ -40,4 +40,33 @@ public class FindVarHandleTest extends TestJPF {
         }
     }
 
+
+
+    // Below three methods are to test "static fields"
+
+    @Test
+    public void testFindStaticVarHandleInstanceField() throws NoSuchFieldException, IllegalAccessException {
+        if (verifyUnhandledException("java.lang.IllegalAccessException")){
+            VarHandle handle = MethodHandles.lookup().findStaticVarHandle(TestClass.class, "instanceField", int.class);
+            assertNotNull(handle);
+        }
+    }
+
+
+    @Test
+    public void testFindStaticVarHandleStaticField() throws NoSuchFieldException, IllegalAccessException {
+        if (verifyNoPropertyViolation()){
+            VarHandle handle = MethodHandles.lookup().findStaticVarHandle(TestClass.class, "staticField", int.class);
+            assertNotNull(handle);
+        }
+    }
+
+
+    @Test
+    public void testFindStaticVarHandleNoSuchField() throws NoSuchFieldException, IllegalAccessException {
+        if (verifyUnhandledException("java.lang.NoSuchFieldException")){
+            VarHandle handle = MethodHandles.lookup().findStaticVarHandle(TestClass.class, "notExistingField", int.class);
+            assertNotNull(handle);
+        }
+    }
 }
