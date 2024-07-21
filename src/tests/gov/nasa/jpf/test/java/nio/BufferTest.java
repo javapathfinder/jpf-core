@@ -20,10 +20,12 @@ package gov.nasa.jpf.test.java.nio;
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
 
 public class BufferTest extends TestJPF {
 
@@ -52,8 +54,8 @@ public class BufferTest extends TestJPF {
     String utf8String = "Hello, 世界";
     byte[] utf8Bytes = utf8String.getBytes(StandardCharsets.UTF_8);
 
-    String decodedUtf8FromUtf8 = decodeWithScanner(utf8Bytes, StandardCharsets.UTF_8);
-    String decodedLatin1FromUtf8 = decodeWithScanner(utf8Bytes, StandardCharsets.ISO_8859_1);
+    String decodedUtf8FromUtf8 = decodeWithBufferedReader(utf8Bytes, StandardCharsets.UTF_8);
+    String decodedLatin1FromUtf8 = decodeWithBufferedReader(utf8Bytes, StandardCharsets.ISO_8859_1);
 
     byte[] utf8FromUtf8 = decodedUtf8FromUtf8.getBytes(StandardCharsets.UTF_8);
     byte[] latin1FromUtf8 = decodedLatin1FromUtf8.getBytes(StandardCharsets.ISO_8859_1);
@@ -70,8 +72,8 @@ public class BufferTest extends TestJPF {
 
       byte[] latin1BytesFromLatin1String = latin1String.getBytes(StandardCharsets.ISO_8859_1);
 
-      String decodedUtf8FromLatin1 = decodeWithScanner(latin1BytesFromLatin1String, StandardCharsets.UTF_8);
-      String decodedLatin1FromLatin1 = decodeWithScanner(latin1BytesFromLatin1String, StandardCharsets.ISO_8859_1);
+      String decodedUtf8FromLatin1 = decodeWithBufferedReader(latin1BytesFromLatin1String, StandardCharsets.UTF_8);
+      String decodedLatin1FromLatin1 = decodeWithBufferedReader(latin1BytesFromLatin1String, StandardCharsets.ISO_8859_1);
 
       byte[] utf8FromLatin1 = decodedUtf8FromLatin1.getBytes(StandardCharsets.UTF_8);
       byte[] latin1FromLatin1 = decodedLatin1FromLatin1.getBytes(StandardCharsets.ISO_8859_1);
@@ -89,8 +91,8 @@ public class BufferTest extends TestJPF {
 
       byte[] utf8BytesFromLatin1String = latin1String.getBytes(StandardCharsets.UTF_8);
 
-      String decodedUtf8FromUtf8 = decodeWithScanner(utf8BytesFromLatin1String, StandardCharsets.UTF_8);
-      String decodedLatin1FromUtf8 = decodeWithScanner(utf8BytesFromLatin1String, StandardCharsets.ISO_8859_1);
+      String decodedUtf8FromUtf8 = decodeWithBufferedReader(utf8BytesFromLatin1String, StandardCharsets.UTF_8);
+      String decodedLatin1FromUtf8 = decodeWithBufferedReader(utf8BytesFromLatin1String, StandardCharsets.ISO_8859_1);
 
       byte[] utf8FromUtf8 = decodedUtf8FromUtf8.getBytes(StandardCharsets.UTF_8);
       byte[] latin1FromUtf8 = decodedLatin1FromUtf8.getBytes(StandardCharsets.UTF_8);
@@ -100,12 +102,27 @@ public class BufferTest extends TestJPF {
     }
   }
 
-  private static String decodeWithScanner(byte[] bytes, Charset charset) {
-    Scanner scanner = new Scanner(new String(bytes, charset));
+
+  private static String decodeWithBufferedReader(byte[] bytes, Charset charset) {
+    String s = new String(bytes, charset);
+    BufferedReader reader = new BufferedReader(new StringReader(s));
     StringBuilder result = new StringBuilder();
-    while (scanner.hasNextLine()) {
-      result.append(scanner.nextLine());
+    String line;
+
+    try {
+      while ((line = reader.readLine()) != null) {
+        result.append(line);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        reader.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
+
     return result.toString();
   }
 
