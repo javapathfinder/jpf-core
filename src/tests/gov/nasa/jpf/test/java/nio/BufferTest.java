@@ -57,11 +57,8 @@ public class BufferTest extends TestJPF {
     String decodedUtf8FromUtf8 = decodeWithBufferedReader(utf8Bytes, StandardCharsets.UTF_8);
     String decodedLatin1FromUtf8 = decodeWithBufferedReader(utf8Bytes, StandardCharsets.ISO_8859_1);
 
-    byte[] utf8FromUtf8 = decodedUtf8FromUtf8.getBytes(StandardCharsets.UTF_8);
-    byte[] latin1FromUtf8 = decodedLatin1FromUtf8.getBytes(StandardCharsets.ISO_8859_1);
-
-    assertTrue(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedUtf8FromUtf8),utf8FromUtf8.equals(utf8Bytes));
-    assertFalse(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedLatin1FromUtf8),latin1FromUtf8.equals(utf8Bytes));
+    assertEquals(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedUtf8FromUtf8), decodedUtf8FromUtf8, utf8String);
+    assertNotEquals(("Assertion failed. Original: " + utf8String + ", Decoded: " + decodedLatin1FromUtf8), decodedLatin1FromUtf8, utf8String);
     }
   }
 
@@ -75,12 +72,8 @@ public class BufferTest extends TestJPF {
       String decodedUtf8FromLatin1 = decodeWithBufferedReader(latin1BytesFromLatin1String, StandardCharsets.UTF_8);
       String decodedLatin1FromLatin1 = decodeWithBufferedReader(latin1BytesFromLatin1String, StandardCharsets.ISO_8859_1);
 
-      byte[] utf8FromLatin1 = decodedUtf8FromLatin1.getBytes(StandardCharsets.UTF_8);
-      byte[] latin1FromLatin1 = decodedLatin1FromLatin1.getBytes(StandardCharsets.ISO_8859_1);
-
-      assertTrue(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromLatin1),utf8FromLatin1.equals(latin1BytesFromLatin1String));
-      assertFalse(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromLatin1),latin1FromLatin1.equals(latin1BytesFromLatin1String));
-
+      assertNotEquals(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromLatin1), decodedUtf8FromLatin1, latin1String);
+      assertEquals(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromLatin1), decodedLatin1FromLatin1, latin1String);
     }
   }
 
@@ -94,11 +87,8 @@ public class BufferTest extends TestJPF {
       String decodedUtf8FromUtf8 = decodeWithBufferedReader(utf8BytesFromLatin1String, StandardCharsets.UTF_8);
       String decodedLatin1FromUtf8 = decodeWithBufferedReader(utf8BytesFromLatin1String, StandardCharsets.ISO_8859_1);
 
-      byte[] utf8FromUtf8 = decodedUtf8FromUtf8.getBytes(StandardCharsets.UTF_8);
-      byte[] latin1FromUtf8 = decodedLatin1FromUtf8.getBytes(StandardCharsets.UTF_8);
-
-      assertTrue(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromUtf8),utf8FromUtf8.equals(utf8BytesFromLatin1String));
-      assertFalse(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromUtf8),latin1FromUtf8.equals(utf8BytesFromLatin1String));
+      assertEquals(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedUtf8FromUtf8), decodedUtf8FromUtf8, latin1String);
+      assertNotEquals(("Assertion failed. Original: " + latin1String + ", Decoded: " + decodedLatin1FromUtf8), decodedLatin1FromUtf8, latin1String);
     }
   }
 
