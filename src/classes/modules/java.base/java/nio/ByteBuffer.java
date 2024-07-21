@@ -330,4 +330,13 @@ public class ByteBuffer extends Buffer {
   public boolean isReadOnly(){
     return false;
   }
+
+  @Override
+  public final int arrayOffset(){
+    if (array == null)
+      throw new UnsupportedOperationException();
+    if (isReadOnly())
+      throw new ReadOnlyBufferException();
+    return offset;
+  }
 }
