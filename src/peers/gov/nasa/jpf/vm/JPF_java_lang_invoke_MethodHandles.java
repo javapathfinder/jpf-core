@@ -30,7 +30,7 @@ public class JPF_java_lang_invoke_MethodHandles extends NativePeer {
     @MJI
     public int
     findVarHandle__Ljava_lang_Class_2Ljava_lang_String_2Ljava_lang_Class_2__Ljava_lang_invoke_VarHandle_2(
-        MJIEnv env, int objRef, int classRef, int stringRef, int typeRef) {
+            MJIEnv env, int objRef, int classRef, int stringRef, int typeRef) {
       ClassInfo ci = env.getClassInfo(classRef);
       int nameCls = env.getReferenceField(classRef, "name");
       String clsName = env.getStringObject(nameCls);
@@ -38,12 +38,18 @@ public class JPF_java_lang_invoke_MethodHandles extends NativePeer {
       int nameType = env.getReferenceField(typeRef, "name");
       String typeName = env.getStringObject(nameType);
       String varName = env.getStringObject(stringRef);
+
+      // Checking access to static field, if found we will throw IllegalAccessException
       FieldInfo fi = ci.getStaticField(varName);
-      if (fi == null) {
-        fi = ci.getInstanceField(varName);
+      if (fi != null) {
+        env.throwException(IllegalAccessException.class.getName(), "Cannot access static field: " + varName + " on class: " + clsName + " as instance field");
+        return MJIEnv.NULL;
       }
+
+      fi = ci.getInstanceField(varName);
       if (fi == null) {
-        throw new IllegalArgumentException("Cannot find field: " + varName + " on class: " + clsName);
+        env.throwException(NoSuchFieldException.class.getName(), "Cannot find field: " + varName + " on class: " + clsName);
+        return MJIEnv.NULL;
       }
       int jpfFieldVarHandle = env.newObject("java.base$&$java.lang.invoke.JPFFieldVarHandle");
       env.setIntField(jpfFieldVarHandle, "fieldRef", fi.getFieldIndex());
