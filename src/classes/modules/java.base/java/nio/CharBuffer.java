@@ -121,4 +121,9 @@ public class CharBuffer extends Buffer {
     return this;
   }
 
+  @Override
+  public boolean isReadOnly(){
+    return false;
+  }
+
 }

@@ -97,4 +97,6 @@ public abstract class Buffer {
   public abstract boolean hasArray();
 
   public abstract Object array();
+
+  public abstract boolean isReadOnly();
 }

@@ -325,4 +325,9 @@ public class ByteBuffer extends Buffer {
   Object base() {
     return array;
   }
+
+  @Override
+  public boolean isReadOnly(){
+    return false;
+  }
 }
