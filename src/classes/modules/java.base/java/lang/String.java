@@ -595,13 +595,27 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	native public int codePointBefore(int index);
 	native public int codePointCount(int beginIndex, int endIndex);
 	native public int offsetByCodePoints(int index, int codePointOffset);
-	native public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin);
+
+
+	public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin){
+		if (isLatin1()) {
+			StringLatin1.getChars(value, srcBegin, srcEnd, dst, dstBegin);
+		} else {
+			StringUTF16.getChars(value, srcBegin, srcEnd, dst, dstBegin);
+		}
+	}
+
+
 	native void getChars(char dst[], int dstBegin);
 
 	@Deprecated
 	native public void getBytes(int srcBegin, int srcEnd, byte dst[], int dstBegin);
 	public void getBytes(byte[] dst, int srcPos, int dstBegin, byte coder, int length){
-		getBytes(srcPos,(srcPos+length),dst,dstBegin);
+		if (isLatin1()) {
+			StringLatin1.getBytes(value,srcPos,(srcPos+length),dst,dstBegin);
+		} else {
+			StringUTF16.getBytes(value,srcPos,(srcPos+length),dst,dstBegin);
+		}
 	}
 
 	native public byte[] getBytes(String charsetName)
