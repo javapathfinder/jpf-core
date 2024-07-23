@@ -136,6 +136,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 	private native String init(byte bytes[], int offset, int length, String charsetName);
 
 
+	@SuppressWarnings("removal") // SecurityManager
 	public String(byte x[], int offset, int length, Charset cset) {
 		// no Charset model
 		if (cset == null){
@@ -800,6 +801,7 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		}
 	}
 
+	@SuppressWarnings("removal") // SecurityManager
 	private static byte[] safeTrim(byte[] ba, int len, boolean isTrusted) {
 		if (len == ba.length && (isTrusted || System.getSecurityManager() == null)) {
 			return ba;

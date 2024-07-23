@@ -167,12 +167,15 @@ public class System {
   }
 
   //--- security manager
+  @SuppressWarnings("removal") // SecurityManager
   static SecurityManager securityManager;
 
+  @SuppressWarnings("removal") // SecurityManager
   public static void setSecurityManager (SecurityManager newManager) {
     securityManager = newManager;
   }
 
+  @SuppressWarnings("removal") // SecurityManager
   public static SecurityManager getSecurityManager() {
     return securityManager;
   }
