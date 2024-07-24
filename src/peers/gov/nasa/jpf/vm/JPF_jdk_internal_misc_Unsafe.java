@@ -104,7 +104,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
    */
   @MJI
   public boolean compareAndSetReference__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z(MJIEnv env, int unsafeRef, int oRef, long offset, int expectedRef, int xRef) {
-    int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, oRef, offset);
+    int actual = getReference__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, oRef, offset);
     if (actual == expectedRef) {
       putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, oRef, offset, xRef);
       return true;
@@ -156,7 +156,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   public boolean compareAndSwapObject__Ljava_lang_Object_2JLjava_lang_Object_2Ljava_lang_Object_2__Z (MJIEnv env, int unsafeRef,
                                                                                                              int objRef, long fieldOffset,
                                                                                                              int expectRef, int updateRef) {
-    int actual = getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, objRef, fieldOffset);
+    int actual = getReference__Ljava_lang_Object_2J__Ljava_lang_Object_2(env, unsafeRef, objRef, fieldOffset);
     if (actual == expectRef) {
       putReference__Ljava_lang_Object_2JLjava_lang_Object_2__V(env, unsafeRef, objRef, fieldOffset, updateRef);
       return true;
@@ -281,7 +281,7 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   }
 
   @MJI
-  public int getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2 (MJIEnv env, int unsafeRef,
+  public int getReference__Ljava_lang_Object_2J__Ljava_lang_Object_2 (MJIEnv env, int unsafeRef,
                                                                           int objRef, long fieldOffset) {
     ElementInfo ei = env.getElementInfo(objRef);
     if (!ei.isArray()) {
@@ -293,9 +293,9 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   }
   
   @MJI
-  public int getObjectVolatile__Ljava_lang_Object_2J__Ljava_lang_Object_2 (MJIEnv env, int unsafeRef,
+  public int getReferenceVolatile__Ljava_lang_Object_2J__Ljava_lang_Object_2 (MJIEnv env, int unsafeRef,
       int objRef, long fieldOffset) {
-    return getObject__Ljava_lang_Object_2J__Ljava_lang_Object_2( env, unsafeRef, objRef, fieldOffset);
+    return getReference__Ljava_lang_Object_2J__Ljava_lang_Object_2( env, unsafeRef, objRef, fieldOffset);
   }
 
   @MJI

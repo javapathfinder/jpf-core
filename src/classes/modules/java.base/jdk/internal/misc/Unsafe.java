@@ -156,10 +156,6 @@ public class Unsafe {
   }
   public final native boolean compareAndSetLong(Object o, long offset, long expected, long x);
 
-  public final boolean compareAndSetObject(Object o, long offset, Object expected, Object x) {
-    return compareAndSetReference(o, offset, expected, x);
-  }
-
   // those do the usual CAS magic
   public native boolean compareAndSwapObject(Object oThis, long offset, Object expect,
       Object update);
@@ -196,34 +192,10 @@ public class Unsafe {
 
   public native void putOrderedInt(Object obj, long l, int i);
 
-  public native Object getObject(Object obj, long l);
-  public native Object getObjectVolatile(Object obj, long l);
-
-  public final Object getObjectAcquire(Object o, long offset) {
-    return getObjectVolatile(o, offset);
-  }
-
-  @Deprecated
-  public Object getObject(Object obj, int offset) {
-    return getObject(obj, (long) offset);
-  }
-
-  public final void putObject(Object o, long offset, Object x) {
-    putReference(o, offset, x);
-  }
-
-  public final void putObjectOpaque(Object o, long offset, Object x) {
-    putReferenceOpaque(o, offset, x);
-  }
-
-  public final void putObjectRelease(Object o, long offset, Object x) {
-    putReferenceRelease(o, offset, x);
-  }
-  public final void putObjectVolatile(Object o, long offset, Object x) {
-    putReferenceVolatile(o, offset, x);
-  }
-
   public native void putReference(Object o, long offset, Object x);
+
+  public native Object getReference(Object o, long offset);
+
 
 
   public final void putReferenceOpaque(Object o, long offset, Object x) {
@@ -236,10 +208,11 @@ public class Unsafe {
 
   public native void putReferenceVolatile(Object o, long offset, Object x);
 
-  @Deprecated
-  public void putObject(Object obj, int offset, Object obj1) {
-    putObject(obj, (long) offset, obj1);
+  public final Object getReferenceAcquire(Object o, long offset) {
+    return getReferenceVolatile(o, offset);
   }
+
+  public native Object getReferenceVolatile(Object o, long offset);
 
   public native void putOrderedObject(Object obj, long l, Object obj1);
 
@@ -270,9 +243,6 @@ public class Unsafe {
     return getByte(obj, (long) offset);
   }
 
-  public final Object getReferenceAcquire(Object o, long offset) {
-    return getObject(o,offset);
-  }
 
   public final native boolean compareAndSetReference(Object o, long offset, Object expected, Object x);
 

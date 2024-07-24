@@ -21,15 +21,12 @@ import gov.nasa.jpf.Config;
 import gov.nasa.jpf.ConfigChangeListener;
 import gov.nasa.jpf.JPFException;
 import gov.nasa.jpf.annotation.MJI;
-import gov.nasa.jpf.vm.JPF_gov_nasa_jpf_vm_Verify;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.NativePeer;
+import jdk.internal.misc.Unsafe;
 
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
-
-import jdk.internal.misc.Unsafe;
 
 /**
  * MJI NativePeer class for java.util.Random library abstraction
@@ -107,12 +104,12 @@ public class JPF_java_util_Random extends NativePeer {
   }
   
   private static void setNativeSeed (Random rand, long seed) {
-    AtomicLong al = (AtomicLong) unsafe.getObject(rand, seedFieldOffset);
+    AtomicLong al = (AtomicLong) unsafe.getReference(rand, seedFieldOffset);
     al.set(seed);
   }
 
   private static long getNativeSeed (Random rand){
-    AtomicLong al = (AtomicLong) unsafe.getObject(rand, seedFieldOffset);
+    AtomicLong al = (AtomicLong) unsafe.getReference(rand, seedFieldOffset);
     return al.longValue();
   }
 
