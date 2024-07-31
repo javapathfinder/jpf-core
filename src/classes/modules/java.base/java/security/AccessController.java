@@ -22,30 +22,9 @@ package java.security;
  * MJI model class for java.security.AccessController library abstraction
  */
 public class AccessController {
-  public static void checkPermission (Permission p) throws AccessControlException {
-  }
-  
-  public static <T> T doPrivileged (PrivilegedAction<T> action,
-                                     AccessControlContext context) {
-    return action.run();
-  }
   
   public static <T> T doPrivileged (PrivilegedAction<T> action)  {
     return action.run();
-  }
-  
-  public static <T> T doPrivileged (PrivilegedExceptionAction<T> action,
-                                     AccessControlContext context)
-    throws PrivilegedActionException {
-
-    try {
-      return action.run();
-      
-    } catch (RuntimeException rx){
-      throw rx; // we have to let unchecked exceptions pass
-    } catch (Exception x) {
-      throw new PrivilegedActionException(x);
-    }
   }
   
   public static <T> T doPrivileged (PrivilegedExceptionAction<T> action)
@@ -59,19 +38,6 @@ public class AccessController {
     } catch (Exception x) {
       throw new PrivilegedActionException(x);
     }
-  }
-  
-  public static AccessControlContext getContext() {
-    return null;
-  }
-  
-  @SuppressWarnings("unused")
-  private static AccessControlContext getStackAccessControlContext() {
-    return null;
-  }
-
-  static AccessControlContext getInheritedAccessControlContext() {
-    return null;
   }
 
 }
