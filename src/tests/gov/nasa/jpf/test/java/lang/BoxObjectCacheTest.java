@@ -17,12 +17,11 @@
  */
 package gov.nasa.jpf.test.java.lang;
 
+import gov.nasa.jpf.util.test.TestJPF;
+import org.junit.Test;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import gov.nasa.jpf.util.test.TestJPF;
-
-import org.junit.Test;
 
 /**
  * regression test for java.lang.Integer
@@ -135,7 +134,7 @@ public class BoxObjectCacheTest extends TestJPF {
       Integer i1 = Integer.valueOf( 1);        // should be cached
       assertTrue( i1.intValue() == 1);
       
-      Integer i2 = new Integer(1);
+      Integer i2 = Integer.valueOf(1);
       Method m = Integer.class.getMethod("intValue", new Class[0]);
       Integer i3 = (Integer) m.invoke(i2, new Object[0]);
       assertTrue( i1 == i3);
@@ -149,7 +148,7 @@ public class BoxObjectCacheTest extends TestJPF {
       Character c1 = Character.valueOf( '?');        // should be cached
       assertTrue( c1.charValue() == '?');
       
-      Character c2 = new Character('?');
+      Character c2 = Character.valueOf('?');
       Method m = Character.class.getMethod("charValue", new Class[0]);
       Character c3 = (Character) m.invoke(c2, new Object[0]);
       assertTrue( c1 == c3);
@@ -163,7 +162,7 @@ public class BoxObjectCacheTest extends TestJPF {
       Byte b1 = Byte.valueOf( (byte)1);        // should be cached
       assertTrue( b1.byteValue() == 1);
       
-      Byte b2 = new Byte((byte)1);
+      Byte b2 = Byte.valueOf((byte)1);
       Method m = Byte.class.getMethod("byteValue", new Class[0]);
       Byte b3 = (Byte) m.invoke(b2, new Object[0]);
       assertTrue( b1 == b3);
@@ -177,7 +176,7 @@ public class BoxObjectCacheTest extends TestJPF {
       Short s1 = Short.valueOf((short)1);        // should be cached
       assertTrue( s1.shortValue() == 1);
       
-      Short s2 = new Short((short)1);
+      Short s2 = Short.valueOf((short)1);
       Method m = Short.class.getMethod("shortValue", new Class[0]);
       Short s3 = (Short) m.invoke(s2, new Object[0]);
       assertTrue( s1 == s3);
@@ -191,7 +190,7 @@ public class BoxObjectCacheTest extends TestJPF {
       Long l1 = Long.valueOf(1);        // should be cached
       assertTrue( l1.longValue() == 1);
       
-      Long l2 = new Long(1);
+      Long l2 = Long.valueOf(1);
       Method m = Long.class.getMethod("longValue", new Class[0]);
       Long l3 = (Long) m.invoke(l2, new Object[0]);
       assertTrue( l1 == l3);
@@ -205,7 +204,7 @@ public class BoxObjectCacheTest extends TestJPF {
       Boolean b1 = Boolean.valueOf(true);        // should be cached
       assertTrue( b1.booleanValue() == true);
       
-      Boolean b2 = new Boolean(true);
+      Boolean b2 = Boolean.valueOf(true);
       Method m = Boolean.class.getMethod("booleanValue", new Class[0]);
       Boolean b3 = (Boolean) m.invoke(b2, new Object[0]);
       assertTrue( b1 == b3);
