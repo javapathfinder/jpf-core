@@ -131,7 +131,7 @@ public class StringConcatenationTest extends TestJPF {
     @Test
     public void testStringConcatenationWith_mixedTypes() {
         if (verifyNoPropertyViolation()) {
-            Character ch = new Character('@');
+            Character ch = Character.valueOf('@');
             byte b = 10;
             String name = "xyz";
             char dot = '.';

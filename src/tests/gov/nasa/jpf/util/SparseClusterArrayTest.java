@@ -18,15 +18,15 @@
 
 package gov.nasa.jpf.util;
 
-import static gov.nasa.jpf.util.SparseClusterArray.S1;
 import gov.nasa.jpf.util.SparseClusterArray.Entry;
 import gov.nasa.jpf.util.SparseClusterArray.Snapshot;
 import gov.nasa.jpf.util.test.TestJPF;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Random;
 
-import org.junit.Test;
+import static gov.nasa.jpf.util.SparseClusterArray.S1;
 
 /**
  * unit test for gov.nasa.jpf.util.SparseClusterArray
@@ -182,7 +182,7 @@ public class SparseClusterArrayTest extends TestJPF {
       @Override
       @SuppressWarnings("deprecation")
 	public Integer clone (Integer other) {
-        return new Integer(other);
+        return Integer.valueOf(other);
       }
     };
     SparseClusterArray<Integer> newArr = arr.deepCopy(cloner);
