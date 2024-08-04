@@ -42,6 +42,7 @@ public class SuspendResumeTest extends TestJPF {
     }
   }
 
+  @SuppressWarnings("removal") // Thread.suspend()
   @Test
   public void testBasicSuspendDeadlock(){
     if (verifyDeadlock("+cg.threads.break_yield")) {
@@ -61,7 +62,8 @@ public class SuspendResumeTest extends TestJPF {
       //t1.resume();
     }
   }
-  
+
+  @SuppressWarnings("removal") // Thread.suspend(), Thread.resume()
   @Test
   public void testBasicSuspendResume(){
     if (verifyNoPropertyViolation("+cg.threads.break_yield")) {
@@ -106,7 +108,8 @@ public class SuspendResumeTest extends TestJPF {
       System.out.println("t2 terminating");
     }
   }
-  
+
+  @SuppressWarnings("removal") // Thread.suspend()
   @Test
   public void testLockholderSuspendDeadlock(){
 
@@ -144,6 +147,7 @@ public class SuspendResumeTest extends TestJPF {
     }
   }
 
+  @SuppressWarnings("removal") // Thread.suspend()
   @Test
   public void testWaitingSuspendNotifyDeadlock(){
     if (verifyDeadlock("+cg.threads.break_yield")) {
@@ -166,7 +170,8 @@ public class SuspendResumeTest extends TestJPF {
       }
     }    
   }
-  
+
+  @SuppressWarnings("removal") // Thread.suspend(), Thread.resume()
   @Test
   public void testWaitingSuspendNotifyResume(){
     if (verifyNoPropertyViolation("+cg.threads.break_yield")) {
@@ -220,7 +225,8 @@ public class SuspendResumeTest extends TestJPF {
       System.out.println("t4 terminating");
     }
   }
-  
+
+  @SuppressWarnings("removal") // Thread.suspend()
   @Test
   public void testBlockSuspendUnblockDeadlock(){
     if (verifyDeadlock("+cg.threads.break_yield")) {
@@ -245,7 +251,7 @@ public class SuspendResumeTest extends TestJPF {
     }
   }
 
-  
+  @SuppressWarnings("removal") // Thread.suspend(), Thread.resume()
   @Test
   public void testBlockSuspendUnblockResume(){
     if (verifyNoPropertyViolation("+cg.threads.break_yield")) {
