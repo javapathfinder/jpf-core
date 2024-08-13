@@ -165,16 +165,16 @@ public class JPF_java_lang_String extends NativePeer {
 
   @MJI
   public boolean equals__Ljava_lang_Object_2__Z (MJIEnv env, int objRef, int argRef) {
-    if (argRef == MJIEnv.NULL) { 
-      return false; 
+    if (argRef == MJIEnv.NULL) {
+      return false;
     }
-
-    String s1 = env.getStringObject(objRef);
-    String s2 = env.getStringObject(argRef);
-
-    return s1.equals(s2);
+    if (env.isInstanceOf(argRef, "java.lang.String")) {
+      String s1 = env.getStringObject(objRef);
+      String s2 = env.getStringObject(argRef);
+      return s1.equals(s2);
+    }
+    return false;
   }
-
   @MJI
   public boolean equalsIgnoreCase__Ljava_lang_String_2__Z (MJIEnv env, int objref, int anotherString) {
     String thisString = env.getStringObject(objref);
