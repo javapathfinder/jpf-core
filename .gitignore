@@ -80,3 +80,5 @@ atlassian-ide-plugin.xml
 #local files
 local
 temp.ser
+output.txt
+file
