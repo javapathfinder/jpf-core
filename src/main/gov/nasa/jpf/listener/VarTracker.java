@@ -191,7 +191,9 @@ public class VarTracker extends ListenerAdapter {
       varId = ((JVMFieldInstruction)executedInsn).getFieldName();
 
       StackFrame frame = ti.getModifiableTopFrame();
-      frame.addOperandAttr(varId);
+      if (frame.getTopPos() >= 0) {
+        frame.addOperandAttr(varId);
+      }
 
 
     // here come the changes - note that we can't update the stats right away,
