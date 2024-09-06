@@ -69,7 +69,7 @@ public class NumericValueChecker extends PropertyListenerAdapter {
     String check (double v){
       if (v < min){
         return String.format("%f < %f", v, min);
-      } else if (v > (long)max){
+      } else if (v > (double)max){
         return String.format("%f > %f", v, max);
       }
       return null;
