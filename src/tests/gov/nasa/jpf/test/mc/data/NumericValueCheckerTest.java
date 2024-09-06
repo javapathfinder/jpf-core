@@ -33,6 +33,10 @@ public class NumericValueCheckerTest extends TestJPF {
     void setValue(double v){
       d = v;
     }
+
+    void setLocalVar() {
+      double x = 0.5;
+    }
   }
 
   @Test
@@ -47,6 +51,16 @@ public class NumericValueCheckerTest extends TestJPF {
     }
   }
 
+  @Test
+  public void testLocalVar() {
+    if (verifyNoPropertyViolation("+listener=.listener.NumericValueChecker",
+        "+range.vars=x",
+        "+range.x.var=*$C1.setLocalVar():x",
+        "+range.x.max=0.9")) {
+      C1 c1= new C1();
+      c1.setLocalVar();
+    }
+  }
 
   static class C2 {
     void doSomething(int d){
