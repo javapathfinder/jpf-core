@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 import jdk.internal.misc.JavaLangAccess;
 import jdk.internal.misc.SharedSecrets;
+import jdk.internal.misc.VM;
 import jdk.internal.reflect.ConstantPool;
 import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
@@ -70,6 +71,9 @@ public class System {
     // <2do> this is an approximation that isn't particularly safe since we don't
     // initialize sun.misc.VM
     //sun.misc.VM.booted();
+ 
+    //Loading all Properties to VM
+    VM.saveAndRemoveProperties(properties);
   }
 
   static JavaLangAccess createJavaLangAccess () {
