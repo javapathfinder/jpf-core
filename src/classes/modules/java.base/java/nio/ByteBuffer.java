@@ -263,6 +263,9 @@ public class ByteBuffer extends Buffer {
 
     return this;
   }
+  public int arrayOffset(){
+    return offset;
+  }
 
   @Override
   public byte[] array() {
@@ -315,5 +318,10 @@ public class ByteBuffer extends Buffer {
 
   Object base() {
     return array;
+  }
+  @Override
+  public final ByteBuffer flip() {
+    super.flip();
+    return this;
   }
 }
