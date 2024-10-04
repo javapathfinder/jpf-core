@@ -18,42 +18,15 @@
 
 package gov.nasa.jpf.jvm;
 
+import gov.nasa.jpf.Config;
+import gov.nasa.jpf.util.Misc;
+import gov.nasa.jpf.util.StringSetMatcher;
+import gov.nasa.jpf.vm.*;
+
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-
-import gov.nasa.jpf.Config;
-import gov.nasa.jpf.util.Misc;
-import gov.nasa.jpf.util.StringSetMatcher;
-import gov.nasa.jpf.vm.AbstractTypeAnnotationInfo;
-import gov.nasa.jpf.vm.AnnotationInfo;
-import gov.nasa.jpf.vm.BootstrapMethodInfo;
-import gov.nasa.jpf.vm.BytecodeAnnotationInfo;
-import gov.nasa.jpf.vm.BytecodeTypeParameterAnnotationInfo;
-import gov.nasa.jpf.vm.ClassInfo;
-import gov.nasa.jpf.vm.ClassInfoException;
-import gov.nasa.jpf.vm.ClassLoaderInfo;
-import gov.nasa.jpf.vm.ClassParseException;
-import gov.nasa.jpf.vm.DirectCallStackFrame;
-import gov.nasa.jpf.vm.ExceptionHandler;
-import gov.nasa.jpf.vm.ExceptionParameterAnnotationInfo;
-import gov.nasa.jpf.vm.FieldInfo;
-import gov.nasa.jpf.vm.FormalParameterAnnotationInfo;
-import gov.nasa.jpf.vm.GenericSignatureHolder;
-import gov.nasa.jpf.vm.InfoObject;
-import gov.nasa.jpf.vm.LocalVarInfo;
-import gov.nasa.jpf.vm.MethodInfo;
-import gov.nasa.jpf.vm.NativeMethodInfo;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.SuperTypeAnnotationInfo;
-import gov.nasa.jpf.vm.ThreadInfo;
-import gov.nasa.jpf.vm.ThrowsAnnotationInfo;
-import gov.nasa.jpf.vm.TypeAnnotationInfo;
-import gov.nasa.jpf.vm.TypeParameterAnnotationInfo;
-import gov.nasa.jpf.vm.TypeParameterBoundAnnotationInfo;
-import gov.nasa.jpf.vm.Types;
-import gov.nasa.jpf.vm.VariableAnnotationInfo;
 
 /**
  * a ClassInfo that was created from a Java classfile
@@ -118,14 +91,15 @@ public class JVMClassInfo extends ClassInfo {
     public void setBootstrapMethodCount (ClassFile cf, Object tag, int count) {
       bootstrapMethods = new BootstrapMethodInfo[count];
     }
-    
+
     @Override
     public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
                                      String parameters, String descriptor, int[] cpArgs) {
       String clsName = null;
       ClassInfo enclosingLambdaCls;
-      
-      if (cpArgs.length > 1) {
+
+      if (cls.equals("java/lang/invoke/LambdaMetafactory") && (mth.equals("metafactory") || mth.equals("altMetafactory"))) {
+        assert(cpArgs.length>1);
         // For Lambdas
       	int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);
         clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
@@ -164,16 +138,17 @@ public class JVMClassInfo extends ClassInfo {
       	int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
       	String mthName = cf.methodNameAt(mrefIdx);
         String signature = cf.methodDescriptorAt(mrefIdx);
-        String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]); 
-        
+        String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]);
+
         setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor, null,
-                               isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
-                                              : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
-      }
-      else {
+                isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
+                        : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
+      } else if (cls.equals("java/lang/runtime/ObjectMethods") && mth.equals("bootstrap")) {
+        // -----
+      } else {
         // For String Concatenation
-        clsName = cls; 
-          
+        clsName = cls;
+        assert(mth.startsWith("makeConcat"));
         if(!clsName.equals(JVMClassInfo.this.getName())) {
         enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
         } else {
