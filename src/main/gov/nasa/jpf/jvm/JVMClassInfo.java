@@ -99,70 +99,83 @@ public class JVMClassInfo extends ClassInfo {
       ClassInfo enclosingLambdaCls;
 
       if (cls.equals("java/lang/invoke/LambdaMetafactory") && (mth.equals("metafactory") || mth.equals("altMetafactory"))) {
-        assert(cpArgs.length>1);
-        // For Lambdas
-      	int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);
-        clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
-
-        if(!clsName.equals(JVMClassInfo.this.getName())) {
-          if (JVMClassInfo.resolvedClasses.containsKey(clsName))
-            enclosingLambdaCls = (JVMClassInfo) JVMClassInfo.resolvedClasses.get(clsName);
-          else
-            enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
-        } else {
-          enclosingLambdaCls = JVMClassInfo.this;
-          JVMClassInfo.resolvedClasses.put(clsName, enclosingLambdaCls);
-        }
-
-        // The following check should be up-to-date
-        // with OpenJDK 11' implementation of
-        // java.lang.invoke.LambdaMetafactory::altMetafactory()
-        //
-        // Check if it is serializable lambda expression. It is if:
-        //   1. bootstrap method is "altMetafactory"
-        //   2. 4-th cp arg value has FLAG_SERIALIZABLE (1 << 0) bit set
-        // The check order cannot be reversed since other BSM may not
-        // have forth argument in `cpArgs`
-        boolean isSerializable = false;
-        if (cls.equals("java/lang/invoke/LambdaMetafactory")
-            && mth.equals("altMetafactory")) {
-          int flags = cf.intAt(cpArgs[3]);
-          int FLAG_SERIALIZABLE = 1 << 0;
-          if ((flags & FLAG_SERIALIZABLE) != 0) {
-            isSerializable = true;
-          }
-        }
-
-        assert (enclosingLambdaCls!=null);
-
-      	int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
-      	String mthName = cf.methodNameAt(mrefIdx);
-        String signature = cf.methodDescriptorAt(mrefIdx);
-        String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]);
-
-        setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor, null,
-                isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
-                        : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
+        lambdaMetaFactory(cf,idx,cls,mth,cpArgs);
       } else if (cls.equals("java/lang/runtime/ObjectMethods") && mth.equals("bootstrap")) {
-        // -----
+        objectMethodsBootstrap(cf,tag,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
       } else {
         // For String Concatenation
-        clsName = cls;
-        assert(mth.startsWith("makeConcat"));
-        if(!clsName.equals(JVMClassInfo.this.getName())) {
-        enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
-        } else {
-          enclosingLambdaCls = JVMClassInfo.this;
-        }
-
-        assert (enclosingLambdaCls!=null);
-
-        String bmArg = cf.getBmArgString(cpArgs[0]);
-
-        setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
-                BootstrapMethodInfo.BMType.STRING_CONCATENATION);
+        stringConcatenation(cf,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
       }
 
+    }
+    private void lambdaMetaFactory(ClassFile cf, int idx, String cls, String mth, int[] cpArgs){
+      String clsName;
+      ClassInfo enclosingLambdaCls;
+
+      assert (cpArgs.length > 1);
+      // For Lambdas
+      int mrefIdx = cf.mhMethodRefIndexAt(cpArgs[1]);
+      clsName = cf.methodClassNameAt(mrefIdx).replace('/', '.');
+
+      if (!clsName.equals(JVMClassInfo.this.getName())) {
+        if (JVMClassInfo.resolvedClasses.containsKey(clsName))
+          enclosingLambdaCls = (JVMClassInfo) JVMClassInfo.resolvedClasses.get(clsName);
+        else
+          enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+      } else {
+        enclosingLambdaCls = JVMClassInfo.this;
+        JVMClassInfo.resolvedClasses.put(clsName, enclosingLambdaCls);
+      }
+
+      // The following check should be up-to-date
+      // with OpenJDK 11' implementation of
+      // java.lang.invoke.LambdaMetafactory::altMetafactory()
+      //
+      // Check if it is serializable lambda expression. It is if:
+      //   1. bootstrap method is "altMetafactory"
+      //   2. 4-th cp arg value has FLAG_SERIALIZABLE (1 << 0) bit set
+      // The check order cannot be reversed since other BSM may not
+      // have forth argument in `cpArgs`
+      boolean isSerializable = false;
+      if (cls.equals("java/lang/invoke/LambdaMetafactory")
+              && mth.equals("altMetafactory")) {
+        int flags = cf.intAt(cpArgs[3]);
+        int FLAG_SERIALIZABLE = 1 << 0;
+        if ((flags & FLAG_SERIALIZABLE) != 0) {
+          isSerializable = true;
+        }
+      }
+
+      assert (enclosingLambdaCls != null);
+
+      int lambdaRefKind = cf.mhRefTypeAt(cpArgs[1]);
+      String mthName = cf.methodNameAt(mrefIdx);
+      String signature = cf.methodDescriptorAt(mrefIdx);
+      String samDescriptor = cf.methodTypeDescriptorAt(cpArgs[2]);
+
+      setBootstrapMethodInfo(enclosingLambdaCls, mthName, signature, idx, lambdaRefKind, samDescriptor, null,
+              isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
+                      : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
+    }
+    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
+      //-----
+    }
+    private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
+      String clsName = cls;
+      ClassInfo enclosingLambdaCls;
+      assert(mth.startsWith("makeConcat"));
+      if(!clsName.equals(JVMClassInfo.this.getName())) {
+        enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+      } else {
+        enclosingLambdaCls = JVMClassInfo.this;
+      }
+
+      assert (enclosingLambdaCls!=null);
+
+      String bmArg = cf.getBmArgString(cpArgs[0]);
+
+      setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
+              BootstrapMethodInfo.BMType.STRING_CONCATENATION);
     }
     
     // helper method for setBootstrapMethod()
