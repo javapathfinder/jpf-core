@@ -13,7 +13,7 @@ public class NullCharsetTest extends TestJPF
                 Path.of("/tmp");
             } catch (IllegalArgumentException iae)
             { 
-                if ("Null charset name".equals(e.getMessage()))
+                if ("Null charset name".equals(iae.getMessage()))
                 { 
                     fail("IllegalArgumentException with 'Null charset name' encountered");
                 }
