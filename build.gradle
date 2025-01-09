@@ -81,7 +81,9 @@ tasks.named('jar') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
 }
-
+tasks.named("test") {
+    dependsOn(tasks.named("modifyAndCompileD"))
+}
 
 tasks.register('compileModules', JavaCompile) {
     dependsOn(copyLibs)
@@ -268,6 +270,33 @@ tasks.register('buildJars') {
     dependsOn createJpfJar
     dependsOn createRunJpfJar
     dependsOn createRunTestJar
+}
+task.register("modifyAndCompileD") {
+    // Declaring inputs and outputs to make the task compatible with the configuration cache
+    inputs.file("src/main/java/D.java")
+    outputs.dir("${buildDir}/classes/java/main")
+
+    doLast {
+        // Step 1: Defining file paths
+        def originalFile = "src/main/java/D.java"
+        def tempDir = file("${buildDir}/tempD")
+        def buildClassesDir = file("${buildDir}/classes/java/main")
+
+        // Step 2: Creating a temporary directory
+        tempDir.mkdirs()
+
+        // Step 3: Modifying D.java by removing the "static" keyword
+        def modifiedFile = file("${sourceDir}/D.java")
+        modifiedFile.text = originalFile.text.replace("static ", "")
+
+        // Step 4: Compiling the modified D.java
+        def javac = org.gradle.internal.jvm.Jvm.current().javacExecutable
+        exec {
+            commandLine javac, "-d", buildClassesDir, modifiedFile
+        }
+
+        println "Modified and recompiled D.java without 'static'."
+    }
 }
 
 test {
