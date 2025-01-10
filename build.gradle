@@ -271,7 +271,7 @@ tasks.register('buildJars') {
     dependsOn createRunJpfJar
     dependsOn createRunTestJar
 }
-task.register("modifyAndCompileD") {
+tasks.register("modifyAndCompileD") {
     // Declaring inputs and outputs to make the task compatible with the configuration cache
     inputs.file("src/main/java/D.java")
     outputs.dir("${buildDir}/classes/java/main")
