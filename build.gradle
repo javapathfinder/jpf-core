@@ -1,3 +1,5 @@
+import java.nio.file.Files
+import java.nio.file.Paths
 plugins {
     id 'java'
     id 'maven-publish'
@@ -57,6 +59,38 @@ apply from: "gradle/build-resources.gradle"
 
 compileJava.dependsOn(copyLibs)
 
+tasks.register("modifyAndCompileD") {
+    // Declaring inputs and outputs to make the task compatible with the configuration cache
+    inputs.file("src/main/java/D.java")
+    outputs.dir("${buildDir}/classes/main/java")
+
+    doLast {
+        // Step 1: Defining file paths
+        def originalFilePath = "src/main/java/D.java"
+        def originalFile = Paths.get(originalFilePath)
+        def tempDir = file("${buildDir}/tempD")
+        def buildClassesDir = file("${buildDir}/classes/java/main")
+
+        // Step 2: Creating a temporary directory
+        tempDir.mkdirs()
+
+        def content = Files.readString(originalFile)
+
+        content = content.replace("static ", "")
+
+        def modifiedFile = file("${tempDir}/D.java")
+
+        Files.writeString(modifiedFile.toPath(), content)
+
+        def javac = org.gradle.internal.jvm.Jvm.current().javacExecutable
+        exec {
+            commandLine javac, "-d", buildClassesDir, modifiedFile
+        }
+
+        println "Modified and recompiled D.java without 'static'."
+    }
+}
+
 tasks.named('compileClassesJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
@@ -76,6 +110,7 @@ tasks.named('compilePeersJava') {
 tasks.named('compileTestJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
+    mustRunAfter(modifyAndCompileD)
 }
 tasks.named('jar') {
     dependsOn(copyLibs)
@@ -88,6 +123,7 @@ tasks.named("test") {
 tasks.register('compileModules', JavaCompile) {
     dependsOn(copyLibs)
     dependsOn compileTestJava
+    dependsOn modifyAndCompileD
     source = fileTree(dir: 'src/classes/modules')
     classpath = files('build/annotations', 'build/classes', 'build/main')
     options.compilerArgs = [
@@ -123,6 +159,7 @@ tasks.register('createJpfClassesJar', Jar) {
     dependsOn(copyLibs)
     dependsOn compile
     dependsOn copyResources
+    dependsOn modifyAndCompileD
 
     from sourceSets.classes.java.destinationDirectory
     from sourceSets.annotations.java.destinationDirectory
@@ -271,34 +308,6 @@ tasks.register('buildJars') {
     dependsOn createRunJpfJar
     dependsOn createRunTestJar
 }
-tasks.register("modifyAndCompileD") {
-    // Declaring inputs and outputs to make the task compatible with the configuration cache
-    inputs.file("src/main/java/D.java")
-    outputs.dir("${buildDir}/classes/java/main")
-
-    doLast {
-        // Step 1: Defining file paths
-        def originalFile = "src/main/java/D.java"
-        def tempDir = file("${buildDir}/tempD")
-        def buildClassesDir = file("${buildDir}/classes/java/main")
-
-        // Step 2: Creating a temporary directory
-        tempDir.mkdirs()
-
-        // Step 3: Modifying D.java by removing the "static" keyword
-        def modifiedFile = file("${sourceDir}/D.java")
-        modifiedFile.text = originalFile.text.replace("static ", "")
-
-        // Step 4: Compiling the modified D.java
-        def javac = org.gradle.internal.jvm.Jvm.current().javacExecutable
-        exec {
-            commandLine javac, "-d", buildClassesDir, modifiedFile
-        }
-
-        println "Modified and recompiled D.java without 'static'."
-    }
-}
-
 test {
     description = "Runs core regression tests."
 
