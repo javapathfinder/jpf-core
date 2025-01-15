@@ -5,23 +5,15 @@ import gov.nasa.jpf.util.test.TestJPF;
 
 public class StaticCallToNonStaticTest extends TestJPF {
 
-    // A non-static method
-    public void nonStaticMethod() {
-        System.out.println("Non-static method executed.");
-    }
-
-    // Test case to verify JPF behavior
     @Test
     public void testStaticCallToNonStatic() {
-        // Using JPF’s verification mechanism
         if (verifyNoPropertyViolation()) {
-            // Simulating a static method call to a non-static method
-            StaticCallToNonStaticTest instance = null;
             try {
-                instance.nonStaticMethod(); // This should fail because it's a static call to a non-static method
-            } catch (NullPointerException e) {
-                // Expected exception: this will be caught as instance is null
-                System.out.println("Caught expected NullPointerException: " + e.getMessage());
+                // Attempting to call non-static method m() on class D without an instance
+                D.m(); // This should throw IncompatibleClassChangeError after D.java is recompiled without static
+            } catch (IncompatibleClassChangeError e) {
+                // Expected exception: this is the behavior we want to test
+                System.out.println("Caught expected IncompatibleClassChangeError: " + e.getMessage());
             }
         }
     }
