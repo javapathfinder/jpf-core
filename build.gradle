@@ -31,7 +31,11 @@ repositories {
 dependencies {
     testImplementation 'org.ow2.asm:asm:9.5'
     testImplementation('junit:junit:4.13.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
 }
+
 
 configurations {
     customTestImpl.extendsFrom testImplementation
@@ -61,15 +65,15 @@ compileJava.dependsOn(copyLibs)
 
 tasks.register("modifyAndCompileD") {
     // Declaring inputs and outputs to make the task compatible with the configuration cache
-    inputs.file("src/main/java/D.java")
-    outputs.dir("${buildDir}/classes/main/java")
+    inputs.file("src/test/D.java")
+    outputs.dir("${buildDir}/classes/test/java")
 
     doLast {
         // Step 1: Defining file paths
-        def originalFilePath = "src/main/java/D.java"
+        def originalFilePath = "src/test/D.java"
         def originalFile = Paths.get(originalFilePath)
         def tempDir = file("${buildDir}/tempD")
-        def buildClassesDir = file("${buildDir}/classes/java/main")
+        def buildClassesDir = file("${buildDir}/classes/java/test")
 
         // Step 2: Creating a temporary directory
         tempDir.mkdirs()
@@ -310,6 +314,8 @@ tasks.register('buildJars') {
 }
 test {
     description = "Runs core regression tests."
+    useJUnitPlatform()  // This Ensures Gradle uses JUnit 5 to run the tests
+
 
     dependsOn buildJars
     jacoco.enabled = false
