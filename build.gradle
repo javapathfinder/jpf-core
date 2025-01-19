@@ -36,7 +36,6 @@ dependencies {
 
 }
 
-
 configurations {
     customTestImpl.extendsFrom testImplementation
 }
@@ -114,7 +113,7 @@ tasks.named('compilePeersJava') {
 tasks.named('compileTestJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
-    mustRunAfter(modifyAndCompileD)
+    shouldRunAfter(modifyAndCompileD)
 }
 tasks.named('jar') {
     dependsOn(copyLibs)
@@ -122,6 +121,9 @@ tasks.named('jar') {
 }
 tasks.named("test") {
     dependsOn(tasks.named("modifyAndCompileD"))
+}
+tasks.named('modifyAndCompileD') {
+    dependsOn('compileTestJava')
 }
 
 tasks.register('compileModules', JavaCompile) {
