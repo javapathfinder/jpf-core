@@ -1,23 +1,19 @@
 package gov.nasa.jpf;
+
 import org.junit.AfterClass;
 import gov.nasa.jpf.util.test.TestJPF;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import java.io.File;
+
+
 
 
 public class StaticCallToNonStaticTest extends TestJPF {
 
     @Test
-    public void testStaticCallToNonStatic() {
-        
-        try {
-           
-             D.m();  
-        } catch (IncompatibleClassChangeError e) {
-            System.out.println("Caught expected IncompatibleClassChangeError: " + e.getMessage());
-        }
-    }
+public void testStaticCallToNonStatic() {
+  D.m();
+}
 
     // Cleanup method to delete the temporary file after tests
     @AfterClass
