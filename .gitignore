@@ -82,3 +82,6 @@ local
 temp.ser
 output.txt
 file
+
+#json file
+.vscode/settings.json
