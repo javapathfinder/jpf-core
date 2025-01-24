@@ -31,28 +31,7 @@ repositories {
 dependencies {
     testImplementation 'org.ow2.asm:asm:9.5'
     testImplementation('junit:junit:4.13.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
-    implementation files("$buildDir/classes/java/main")
-
-}
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java']
-        }
-    }
-    test {
-        java {
-            srcDirs = ['src/tests']
-        }
-    }
-}
-tasks.test {
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.test.output.classesDirs
-    classpath = sourceSets.test.runtimeClasspath
 }
 
 configurations {
@@ -113,6 +92,7 @@ tasks.register("modifyAndCompileD") {
     }
 }
 
+
 tasks.named('compileClassesJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
@@ -144,6 +124,8 @@ tasks.named("test") {
 tasks.named('modifyAndCompileD') {
     dependsOn('compileTestJava')
 }
+
+
 
 tasks.register('compileModules', JavaCompile) {
     dependsOn(copyLibs)
@@ -333,10 +315,9 @@ tasks.register('buildJars') {
     dependsOn createRunJpfJar
     dependsOn createRunTestJar
 }
+
 test {
     description = "Runs core regression tests."
-    useJUnitPlatform()  // This Ensures Gradle uses JUnit 5 to run the tests
-
 
     dependsOn buildJars
     jacoco.enabled = false
