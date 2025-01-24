@@ -109,10 +109,12 @@ tasks.named('compilePeersJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
 }
+tasks.named('modifyAndCompileD') {
+    shouldRunAfter('compileTestJava')
+}
 tasks.named('compileTestJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
-    shouldRunAfter(modifyAndCompileD)
 }
 tasks.named('jar') {
     dependsOn(copyLibs)
