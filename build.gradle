@@ -109,6 +109,16 @@ tasks.named('compilePeersJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
 }
+task runModifiedTest(type: Test) {
+    description = "Runs the test for the modified class file."
+    group = "verification"
+    useJUnitPlatform() 
+    include "**/StaticCallToNonStaticTest.class" // Runs only the new test class
+}
+tasks.named("runModifiedTest") {
+    dependsOn("compileTestJava")
+    shouldRunAfter("test")
+}
 tasks.named('modifyAndCompileD') {
     shouldRunAfter('compileTestJava')
 }
