@@ -28,4 +28,4 @@ jobs:
     - name: Run PolDet test
       run: ./gradlew testPolDet
     - name: Test on modified class file
-      run: ./gradlew runModifiedTest
+      run: ./gradlew runModifiedTest --info

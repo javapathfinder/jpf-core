@@ -11,7 +11,7 @@ import java.io.File;
 public class StaticCallToNonStaticTest extends TestJPF {
 
     @Test
-public void testStaticCallToNonStatic() {
+    public void testStaticCallToNonStatic() {
   D.m();
 }
 
