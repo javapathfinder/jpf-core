@@ -557,11 +557,5 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		System.arraycopy(multiple, 0, multiple, copied, newLength - copied);
 		return new String(multiple, coder);
 	}
-
-	public Stream<String> lines() {
-		return Pattern.compile("\r\n|[\n\r\u2028\u2029\u0085]")
-				.splitAsStream(this);
-	}
-
 }
 

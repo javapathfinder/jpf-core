@@ -325,18 +325,6 @@ public class StringTest extends TestJPF {
 	}
 
 	@Test
-	public void testLines() {
-		if (verifyNoPropertyViolation()) {
-			String multiline = "Line 1\nLine 2\r\nLine 3";
-			List<String> lines = multiline.lines().collect(Collectors.toList());
-			assertEquals(3, lines.size());
-			assertEquals("Line 1", lines.get(0));
-			assertEquals("Line 2", lines.get(1));
-			assertEquals("Line 3", lines.get(2));
-		}
-	}
-
-	@Test
 	public void testStrip() {
 		if (verifyNoPropertyViolation()) {
 			assertEquals("abc", "  abc  ".strip());
