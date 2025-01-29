@@ -26,7 +26,6 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 /**
  * MJI adapter for java.lang.String, based on jdk 1.7.0_07 source.
