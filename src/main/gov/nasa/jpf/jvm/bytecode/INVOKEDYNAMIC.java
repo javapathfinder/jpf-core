@@ -29,6 +29,8 @@ import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
 
+import java.util.Objects;
+
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  * 
@@ -102,6 +104,9 @@ public class INVOKEDYNAMIC extends Instruction {
 
       // First, resolve the functional interface
       try {
+        if (Objects.equals(functionalInterfaceName,"Z")){
+          functionalInterfaceName = "java.lang.Boolean";
+        }
         fiClassInfo = ti.resolveReferencedClass(functionalInterfaceName);
       } catch(LoadOnJPFRequired lre) {
         return ti.getPC();
