@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * MJI adapter for java.lang.String, based on jdk 1.7.0_07 source.
@@ -555,6 +556,11 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		}
 		System.arraycopy(multiple, 0, multiple, copied, newLength - copied);
 		return new String(multiple, coder);
+	}
+
+	public Stream<String> lines() {
+		return Pattern.compile("\r\n|[\n\r\u2028\u2029\u0085]")
+				.splitAsStream(this);
 	}
 
 }
