@@ -159,6 +159,17 @@ public class JVMClassInfo extends ClassInfo {
     }
     private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       //-----
+      String clsName = cls;
+      ClassInfo enclosingLambdaCls;
+      if(!clsName.equals(JVMClassInfo.this.getName())) {
+        enclosingLambdaCls = ClassLoaderInfo.getCurrentResolvedClassInfo(clsName);
+      } else {
+        enclosingLambdaCls = JVMClassInfo.this;
+      }
+      assert (enclosingLambdaCls!=null);
+      String bmArg = cf.getBmArgString(cpArgs[0]);
+      setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
+              BootstrapMethodInfo.BMType.RECORDS_O);
     }
     private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       String clsName = cls;
