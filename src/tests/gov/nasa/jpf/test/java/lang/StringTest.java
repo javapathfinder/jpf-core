@@ -23,8 +23,10 @@ import gov.nasa.jpf.vm.Verify;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -308,6 +310,54 @@ public class StringTest extends TestJPF {
 			String str = "Hello, ";
 			String out = str + "World!";
 			assert out.equals("Hello, World!");
+		}
+	}
+
+	@Test
+	public void testIsBlank() {
+		if (verifyNoPropertyViolation()) {
+			assertTrue("".isBlank());
+			assertTrue("   ".isBlank());
+			assertTrue("\t\n\r".isBlank());
+			assertFalse("  a  ".isBlank());
+			assertFalse("abc".isBlank());
+		}
+	}
+
+	@Test
+	public void testStrip() {
+		if (verifyNoPropertyViolation()) {
+			assertEquals("abc", "  abc  ".strip());
+			assertEquals("abc", "abc".strip());
+			assertEquals("", "  ".strip());
+		}
+	}
+
+	@Test
+	public void testStripLeading() {
+		if (verifyNoPropertyViolation()) {
+			assertEquals("abc  ", "  abc  ".stripLeading());
+			assertEquals("abc", "abc".stripLeading());
+			assertEquals("", "  ".stripLeading());
+		}
+	}
+
+	@Test
+	public void testStripTrailing() {
+		if (verifyNoPropertyViolation()) {
+			assertEquals("  abc", "  abc  ".stripTrailing());
+			assertEquals("abc", "abc".stripTrailing());
+			assertEquals("", "  ".stripTrailing());
+		}
+	}
+
+	@Test
+	public void testRepeat() {
+		if (verifyNoPropertyViolation()) {
+			assertEquals("", "abc".repeat(0));
+			assertEquals("abc", "abc".repeat(1));
+			assertEquals("abcabc", "abc".repeat(2));
+			assertEquals("  ", " ".repeat(2));
 		}
 	}
 }

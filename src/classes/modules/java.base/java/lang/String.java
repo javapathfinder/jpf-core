@@ -501,5 +501,60 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
     }
   }
 
+	public boolean isBlank() {
+		return isEmpty() || strip().isEmpty();
+	}
+
+	public String strip() {
+		return stripLeading().stripTrailing();
+	}
+
+	public String stripLeading() {
+		int start = 0;
+		while (start < value.length && Character.isWhitespace(charAt(start))) {
+			start++;
+		}
+		return substring(start);
+	}
+
+	public String stripTrailing() {
+		int end = value.length;
+		while (end > 0 && Character.isWhitespace(charAt(end - 1))) {
+			end--;
+		}
+		return substring(0, end);
+	}
+
+	public String repeat(int count) {
+		if (count < 0) {
+			throw new IllegalArgumentException("count is negative: " + count);
+		}
+		if (count == 1 || isEmpty()) {
+			return this;
+		}
+		final int len = value.length;
+		if (len == 0 || count == 0) {
+			return "";
+		}
+		if (len == 1) {
+			final byte[] single = new byte[count];
+			Arrays.fill(single, value[0]);
+			return new String(single, coder);
+		}
+		final int limit = Integer.MAX_VALUE / count;
+		if (len > limit) {
+			throw new OutOfMemoryError("Repeating " + len + " bytes String " + count +
+					" times will produce a String exceeding maximum size.");
+		}
+		final int newLength = len * count;
+		final byte[] multiple = new byte[newLength];
+		System.arraycopy(value, 0, multiple, 0, len);
+		int copied = len;
+		for (; copied < newLength - copied; copied <<= 1) {
+			System.arraycopy(multiple, 0, multiple, copied, copied);
+		}
+		System.arraycopy(multiple, 0, multiple, copied, newLength - copied);
+		return new String(multiple, coder);
+	}
 }
 
