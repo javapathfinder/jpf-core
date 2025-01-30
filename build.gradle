@@ -1,3 +1,5 @@
+import java.nio.file.Files
+import java.nio.file.Paths
 plugins {
     id 'java'
     id 'maven-publish'
@@ -29,6 +31,7 @@ repositories {
 dependencies {
     testImplementation 'org.ow2.asm:asm:9.5'
     testImplementation('junit:junit:4.13.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 }
 
 configurations {
@@ -57,6 +60,39 @@ apply from: "gradle/build-resources.gradle"
 
 compileJava.dependsOn(copyLibs)
 
+tasks.register("modifyAndCompileD") {
+    // Declaring inputs and outputs to make the task compatible with the configuration cache
+    inputs.file("src/tests/gov/nasa/jpf/test/D.java")
+    outputs.dir("${buildDir}/classes/test/java")
+
+    doLast {
+        // Step 1: Defining file paths
+        def originalFilePath = "src/tests/gov/nasa/jpf/test/D.java"
+        def originalFile = Paths.get(originalFilePath)
+        def tempDir = file("${buildDir}/tempD")
+        def buildClassesDir = file("${buildDir}/classes/java/test")
+
+        // Step 2: Creating a temporary directory
+        tempDir.mkdirs()
+
+        def content = Files.readString(originalFile)
+
+        content = content.replace("static ", "")
+
+        def modifiedFile = file("${tempDir}/D.java")
+
+        Files.writeString(modifiedFile.toPath(), content)
+
+        def javac = org.gradle.internal.jvm.Jvm.current().javacExecutable
+        exec {
+            commandLine javac, "-d", buildClassesDir, modifiedFile
+        }
+
+        println "Modified and recompiled D.java without 'static'."
+    }
+}
+
+
 tasks.named('compileClassesJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
@@ -73,6 +109,23 @@ tasks.named('compilePeersJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
 }
+task runModifiedTest(type: Test) {
+    description = 'Run modified test'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+   include '**/StaticCallToNonStaticTest.class'
+
+    useJUnitPlatform() 
+}
+
+tasks.named("runModifiedTest") {
+    dependsOn("compileTestJava")
+    shouldRunAfter("test")
+}
+tasks.named('modifyAndCompileD') {
+    shouldRunAfter('compileTestJava')
+}
 tasks.named('compileTestJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
@@ -81,11 +134,19 @@ tasks.named('jar') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
 }
+tasks.named("test") {
+    dependsOn(tasks.named("modifyAndCompileD"))
+}
+tasks.named('modifyAndCompileD') {
+    dependsOn('compileTestJava')
+}
+
 
 
 tasks.register('compileModules', JavaCompile) {
     dependsOn(copyLibs)
     dependsOn compileTestJava
+    dependsOn modifyAndCompileD
     source = fileTree(dir: 'src/classes/modules')
     classpath = files('build/annotations', 'build/classes', 'build/main')
     options.compilerArgs = [
@@ -121,6 +182,7 @@ tasks.register('createJpfClassesJar', Jar) {
     dependsOn(copyLibs)
     dependsOn compile
     dependsOn copyResources
+    dependsOn modifyAndCompileD
 
     from sourceSets.classes.java.destinationDirectory
     from sourceSets.annotations.java.destinationDirectory
