@@ -11,16 +11,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ZipFileTest extends TestJPF {
-    private static ZipFile zf;
 
     static String userDir = System.getProperty("user.dir");
-    static String relativeZipPath = "src/tests/test.zip";  // Adjust path if needed
+    static String relativeZipPath = "src/tests/test.zip"; //might need to change based on project defaults
     static String fullPath = userDir + "/" + relativeZipPath;
-
-    @BeforeClass
-    public static void setup() throws IOException {
-        zf = new ZipFile(fullPath);
-    }
 
     @Test
     public void testEntries() throws IOException {
@@ -58,16 +52,19 @@ public class ZipFileTest extends TestJPF {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class) // TODO: check how to test for specific exceptions in jpf
     public void testClose() throws IOException {
-        ZipFile closedZip = new ZipFile(fullPath);
-        closedZip.close();
-        closedZip.getEntry("empty.txt");
+            ZipFile closedZip = new ZipFile(fullPath);
+            closedZip.close();
+            closedZip.getEntry("empty.txt");
     }
 
     @Test
-    public void testNonExistentEntry(){
-        assertNull(zf.getEntry("nonexistent.txt"));
+    public void testNonExistentEntry() throws IOException {
+        if (verifyNoPropertyViolation()) {
+            ZipFile zf = new ZipFile(fullPath);
+            assertNull(zf.getEntry("nonexistent.txt"));
+        }
     }
 
     @Test
