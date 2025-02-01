@@ -84,6 +84,11 @@ public class JPF_jdk_internal_misc_Unsafe extends NativePeer {
   public long objectFieldOffset__Ljava_lang_Class_2Ljava_lang_String_2__J (MJIEnv env, int unsafeRef, int clsRef, int nameRef) {
     ClassInfo ci = env.getReferredClassInfo(clsRef);
     String fname = env.getStringObject(nameRef);
+
+    // A hack for helping the getentry method of zipFile
+    if(fname.equals("hb")){
+      return 0x7CAFEB; //since the offset value just needs to be unique
+    }
     FieldInfo fi = null;
 
     fi = ci.getInstanceField(fname);

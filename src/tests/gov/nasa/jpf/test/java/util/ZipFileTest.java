@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import gov.nasa.jpf.util.test.TestJPF;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ZipFileTest extends TestJPF {
