@@ -118,7 +118,9 @@ public class ZipFile {
             return null;
         }
         byte[] extraBytes = getZEExtraBytes(entryName);
-        ze.setExtra(extraBytes);
+        //this causes errors in java 11 but works perfectly fine in java 8,
+        //TODO : check the native peer for what is causing the error
+        //ze.setExtra(extraBytes);   
         return ze;
     }
 

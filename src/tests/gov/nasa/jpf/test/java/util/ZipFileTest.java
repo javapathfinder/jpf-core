@@ -24,29 +24,38 @@ public class ZipFileTest extends TestJPF {
 
     @Test
     public void testEntries() throws IOException {
-        assertNotNull(zf.getEntry("test.txt"));
-        assertNotNull(zf.getEntry("empty.txt"));
+        if (verifyNoPropertyViolation()) {
+            ZipFile zf = new ZipFile(fullPath);
+            assertNotNull(zf.getEntry("test.txt"));
+            assertNotNull(zf.getEntry("empty.txt"));
+        }
     }
 
     @Test
-    public void testSize(){
-        assertEquals(2,zf.size());
+    public void testSize() throws IOException {
+        if (verifyNoPropertyViolation()) {
+            ZipFile zf = new ZipFile(fullPath);
+            assertEquals(2, zf.size());
+        }
     }
 
     @Test
     public void testGetInputStream() throws IOException {
-        ZipEntry ze = zf.getEntry("test.txt");
-        InputStream is = zf.getInputStream(ze);
+        if (verifyNoPropertyViolation()) {
+            ZipFile zf = new ZipFile(fullPath);
+            ZipEntry ze = zf.getEntry("test.txt");
+            InputStream is = zf.getInputStream(ze);
 
-        ByteArrayOutputStream result = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int length;
-        while((length = is.read(buffer))!= -1){
-            result.write(buffer,0,length);
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = is.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            String content = result.toString(StandardCharsets.UTF_8);
+            System.out.println(content);
+            assertEquals("Hello\n", content);
         }
-        String content = result.toString(StandardCharsets.UTF_8);
-        System.out.println(content);
-        assertEquals("Hello\n",content);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -62,15 +71,21 @@ public class ZipFileTest extends TestJPF {
     }
 
     @Test
-    public void testGetName(){
-        System.out.println(zf.getName());
-        System.out.println(fullPath);
-        assertEquals(zf.getName(),fullPath);
+    public void testGetName() throws IOException {
+        if (verifyNoPropertyViolation()) {
+            ZipFile zf = new ZipFile(fullPath);
+            System.out.println(zf.getName());
+            System.out.println(fullPath);
+            assertEquals(zf.getName(), fullPath);
+        }
     }
 
     @Test
-    public void testGetComment(){
-        System.out.println(zf.getComment());
-        assertEquals(zf.getComment(),"Comment");
+    public void testGetComment() throws IOException {
+        if (verifyNoPropertyViolation()) {
+            ZipFile zf = new ZipFile(fullPath);
+            System.out.println(zf.getComment());
+            assertEquals(zf.getComment(), "Comment");
+        }
     }
 }
