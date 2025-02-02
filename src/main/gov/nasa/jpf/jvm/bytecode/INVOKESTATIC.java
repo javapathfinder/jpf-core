@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014, United States Government, as represented by the
+ * Copyright (C) 2024, United States Government, as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All rights reserved.
  *
@@ -17,7 +17,6 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-
 import gov.nasa.jpf.vm.ClassInfo;
 import gov.nasa.jpf.vm.ClassLoaderInfo;
 import gov.nasa.jpf.vm.ElementInfo;
@@ -27,7 +26,6 @@ import gov.nasa.jpf.vm.MethodInfo;
 import gov.nasa.jpf.vm.StaticElementInfo;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
-
 
 /**
  * Invoke a class (static) method
@@ -57,14 +55,13 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     StringBuilder sb = new StringBuilder();
     sb.append(getMnemonic());
     sb.append(' ');
-    sb.append( invokedMethod.getFullName());
+    sb.append(invokedMethod.getFullName());
 
     if (invokedMethod.isMJI()){
       sb.append(" [native]");
     }
     
     return sb.toString();
-
   }
   
   public StaticElementInfo getStaticElementInfo (){
@@ -88,28 +85,37 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     if (callee == null) {
       return ti.createAndThrowException("java.lang.NoSuchMethodException", cname + '.' + mname);
     }
+    
+    // Added the static method check here
+    if (!callee.isStatic()) {
+        //System.out.println("hererrrererererer");
+        // If the method is not static, throw an exception
+        return ti.createAndThrowException("java.lang.IncompatibleClassChangeError",
+                "Expected static method " + callee.getFullName());
+    }
+    
 
-    // this can be actually different than (can be a base)
+    // This can be actually different than (can be a base)
     ClassInfo ciCallee = callee.getClassInfo();
     
     if (ciCallee.initializeClass(ti)) {
-      // do class initialization before continuing
-      // note - this returns the next insn in the topmost clinit that just got pushed
+      // Do class initialization before continuing
+      // Note - this returns the next insn in the topmost clinit that just got pushed
       return ti.getPC();
     }
 
     if (callee.isSynchronized()) {
       ElementInfo ei = ciCallee.getClassObject();
-      ei = ti.getScheduler().updateObjectSharedness(ti, ei, null); // locks most likely belong to shared objects
+      ei = ti.getScheduler().updateObjectSharedness(ti, ei, null); // Locks most likely belong to shared objects
       
       if (reschedulesLockAcquisition(ti, ei)){
         return this;
       }
     }
         
-    setupCallee( ti, callee); // this creates, initializes and pushes the callee StackFrame
+    setupCallee(ti, callee); // This creates, initializes, and pushes the callee StackFrame
 
-    return ti.getPC(); // we can't just return the first callee insn if a listener throws an exception
+    return ti.getPC(); // We can't just return the first callee insn if a listener throws an exception
   }
 
   @Override
@@ -119,7 +125,7 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     } else {
       // Hmm, this would be pre-exec, but if the current thread is not the one executing the insn 
       // this might result in false sharedness of the class object
-      return getInvokedMethod( ThreadInfo.getCurrentThread());
+      return getInvokedMethod(ThreadInfo.getCurrentThread());
     }
   }
   
@@ -130,10 +136,10 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
       if (clsInfo != null){
         MethodInfo callee = clsInfo.getMethod(mname, true);
         if (callee != null){
-          ClassInfo ciCallee = callee.getClassInfo(); // might be a superclass of ci, i.e. not what is referenced in the insn
+          ClassInfo ciCallee = callee.getClassInfo(); // Might be a superclass of ci, i.e. not what is referenced in the insn
 
           if (!ciCallee.isRegistered()){
-            // if it wasn't registered yet, classLoaded listeners didn't have a chance yet to modify it..
+            // If it wasn't registered yet, classLoaded listeners didn't have a chance yet to modify it..
             ciCallee.registerClass(ti);
             // .. and might replace/remove MethodInfos
             callee = clsInfo.getMethod(mname, true);
@@ -145,7 +151,7 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     return invokedMethod;
   }
   
-  // can be different thatn the ci - method can be in a superclass
+  // Can be different than the ci - method can be in a superclass
   public ClassInfo getInvokedClassInfo(){
     return getInvokedMethod().getClassInfo();
   }
@@ -163,10 +169,9 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     return argSize;
   }
 
-  
   @Override
   public String toString() {
-    // methodInfo not set outside real call context (requires target object)
+    // MethodInfo not set outside real call context (requires target object)
     return "invokestatic " + cname + '.' + mname;
   }
 
@@ -177,7 +182,7 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
   
   @Override
   public void accept(JVMInstructionVisitor insVisitor) {
-	  insVisitor.visit(this);
+    insVisitor.visit(this);
   }
 
   @Override
@@ -187,7 +192,7 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     try {
       clone = (INVOKESTATIC) super.clone();
 
-      // reset the method that this insn belongs to
+      // Reset the method that this insn belongs to
       clone.mi = mi;
 
       clone.invokedMethod = null;
@@ -200,4 +205,3 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     return clone;
   }
 }
-
