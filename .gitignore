@@ -38,6 +38,12 @@ tmp/
 .classpath
 .project
 
+####### Ignoring VS Code settings #######
+.vscode/
+settings.json
+.log
+.temp
+
 ####### Covers JetBrains IDE: IntelliJ #######
 *.iml
 *.ipr
@@ -82,3 +88,6 @@ local
 temp.ser
 output.txt
 file
+
+#json file
+.vscode/settings.json
