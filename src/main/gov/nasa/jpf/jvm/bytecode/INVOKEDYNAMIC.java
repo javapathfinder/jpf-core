@@ -105,7 +105,9 @@ public class INVOKEDYNAMIC extends Instruction {
       // First, resolve the functional interface
       try {
         if (Objects.equals(functionalInterfaceName,"Z")){
-          functionalInterfaceName = "java.lang.Boolean";
+          functionalInterfaceName = "java/lang/Boolean";
+        }else if (Objects.equals(functionalInterfaceName,"I")){
+          functionalInterfaceName = "Ljava/lang/Integer";
         }
         fiClassInfo = ti.resolveReferencedClass(functionalInterfaceName);
       } catch(LoadOnJPFRequired lre) {
