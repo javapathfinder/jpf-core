@@ -24,8 +24,21 @@ public final class Field extends AccessibleObject implements Member {
   String name; // deferred set by the NativePeer getName()
 
   public String toGenericString() {
-	  // TODO: return real generic string
-	  return toString();
+    // returning pattern will be [modifiers] [type] [declaring class].[field name]
+    StringBuilder sb = new StringBuilder();
+
+    int modifiers = getModifiers();
+    if (modifiers != 0) {
+      sb.append(Modifier.toString(modifiers)).append(' ');
+    }
+    Class<?> type = getType();
+    sb.append(type.getCanonicalName()).append(' ');
+
+    Class<?> declaringClass = getDeclaringClass();
+    String declaringClassName = declaringClass.getCanonicalName();
+    sb.append(declaringClassName).append('.').append(getName());
+
+    return sb.toString();
   }
   
   public native boolean getBoolean (Object o) throws IllegalAccessException;

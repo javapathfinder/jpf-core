@@ -19,6 +19,8 @@
 package gov.nasa.jpf.test.java.lang.reflect;
 
 import gov.nasa.jpf.util.test.TestJPF;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.junit.Test;
 
@@ -35,6 +37,20 @@ public class MethodTest extends TestJPF {
       Method m2 = MethodTest.class.getMethod("equalsTest", new Class[0]);
       assertTrue(m1.equals(m2));
       assertFalse(m1 == m2);
+    }
+  }
+
+  @Test
+  public void toGenericStringTest () throws SecurityException, NoSuchFieldException {
+    if (verifyNoPropertyViolation()){
+      Field f1 = FieldTest.class.getField("testField1");
+      System.out.println(f1.toGenericString());
+      assertEquals("public static final int gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField1",
+              f1.toGenericString());
+
+      Field f2 = FieldTest.class.getField("testField2");
+      assertEquals("public java.lang.String gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField2",
+              f2.toGenericString());
     }
   }
 
