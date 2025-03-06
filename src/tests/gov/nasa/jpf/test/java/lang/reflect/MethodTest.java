@@ -40,7 +40,7 @@ public class MethodTest extends TestJPF {
   }
 
   @Test
-  public void methodToGenericStringTest() throws Exception {
+  public void toGenericStringTest() throws Exception {
     if (verifyNoPropertyViolation()){
       //public method with no parameters
       Method equalsTest = MethodTest.class.getMethod("equalsTest", new Class[0]);
