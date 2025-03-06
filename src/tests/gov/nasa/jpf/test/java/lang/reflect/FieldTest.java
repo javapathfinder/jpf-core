@@ -56,6 +56,7 @@ public class FieldTest extends TestJPF {
       assertFalse(f1.equals(f3));
     }
   }
+  
   @Test
   public void toStringTest () throws SecurityException, NoSuchFieldException{
     if (verifyNoPropertyViolation()){
@@ -66,6 +67,7 @@ public class FieldTest extends TestJPF {
       assertEquals(f2.toString(), "public java.lang.String gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField2");
     }
   }
+  
   @Test
   public void toGenericStringTest() throws NoSuchFieldException {
     if (verifyNoPropertyViolation()){
