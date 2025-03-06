@@ -20,7 +20,6 @@ package gov.nasa.jpf.test.java.lang.reflect;
 
 import gov.nasa.jpf.util.test.TestJPF;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import org.junit.Test;
 
@@ -41,16 +40,31 @@ public class MethodTest extends TestJPF {
   }
 
   @Test
-  public void toGenericStringTest () throws SecurityException, NoSuchFieldException {
+  public void methodToGenericStringTest() throws Exception {
     if (verifyNoPropertyViolation()){
-      Field f1 = FieldTest.class.getField("testField1");
-      System.out.println(f1.toGenericString());
-      assertEquals("public static final int gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField1",
-              f1.toGenericString());
+      //public method with no parameters
+      Method equalsTest = MethodTest.class.getMethod("equalsTest", new Class[0]);
+      String equalsTestStr = equalsTest.toGenericString();
+      //System.out.println("equalsTest: "+equalsTestStr); // err msg here
+      assertTrue(equalsTestStr.contains("public void"));
+      assertTrue(equalsTestStr.contains("gov.nasa.jpf.test.java.lang.reflect.MethodTest.equalsTest()"));
+      assertTrue(equalsTestStr.contains("throws java.lang.SecurityException, java.lang.NoSuchMethodException"));
 
-      Field f2 = FieldTest.class.getField("testField2");
-      assertEquals("public java.lang.String gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField2",
-              f2.toGenericString());
+      //method with varargs parameter
+      Method varArgsMethod = MethodTest.class.getDeclaredMethod("testIsVarArg1s", Class[].class);
+      String varArgsMethodStr = varArgsMethod.toGenericString();
+      //System.out.println("varArgs method: " + varArgsMethodStr);
+      assertTrue(varArgsMethodStr.contains("transient void"));
+      assertTrue(varArgsMethodStr.contains("gov.nasa.jpf.test.java.lang.reflect.MethodTest.testIsVarArg1s(java.lang.Class[])"));
+
+      //method with return type
+      Method fooMethod = B.class.getDeclaredMethod("foo", int.class);
+      String fooMethodStr = fooMethod.toGenericString();
+      //System.out.println("foo method: " + fooMethodStr);
+      assertTrue(fooMethodStr.contains("public"));
+      assertTrue(fooMethodStr.contains("gov.nasa.jpf.test.java.lang.reflect.MethodTest.B"));
+      assertTrue(fooMethodStr.contains("foo(int)"));
+
     }
   }
 
