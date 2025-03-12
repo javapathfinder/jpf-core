@@ -249,4 +249,16 @@ public class ClassFileReaderAdapter implements ClassFileReader {
 
   @Override
   public void setAnnotationFieldValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex) {}
+
+  @Override
+  public void setRecordComponentCount(ClassFile cf, Object tag, int count) {}
+
+  @Override
+  public void setRecordComponent(ClassFile cf, Object tag, int index, String name, String descriptor, int attributesCount) {}
+
+  @Override
+  public void setRecordComponentAttribute(ClassFile cf, Object tag, int componentIndex, int attrIndex, String attrName, int attrLength) {}
+
+  @Override
+  public void setRecordComponentsDone(ClassFile cf, Object tag) {}
 }

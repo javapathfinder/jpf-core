@@ -84,6 +84,8 @@ public class JVMClassInfo extends ClassInfo {
       } else if (name == ClassFile.BOOTSTRAP_METHOD_ATTR) {
         cf.parseBootstrapMethodAttr(this, JVMClassInfo.this);
         
+      } else if (name == ClassFile.RECORD_ATTR){
+        cf.parseRecordAttribute(this,JVMClassInfo.this);
       }
     }
     

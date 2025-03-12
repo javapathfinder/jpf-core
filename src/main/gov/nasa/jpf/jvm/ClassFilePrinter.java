@@ -188,6 +188,47 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     }
   }
 
+  //--- records
+  @Override
+  public void setRecordComponentCount(ClassFile cf, Object tag, int count) {
+    printSectionHeader("record components");
+    pw.printf("%srecord component count=%d\n", indent, count);
+    incIndent();
+  }
+
+  @Override
+  public void setRecordComponent(ClassFile cf, Object tag, int index, String name, String descriptor, int attributesCount) {
+    pw.printf("%s[%d]: %s, type=%s", indent, index, name, descriptor);
+  }
+
+  @Override
+  public void setRecordComponentAttribute(ClassFile cf, Object tag, int componentIndex, int attrIndex, String attrName, int attrLength) {
+    pw.printf(", attribute[%d]: %s", attrIndex, attrName);
+
+    if (attrName == ClassFile.SIGNATURE_ATTR) {
+      cf.parseSignatureAttr(this, tag);
+    } else if (attrName == ClassFile.RUNTIME_VISIBLE_ANNOTATIONS_ATTR) {
+      cf.parseAnnotationsAttr(this, tag);
+    } else if (attrName == ClassFile.RUNTIME_INVISIBLE_ANNOTATIONS_ATTR) {
+      cf.parseAnnotationsAttr(this, tag);
+    } else if (attrName == ClassFile.RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR) {
+      cf.parseTypeAnnotationsAttr(this, tag);
+    } else if (attrName == ClassFile.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS_ATTR) {
+      cf.parseTypeAnnotationsAttr(this, tag);
+    } else {
+      pw.printf(" ,length=%d,data=[", attrLength);
+      printRawData(pw, cf, attrLength, 10);
+      pw.println(']');
+    }
+
+    pw.println();
+  }
+
+  @Override
+  public void setRecordComponentsDone(ClassFile cf, Object tag) {
+    decIndent();
+  }
+
   @Override
   public void setMethodAttributesDone(ClassFile cf, int methodIndex){
     decIndent();
