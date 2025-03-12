@@ -178,6 +178,7 @@ public class ClassFile extends BinaryClassSource {
   public static final String RUNTIME_INVISIBLE_ANNOTATIONS_ATTR = "RuntimeInvisibleAnnotations";
   public static final String RUNTIME_VISIBLE_ANNOTATIONS_ATTR = "RuntimeVisibleAnnotations";
   public static final String RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR = "RuntimeVisibleTypeAnnotations";
+  public static final String RUNTIME_INVISIBLE_TYPE_ANNOTATIONS_ATTR = "RuntimeInvisibleTypeAnnotations";
 
   //--- standard field attributes
   public static final String CONST_VALUE_ATTR = "ConstantValue";
@@ -216,11 +217,19 @@ public class ClassFile extends BinaryClassSource {
   public static final String  INNER_CLASSES_ATTR = "InnerClasses";
   public static final String  ENCLOSING_METHOD_ATTR = "EnclosingMethod";
   public static final String  BOOTSTRAP_METHOD_ATTR = "BootstrapMethods";
-  
+  public static final String  RECORD_ATTR = "Record";
+
   protected final static String[] stdClassAttrs = {
     SOURCE_FILE_ATTR, DEPRECATED_ATTR, INNER_CLASSES_ATTR, DEPRECATED_ATTR, SIGNATURE_ATTR,
     RUNTIME_INVISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR,
-    ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR };
+    ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR, RECORD_ATTR};
+
+  //--- standard Record attributes
+  public static final String[] stdRecordComponentAttrs = {
+          SIGNATURE_ATTR,
+          RUNTIME_INVISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_ANNOTATIONS_ATTR,
+          RUNTIME_INVISIBLE_TYPE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR
+  };
 
 
   protected String internStdAttrName(int cpIdx, String name, String[] stdNames){
@@ -1529,6 +1538,75 @@ public class ClassFile extends BinaryClassSource {
     }
     
     setBootstrapMethodsDone( reader, tag);
+  }
+
+  //-- record parsing
+  /*
+  Record_attribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 components_count;
+    {
+        u2 name_index;
+        u2 descriptor_index;
+        u2 attributes_count;
+        attribute_info attributes[attributes_count];
+    } components[components_count];
+    }
+   */
+  private void setRecordComponentCount(ClassFileReader reader, Object tag, int count) {
+    int p = pos;
+    reader.setRecordComponentCount(this, tag, count);
+    pos = p;
+  }
+
+  private void setRecordComponent(ClassFileReader reader, Object tag, int index, String name, String descriptor, int attributesCount) {
+    int p = pos;
+    reader.setRecordComponent(this, tag, index, name, descriptor, attributesCount);
+    pos = p;
+  }
+
+  private void setRecordComponentAttribute(ClassFileReader reader, Object tag, int componentIndex, int attrIndex, String attrName, int attrLength) {
+    int p = pos + attrLength;
+    reader.setRecordComponentAttribute(this, tag, componentIndex, attrIndex, attrName, attrLength);
+    pos = p;
+  }
+
+  private void setRecordComponentsDone(ClassFileReader reader, Object tag) {
+    int p = pos;
+    reader.setRecordComponentsDone(this, tag);
+    pos = p;
+  }
+
+  public void parseRecordAttribute(ClassFileReader reader, Object tag) {
+    int componentsCount = readU2();
+    setRecordComponentCount(reader, tag, componentsCount);
+
+    for (int i = 0; i < componentsCount; i++) {
+      int nameIndex = readU2();
+      String name = utf8At(nameIndex);
+
+      int descriptorIndex = readU2();
+      String descriptor = utf8At(descriptorIndex);
+
+      int attributesCount = readU2();
+
+      // Create and set the record component
+      setRecordComponent(reader, tag, i, name, descriptor, attributesCount);
+
+      // Parse the component attributes
+      for (int j = 0; j < attributesCount; j++) {
+        int attrNameIndex = readU2();
+        String attrName = utf8At(attrNameIndex);
+
+        attrName = internStdAttrName(attrNameIndex, attrName, stdRecordComponentAttrs);
+
+        int attrLength = readI4();
+        setRecordComponentAttribute(reader, tag, i, j, attrName, attrLength);
+      }
+    }
+
+    setRecordComponentsDone(reader, tag);
   }
   
   String nameAt(int nameTypeInfoIdx) {
