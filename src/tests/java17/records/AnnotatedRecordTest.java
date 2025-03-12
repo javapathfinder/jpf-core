@@ -48,11 +48,6 @@ public class AnnotatedRecordTest extends TestJPF {
     }
 
     @Test
-    public void testRecordComponentAnnotations() {
-        // TO DO : we can make three record components and check the annotation for each one
-    }
-
-    @Test
     public void testRecordMethodAnnotations() {
         if (verifyNoPropertyViolation()) {
             try {

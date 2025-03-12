@@ -43,13 +43,6 @@ public class GenericRecordTest extends TestJPF {
     }
 
     @Test
-    public void testBoundedGenericRecord() {
-        if (verifyNoPropertyViolation()) {
-            // TODO
-        }
-    }
-
-    @Test
     public void testGenericRecordWithCollections() {
         if (verifyNoPropertyViolation()) {
             Collection<String> c1 = new Collection<>(new ArrayList<>());
