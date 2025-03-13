@@ -144,6 +144,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   protected boolean      isReferenceArray = false;
   protected boolean      isAbstract = false;
   protected boolean      isBuiltin = false;
+  protected boolean      isRecord = false;
 
   // that's ultimately where we keep the attributes
   // <2do> this is currently quite redundant, but these are used in reflection
@@ -222,7 +223,10 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   /** from where the corresponding classfile was loaded (if this is not a builtin) */
   protected gov.nasa.jpf.vm.ClassFileContainer container;
 
-  
+  /** Array of Record components if this class is a record **/
+  protected RecordComponentInfo[] recordComponents;
+
+
   /**
    *  a search global numeric id that is only unique within this ClassLoader namespace. Ids are
    *  computed by the ClassLoaderInfo/Statics implementation during ClassInfo registration
@@ -866,6 +870,13 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return this;
   }
 
+  /**
+   * Returns the array of record components if this class is a record, or null otherwise.
+   */
+  public RecordComponentInfo[] getRecordComponents() {
+    return recordComponents;
+  }
+
   protected void setAssertionStatus() {
     if(isInitialized()) {
       return;
@@ -927,6 +938,8 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   public boolean isThreadClassInfo() {
     return isThreadClassInfo;
   }
+
+  public boolean isRecord() { return isRecord; }
 
   protected void checkNoClinitInitialization(){
     if (!isInitialized()){
