@@ -17,11 +17,11 @@
  */
 package gov.nasa.jpf.vm;
 
+import gov.nasa.jpf.jvm.JVMStackFrame;
+
 import java.lang.invoke.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import gov.nasa.jpf.jvm.JVMStackFrame;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -136,6 +136,11 @@ public class FunctionObjectFactory {
     if (bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION) {
       createConcatStringCall(ti, bmi.getBmArg(), freeVariableTypeNames, freeVariableValues);
       return MJIEnv.NULL;
+    } else if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS_O) {
+//      createConcatStringCall(ti, bmi.getBmArg(), freeVariableTypeNames, freeVariableValues);
+      System.out.println("FunctionObjectFactory called >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>HH");
+      ei = heap.newObject(funcObjType, ti);
+//      return MJIEnv.NULL;
     } else {
       ei = heap.newObject(funcObjType, ti); // In the case of Lambda Expressions
     }
