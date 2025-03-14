@@ -31,8 +31,39 @@ public final class Method extends AccessibleObject implements Member {
   @Override
   public native String getName();
   public String toGenericString() {
-	  // TODO: return real generic string
-	  return toString();
+    // return type will be [modifiers] [return_type] [declaring_class].[method_name]([parameter_types]) [throws_clause]
+    StringBuilder sb = new StringBuilder();
+
+    int modifiers = getModifiers();
+    if (modifiers != 0) {
+      sb.append(Modifier.toString(modifiers)).append(' ');
+    }
+
+    Class<?> returnType = getReturnType();
+    sb.append(returnType.getCanonicalName()).append(' ');
+
+    Class<?> declaringClass = getDeclaringClass();
+    sb.append(declaringClass.getCanonicalName())
+            .append('.')
+            .append(getName());
+
+    Class<?>[] paramTypes = getParameterTypes();
+    sb.append('(');
+    for (int i = 0; i < paramTypes.length; i++) {
+      if (i > 0) sb.append(", ");
+      sb.append(paramTypes[i].getCanonicalName());
+    }
+    sb.append(')');
+
+    Class<?>[] exceptionTypes = getExceptionTypes();
+    if (exceptionTypes.length > 0) {
+      sb.append(" throws ");
+      for (int i = 0; i < exceptionTypes.length; i++) {
+        if (i > 0) sb.append(", ");
+        sb.append(exceptionTypes[i].getCanonicalName());
+      }
+    }
+    return sb.toString();
   }
   public native Object invoke (Object object, Object... args)
         throws IllegalAccessException, InvocationTargetException;

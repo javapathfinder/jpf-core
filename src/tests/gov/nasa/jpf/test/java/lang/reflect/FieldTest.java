@@ -56,7 +56,7 @@ public class FieldTest extends TestJPF {
       assertFalse(f1.equals(f3));
     }
   }
-
+  
   @Test
   public void toStringTest () throws SecurityException, NoSuchFieldException{
     if (verifyNoPropertyViolation()){
@@ -65,6 +65,19 @@ public class FieldTest extends TestJPF {
       assertEquals(f1.toString(), "public static final int gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField1");
       Field f2 = FieldTest.class.getField("testField2");
       assertEquals(f2.toString(), "public java.lang.String gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField2");
+    }
+  }
+  
+  @Test
+  public void toGenericStringTest() throws NoSuchFieldException {
+    if (verifyNoPropertyViolation()){
+      Field f1 = FieldTest.class.getField("testField1");
+      String expected1 = "public static final int gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField1";
+      assertEquals(expected1, f1.toGenericString());
+
+      Field f2 = FieldTest.class.getField("testField2");
+      String expected2 = "public java.lang.String gov.nasa.jpf.test.java.lang.reflect.FieldTest.testField2";
+      assertEquals(expected2, f2.toGenericString());
     }
   }
 
