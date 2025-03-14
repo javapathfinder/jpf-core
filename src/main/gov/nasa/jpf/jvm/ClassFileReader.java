@@ -195,4 +195,13 @@ public interface ClassFileReader {
 
 
   void setSignature(ClassFile cf, Object tag, String signature);
+
+  //--- records
+  void setRecordComponentCount(ClassFile cf, Object tag, int count);
+
+  void setRecordComponent(ClassFile cf, Object tag, int index, String name, String descriptor, int attributesCount);
+
+  void setRecordComponentAttribute(ClassFile cf, Object tag, int componentIndex, int attrIndex, String attrName, int attrLength);
+
+  void setRecordComponentsDone(ClassFile cf, Object tag);
 }
