@@ -46,6 +46,7 @@ public class ClassFile extends BinaryClassSource {
   public static final int METHOD_HANDLE = 15;
   public static final int METHOD_TYPE = 16;
   public static final int INVOKE_DYNAMIC = 18;
+  private static final int MAX_SUPPORTED_VERSION = 61;
 
   public static final int REF_GETFIELD = 1;
   public static final int REF_GETSTATIC = 2;
@@ -944,6 +945,10 @@ public class ClassFile extends BinaryClassSource {
       // we don't do much with the version numbers yet
       int minor = readU2();
       int major = readU2();
+      if (major > MAX_SUPPORTED_VERSION) {
+        // this will throw ClassParseException if the major version java 18 or higher
+        error("Unsupported class file version: " + major);
+      }
 
       // get the const pool
       int cpCount = readU2();
