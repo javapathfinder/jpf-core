@@ -154,6 +154,28 @@ public class MethodInfo extends InfoObject implements GenericSignatureHolder  {
     }
   }
   
+  public boolean isRecordAccessor() {
+    if(ci!=null && ci.isRecord()) {
+      for(RecordComponentInfo component:ci.getRecordComponents()) {
+        if(getName().equals(component.getName())&& getReturnType().equals(component.getType().getName())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public Object invokeAccessor(Object target) throws Exception {
+    if(target instanceof Record) {
+      RecordComponentInfo[] components=ci.getRecordComponents();
+      for(RecordComponentInfo component:components) {
+        if(getName().equals(component.getName())) {
+          return component.getAccessor().invoke(target);
+        }
+      }
+    }
+    return null;
+  }
   public static MethodInfo create (String name, String signature, int modifiers){
     return new MethodInfo( name, signature, modifiers);
   }

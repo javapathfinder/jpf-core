@@ -173,6 +173,17 @@ public abstract class StackFrame implements Cloneable {
     return false;
   }
   
+  public void setReturnValue(Object value) {
+    if(value instanceof Integer) {
+      push((Integer) value, false);
+    }
+    else if(value instanceof Long) {
+      push((int)((Long) value).longValue(), false);
+    }
+    else {
+      setOperandAttr(value);
+    }
+  }
   public StackFrame getCallerFrame (){
     MethodInfo callee = mi;
     for (StackFrame frame = getPrevious(); frame != null; frame = frame.getPrevious()){

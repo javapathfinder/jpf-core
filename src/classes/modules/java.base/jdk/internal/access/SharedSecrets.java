@@ -63,7 +63,7 @@ public class SharedSecrets {
   private static JavaObjectInputStreamAccess javaObjectInputStreamAccess;
   private static JavaObjectInputFilterAccess javaObjectInputFilterAccess;
   private static JavaObjectInputStreamReadString javaObjectInputStreamReadString;
-  private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
+  //private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
   private static JavaLangReflectAccess javaLangReflectAccess;
   private static JavaSecurityAccess javaSecurityAccess;
 
@@ -211,9 +211,9 @@ public class SharedSecrets {
     javaObjectInputStreamReadString = access;
   }
 
-  public static void setJavaSecurityPropertiesAccess(JavaSecurityPropertiesAccess j) {
-    javaSecurityPropertiesAccess = j;
-  }
+ // public static void setJavaSecurityPropertiesAccess(JavaSecurityPropertiesAccess j) {
+   // javaSecurityPropertiesAccess = j;
+  //}
 
   public static void setJavaLangReflectAccess(JavaLangReflectAccess j) {
     javaLangReflectAccess = j;

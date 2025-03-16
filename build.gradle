@@ -7,6 +7,9 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+    languageVersion=JavaLanguageVersion.of(17)
+    }
 }
 
 gradleEnterprise {
@@ -29,6 +32,8 @@ repositories {
 dependencies {
     testImplementation 'org.ow2.asm:asm:9.5'
     testImplementation('junit:junit:4.13.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
 configurations {
@@ -281,6 +286,7 @@ test {
     enableAssertions = true
     maxHeapSize = "1024m"
 
+    useJUnitPlatform()
     include "**/*Test.class"
     exclude "**/SplitInputStreamTest.class"
     exclude "**/JPF_*.class"
@@ -343,7 +349,7 @@ publishing {
     }
 }
 
-def PolDetJPFClasspath = "${buildDir}/tests:" + configurations.testRuntimeClasspath.findAll { it.name.endsWith('jar') && (it.name.contains('junit') || it.name.contains('hamcrest')) }.join(":")
+def PolDetJPFClasspath = "${buildDir}/tests:" + configurations.testRuntimeClasspath.findAll { it.name.endsWith('jar') && (it.name.contains('junit-jupiter') || it.name.contains('hamcrest')) }.join(":")
 
 tasks.register('testPolDet', Exec) {
     group = "PolDet@JPF"
