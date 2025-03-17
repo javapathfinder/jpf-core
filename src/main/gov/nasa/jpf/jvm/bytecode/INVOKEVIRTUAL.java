@@ -17,6 +17,12 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
+import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.Instruction;
+import gov.nasa.jpf.vm.MethodInfo;
+import gov.nasa.jpf.vm.ClassInfo;
+import gov.nasa.jpf.vm.RecordComponentInfo;
+import gov.nasa.jpf.JPFException;
 
 
 /**
@@ -29,8 +35,14 @@ public class INVOKEVIRTUAL extends VirtualInvocation {
   protected INVOKEVIRTUAL (String clsDescriptor, String methodName, String signature){
     super(clsDescriptor, methodName, signature);
   }
-
-
+  @Override
+public MethodInfo getInvokedMethod(ThreadInfo ti) {
+    ClassInfo ci = ti.resolveReferencedClass(cname);
+    if (ci != null) {
+        return ci.getMethod(mname, true);
+    }
+    return null;
+}
   @Override
   public int getByteCode () {
     return 0xB6;
@@ -46,4 +58,33 @@ public class INVOKEVIRTUAL extends VirtualInvocation {
   public void accept(JVMInstructionVisitor insVisitor) {
 	  insVisitor.visit(this);
   }
+  @Override
+public Instruction execute(ThreadInfo ti) {
+    MethodInfo mi = getInvokedMethod(ti);
+
+    if (mi == null) {
+        throw new JPFException("Method not found: " + cname + '.' + mname);
+    }
+
+    // Handle record accessors
+    if (mi.isRecordAccessor()) {
+        Object target = ti.getTopFrame().getThis();
+        if (target instanceof Record) {
+            try {
+                RecordComponentInfo[] components = ((ClassInfo) mi.getClassInfo()).getRecordComponents();
+                for (RecordComponentInfo component : components) {
+                    if (mi.getName().equals(component.getName())) {
+                        Object result = component.getAccessor().invoke(target);
+                        ti.getTopFrame().setReturnValue(result);
+                        return ti.getPC().getNext();
+                    }
+                }
+            } catch (Exception e) {
+                throw new JPFException("Failed to invoke accessor for record: " + mi.getName());
+            }
+        }
+    }
+
+    return super.execute(ti);
+}
 }

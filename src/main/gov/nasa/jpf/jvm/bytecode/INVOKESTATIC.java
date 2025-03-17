@@ -27,7 +27,8 @@ import gov.nasa.jpf.vm.MethodInfo;
 import gov.nasa.jpf.vm.StaticElementInfo;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
-
+import gov.nasa.jpf.vm.StackFrame;
+import gov.nasa.jpf.JPFException;
 
 /**
  * Invoke a class (static) method
@@ -106,11 +107,41 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
         return this;
       }
     }
-        
-    setupCallee( ti, callee); // this creates, initializes and pushes the callee StackFrame
-
-    return ti.getPC(); // we can't just return the first callee insn if a listener throws an exception
+    
+    if (callee.isSynchronized()) {
+      ElementInfo ei = ciCallee.getClassObject();
+      ei = ti.getScheduler().updateObjectSharedness(ti, ei, null); // locks most likely belong to shared objects
+      
+      if (reschedulesLockAcquisition(ti, ei)){
+          return this;
+      }
+  
+      MethodInfo mi = getInvokedMethod(ti);
+  
+      if (mi != null && mi.isRecordAccessor()) {
+          try {
+              Object result = mi.invokeAccessor(ti.getThis());
+              ti.getTopFrame().setReturnValue(result);
+              return ti.getPC().getNext();
+          } catch (Throwable e) { // Catch Throwable instead of Exception
+              throw new JPFException("Failed to invoke accessor for record: " + mi.getName(), e);
+          }
+      }
+  
+      if (mi != null) {
+          return mi.getInstructions()[0];
+      } else {
+          return null;
+      }
   }
+        
+    setupCallee( ti, callee);
+    // this creates, initializes and pushes the callee StackFrame
+
+    return ti.getPC();
+   } // we can't just return the first callee insn if a listener throws an exception
+  
+
 
   @Override
   public MethodInfo getInvokedMethod(){

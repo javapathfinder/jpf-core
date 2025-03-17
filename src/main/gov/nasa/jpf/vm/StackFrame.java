@@ -155,7 +155,16 @@ public abstract class StackFrame implements Cloneable {
     pc = mi.getInstruction(0);
   }  
   
-
+  public void setReturnValue(Object value) {
+    if (value instanceof Integer) {
+      push((Integer) value, false);
+  } else if (value instanceof Long) {
+      push((int) ((Long) value).longValue(), false);
+  } else {
+      // Handle non-primitive types differently (e.g., store them as attributes)
+      setOperandAttr(value);
+  }
+}
 
   protected FixedBitSet createReferenceMap (int nSlots){
     if (nSlots <= 64){
@@ -1368,6 +1377,7 @@ public abstract class StackFrame implements Cloneable {
   public boolean isReflection(){
     return ((attributes & ATTR_IS_REFLECTION) != 0);
   }
+
 
   // all the dupses don't have any GC side effect (everything is already
   // on the stack), so skip the GC requests associated with push()/pop()

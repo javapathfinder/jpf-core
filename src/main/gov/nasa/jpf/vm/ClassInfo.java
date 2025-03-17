@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
+import gov.nasa.jpf.vm.MethodInfo;
 
 
 /**
@@ -1113,7 +1114,30 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
     return mi;
   }
+public MethodInfo getRecordConstructor(String name, String[] argTypes) {
+    if (isRecord) {
+        // Get all declared methods
+        for (MethodInfo m : methods.values()) {
+          if (m.getName().equals("<init>") && matchConstructorArgs(m, argTypes)) {
+              return m;
+          }
+      }
+    }
+    return null;
+}
 
+private boolean matchConstructorArgs(MethodInfo mi, String[] argTypes) {
+    RecordComponentInfo[] components = getRecordComponents();
+    if (components != null && components.length == argTypes.length) {
+        for (int i = 0; i < components.length; i++) {
+            if (!components[i].getType().getName().equals(argTypes[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    return false;
+}
   
   public MethodInfo getDefaultMethod (String uniqueName) {
     MethodInfo mi = null;
