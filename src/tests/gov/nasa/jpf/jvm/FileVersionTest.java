@@ -30,23 +30,28 @@ public class FileVersionTest extends TestJPF {
         }
     }
 
+    private int getMajorVersion(byte[] classData) {
+        int major = ((classData[6] & 0xff) << 8) | (classData[7] & 0xff);
+        return major;
+    }
+
     @Test
-    public void testSupportedVersionJava17() throws IOException {
+    public void testSupportedVersionJava17() throws IOException, ClassParseException {
         byte[] classData = loadClassFile(JAVA17_CLASS);
-
+        System.out.println(getMajorVersion(classData));
         ClassFile classFile = new ClassFile(classData);
-
-        assertTrue("Java 17 class file should be parsed successfully", true);
+        ClassFileReader reader = new ClassFileReaderAdapter();
+        // this should pass with no exceptions
+        classFile.parse(reader);
     }
 
-    /*
     @Test(expected = ClassParseException.class)
-    public void testUnsupportedVersionJava21() throws IOException {
+    public void testUnsupportedVersionJava21() throws IOException, ClassParseException {
         byte[] classData = loadClassFile(JAVA21_CLASS);
-
+        System.out.println(getMajorVersion(classData));
         ClassFile classFile = new ClassFile(classData);
-        // this should throw exception if we used any version other than java 17
-        // which mean the test passes
+        ClassFileReader reader = new ClassFileReaderAdapter();
+        // this should throw ClassParseException
+        classFile.parse(reader);
     }
-    */
 }
