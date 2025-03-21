@@ -8,9 +8,8 @@ import java.io.*;
 
 public class FileVersionTest extends TestJPF {
 
-    private static final String RESOURCES_PATH = "resources/";
-    private static final String JAVA17_CLASS = RESOURCES_PATH + "TestClassJava17.class";
-    private static final String JAVA21_CLASS = RESOURCES_PATH + "TestClassJava21.class";
+    private static final String JAVA17_CLASS = "/TestClassJava17.class";
+    private static final String JAVA21_CLASS = "/TestClassJava21.class";
 
     // loading a .class file into a byte array
     private byte[] loadClassFile(String resourceName) throws IOException {
@@ -30,15 +29,10 @@ public class FileVersionTest extends TestJPF {
         }
     }
 
-    private int getMajorVersion(byte[] classData) {
-        int major = ((classData[6] & 0xff) << 8) | (classData[7] & 0xff);
-        return major;
-    }
 
     @Test
     public void testSupportedVersionJava17() throws IOException, ClassParseException {
         byte[] classData = loadClassFile(JAVA17_CLASS);
-        System.out.println(getMajorVersion(classData));
         ClassFile classFile = new ClassFile(classData);
         ClassFileReader reader = new ClassFileReaderAdapter();
         // this should pass with no exceptions
@@ -48,7 +42,6 @@ public class FileVersionTest extends TestJPF {
     @Test(expected = ClassParseException.class)
     public void testUnsupportedVersionJava21() throws IOException, ClassParseException {
         byte[] classData = loadClassFile(JAVA21_CLASS);
-        System.out.println(getMajorVersion(classData));
         ClassFile classFile = new ClassFile(classData);
         ClassFileReader reader = new ClassFileReaderAdapter();
         // this should throw ClassParseException
