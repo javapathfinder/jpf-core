@@ -366,3 +366,11 @@ tasks.register('runPolDet', Exec) {
 }
 
 defaultTasks "buildJars"
+
+sourceSets {
+    test {
+        resources {
+            srcDirs = ['src/tests/resources']
+        }
+    }
+}
