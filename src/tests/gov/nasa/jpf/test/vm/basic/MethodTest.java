@@ -297,4 +297,59 @@ public class MethodTest extends TestMethodBase {
     }
   }
 
+    /*
+  unit tests for method dispatch
+   */
+
+  //Same Context, Instance Caller, Static Callee, Default/Private
+  @Test
+  public void testStaticPrivateMethodCallFromInstance() {
+    if (verifyNoPropertyViolation()) {
+      // static helper class with private static method
+      // static declarations in inner classes are not supported at java 11
+      class PrivateMethodAccessor {
+        private static final int PRIVATE_STATIC_VALUE = 99;
+      }
+
+      // method to verify private static field access
+      int result = PrivateMethodAccessor.PRIVATE_STATIC_VALUE;
+
+      assert result == 99 :
+              "Failed to access private static field from instance context";
+    }
+  }
+
+  //Inner Context, Instance Caller, Instance Callee, Default/Protected
+  @Test
+  public void testProtectedMethodCallInInnerContext() {
+    if (verifyNoPropertyViolation()) {
+      // Inner class with protected method
+      class InnerTestHelper {
+        protected int protectedInnerMethod() {
+          return 42;
+        }
+      }
+
+      InnerTestHelper innerHelper = new InnerTestHelper();
+      assert innerHelper.protectedInnerMethod() == 42 :
+              "Failed to call protected method in inner context";
+    }
+  }
+
+  //Same Context, Instance Caller, Instance Callee, Private/Public
+  @Test
+  public void testPublicMethodCallFromPrivateContext() {
+    if (verifyNoPropertyViolation()) {
+      // Class with a public method to be called
+      class PublicMethodHolder {
+        public int publicMethod() {
+          return 77;
+        }
+      }
+
+      PublicMethodHolder methodHolder = new PublicMethodHolder();
+      assert methodHolder.publicMethod() == 77 :
+              "Failed to call public method from private context";
+    }
+  }
 }
