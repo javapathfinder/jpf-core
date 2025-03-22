@@ -134,13 +134,19 @@ public class ProxyTest extends TestJPF {
 
   @Test
   public void testProxyCreationInCaseOfChoiceGenerator() {
-    if (verifyNoPropertyViolation()){
+    if (verifyNoPropertyViolation()) {
+      MyHandler handler = new MyHandler(42);
+      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(), new Class[] { Ifc.class }, handler);
+      String interfaceName = Ifc.class.getName();
+      String packageName = interfaceName.substring(0, interfaceName.lastIndexOf('.'));
+      String desiredProxyClsName = packageName + ".$Proxy$"
+              + Integer.toHexString(Ifc.class.getName().hashCode());
+      assertEquals(ifc.getClass().getName(), desiredProxyClsName);
+
+      // now test cross-thread behavior with minimal operations
+      // which mean we need fewer interleavings
       NewThread t = new NewThread();
       t.start();
-      MyHandler handler = new MyHandler(42);
-      Ifc ifc = (Ifc) Proxy.newProxyInstance(Ifc.class.getClassLoader(),
-                                             new Class[] { Ifc.class },
-                                             handler);
 
       try {
         t.join();
@@ -149,12 +155,6 @@ public class ProxyTest extends TestJPF {
       }
       Ifc ifcInOtherThread = t.ifc;
       assertEquals(ifc.getClass().getName(), ifcInOtherThread.getClass().getName());
-
-      String interfaceName = Ifc.class.getName();
-      String packageName = interfaceName.substring(0, interfaceName.lastIndexOf('.'));
-      String desiredProxyClsName = packageName + ".$Proxy$"
-          + Integer.toHexString(Ifc.class.getName().hashCode());
-      assertEquals(ifc.getClass().getName(), desiredProxyClsName);
     }
   }
 
