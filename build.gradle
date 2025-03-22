@@ -282,7 +282,7 @@ test {
     jacoco.enabled = false
 
     forkEvery = 1
-    maxParallelForks = Math.max(4, Runtime.runtime.availableProcessors())
+    maxParallelForks = Math.max(16, Runtime.runtime.availableProcessors())
     enableAssertions = true
     maxHeapSize = "1024m"
 
