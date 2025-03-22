@@ -272,6 +272,11 @@ tasks.register('buildJars') {
 
 test {
     description = "Runs core regression tests."
+    
+    doFirst {
+        println "Max Worker Count: ${project.gradle.startParameter.maxWorkerCount}"
+        println "Test will use ${maxParallelForks} parallel forks"
+    }
 
     dependsOn buildJars
     jacoco.enabled = false
