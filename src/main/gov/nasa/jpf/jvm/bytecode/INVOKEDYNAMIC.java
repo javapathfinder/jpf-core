@@ -17,17 +17,7 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.BootstrapMethodInfo;
-import gov.nasa.jpf.vm.ClassInfo;
-import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.FunctionObjectFactory;
-import gov.nasa.jpf.vm.Instruction;
-import gov.nasa.jpf.vm.LoadOnJPFRequired;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.ThreadInfo;
-import gov.nasa.jpf.vm.Types;
-import gov.nasa.jpf.vm.VM;
+import gov.nasa.jpf.vm.*;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -72,7 +62,7 @@ public class INVOKEDYNAMIC extends Instruction {
   public int getByteCode () {
     return 0xBA;
   }
-  
+
   @Override
   public String toString() {
     String args = "";
@@ -82,7 +72,7 @@ public class INVOKEDYNAMIC extends Instruction {
       }
       args += type;
     }
-    return "invokedynamic " + bootstrapMethodIndex + " " + 
+    return "invokedynamic " + bootstrapMethodIndex + " " +
     samMethodName + '(' + args +"):" + functionalInterfaceName;
   }
 
@@ -91,12 +81,119 @@ public class INVOKEDYNAMIC extends Instruction {
    * Executing this returns an object that implements the functional interface 
    * and contains a method which captures the behavior of the lambda expression.
    */
+  private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
+    ElementInfo thisEi = ti.getThisElementInfo();
+    ElementInfo otherEi = ti.getHeap().get(otherRef);
+    System.out.println("computeRecordEquals: thisRef=" + thisEi.getObjectRef() + ", otherRef=" + otherRef);
+    if (otherEi == null || !ci.equals(otherEi.getClassInfo())) {
+      System.out.println("Early return: otherEi=" + (otherEi == null ? "null" : otherEi.getClassInfo().getName()));
+      return false;
+    }
+    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    String[] components = bmi.getBmArg().split(";");
+    System.out.println("Components: " + java.util.Arrays.toString(components));
+    for (String compName : components) {
+      FieldInfo fi = ci.getDeclaredInstanceField(compName);
+      Object thisVal = thisEi.getFieldValueObject(compName);
+      Object otherVal = otherEi.getFieldValueObject(compName);
+      boolean equal;
+      if (fi.isReference() && thisVal != null && otherVal != null) {
+        ElementInfo thisStringEi = (ElementInfo) thisVal;
+        ElementInfo otherStringEi = (ElementInfo) otherVal;
+        // Get coder fields (byte: 0 = Latin-1, 1 = UTF-16)
+        // this is a value within the string class determine which encoding is used
+        // we will compare based on coders and bytes
+        byte thisCoder = thisStringEi.getByteField("coder");
+        byte otherCoder = otherStringEi.getByteField("coder");
+        // Get value fields (byte[])
+        int thisBytesRef = thisStringEi.getReferenceField("value");
+        int otherBytesRef = otherStringEi.getReferenceField("value");
+        ElementInfo thisBytesEi = ti.getHeap().get(thisBytesRef);
+        ElementInfo otherBytesEi = ti.getHeap().get(otherBytesRef);
+        byte[] thisBytes = ((ByteArrayFields) thisBytesEi.getFields()).asByteArray();
+        byte[] otherBytes = ((ByteArrayFields) otherBytesEi.getFields()).asByteArray();
+        // Compare based on coder and bytes
+        equal = thisCoder == otherCoder && java.util.Arrays.equals(thisBytes, otherBytes); // Different encodings if false
+      } else if (thisVal == null) {
+        equal = (otherVal == null);
+        System.out.println("Comparing " + compName + ": thisVal=null, otherVal=" + otherVal);
+      } else if (thisVal instanceof Integer && otherVal instanceof Integer) {
+        equal = ((Integer) thisVal).intValue() == ((Integer) otherVal).intValue();
+        System.out.println("Comparing " + compName + ": thisVal=" + thisVal +
+                " (java.lang.Integer), otherVal=" + otherVal + " (java.lang.Integer)");
+      } else {
+        equal = thisVal.equals(otherVal);
+        System.out.println("Comparing " + compName + ": thisVal=" + thisVal +
+                " (" + thisVal.getClass().getName() + "), otherVal=" + otherVal +
+                " (" + otherVal.getClass().getName() + ")");
+      }
+      System.out.println("Result: " + equal);
+      if (!equal) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private int computeRecordHashCode(ThreadInfo ti, ClassInfo ci) {
+    ElementInfo ei = ti.getThisElementInfo();
+    if (ei == null) {
+      throw new IllegalStateException("No 'this' instance for hashCode computation");
+    }
+    int hash = 0;
+    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    String[] components = bmi.getBmArg().split(";");
+    System.out.println("printing el components el gamdeen neek: " + java.util.Arrays.toString(components));
+    for (String compName : components) {
+      Object value = ei.getFieldValueObject(compName);
+      System.out.println("Component: " + compName + ", Value: " + value);
+      hash = 31 * hash + (value != null ? value.hashCode() : 0);
+    }
+    // System.out.println("Computed hashCode: " + hash);
+    return hash;
+  }
+
+  private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
+    // TODO : ==>
+    return -1;
+  }
   @Override
   public Instruction execute (ThreadInfo ti) {
     StackFrame frame = ti.getModifiableTopFrame();
-    
+    ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
+    BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
+
+    String bootstrapMethodName = (bmi.getLambdaBody() != null) ? bmi.getLambdaBody().getName() : this.samMethodName;
+    System.out.println("Bootstrap type: " + bmi.getBmType() + ", method: " + bootstrapMethodName +
+            ", bootstrapIndex: " + bootstrapMethodIndex);
+
+    if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS) {
+      String methodName = this.samMethodName;
+      System.out.println("Executing record method: " + methodName);
+
+      if ("equals".equals(methodName)) {
+        System.out.println("Stack before pop: " + frame.getTopPos() + ", " + frame.peek(1) + ", " + frame.peek(0));
+        int otherRef = frame.peek();
+        frame.pop(2);
+        System.out.println("Calling computeRecordEquals with otherRef=" + otherRef);
+        boolean result = computeRecordEquals(ti, enclosingClass, otherRef);
+        frame.push(result ? 1 : 0);
+      } else if ("hashCode".equals(methodName)) {
+        frame.pop(1);
+        System.out.println("Calling computeRecordHashCode for class: " + enclosingClass.getName());
+        int hashCode = computeRecordHashCode(ti, enclosingClass);
+        frame.push(hashCode);
+      } else if ("toString".equals(methodName)) {
+        frame.pop(1);
+        int stringRef = computeRecordToString(ti, enclosingClass);
+        frame.push(stringRef);
+      } else {
+        throw new IllegalStateException("Unsupported record method: " + methodName);
+      }
+
+      return getNext(ti);
+    }
     ElementInfo ei = ti.getHeap().get(funcObjRef);
-    
     if(ei==null || ei!=lastFuncObj || freeVariableTypes.length>0) {
       ClassInfo fiClassInfo;
 
@@ -110,11 +207,9 @@ public class INVOKEDYNAMIC extends Instruction {
       if (fiClassInfo.initializeClass(ti)) {
         return ti.getPC();
       }
-      
-      ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
-      
-      BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
-      
+
+
+
       VM vm = VM.getVM();
       FunctionObjectFactory funcObjFactory = vm.getFunctionObjectFacotry();
       
