@@ -43,14 +43,14 @@ public class BootstrapMethodInfo {
   public enum BMType{
     STRING_CONCATENATION,
     LAMBDA_EXPRESSION,
-    SERIALIZABLE_LAMBDA_EXPRESSION
+    SERIALIZABLE_LAMBDA_EXPRESSION,
+    RECORDS // For record synthetic methods
   }
   BMType bmType;
-  public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor,
-                             String bmArg, BMType bmType) {
+  public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor, String bmArg, BMType bmType) {
     this.lambdaRefKind = lambdaRefKind;
     this.enclosingClass = enclosingClass;
-    this.lambdaBody = lambdaBody;
+    this.lambdaBody = lambdaBody != null ? lambdaBody : enclosingClass.getMethod(samDescriptor, false); // Fallback
     this.samDescriptor = samDescriptor;
     this.bmArg = bmArg;
     this.bmType = bmType;
