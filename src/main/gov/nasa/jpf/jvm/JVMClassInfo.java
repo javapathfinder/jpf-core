@@ -160,8 +160,26 @@ public class JVMClassInfo extends ClassInfo {
               isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
                       : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
     }
-    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
-      //-----
+    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs) {
+      ClassInfo enclosingCls = JVMClassInfo.this;
+      String components = cf.getBmArgString(cpArgs[1]); // this is something like "x;y"
+      String methodName;
+      String methodDescriptor;
+
+      if (descriptor.equals("()I")) {
+        methodName = "hashCode";
+        methodDescriptor = "()I";
+      } else if (descriptor.endsWith("Ljava/lang/Object;)Z")) {
+        methodName = "equals";
+        methodDescriptor = "(Ljava/lang/Object;)Z";
+      } else if (descriptor.equals("()Ljava/lang/String;")) {
+        methodName = "toString";
+        methodDescriptor = "()Ljava/lang/String;";
+      } else {
+        throw new IllegalStateException("Unsupported record method descriptor: " + descriptor);
+      }
+
+      setBootstrapMethodInfo(enclosingCls, methodName, methodDescriptor, idx, refKind, descriptor, components, BootstrapMethodInfo.BMType.RECORDS);
     }
     private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       String clsName = cls;
@@ -182,14 +200,14 @@ public class JVMClassInfo extends ClassInfo {
     }
     
     // helper method for setBootstrapMethod()
-    public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind, 
-                              String descriptor, String bmArg,BootstrapMethodInfo.BMType bmType){
-      MethodInfo methodBody = enclosingCls.getMethod(mthName + parameters, false);
-      
-      if(methodBody!=null) {
-        bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor
-                , bmArg, bmType);
+    public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind,
+                                       String descriptor, String bmArg, BootstrapMethodInfo.BMType bmType) {
+      MethodInfo methodBody = null;
+      if (bmType != BootstrapMethodInfo.BMType.RECORDS) {
+        methodBody = enclosingCls.getMethod(mthName + parameters, false);
       }
+      // Always set bootstrapMethods[idx], even if methodBody is null for RECORDS_O
+      bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor, bmArg, bmType);
     }
 
     //--- Storing record while parsing
