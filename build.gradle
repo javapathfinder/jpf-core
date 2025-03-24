@@ -76,6 +76,7 @@ tasks.named('compilePeersJava') {
 tasks.named('compileTestJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
+    dependsOn(compileModulesJava)
 }
 tasks.named('jar') {
     dependsOn(copyLibs)
