@@ -65,15 +65,17 @@ public class INVOKEDYNAMIC extends Instruction {
 
   @Override
   public String toString() {
-    String args = "";
-    for(String type: freeVariableTypeNames) {
-      if(args.length()>0) {
-        type += ','+ type;
+    StringBuilder args = new StringBuilder();
+    if (freeVariableTypeNames != null) {
+      for (int i = 0; i < freeVariableTypeNames.length; i++) {
+        if (i > 0) {
+          args.append(",");
+        }
+        args.append(freeVariableTypeNames[i]);
       }
-      args += type;
     }
     return "invokedynamic " + bootstrapMethodIndex + " " +
-    samMethodName + '(' + args +"):" + functionalInterfaceName;
+            samMethodName + '(' + args + "):" + functionalInterfaceName;
   }
 
   /**
@@ -154,8 +156,19 @@ public class INVOKEDYNAMIC extends Instruction {
   }
 
   private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
-    // TODO : ==>
-    return -1;
+    ElementInfo ei = ti.getThisElementInfo();
+    String simpleName = ci.getName().substring(ci.getName().lastIndexOf('$') + 1);
+    StringBuilder sb = new StringBuilder(simpleName).append("[");
+    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    String[] components = bmi.getBmArg().split(";");
+    for (int i = 0; i < components.length; i++) {
+      Object value = ei.getFieldValueObject(components[i]);
+      sb.append(components[i]).append("=").append(value);
+      if (i < components.length - 1) sb.append(", ");
+    }
+    sb.append("]");
+    System.out.println("a7a: "+ sb.toString());
+    return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
   @Override
   public Instruction execute (ThreadInfo ti) {
