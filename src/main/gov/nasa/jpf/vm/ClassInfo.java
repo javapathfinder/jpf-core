@@ -754,22 +754,16 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   
   @Override
   public int hashCode() {
-    return OATHash.hash(name.hashCode(), classLoader.hashCode());
+    return 31*name.hashCode()+(classLoader!=null ? classLoader.hashCode():0);
   }
   
   @Override
   public boolean equals (Object o) {
-    if (o instanceof ClassInfo) {
-      ClassInfo other = (ClassInfo)o;
-      if (classLoader == other.classLoader) {
-        // beware of ClassInfos that are not registered yet - in this case we have to equals names
-        if (name.equals(other.name)) {
-          return true;
-        }
-      }
-    }
-    
-    return false;
+    if(this==o) return true;
+    if(!(o instanceof ClassInfo)) return false;
+    ClassInfo other=(ClassInfo) o;
+
+    return name.equals(other.name) && classLoader==other.classLoader;
   }
 
   protected String computeSourceFileName(){
@@ -2538,7 +2532,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   
   @Override
   public String toString() {
-    return "ClassInfo[name=" + name + "]";
+    return "ClassInfo[name=" +name+ ", classLoader="+classLoader+"]";
   }
 
   protected MethodInfo getFinalizer0 () {
