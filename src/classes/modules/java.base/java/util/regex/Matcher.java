@@ -118,7 +118,49 @@ public class Matcher {
 
   public native boolean requireEnd();
 
-  // TODO public native MatchResult toMatchResult();
+  //Used for regular expression matching
+  public MatchResult toMatchResult() {
+    return new MatchResult() {
+      @Override
+      public int start() {
+        return Matcher.this.start();
+      }
+
+      @Override
+      public int start(int group) {
+        return Matcher.this.start(group);
+      }
+
+      @Override
+      public int end() {
+        return Matcher.this.end();
+      }
+
+      @Override
+      public int end(int group) {
+        return Matcher.this.end(group);
+      }
+
+      @Override
+      public String group() {
+        return Matcher.this.group();
+      }
+
+      @Override
+      public String group(int group) {
+        return Matcher.this.group(group);
+      }
+
+      @Override
+      public int groupCount() {
+        return Matcher.this.groupCount();
+      }
+    };
+
+  }
+
+
+  // TODO public native MatchResult toMatchResult();-Done;
   // TODO public native StringBuffer appendTail(StringBuffer sb);
   // TODO public native Matcher appendReplacement(StringBuffer sb, String replacement);
 }
