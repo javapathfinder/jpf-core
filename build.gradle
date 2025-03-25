@@ -29,6 +29,7 @@ repositories {
 dependencies {
     testImplementation 'org.ow2.asm:asm:9.5'
     testImplementation('junit:junit:4.13.1')
+     testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
 }
 
 configurations {
@@ -281,6 +282,7 @@ test {
     enableAssertions = true
     maxHeapSize = "1024m"
 
+    useJUnitPlatform()
     include "**/*Test.class"
     exclude "**/SplitInputStreamTest.class"
     exclude "**/JPF_*.class"
