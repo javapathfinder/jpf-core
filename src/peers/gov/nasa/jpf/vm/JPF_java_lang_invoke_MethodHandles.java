@@ -72,6 +72,31 @@ public class JPF_java_lang_invoke_MethodHandles extends NativePeer {
       }
       return type;
     }
+
+    // public java.lang.invoke.MethodHandle findStatic(java.lang.Class<?>, java.lang.String, java.lang.invoke.MethodType) throws java.lang.NoSuchMethodException, java.lang.IllegalAccessException;
+    @MJI
+    public int findStatic__Ljava_lang_Class_2Ljava_lang_String_2Ljava_lang_invoke_MethodType_2__Ljava_lang_invoke_MethodHandle_2(
+        MJIEnv env, int objRef, int classRef, int nameRef, int methodTypeRef) 
+        throws NoSuchMethodException, IllegalAccessException {
+      String targetClsName = env.getStringObject(env.getReferenceField(classRef, "name")); // This part is tricky, don't use ci.getName(), it will return "Class.class"
+      String methodName = env.getStringObject(nameRef);
+      ClassInfo targetCls = env.getSystemClassLoaderInfo().loadClass(targetClsName);
+      if (targetCls == null) {
+        throw new NoSuchMethodException("Cannot find class: " + targetClsName);
+      }
+
+      for(String method : targetCls.methods.keySet()) {
+        System.out.println(method);
+      }
+      // TODO: add MethodType to the method name
+      MethodInfo mi = targetCls.getMethod(methodName + "(I)I", true);
+      if (mi == null) {
+        throw new NoSuchMethodException("Cannot find method: " + methodName + " on class: " + targetClsName);
+      }
+
+      // TODO: return the method handle
+      return mi.getGlobalId();
+    }
   }
 
 }
