@@ -17,9 +17,56 @@
  */
 package gov.nasa.jpf.vm;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import gov.nasa.jpf.annotation.MJI;
 
 public class JPF_java_lang_invoke_MethodHandles extends NativePeer {
+  static Class<?> getClass(MJIEnv env, int classRef) throws ClassNotFoundException {
+    String className = env.getStringObject(env.getReferenceField(classRef, "name"));
+    return Class.forName(className);
+  }
+
+  // use  `private  MethodType(Class<?> rtype, Class<?>[] ptypes)` to initialize the method type
+  static MethodType getMethodType(MJIEnv env, int methodTypeRef) throws ClassNotFoundException {
+    String rtypeName = env.getStringObject(env.getReferenceField(methodTypeRef, "rtype"));
+    Class<?> rtype = Class.forName(rtypeName);
+    String[] ptypeNames = env.getStringArrayObject(env.getReferenceField(methodTypeRef, "ptypes"));
+    Class<?>[] ptypes = new Class<?>[ptypeNames.length];
+    for (int i = 0; i < ptypeNames.length; i++) {
+      ptypes[i] = Class.forName(ptypeNames[i]);
+    }
+    return MethodType.methodType(rtype, ptypes);
+  }
+
+
+  // this function is used to get the method handle by lookup.findStatic(C.class,"m",MT)
+  static MethodHandle getMethodHandleByFindStatic(MJIEnv env, int classRef, int nameRef, int methodTypeRef) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException {
+    MethodHandles.Lookup lookup = MethodHandles.lookup();
+    Class<?> targetCls = getClass(env, classRef);
+    String methodName = env.getStringObject(nameRef);
+    MethodType methodType = getMethodType(env, methodTypeRef);
+    return lookup.findStatic(targetCls, methodName, methodType);
+  }
+
+  // TODO: LambdaForm is private, need some effort to recreate this:
+  static int createJPFLambdaForm(MJIEnv env, MethodHandle methodHandle) {
+    int lfRef = env.newObject("java.lang.invoke.LambdaForm");
+    ElementInfo lfEI = env.getModifiableElementInfo(lfRef);
+    return lfRef;
+  }
+
+  // create a new JPF method handle by simulate `MethodHandle(MethodType type, LambdaForm form)`
+  static int createJPFMethodHandle(MJIEnv env, int mtRef, int lfRef) {
+    int newMethodHandleRef = env.newObject("java.lang.invoke.MethodHandle");
+    ElementInfo methodHandleEI = env.getModifiableElementInfo(newMethodHandleRef);
+    methodHandleEI.setReferenceField("type", mtRef);
+    methodHandleEI.setReferenceField("form", lfRef);
+    return newMethodHandleRef;
+  }
+
 
   @MJI
   public int privateLookupIn(MJIEnv env, int clsRef, int targetCls, int lookupRef) {
@@ -78,24 +125,14 @@ public class JPF_java_lang_invoke_MethodHandles extends NativePeer {
     public int findStatic__Ljava_lang_Class_2Ljava_lang_String_2Ljava_lang_invoke_MethodType_2__Ljava_lang_invoke_MethodHandle_2(
         MJIEnv env, int objRef, int classRef, int nameRef, int methodTypeRef) 
         throws NoSuchMethodException, IllegalAccessException {
-      String targetClsName = env.getStringObject(env.getReferenceField(classRef, "name")); // This part is tricky, don't use ci.getName(), it will return "Class.class"
-      String methodName = env.getStringObject(nameRef);
-      ClassInfo targetCls = env.getSystemClassLoaderInfo().loadClass(targetClsName);
-      if (targetCls == null) {
-        throw new NoSuchMethodException("Cannot find class: " + targetClsName);
+      MethodHandle methodHandle;
+      try {
+        methodHandle = getMethodHandleByFindStatic(env, classRef, nameRef, methodTypeRef);
+      } catch (Exception e) {
+        throw new NoSuchMethodException(e.getMessage());
       }
-
-      for(String method : targetCls.methods.keySet()) {
-        System.out.println(method);
-      }
-      // TODO: add MethodType to the method name
-      MethodInfo mi = targetCls.getMethod(methodName + "(I)I", true);
-      if (mi == null) {
-        throw new NoSuchMethodException("Cannot find method: " + methodName + " on class: " + targetClsName);
-      }
-
-      // TODO: return the method handle
-      return mi.getGlobalId();
+      int lfRef = createJPFLambdaForm(env, methodHandle);
+      return createJPFMethodHandle(env, methodTypeRef, lfRef);
     }
   }
 
