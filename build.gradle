@@ -76,6 +76,7 @@ tasks.named('compilePeersJava') {
 tasks.named('compileTestJava') {
     dependsOn(copyLibs)
     dependsOn(copyResources)
+    dependsOn(compileModulesJava)
 }
 tasks.named('jar') {
     dependsOn(copyLibs)
@@ -424,4 +425,11 @@ tasks.register('runPolDet', Exec) {
 }
 
 defaultTasks "buildJars"
-System.setProperty('https.protocols',"TLSv1.2")
+
+sourceSets {
+    test {
+        resources {
+            srcDirs = ['src/tests/resources']
+        }
+    }
+}
