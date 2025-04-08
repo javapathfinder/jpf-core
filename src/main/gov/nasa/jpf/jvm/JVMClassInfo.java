@@ -266,7 +266,9 @@ public class JVMClassInfo extends ClassInfo {
 
     @Override
     public void setRecordComponentsDone(ClassFile cf, Object tag) {
-      // TODO: finalize logic here if needed or whatever we can leave it for now
+      if (!JVMClassInfo.this.isRecord) {
+        throw new IllegalStateException("setRecordComponentsDone called on a non-record class: " + getName());
+      }
     }
 
    //--- inner/enclosing classes 
