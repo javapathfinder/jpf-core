@@ -27,6 +27,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * a ClassInfo that was created from a Java classfile
@@ -160,26 +161,24 @@ public class JVMClassInfo extends ClassInfo {
               isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
                       : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
     }
-    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs) {
+    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
+                                        String parameters, String descriptor, int[] cpArgs) {
       ClassInfo enclosingCls = JVMClassInfo.this;
       String components = cf.getBmArgString(cpArgs[1]); // this is something like "x;y"
-      String methodName;
-      String methodDescriptor;
 
-      if (descriptor.equals("()I")) {
-        methodName = "hashCode";
-        methodDescriptor = "()I";
-      } else if (descriptor.endsWith("Ljava/lang/Object;)Z")) {
-        methodName = "equals";
-        methodDescriptor = "(Ljava/lang/Object;)Z";
-      } else if (descriptor.equals("()Ljava/lang/String;")) {
-        methodName = "toString";
-        methodDescriptor = "()Ljava/lang/String;";
-      } else {
-        throw new IllegalStateException("Unsupported record method descriptor: " + descriptor);
-      }
+      Map<String, String> methodMap = Map.of(
+              "()I", "hashCode",
+              "()Ljava/lang/String;", "toString"
+      );
+      //special case for equals which has a pattern
+      String methodName = descriptor.endsWith("Ljava/lang/Object;)Z") ? "equals" :
+              methodMap.getOrDefault(descriptor, throwIllegalState("Unsupported record method descriptor: " + descriptor));
 
-      setBootstrapMethodInfo(enclosingCls, methodName, methodDescriptor, idx, refKind, descriptor, components, BootstrapMethodInfo.BMType.RECORDS);
+      setBootstrapMethodInfo(enclosingCls, methodName, descriptor, idx, refKind, descriptor, components,
+              BootstrapMethodInfo.BMType.RECORDS);
+    }
+    private String throwIllegalState(String message) {
+      throw new IllegalStateException(message);
     }
     private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       String clsName = cls;
