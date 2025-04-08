@@ -286,36 +286,34 @@ tasks.named('test') {
     jacoco.enabled = false
 }
 
-// Define Fast Test Task (renamed to parallelTest)
+// tests can run in parallel
 tasks.register('parallelTest', Test) {
     description = "Runs all core regression tests except those marked with @Category(singleThreadedTest.class)."
     group = "JPF Test"
 
-    // Inherit configurations from the default test task
     dependsOn buildJars
-    forkEvery = tasks.test.forkEvery // Use the original test task's config before modification
-    maxParallelForks = Math.max(16, Runtime.runtime.availableProcessors()) // Explicitly set parallel forks
-    enableAssertions = true // Explicitly set enableAssertions
-    maxHeapSize = "1024m" // Explicitly set maxHeapSize
-    jvmArgs = ['--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED'] // Explicitly set jvmArgs
+    forkEvery = tasks.test.forkEvery
+    maxParallelForks = Math.max(16, Runtime.runtime.availableProcessors())
+    enableAssertions = true
+    maxHeapSize = "1024m"
+    jvmArgs = ['--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED']
 
     testLogging {
         events "passed", "skipped", "failed"
     }
 
-    // Add summary reporting
     afterSuite { testDescriptor, result ->
         if (!testDescriptor.parent) {
-            println "Test Execution (${name}): ${result.resultType}" // Use task name
+            println "Test Execution (${name}): ${result.resultType}"
             def summaryFields = ["${result.testCount} tests",
                                  "${result.successfulTestCount} passed",
                                  "${result.failedTestCount} failed",
                                  "${result.skippedTestCount} skipped"]
-            println "Summary (${name}): " + summaryFields.join(", ") // Use task name
+            println "Summary (${name}): " + summaryFields.join(", ")
         }
     }
 
-    include "**/*Test.class" // Include all potential tests first
+    include "**/*Test.class"
     exclude "**/SplitInputStreamTest.class"
     exclude "**/JPF_*.class"
 
@@ -325,40 +323,37 @@ tasks.register('parallelTest', Test) {
     }
 }
 
-// Define Slow Test Task (renamed to singleThreadedTest)
-tasks.register('singleThreadedTest', Test) {
+// the tests which uses movePKG can't be parallelized, so we run them in a single thread
+tasks.register('singleThreadTest', Test) {
     description = "Runs single threaded core regression tests (marked with @Category(singleThreadedTest.class)). These might not be parallelizable."
     group = "JPF Test"
 
-    // Inherit configurations from the default test task
     dependsOn buildJars
-    forkEvery = 1 // Explicitly set forkEvery
-    maxParallelForks = 1 // Run single threaded tests sequentially by default
-    enableAssertions = true // Explicitly set enableAssertions
-    maxHeapSize = "1024m" // Explicitly set maxHeapSize
+    forkEvery = 1
+    maxParallelForks = 1
+    enableAssertions = true
+    maxHeapSize = "1024m"
     jvmArgs = ['--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED', '--add-opens', 'java.base/java.lang=ALL-UNNAMED', '--add-opens', 'java.base/java.util=ALL-UNNAMED'] // Explicitly set jvmArgs
 
     testLogging {
         events "passed", "skipped", "failed"
     }
 
-    // Add summary reporting
     afterSuite { testDescriptor, result ->
         if (!testDescriptor.parent) {
-            println "Test Execution (${name}): ${result.resultType}" // Use task name
+            println "Test Execution (${name}): ${result.resultType}"
             def summaryFields = ["${result.testCount} tests",
                                  "${result.successfulTestCount} passed",
                                  "${result.failedTestCount} failed",
                                  "${result.skippedTestCount} skipped"]
-            println "Summary (${name}): " + summaryFields.join(", ") // Use task name
+            println "Summary (${name}): " + summaryFields.join(", ")
         }
     }
 
-    include "**/*Test.class" // Include all potential tests first
-    exclude "**/SplitInputStreamTest.class"
-    exclude "**/JPF_*.class"
+    include "**/URLClassLoaderTest.class" 
+    include "**/AssertTest.class" 
 
-    // Use JUnit 4 Categories to include only singleThreadedTest
+    // Use JUnit 4 Categories to include only singleThreadTest
     useJUnit {
         includeCategories 'gov.nasa.jpf.test.SingleThreadTest'
     }
