@@ -28,6 +28,10 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import gov.nasa.jpf.test.SingleThreadTest;
+
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -168,6 +172,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testNonSystemLoaderLoadClass() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -202,6 +207,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testFindResource() throws MalformedURLException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -248,6 +254,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testFindResources() throws IOException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -296,6 +303,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testNewInstance1() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -312,6 +320,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testNewInstance2() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -366,6 +375,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testClassResolution() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -412,6 +422,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testFindSystemClass() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -432,6 +443,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testFindSystemClass_ClassNotFoundException() throws MalformedURLException, ClassNotFoundException {
     movePkgOut();
     if (verifyUnhandledException("java.lang.ClassNotFoundException")) {
@@ -447,6 +459,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testGetPackages() throws ClassNotFoundException, MalformedURLException {
     movePkgOut();
     if(verifyNoPropertyViolation()) {
@@ -481,6 +494,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testGetDefinedPackage() throws ClassNotFoundException, MalformedURLException {
     movePkgOut();
     if(verifyNoPropertyViolation()) {
@@ -498,6 +512,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testThrownException() throws ClassNotFoundException, MalformedURLException, SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     movePkgOut();
     if(verifyNoPropertyViolation()) {
@@ -521,6 +536,7 @@ public class URLClassLoaderTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void getPackageInfo() throws MalformedURLException {
     movePkgOut();
      if(verifyNoPropertyViolation())  {

@@ -23,8 +23,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import gov.nasa.jpf.test.java.net.LoadUtility;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import gov.nasa.jpf.test.SingleThreadTest;
+import gov.nasa.jpf.test.java.net.LoadUtility;
 
 /**
  * JPF part of assertion test
@@ -67,6 +70,7 @@ public class AssertTest extends LoadUtility {
     }
   }
 
+  @Category(SingleThreadTest.class)
   @Test
   public void testSetClassAssertionStatus2() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException {
     movePkgOut();
@@ -96,6 +100,7 @@ public class AssertTest extends LoadUtility {
     movePkgBack();
   }
 
+  @Category(SingleThreadTest.class)
   @Test
   public void testSetPackageAssertionStatus() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException {
     movePkgOut();
@@ -122,6 +127,7 @@ public class AssertTest extends LoadUtility {
     movePkgBack();
   }
 
+  @Category(SingleThreadTest.class)
   @Test
   public void testSetDefaultAssertionStatus() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException {
     movePkgOut();
@@ -150,6 +156,7 @@ public class AssertTest extends LoadUtility {
     movePkgBack();
   }
   
+  @Category(SingleThreadTest.class)
   @Test
   public void testClearAssertionStatus() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     movePkgOut();
