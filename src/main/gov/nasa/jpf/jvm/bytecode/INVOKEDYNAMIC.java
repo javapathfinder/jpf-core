@@ -17,7 +17,19 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.*;
+import gov.nasa.jpf.vm.FieldInfo;
+import gov.nasa.jpf.vm.ByteArrayFields;
+import gov.nasa.jpf.vm.BootstrapMethodInfo;
+import gov.nasa.jpf.vm.ClassInfo;
+import gov.nasa.jpf.vm.ElementInfo;
+import gov.nasa.jpf.vm.FunctionObjectFactory;
+import gov.nasa.jpf.vm.Instruction;
+import gov.nasa.jpf.vm.LoadOnJPFRequired;
+import gov.nasa.jpf.vm.MJIEnv;
+import gov.nasa.jpf.vm.StackFrame;
+import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.Types;
+import gov.nasa.jpf.vm.VM;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
