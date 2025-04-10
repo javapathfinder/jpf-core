@@ -217,17 +217,37 @@ public class INVOKEDYNAMIC extends Instruction {
 
   private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
     ElementInfo ei = ti.getThisElementInfo();
-    String simpleName = ci.getName().substring(ci.getName().lastIndexOf('$') + 1);
+    String fullName = ci.getName();
+    // we will extract the name from the fall name
+    // NestedRecordTest$Rectangle -> will get Rectangle
+    String simpleName = fullName.substring(Math.max(fullName.lastIndexOf('.'), fullName.lastIndexOf('$')) + 1);
     StringBuilder sb = new StringBuilder(simpleName).append("[");
     BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    // splitting bootstrap args -> left;size
     String[] components = bmi.getBmArg().split(";");
     for (int i = 0; i < components.length; i++) {
-      Object value = ei.getFieldValueObject(components[i]);
-      sb.append(components[i]).append("=").append(value);
+      String compName = components[i];
+      Object value = ei.getFieldValueObject(compName);
+      String valueStr;
+      if (value instanceof ElementInfo && ((ElementInfo) value).getClassInfo().isRecord()) {
+        //compute to string recursively for nested records
+        ElementInfo valueEi = (ElementInfo) value;
+        ClassInfo nestedCi = valueEi.getClassInfo();
+        // Temporarily set 'this' to the nested record and compute its toString
+        StackFrame currentFrame = ti.getModifiableTopFrame();
+        int originalThis = currentFrame.getThis();
+        currentFrame.setThis(valueEi.getObjectRef());
+        int stringRef = computeRecordToString(ti, nestedCi);
+        valueStr = ti.getHeap().get(stringRef).asString();
+        // restore original 'this'
+        currentFrame.setThis(originalThis);
+      } else valueStr = String.valueOf(value); // for primitives or non-records
+
+      sb.append(compName).append("=").append(valueStr);
       if (i < components.length - 1) sb.append(", ");
     }
     sb.append("]");
-    System.out.println("a7a: "+ sb.toString());
+    System.out.println("toString: " + sb);
     return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
   @Override
