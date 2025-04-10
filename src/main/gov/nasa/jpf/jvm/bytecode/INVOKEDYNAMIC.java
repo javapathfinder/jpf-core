@@ -98,9 +98,9 @@ public class INVOKEDYNAMIC extends Instruction {
   private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
     ElementInfo thisEi = ti.getThisElementInfo();
     ElementInfo otherEi = ti.getHeap().get(otherRef);
-    System.out.println("computeRecordEquals: thisRef=" + thisEi.getObjectRef() + ", otherRef=" + otherRef);
+    System.out.println("computeRecordEquals: thisRef======>" + thisEi.getObjectRef() + ", otherRef=" + otherRef);
     if (otherEi == null || !ci.equals(otherEi.getClassInfo())) {
-      System.out.println("Early return: otherEi=" + (otherEi == null ? "null" : otherEi.getClassInfo().getName()));
+      System.out.println("Early return: otherEi======>" + (otherEi == null ? "null" : otherEi.getClassInfo().getName()));
       return false;
     }
     BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
@@ -110,41 +110,10 @@ public class INVOKEDYNAMIC extends Instruction {
       FieldInfo fi = ci.getDeclaredInstanceField(compName);
       Object thisVal = thisEi.getFieldValueObject(compName);
       Object otherVal = otherEi.getFieldValueObject(compName);
-      boolean equal;
-      if (fi.isReference() && thisVal != null && otherVal != null) {
-        ElementInfo thisStringEi = (ElementInfo) thisVal;
-        ElementInfo otherStringEi = (ElementInfo) otherVal;
-        // Get coder fields (byte: 0 = Latin-1, 1 = UTF-16)
-        // this is a value within the string class determine which encoding is used
-        // we will compare based on coders and bytes
-        byte thisCoder = thisStringEi.getByteField("coder");
-        byte otherCoder = otherStringEi.getByteField("coder");
-        // Get value fields (byte[])
-        int thisBytesRef = thisStringEi.getReferenceField("value");
-        int otherBytesRef = otherStringEi.getReferenceField("value");
-        ElementInfo thisBytesEi = ti.getHeap().get(thisBytesRef);
-        ElementInfo otherBytesEi = ti.getHeap().get(otherBytesRef);
-        byte[] thisBytes = ((ByteArrayFields) thisBytesEi.getFields()).asByteArray();
-        byte[] otherBytes = ((ByteArrayFields) otherBytesEi.getFields()).asByteArray();
-        // Compare based on coder and bytes
-        equal = thisCoder == otherCoder && java.util.Arrays.equals(thisBytes, otherBytes); // Different encodings if false
-      } else if (thisVal == null) {
-        equal = (otherVal == null);
-        System.out.println("Comparing " + compName + ": thisVal=null, otherVal=" + otherVal);
-      } else if (thisVal instanceof Integer && otherVal instanceof Integer) {
-        equal = ((Integer) thisVal).intValue() == ((Integer) otherVal).intValue();
-        System.out.println("Comparing " + compName + ": thisVal=" + thisVal +
-                " (java.lang.Integer), otherVal=" + otherVal + " (java.lang.Integer)");
-      } else {
-        equal = thisVal.equals(otherVal);
-        System.out.println("Comparing " + compName + ": thisVal=" + thisVal +
-                " (" + thisVal.getClass().getName() + "), otherVal=" + otherVal +
-                " (" + otherVal.getClass().getName() + ")");
-      }
-      System.out.println("Result: " + equal);
-      if (!equal) {
-        return false;
-      }
+      // here, we will omputes equality for a record by comparing all components with deepEquals.
+      boolean equal = deepEquals(ti, thisVal, otherVal, fi.getSignature());
+      //System.out.println("Comparing " + compName + ": thisVal=" + thisVal + ", otherVal=" + otherVal + ", Result=" + equal);
+      if (!equal) return false;
     }
     return true;
   }
