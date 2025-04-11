@@ -31,6 +31,8 @@ import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
 
+import java.util.Arrays;
+
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  * 
@@ -95,84 +97,120 @@ public class INVOKEDYNAMIC extends Instruction {
    * Executing this returns an object that implements the functional interface 
    * and contains a method which captures the behavior of the lambda expression.
    */
-
   private boolean deepEquals(ThreadInfo ti, Object val1, Object val2, String sig) {
+    // identity check and null handling
     if (val1 == val2) return true;
     if (val1 == null || val2 == null) return false;
 
     char typeChar = sig.charAt(0);
-    if (typeChar == '[') {
-      ElementInfo ei1 = ti.getHeap().get((Integer) val1);
-      ElementInfo ei2 = ti.getHeap().get((Integer) val2);
-      if (ei1 == null || ei2 == null || !ei1.isArray() || !ei2.isArray()) return false;
-      if (ei1.arrayLength() != ei2.arrayLength()) return false;
 
-      String componentSig = sig.substring(1);
-      char compType = componentSig.charAt(0);
-      for (int i = 0; i < ei1.arrayLength(); i++) {
-        Object elem1, elem2;
-        switch (compType) {
-          case 'Z': elem1 = ei1.getBooleanElement(i); elem2 = ei2.getBooleanElement(i); break;
-          case 'B': elem1 = ei1.getByteElement(i);    elem2 = ei2.getByteElement(i);    break;
-          case 'C': elem1 = ei1.getCharElement(i);    elem2 = ei2.getCharElement(i);    break;
-          case 'S': elem1 = ei1.getShortElement(i);   elem2 = ei2.getShortElement(i);   break;
-          case 'I': elem1 = ei1.getIntElement(i);     elem2 = ei2.getIntElement(i);     break;
-          case 'J': elem1 = ei1.getLongElement(i);    elem2 = ei2.getLongElement(i);    break;
-          case 'F': elem1 = ei1.getFloatElement(i);   elem2 = ei2.getFloatElement(i);   break;
-          case 'D': elem1 = ei1.getDoubleElement(i);  elem2 = ei2.getDoubleElement(i);  break;
-          default: // reference type
-            elem1 = ti.getHeap().get(ei1.getReferenceElement(i));
-            elem2 = ti.getHeap().get(ei2.getReferenceElement(i));
-            break;
-        }
-        if (!deepEquals(ti, elem1, elem2, componentSig)) return false;
-      }
-      return true;
-    } else if (typeChar == 'Z') {
-      return ((Boolean) val1).booleanValue() == ((Boolean) val2).booleanValue();
-    } else if (typeChar == 'B') {
-      return ((Byte) val1).byteValue() == ((Byte) val2).byteValue();
-    } else if (typeChar == 'C') {
-      return ((Character) val1).charValue() == ((Character) val2).charValue();
-    } else if (typeChar == 'S') {
-      return ((Short) val1).shortValue() == ((Short) val2).shortValue();
-    } else if (typeChar == 'I') {
-      return ((Integer) val1).intValue() == ((Integer) val2).intValue();
-    } else if (typeChar == 'J') {
-      return ((Long) val1).longValue() == ((Long) val2).longValue();
-    } else if (typeChar == 'F') {
-      return ((Float) val1).floatValue() == ((Float) val2).floatValue();
-    } else if (typeChar == 'D') {
-      return ((Double) val1).doubleValue() == ((Double) val2).doubleValue();
-    } else if (typeChar == 'L') {
-      // here we will handle the case for string
-      if ("Ljava/lang/String;".equals(sig)) {
-        ElementInfo ei1 = (ElementInfo) val1;
-        ElementInfo ei2 = (ElementInfo) val2;
-        byte coder1 = ei1.getByteField("coder");
-        byte coder2 = ei2.getByteField("coder");
-        byte[] bytes1 = ((ByteArrayFields) ti.getHeap().get(ei1.getReferenceField("value")).getFields()).asByteArray();
-        byte[] bytes2 = ((ByteArrayFields) ti.getHeap().get(ei2.getReferenceField("value")).getFields()).asByteArray();
-        return coder1 == coder2 && java.util.Arrays.equals(bytes1, bytes2);
-      } else { //reference types
-        ElementInfo ei1 = (ElementInfo) val1;
-        ElementInfo ei2 = (ElementInfo) val2;
-        ClassInfo ci = ei1.getClassInfo();
-        if (ci.isRecord()) { // handle nested records
-          if (!ci.equals(ei2.getClassInfo())) return false;
-          FieldInfo[] fields = ci.getDeclaredInstanceFields();
-          for (FieldInfo fi : fields) {
-            Object v1 = ei1.getFieldValueObject(fi.getName());
-            Object v2 = ei2.getFieldValueObject(fi.getName());
-            if (!deepEquals(ti, v1, v2, fi.getSignature())) return false;
-          }
-          return true;
-        }
-        return ei1 == ei2; // non-record objects (reference equality)
-      }
+    // arrays
+    if (typeChar == '[') {
+      return compareArrays(ti, val1, val2, sig);
     }
-    return false; // shouldn't reach here
+
+    // primitive types
+    if (isPrimitiveType(typeChar)) {
+      return comparePrimitives(val1, val2, typeChar);
+    }
+
+    // reference types (objects)
+    if (typeChar == 'L') {
+      return compareReferenceTypes(ti, val1, val2, sig);
+    }
+
+    return false;
   }
+  private boolean comparePrimitives(Object val1, Object val2, char typeChar) {
+    switch (typeChar) {
+      case 'Z': return ((Boolean) val1).booleanValue() == ((Boolean) val2).booleanValue();
+      case 'B': return ((Byte) val1).byteValue() == ((Byte) val2).byteValue();
+      case 'C': return ((Character) val1).charValue() == ((Character) val2).charValue();
+      case 'S': return ((Short) val1).shortValue() == ((Short) val2).shortValue();
+      case 'I': return ((Integer) val1).intValue() == ((Integer) val2).intValue();
+      case 'J': return ((Long) val1).longValue() == ((Long) val2).longValue();
+      case 'F': return ((Float) val1).floatValue() == ((Float) val2).floatValue();
+      case 'D': return ((Double) val1).doubleValue() == ((Double) val2).doubleValue();
+      default: return false;
+    }
+  }
+  private Object getArrayElement(ElementInfo ei, int index, char type) {
+    switch (type) {
+      case 'Z': return ei.getBooleanElement(index);
+      case 'B': return ei.getByteElement(index);
+      case 'C': return ei.getCharElement(index);
+      case 'S': return ei.getShortElement(index);
+      case 'I': return ei.getIntElement(index);
+      case 'J': return ei.getLongElement(index);
+      case 'F': return ei.getFloatElement(index);
+      case 'D': return ei.getDoubleElement(index);
+      default:  return ei.getReferenceElement(index);
+    }
+  }
+  private boolean compareReferenceTypes(ThreadInfo ti, Object val1, Object val2, String sig) {
+    // string comparison
+    if ("Ljava/lang/String;".equals(sig)) return compareStrings(ti, (ElementInfo) val1, (ElementInfo) val2);
+
+    // record comparison
+    ElementInfo ei1 = (ElementInfo) val1;
+    ElementInfo ei2 = (ElementInfo) val2;
+    ClassInfo ci = ei1.getClassInfo();
+
+    if (ci.isRecord()) return compareRecords(ti, ei1, ei2, ci);
+
+    //object comparison -> default (reference equality)
+    return ei1 == ei2;
+  }
+
+  private boolean compareArrays(ThreadInfo ti, Object val1, Object val2, String sig) {
+    ElementInfo ei1 = ti.getHeap().get((Integer) val1);
+    ElementInfo ei2 = ti.getHeap().get((Integer) val2);
+
+    // Basic validation
+    if (ei1 == null || ei2 == null || !ei1.isArray() || !ei2.isArray()) return false;
+    if (ei1.arrayLength() != ei2.arrayLength()) return false;
+
+    String componentSig = sig.substring(1);
+    char compType = componentSig.charAt(0);
+
+    // Compare each element
+    for (int i = 0; i < ei1.arrayLength(); i++) {
+      Object elem1 = getArrayElement(ei1, i, compType);
+      Object elem2 = getArrayElement(ei2, i, compType);
+
+      if (!deepEquals(ti, elem1, elem2, componentSig)) return false;
+    }
+
+    return true;
+  }
+
+  private boolean isPrimitiveType(char typeChar) {
+    return "ZBCSIJFD".indexOf(typeChar) >= 0;
+  }
+  private boolean compareStrings(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2) {
+    byte coder1 = ei1.getByteField("coder");
+    byte coder2 = ei2.getByteField("coder");
+
+    byte[] bytes1 = ((ByteArrayFields) ti.getHeap().get(ei1.getReferenceField("value")).getFields()).asByteArray();
+    byte[] bytes2 = ((ByteArrayFields) ti.getHeap().get(ei2.getReferenceField("value")).getFields()).asByteArray();
+
+    return coder1 == coder2 && Arrays.equals(bytes1, bytes2);
+  }
+
+  private boolean compareRecords(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2, ClassInfo ci) {
+    if (!ci.equals(ei2.getClassInfo())) return false;
+
+    FieldInfo[] fields = ci.getDeclaredInstanceFields();
+    for (FieldInfo fi : fields) {
+      Object v1 = ei1.getFieldValueObject(fi.getName());
+      Object v2 = ei2.getFieldValueObject(fi.getName());
+
+      if (!deepEquals(ti, v1, v2, fi.getSignature())) return false;
+    }
+
+    return true;
+  }
+
 
   private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
     ElementInfo thisEi = ti.getThisElementInfo();
