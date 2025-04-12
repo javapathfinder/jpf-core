@@ -70,6 +70,8 @@ public class INVOKEDYNAMIC extends Instruction {
     freeVariableTypes = Types.getArgumentTypes(descriptor);
     functionalInterfaceName = Types.getReturnTypeSignature(descriptor);
     freeVariableSize = Types.getArgumentsSize(descriptor);
+    System.out.println("DEBUG: Constructing INVOKEDYNAMIC instruction: methodName=" + methodName +
+            ", descriptor=" + descriptor + ", bootstrapMethodIndex=" + bmIndex);
   }
 
   @Override

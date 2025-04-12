@@ -166,20 +166,11 @@ public class JVMClassInfo extends ClassInfo {
       ClassInfo enclosingCls = JVMClassInfo.this;
       String components = cf.getBmArgString(cpArgs[1]); // this is something like "x;y"
 
-      Map<String, String> methodMap = Map.of(
-              "()I", "hashCode",
-              "()Ljava/lang/String;", "toString"
-      );
-      //special case for equals which has a pattern
-      String methodName = descriptor.endsWith("Ljava/lang/Object;)Z") ? "equals" :
-              methodMap.getOrDefault(descriptor, throwIllegalState("Unsupported record method descriptor: " + descriptor));
-
-      setBootstrapMethodInfo(enclosingCls, methodName, descriptor, idx, refKind, descriptor, components,
+      // For records, method name is determined by INVOKEDYNAMIC
+      setBootstrapMethodInfo(enclosingCls, null, null, idx, refKind, null, components,
               BootstrapMethodInfo.BMType.RECORDS);
     }
-    private String throwIllegalState(String message) {
-      throw new IllegalStateException(message);
-    }
+
     private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       String clsName = cls;
       ClassInfo enclosingLambdaCls;
