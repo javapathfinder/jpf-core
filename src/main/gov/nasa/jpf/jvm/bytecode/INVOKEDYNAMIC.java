@@ -6,19 +6,17 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.FieldInfo;
-import gov.nasa.jpf.vm.ByteArrayFields;
 import gov.nasa.jpf.vm.BootstrapMethodInfo;
 import gov.nasa.jpf.vm.ClassInfo;
 import gov.nasa.jpf.vm.ElementInfo;
@@ -30,37 +28,38 @@ import gov.nasa.jpf.vm.StackFrame;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
-
+import gov.nasa.jpf.vm.ByteArrayFields;
+import gov.nasa.jpf.vm.FieldInfo;
 import java.util.Arrays;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
- * 
+ *
  * Invoke dynamic method. It allows dynamic linkage between a call site and a method implementation.
  *
  * ..., [arg1, [arg2 ...]]  => ...
  */
 public class INVOKEDYNAMIC extends Instruction {
-  
+
   // index of a bootstrap method (index to the array bootstrapMethods[] declared in ClassInfo
   // containing this bytecode instruction)
   int bootstrapMethodIndex;
-  
-  // Free variables are those that are not defined within the lamabda body and 
-  // are captured from the lexical scope. Note that for instance lambda methods 
+
+  // Free variables are those that are not defined within the lamabda body and
+  // are captured from the lexical scope. Note that for instance lambda methods
   // the first captured variable always represents "this"
   String[] freeVariableTypeNames;
   byte[] freeVariableTypes;
   int freeVariableSize;
-  
+
   String functionalInterfaceName;
-  
+
   String samMethodName;
-  
+
   int funcObjRef = MJIEnv.NULL;
-  
+
   ElementInfo lastFuncObj = null;
-  
+
   public INVOKEDYNAMIC () {}
 
   protected INVOKEDYNAMIC (int bmIndex, String methodName, String descriptor){
@@ -70,8 +69,6 @@ public class INVOKEDYNAMIC extends Instruction {
     freeVariableTypes = Types.getArgumentTypes(descriptor);
     functionalInterfaceName = Types.getReturnTypeSignature(descriptor);
     freeVariableSize = Types.getArgumentsSize(descriptor);
-    System.out.println("DEBUG: Constructing INVOKEDYNAMIC instruction: methodName=" + methodName +
-            ", descriptor=" + descriptor + ", bootstrapMethodIndex=" + bmIndex);
   }
 
   @Override
@@ -96,33 +93,31 @@ public class INVOKEDYNAMIC extends Instruction {
 
   /**
    * For now, INVOKEDYNAMIC works only in the context of lambda expressions.
-   * Executing this returns an object that implements the functional interface 
+   * Executing this returns an object that implements the functional interface
    * and contains a method which captures the behavior of the lambda expression.
    */
+
   private boolean deepEquals(ThreadInfo ti, Object val1, Object val2, String sig) {
-    // identity check and null handling
     if (val1 == val2) return true;
     if (val1 == null || val2 == null) return false;
 
     char typeChar = sig.charAt(0);
 
-    // arrays
     if (typeChar == '[') {
       return compareArrays(ti, val1, val2, sig);
     }
 
-    // primitive types
     if (isPrimitiveType(typeChar)) {
       return comparePrimitives(val1, val2, typeChar);
     }
 
-    // reference types (objects)
     if (typeChar == 'L') {
       return compareReferenceTypes(ti, val1, val2, sig);
     }
 
     return false;
   }
+
   private boolean comparePrimitives(Object val1, Object val2, char typeChar) {
     switch (typeChar) {
       case 'Z': return ((Boolean) val1).booleanValue() == ((Boolean) val2).booleanValue();
@@ -133,9 +128,10 @@ public class INVOKEDYNAMIC extends Instruction {
       case 'J': return ((Long) val1).longValue() == ((Long) val2).longValue();
       case 'F': return ((Float) val1).floatValue() == ((Float) val2).floatValue();
       case 'D': return ((Double) val1).doubleValue() == ((Double) val2).doubleValue();
-      default: return false;
+      default:  return false;
     }
   }
+
   private Object getArrayElement(ElementInfo ei, int index, char type) {
     switch (type) {
       case 'Z': return ei.getBooleanElement(index);
@@ -149,18 +145,16 @@ public class INVOKEDYNAMIC extends Instruction {
       default:  return ei.getReferenceElement(index);
     }
   }
+
   private boolean compareReferenceTypes(ThreadInfo ti, Object val1, Object val2, String sig) {
-    // string comparison
     if ("Ljava/lang/String;".equals(sig)) return compareStrings(ti, (ElementInfo) val1, (ElementInfo) val2);
 
-    // record comparison
     ElementInfo ei1 = (ElementInfo) val1;
     ElementInfo ei2 = (ElementInfo) val2;
     ClassInfo ci = ei1.getClassInfo();
 
     if (ci.isRecord()) return compareRecords(ti, ei1, ei2, ci);
 
-    //object comparison -> default (reference equality)
     return ei1 == ei2;
   }
 
@@ -168,14 +162,12 @@ public class INVOKEDYNAMIC extends Instruction {
     ElementInfo ei1 = ti.getHeap().get((Integer) val1);
     ElementInfo ei2 = ti.getHeap().get((Integer) val2);
 
-    // Basic validation
     if (ei1 == null || ei2 == null || !ei1.isArray() || !ei2.isArray()) return false;
     if (ei1.arrayLength() != ei2.arrayLength()) return false;
 
     String componentSig = sig.substring(1);
     char compType = componentSig.charAt(0);
 
-    // Compare each element
     for (int i = 0; i < ei1.arrayLength(); i++) {
       Object elem1 = getArrayElement(ei1, i, compType);
       Object elem2 = getArrayElement(ei2, i, compType);
@@ -189,6 +181,7 @@ public class INVOKEDYNAMIC extends Instruction {
   private boolean isPrimitiveType(char typeChar) {
     return "ZBCSIJFD".indexOf(typeChar) >= 0;
   }
+
   private boolean compareStrings(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2) {
     byte coder1 = ei1.getByteField("coder");
     byte coder2 = ei2.getByteField("coder");
@@ -213,25 +206,19 @@ public class INVOKEDYNAMIC extends Instruction {
     return true;
   }
 
-
   private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
     ElementInfo thisEi = ti.getThisElementInfo();
     ElementInfo otherEi = ti.getHeap().get(otherRef);
-    System.out.println("computeRecordEquals: thisRef======>" + thisEi.getObjectRef() + ", otherRef=" + otherRef);
     if (otherEi == null || !ci.equals(otherEi.getClassInfo())) {
-      System.out.println("Early return: otherEi======>" + (otherEi == null ? "null" : otherEi.getClassInfo().getName()));
       return false;
     }
     BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
     String[] components = bmi.getBmArg().split(";");
-    System.out.println("Components: " + java.util.Arrays.toString(components));
     for (String compName : components) {
       FieldInfo fi = ci.getDeclaredInstanceField(compName);
       Object thisVal = thisEi.getFieldValueObject(compName);
       Object otherVal = otherEi.getFieldValueObject(compName);
-      // here, we will omputes equality for a record by comparing all components with deepEquals.
       boolean equal = deepEquals(ti, thisVal, otherVal, fi.getSignature());
-      //System.out.println("Comparing " + compName + ": thisVal=" + thisVal + ", otherVal=" + otherVal + ", Result=" + equal);
       if (!equal) return false;
     }
     return true;
@@ -245,51 +232,41 @@ public class INVOKEDYNAMIC extends Instruction {
     int hash = 0;
     BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
     String[] components = bmi.getBmArg().split(";");
-    System.out.println("printing el components el gamdeen neek: " + java.util.Arrays.toString(components));
     for (String compName : components) {
       Object value = ei.getFieldValueObject(compName);
-      System.out.println("Component: " + compName + ", Value: " + value);
       hash = 31 * hash + (value != null ? value.hashCode() : 0);
     }
-    // System.out.println("Computed hashCode: " + hash);
     return hash;
   }
 
   private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
     ElementInfo ei = ti.getThisElementInfo();
     String fullName = ci.getName();
-    // we will extract the name from the fall name
-    // NestedRecordTest$Rectangle -> will get Rectangle
     String simpleName = fullName.substring(Math.max(fullName.lastIndexOf('.'), fullName.lastIndexOf('$')) + 1);
     StringBuilder sb = new StringBuilder(simpleName).append("[");
     BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
-    // splitting bootstrap args -> left;size
     String[] components = bmi.getBmArg().split(";");
     for (int i = 0; i < components.length; i++) {
       String compName = components[i];
       Object value = ei.getFieldValueObject(compName);
       String valueStr;
       if (value instanceof ElementInfo && ((ElementInfo) value).getClassInfo().isRecord()) {
-        //compute to string recursively for nested records
         ElementInfo valueEi = (ElementInfo) value;
         ClassInfo nestedCi = valueEi.getClassInfo();
-        // Temporarily set 'this' to the nested record and compute its toString
         StackFrame currentFrame = ti.getModifiableTopFrame();
         int originalThis = currentFrame.getThis();
         currentFrame.setThis(valueEi.getObjectRef());
         int stringRef = computeRecordToString(ti, nestedCi);
         valueStr = ti.getHeap().get(stringRef).asString();
-        // restore original 'this'
         currentFrame.setThis(originalThis);
-      } else valueStr = String.valueOf(value); // for primitives or non-records
-
+      } else valueStr = String.valueOf(value);
       sb.append(compName).append("=").append(valueStr);
       if (i < components.length - 1) sb.append(", ");
     }
     sb.append("]");
-    System.out.println("toString: " + sb);
     return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
+
   @Override
   public Instruction execute (ThreadInfo ti) {
     StackFrame frame = ti.getModifiableTopFrame();
@@ -297,23 +274,17 @@ public class INVOKEDYNAMIC extends Instruction {
     BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
 
     String bootstrapMethodName = (bmi.getLambdaBody() != null) ? bmi.getLambdaBody().getName() : this.samMethodName;
-    System.out.println("Bootstrap type: " + bmi.getBmType() + ", method: " + bootstrapMethodName +
-            ", bootstrapIndex: " + bootstrapMethodIndex);
 
     if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS) {
       String methodName = this.samMethodName;
-      System.out.println("Executing record method: " + methodName);
 
       if ("equals".equals(methodName)) {
-        System.out.println("Stack before pop: " + frame.getTopPos() + ", " + frame.peek(1) + ", " + frame.peek(0));
         int otherRef = frame.peek();
         frame.pop(2);
-        System.out.println("Calling computeRecordEquals with otherRef=" + otherRef);
         boolean result = computeRecordEquals(ti, enclosingClass, otherRef);
         frame.push(result ? 1 : 0);
       } else if ("hashCode".equals(methodName)) {
         frame.pop(1);
-        System.out.println("Calling computeRecordHashCode for class: " + enclosingClass.getName());
         int hashCode = computeRecordHashCode(ti, enclosingClass);
         frame.push(hashCode);
       } else if ("toString".equals(methodName)) {
@@ -326,14 +297,14 @@ public class INVOKEDYNAMIC extends Instruction {
 
       return getNext(ti);
     }
+
     ElementInfo ei = ti.getHeap().get(funcObjRef);
-    if(ei==null || ei!=lastFuncObj || freeVariableTypes.length>0) {
+    if (ei == null || ei != lastFuncObj || freeVariableTypes.length > 0) {
       ClassInfo fiClassInfo;
 
-      // First, resolve the functional interface
       try {
         fiClassInfo = ti.resolveReferencedClass(functionalInterfaceName);
-      } catch(LoadOnJPFRequired lre) {
+      } catch (LoadOnJPFRequired lre) {
         return ti.getPC();
       }
 
@@ -341,30 +312,22 @@ public class INVOKEDYNAMIC extends Instruction {
         return ti.getPC();
       }
 
-
-
       VM vm = VM.getVM();
       FunctionObjectFactory funcObjFactory = vm.getFunctionObjectFacotry();
-      
+
       Object[] freeVariableValues = frame.getArgumentsValues(ti, freeVariableTypes);
-      
+
       funcObjRef = funcObjFactory.getFunctionObject(bootstrapMethodIndex, ti, fiClassInfo, samMethodName, bmi,
               freeVariableTypeNames, freeVariableValues);
       lastFuncObj = ti.getHeap().get(funcObjRef);
     }
-    
+
     frame.pop(freeVariableSize);
     frame.pushRef(funcObjRef);
-    
+
     if (funcObjRef == MJIEnv.NULL) {
-      // In case of string concat, we return a null ref as a dummy arg.
-      // It is here only to be popped at the helper function's
-      // (java.lang.String.generateStringByConcatenatingArgs) return.
-      // We continue execution from the newly created stack frame (in the helper function).
       return ti.getPC();
     } else {
-      // In other cases (for lambda expr), this return value shouldn't be null.
-      // We continue execution from the following bytecode.
       return getNext(ti);
     }
   }
