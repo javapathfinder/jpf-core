@@ -17,6 +17,8 @@
  */
 package gov.nasa.jpf.vm;
 
+import java.util.Arrays;
+
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
  *
@@ -40,11 +42,20 @@ public class BootstrapMethodInfo {
 
   String bmArg;
 
+  String dynamicClassName;
+  String dynamicMethodName;
+  String dynamicParameters;
+  private String dynamicDescriptor;
+  private int[] cpArgs;
+  private Object[] resolvedArgs;
+  private String[] recordComponents;
+
   public enum BMType{
     STRING_CONCATENATION,
     LAMBDA_EXPRESSION,
     SERIALIZABLE_LAMBDA_EXPRESSION,
-    RECORDS // For record synthetic methods
+    RECORDS, // For record synthetic methods
+    DYNAMIC // this one for new type for generic bootstrap methods
   }
   BMType bmType;
   public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor, String bmArg, BMType bmType) {
@@ -62,9 +73,28 @@ public class BootstrapMethodInfo {
    */
   public BootstrapMethodInfo(ClassInfo enclosingClass, int[] cpArgs) {
     this.enclosingClass = enclosingClass;
-
-      // TODO: find a way to parse lambdaBody, samDescriptor etc
+    this.bmType = BMType.DYNAMIC;
+    this.cpArgs = Arrays.copyOf(cpArgs, cpArgs.length);
+    this.lambdaRefKind = 0;
+    this.lambdaBody = null;
+    this.samDescriptor = null;
+    this.dynamicDescriptor = null;
+    this.bmArg = "";
   }
+
+  public void setDynamicMetadata(int refKind, String className, String methodName,
+                                 String parameters, String descriptor) {
+    this.lambdaRefKind = refKind;
+    this.dynamicClassName = className;
+    this.dynamicMethodName = methodName;
+    this.dynamicParameters = parameters;
+    this.dynamicDescriptor = descriptor;
+  }
+  public void setResolvedArgs(Object[] args) {
+    this.resolvedArgs = args;
+  }
+  // this can be useful cause we're using proper descriptor instead of the sam
+  public void setRecordComponents(String components) { this.recordComponents = components.split(";");}
 
   @Override
   public String toString() {
@@ -87,4 +117,23 @@ public class BootstrapMethodInfo {
   public String getBmArg(){ return bmArg;}
 
   public BMType getBmType() { return bmType;}
+
+  public int[] getCpArgs() {return Arrays.copyOf(cpArgs, cpArgs.length);}
+
+  public Object[] getResolvedArgs() {
+    return resolvedArgs;
+  }
+
+  public String[] getRecordComponents() {
+    return recordComponents;
+  }
+
+  public String getDynamicClassName() { return dynamicClassName; }
+
+  public String getDynamicMethodName() { return dynamicMethodName; }
+
+  public String getDynamicParameters() { return dynamicParameters; }
+
+  public String getDynamicDescriptor() { return dynamicDescriptor; }
+
 }
