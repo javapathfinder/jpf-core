@@ -42,6 +42,7 @@ public class JVMClassInfo extends ClassInfo {
 
   // To store partially resolved classes in setBootstrapMethod
   protected static HashMap resolvedClasses = new HashMap<String, JVMClassInfo>();
+  protected ClassFile classFile;
 
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
@@ -95,7 +96,20 @@ public class JVMClassInfo extends ClassInfo {
     public void setBootstrapMethodCount (ClassFile cf, Object tag, int count) {
       bootstrapMethods = new BootstrapMethodInfo[count];
     }
+    private void handleDynamicBootstrapMethod(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
+                                                String parameters, String descriptor, int[] cpArgs) {
+          // resolving cp args
+          Object[] resolvedArgs = new Object[cpArgs.length];
+          for (int i=0; i<cpArgs.length; i++) resolvedArgs[i] = cf.getConstantValue(cpArgs[i]);
 
+          // creating bmi with dynamic meta data
+          BootstrapMethodInfo bmi = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
+          bmi.setDynamicMetadata(refKind, cls, mth, parameters, descriptor);
+          bmi.setResolvedArgs(resolvedArgs);
+
+
+          bootstrapMethods[idx] = bmi;
+      }
     @Override
     public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
                                      String parameters, String descriptor, int[] cpArgs) {
@@ -824,11 +838,10 @@ public class JVMClassInfo extends ClassInfo {
     return true;
   }
 
-  JVMClassInfo (String name, ClassLoaderInfo cli, ClassFile cf, String srcUrl, JVMCodeBuilder cb) throws ClassParseException {
+  public JVMClassInfo (String name, ClassLoaderInfo cli, ClassFile cf, String srcUrl, JVMCodeBuilder cb) throws ClassParseException {
     super( name, cli, srcUrl);
-    
+    this.classFile = cf; // now this should resolve correctly
     new Initializer( cf, cb); // we just need the ctor
-    
     resolveAndLink();
   }
   
