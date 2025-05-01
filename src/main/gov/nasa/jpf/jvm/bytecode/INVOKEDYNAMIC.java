@@ -31,6 +31,10 @@ import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
 import gov.nasa.jpf.vm.VM;
 
+import java.lang.invoke.CallSite;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Arrays;
 
 /**
@@ -279,6 +283,11 @@ public class INVOKEDYNAMIC extends Instruction {
     sb.append("]");
     return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
+
+  private Instruction executeDynamicBootstrap(ThreadInfo ti, StackFrame frame, BootstrapMethodInfo bmi) {
+   // TODO : work to be done here later
+    return null;
+  }
   @Override
   public Instruction execute (ThreadInfo ti) {
     StackFrame frame = ti.getModifiableTopFrame();
@@ -308,6 +317,8 @@ public class INVOKEDYNAMIC extends Instruction {
       }
 
       return getNext(ti);
+    }else if (bmi.getBmType() == BootstrapMethodInfo.BMType.DYNAMIC){
+      return executeDynamicBootstrap(ti, frame, bmi);
     }
     ElementInfo ei = ti.getHeap().get(funcObjRef);
     if(ei==null || ei!=lastFuncObj || freeVariableTypes.length>0) {
