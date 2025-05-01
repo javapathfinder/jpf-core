@@ -2920,4 +2920,11 @@ public class ClassFile extends BinaryClassSource {
     return defaultOffset;
   }
 
+  public Object getConstantValue(int cpIndex) {
+    if (cpIndex < 1 || cpIndex >= cpValue.length) {
+      throw new IllegalArgumentException("Invalid constant pool index: " + cpIndex);
+    }
+    return cpValue[cpIndex];
+  }
+
 }
