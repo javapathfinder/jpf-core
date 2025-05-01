@@ -189,7 +189,9 @@ public class INVOKEDYNAMIC extends Instruction {
   }
 
   private boolean isPrimitiveType(char typeChar) {
-    return "ZBCSIJFD".indexOf(typeChar) >= 0;
+    return (typeChar == 'Z' || typeChar == 'B' || typeChar == 'C'
+            || typeChar == 'S' || typeChar == 'I' || typeChar == 'J'
+            || typeChar == 'F' || typeChar == 'D');
   }
   private boolean compareStrings(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2) {
     byte coder1 = ei1.getByteField("coder");
