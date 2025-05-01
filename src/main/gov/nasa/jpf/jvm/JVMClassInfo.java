@@ -113,16 +113,15 @@ public class JVMClassInfo extends ClassInfo {
     @Override
     public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
                                      String parameters, String descriptor, int[] cpArgs) {
-      String clsName = null;
-      ClassInfo enclosingLambdaCls;
-
       if (cls.equals("java/lang/invoke/LambdaMetafactory") && (mth.equals("metafactory") || mth.equals("altMetafactory"))) {
         lambdaMetaFactory(cf,idx,cls,mth,cpArgs);
       } else if (cls.equals("java/lang/runtime/ObjectMethods") && mth.equals("bootstrap")) {
         objectMethodsBootstrap(cf,tag,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
-      } else {
-        // For String Concatenation
-        stringConcatenation(cf,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
+      } else if (cls.equals("java/lang/invoke/StringConcatFactory") && (mth.equals("makeConcat") || mth.equals("makeConcatWithConstants"))) {
+          stringConcatenation(cf, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
+      }else {
+          // this will handle any other bootstrap method dynamically
+          handleDynamicBootstrapMethod(cf, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
       }
 
     }
