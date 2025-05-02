@@ -198,9 +198,14 @@ public class JPF_java_lang_reflect_Field extends NativePeer {
       return null;
     }
 
-    if (isWrite && fi.isFinal() && !override) {
-      env.throwException("java.lang.IllegalAccessException", "field not accessible: " + fi);
-      return null;
+    if (isWrite && fi.isFinal()) {
+      ClassInfo ci = fi.getClassInfo();
+      // for records -> always prevent modification
+      // for regular classes -> only prevent if not overridden
+      if (ci.isRecord() || !override) {
+        env.throwException("java.lang.IllegalAccessException", "Cannot modify final field: " + fi);
+        return null;
+      }
     }
 
     return ei;
