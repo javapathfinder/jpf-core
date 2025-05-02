@@ -27,6 +27,7 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * a ClassInfo that was created from a Java classfile
@@ -41,6 +42,7 @@ public class JVMClassInfo extends ClassInfo {
 
   // To store partially resolved classes in setBootstrapMethod
   protected static HashMap resolvedClasses = new HashMap<String, JVMClassInfo>();
+  protected ClassFile classFile;
 
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
@@ -94,20 +96,32 @@ public class JVMClassInfo extends ClassInfo {
     public void setBootstrapMethodCount (ClassFile cf, Object tag, int count) {
       bootstrapMethods = new BootstrapMethodInfo[count];
     }
+    private void handleDynamicBootstrapMethod(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
+                                                String parameters, String descriptor, int[] cpArgs) {
+          // resolving cp args
+          Object[] resolvedArgs = new Object[cpArgs.length];
+          for (int i=0; i<cpArgs.length; i++) resolvedArgs[i] = cf.getConstantValue(cpArgs[i]);
 
+          // creating bmi with dynamic meta data
+          BootstrapMethodInfo bmi = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs);
+          bmi.setDynamicMetadata(refKind, cls, mth, parameters, descriptor);
+          bmi.setResolvedArgs(resolvedArgs);
+
+
+          bootstrapMethods[idx] = bmi;
+      }
     @Override
     public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
                                      String parameters, String descriptor, int[] cpArgs) {
-      String clsName = null;
-      ClassInfo enclosingLambdaCls;
-
       if (cls.equals("java/lang/invoke/LambdaMetafactory") && (mth.equals("metafactory") || mth.equals("altMetafactory"))) {
         lambdaMetaFactory(cf,idx,cls,mth,cpArgs);
       } else if (cls.equals("java/lang/runtime/ObjectMethods") && mth.equals("bootstrap")) {
         objectMethodsBootstrap(cf,tag,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
-      } else {
-        // For String Concatenation
-        stringConcatenation(cf,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
+      } else if (cls.equals("java/lang/invoke/StringConcatFactory") && (mth.equals("makeConcat") || mth.equals("makeConcatWithConstants"))) {
+          stringConcatenation(cf, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
+      }else {
+          // this will handle any other bootstrap method dynamically
+          handleDynamicBootstrapMethod(cf, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
       }
 
     }
@@ -160,9 +174,13 @@ public class JVMClassInfo extends ClassInfo {
               isSerializable ? BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION
                       : BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION);
     }
-    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
-      //-----
+    private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
+                                        String parameters, String descriptor, int[] cpArgs) {
+        handleDynamicBootstrapMethod(cf, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
+        // we are here using proper descriptor instead of sam
+        bootstrapMethods[idx].setRecordComponents(cf.getBmArgString(cpArgs[1]));
     }
+
     private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       String clsName = cls;
       ClassInfo enclosingLambdaCls;
@@ -182,14 +200,14 @@ public class JVMClassInfo extends ClassInfo {
     }
     
     // helper method for setBootstrapMethod()
-    public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind, 
-                              String descriptor, String bmArg,BootstrapMethodInfo.BMType bmType){
-      MethodInfo methodBody = enclosingCls.getMethod(mthName + parameters, false);
-      
-      if(methodBody!=null) {
-        bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor
-                , bmArg, bmType);
+    public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind,
+                                       String descriptor, String bmArg, BootstrapMethodInfo.BMType bmType) {
+      MethodInfo methodBody = null;
+      if (bmType != BootstrapMethodInfo.BMType.RECORDS) {
+        methodBody = enclosingCls.getMethod(mthName + parameters, false);
       }
+      // Always set bootstrapMethods[idx], even if methodBody is null for RECORDS_O
+      bootstrapMethods[idx] = new BootstrapMethodInfo(refKind, JVMClassInfo.this, methodBody, descriptor, bmArg, bmType);
     }
 
     //--- Storing record while parsing
@@ -248,7 +266,9 @@ public class JVMClassInfo extends ClassInfo {
 
     @Override
     public void setRecordComponentsDone(ClassFile cf, Object tag) {
-      // TODO: finalize logic here if needed or whatever we can leave it for now
+      if (!JVMClassInfo.this.isRecord) {
+        throw new IllegalStateException("setRecordComponentsDone called on a non-record class: " + getName());
+      }
     }
 
    //--- inner/enclosing classes 
@@ -814,11 +834,10 @@ public class JVMClassInfo extends ClassInfo {
     return true;
   }
 
-  JVMClassInfo (String name, ClassLoaderInfo cli, ClassFile cf, String srcUrl, JVMCodeBuilder cb) throws ClassParseException {
+  public JVMClassInfo (String name, ClassLoaderInfo cli, ClassFile cf, String srcUrl, JVMCodeBuilder cb) throws ClassParseException {
     super( name, cli, srcUrl);
-    
+    this.classFile = cf; // now this should resolve correctly
     new Initializer( cf, cb); // we just need the ctor
-    
     resolveAndLink();
   }
   
