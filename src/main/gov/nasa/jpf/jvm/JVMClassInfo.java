@@ -221,7 +221,7 @@ public class JVMClassInfo extends ClassInfo {
     public void setRecordComponent(ClassFile cf, Object tag, int index, String name, String descriptor, int attributesCount) {
       // Create a basic RecordComponentInfo object. this can be the default
       // TODO: attributes like signature/annotations will be added later
-      RecordComponentInfo rci = new RecordComponentInfo(name, descriptor, null, null, null);
+      RecordComponentInfo rci = new RecordComponentInfo(name, descriptor, descriptor, "", new AnnotationInfo[0], new TypeAnnotationInfo[0]);
       JVMClassInfo.this.recordComponents[index] = rci;
     }
 
@@ -261,7 +261,7 @@ public class JVMClassInfo extends ClassInfo {
 
       // a new RecordComponentInfo with all updated attributes
       JVMClassInfo.this.recordComponents[componentIndex] =
-              new RecordComponentInfo(name, descriptor, signature, annotations, typeAnnotations);
+              new RecordComponentInfo(name, descriptor, signature, "", annotations, typeAnnotations);
     }
 
     @Override
