@@ -32,16 +32,7 @@ import gov.nasa.jpf.util.Source;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 
@@ -145,6 +136,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   protected boolean      isAbstract = false;
   protected boolean      isBuiltin = false;
   protected boolean      isRecord = false;
+  protected boolean      isSealed = false;
 
   // that's ultimately where we keep the attributes
   // <2do> this is currently quite redundant, but these are used in reflection
@@ -213,6 +205,11 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
   /** this is only set if the classfile has a SourceFile class attribute */
   protected String sourceFileName;
+
+  /**
+   * Names of classes permitted to extend this sealed class
+   */
+  protected String[] permittedSubclassNames = EMPTY_STRING_ARRAY;
 
   /** 
    * Uniform resource locater for the class file. NOTE: since for builtin classes
@@ -877,12 +874,34 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return recordComponents;
   }
 
+
+  public boolean isSealed() {return isSealed;}
+
   protected void setAssertionStatus() {
     if(isInitialized()) {
       return;
     } else {
       enableAssertions = classLoader.desiredAssertionStatus(name);
     }
+  }
+
+
+  public boolean isPermittedSubclass(String className) {
+    System.out.println("Checking if " + className + " is permitted subclass of " + this.name);
+    System.out.println("isSealed = " + isSealed + ", permitted = " + Arrays.toString(permittedSubclassNames));
+    if (!isSealed) {
+      System.out.println("Class is not sealed, allowing " + className);
+      return true;
+    }
+
+    for (String permitted : permittedSubclassNames) {
+      if (permitted.equals(className)) {
+        System.out.println("--" + className + " found in permitted list");
+        return true;
+      }
+    }
+    System.out.println("--" + className + " NOT found in permitted list");
+    return false;
   }
 
   boolean getAssertionStatus () {
