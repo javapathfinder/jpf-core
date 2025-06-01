@@ -374,6 +374,7 @@ public class ClassLoaderInfo
       setAttributes(ci);
       resolvedClasses.put(typeName, ci);
     }
+    // TODO : we need to add enforcement  sealed class and interface constraints
     
     return ci;
   }
