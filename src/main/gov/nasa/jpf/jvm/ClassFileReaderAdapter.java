@@ -261,4 +261,13 @@ public class ClassFileReaderAdapter implements ClassFileReader {
 
   @Override
   public void setRecordComponentsDone(ClassFile cf, Object tag) {}
+
+  @Override
+  public void setPermittedSubclassCount(ClassFile cf, Object tag, int count) {}
+
+  @Override
+  public void setPermittedSubclass(ClassFile cf, Object tag, int index, String subclassName) {}
+
+  @Override
+  public void setPermittedSubclassesDone(ClassFile cf, Object tag) {}
 }
