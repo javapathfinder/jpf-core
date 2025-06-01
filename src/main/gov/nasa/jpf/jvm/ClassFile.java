@@ -218,11 +218,13 @@ public class ClassFile extends BinaryClassSource {
   public static final String  ENCLOSING_METHOD_ATTR = "EnclosingMethod";
   public static final String  BOOTSTRAP_METHOD_ATTR = "BootstrapMethods";
   public static final String  RECORD_ATTR = "Record";
+  public static final String  PERMITTED_SUBCLASSES_ATTR = "PermittedSubclasses";
+
 
   protected final static String[] stdClassAttrs = {
     SOURCE_FILE_ATTR, DEPRECATED_ATTR, INNER_CLASSES_ATTR, DEPRECATED_ATTR, SIGNATURE_ATTR,
     RUNTIME_INVISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR,
-    ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR, RECORD_ATTR};
+    ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR, RECORD_ATTR,PERMITTED_SUBCLASSES_ATTR};
 
   //--- standard Record attributes
   public static final String[] stdRecordComponentAttrs = {
@@ -747,7 +749,25 @@ public class ClassFile extends BinaryClassSource {
       return false;
     }
   }
-  
+
+  private void setPermittedSubclassCount(ClassFileReader reader, Object tag, int count) {
+    int p = pos;
+    reader.setPermittedSubclassCount(this, tag, count);
+    pos = p;
+  }
+
+  private void setPermittedSubclass(ClassFileReader reader, Object tag, int index, String subclassName) {
+    int p = pos;
+    reader.setPermittedSubclass(this, tag, index, subclassName);
+    pos = p;
+  }
+
+  private void setPermittedSubclassesDone(ClassFileReader reader, Object tag) {
+    int p = pos;
+    reader.setPermittedSubclassesDone(this, tag);
+    pos = p;
+  }
+
   /*
    * This is largely lifted from AnnotationParser.java
    *   annotation {
@@ -1295,6 +1315,34 @@ public class ClassFile extends BinaryClassSource {
     }
 
     setExceptionsDone(reader, tag);
+  }
+
+
+  /**
+   * PermittedSubclasses_attribute {
+   *   u2 attribute_name_index;
+   *   u4 attribute_length;
+   *   u2 number_of_classes;
+   *   u2 classes[number_of_classes];
+   * }
+   */
+  public void parsePermittedSubclassesAttr(ClassFileReader reader, Object tag) {
+    System.out.println("Parsing PermittedSubclasses attribute");
+
+    int classCount = readU2();
+    System.out.println("Found " + classCount + " permitted subclasses");
+
+    setPermittedSubclassCount(reader, tag, classCount);
+
+    for (int i = 0; i < classCount; i++) {
+      int cpIdx = readU2();
+      String subclassName = classNameAt(cpIdx);
+      System.out.println("Permitted subclass[" + i + "] = " + subclassName);
+      setPermittedSubclass(reader, tag, i, subclassName);
+    }
+
+    setPermittedSubclassesDone(reader, tag);
+    System.out.println("PermittedSubclasses attribute parsing complete");
   }
 
   /**
