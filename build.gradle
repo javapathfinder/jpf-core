@@ -345,6 +345,8 @@ tasks.register('singleThreadTest', Test) {
         }
     }
 
+    include "**/URLClassLoaderTest.class"
+    include "**/AssertTest.class"
 
     // Use JUnit 4 Categories to include only singleThreadTest
     useJUnit {
