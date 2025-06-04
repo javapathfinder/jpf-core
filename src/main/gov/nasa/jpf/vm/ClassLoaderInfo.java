@@ -398,7 +398,7 @@ public class ClassLoaderInfo
                 ci.getName()
         );
       }else {
-        System.out.println("Sealed interface validation passed");
+       // System.out.println("Sealed interface validation passed");
       }
     }
     
