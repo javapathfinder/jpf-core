@@ -23,8 +23,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import gov.nasa.jpf.test.SingleThreadTest;
 import gov.nasa.jpf.test.java.net.LoadUtility;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /**
  * JPF part of assertion test
@@ -68,6 +70,7 @@ public class AssertTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testSetClassAssertionStatus2() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -97,6 +100,7 @@ public class AssertTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testSetPackageAssertionStatus() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -123,6 +127,7 @@ public class AssertTest extends LoadUtility {
   }
 
   @Test
+  @Category(SingleThreadTest.class)
   public void testSetDefaultAssertionStatus() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException {
     movePkgOut();
     if (verifyNoPropertyViolation()) {
@@ -151,6 +156,7 @@ public class AssertTest extends LoadUtility {
   }
   
   @Test
+  @Category(SingleThreadTest.class)
   public void testClearAssertionStatus() throws MalformedURLException, ClassNotFoundException, SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     movePkgOut();
     if (verifyNoPropertyViolation("+vm.disable_assertions=*")) {
