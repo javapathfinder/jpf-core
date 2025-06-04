@@ -374,7 +374,19 @@ public class ClassLoaderInfo
       setAttributes(ci);
       resolvedClasses.put(typeName, ci);
     }
-    // TODO : we need to add enforcement  sealed class and interface constraints
+    // This is the existing check for sealed superclasses
+    if (ci.getSuperClass() != null && ci.getSuperClass().isSealed()) {
+      System.out.println("Validating sealed superclass: " + ci.getSuperClass().getName() +
+              " for subclass: " + ci.getName()); // ADD THIS
+      if (!ci.getSuperClass().isPermittedSubclass(ci.getName())) {
+        System.out.println("SEALED CLASS VIOLATION - throwing IllegalAccessError");
+        throw new ClassInfoException(
+                "Class " + ci.getName() + " is not permitted to extend sealed class " + ci.getSuperClass().getName(), this,
+                "java.lang.IllegalAccessError",
+                ci.getName()
+        );
+      }
+    }
     
     return ci;
   }
