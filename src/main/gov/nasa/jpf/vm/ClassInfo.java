@@ -145,6 +145,7 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   protected boolean      isAbstract = false;
   protected boolean      isBuiltin = false;
   protected boolean      isRecord = false;
+  protected boolean      isSealed = false;
 
   // that's ultimately where we keep the attributes
   // <2do> this is currently quite redundant, but these are used in reflection
@@ -213,6 +214,11 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
   /** this is only set if the classfile has a SourceFile class attribute */
   protected String sourceFileName;
+
+  /**
+   * Names of classes permitted to extend this sealed class
+   */
+  protected String[] permittedSubclassNames = EMPTY_STRING_ARRAY;
 
   /** 
    * Uniform resource locater for the class file. NOTE: since for builtin classes
@@ -877,12 +883,29 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
     return recordComponents;
   }
 
+
+  public boolean isSealed() {return isSealed;}
+
   protected void setAssertionStatus() {
     if(isInitialized()) {
       return;
     } else {
       enableAssertions = classLoader.desiredAssertionStatus(name);
     }
+  }
+
+
+  public boolean isPermittedSubclass(String className) {
+    if (!isSealed) {
+      return true;
+    }
+
+    for (String permitted : permittedSubclassNames) {
+      if (permitted.equals(className)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   boolean getAssertionStatus () {
