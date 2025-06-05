@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.Arrays;
 import java.util.logging.Level;
 
 
@@ -897,20 +896,15 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
 
   public boolean isPermittedSubclass(String className) {
-    System.out.println("Checking if " + className + " is permitted subclass of " + this.name);
-    System.out.println("isSealed = " + isSealed + ", permitted = " + Arrays.toString(permittedSubclassNames));
     if (!isSealed) {
-      System.out.println("Class is not sealed, allowing " + className);
       return true;
     }
 
     for (String permitted : permittedSubclassNames) {
       if (permitted.equals(className)) {
-        System.out.println("--" + className + " found in permitted list");
         return true;
       }
     }
-    System.out.println("--" + className + " NOT found in permitted list");
     return false;
   }
 

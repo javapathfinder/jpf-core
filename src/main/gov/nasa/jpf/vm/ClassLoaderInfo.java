@@ -376,10 +376,7 @@ public class ClassLoaderInfo
     }
     // This is the existing check for sealed superclasses
     if (ci.getSuperClass() != null && ci.getSuperClass().isSealed()) {
-      System.out.println("Validating sealed superclass: " + ci.getSuperClass().getName() +
-              " for subclass: " + ci.getName());
       if (!ci.getSuperClass().isPermittedSubclass(ci.getName())) {
-        System.out.println("SEALED CLASS VIOLATION - throwing IllegalAccessError");
         throw new ClassInfoException(
                 "Class " + ci.getName() + " is not permitted to extend sealed class " + ci.getSuperClass().getName(), this,
                 "java.lang.IllegalAccessError",
@@ -390,15 +387,11 @@ public class ClassLoaderInfo
     // interface check
     for (ClassInfo iface : ci.getInterfaceClassInfos()) {
       if (iface.isSealed() && !iface.isPermittedSubclass(ci.getName())) {
-        System.out.println("Validating sealed interface: " + iface.getName() +
-                " for implementer: " + ci.getName());
         throw new ClassInfoException(
                 "Class " + ci.getName() + " is not permitted to implement sealed interface " + iface.getName(), this,
                 "java.lang.IllegalAccessError",
                 ci.getName()
         );
-      }else {
-       // System.out.println("Sealed interface validation passed");
       }
     }
     

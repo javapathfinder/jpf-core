@@ -1327,22 +1327,18 @@ public class ClassFile extends BinaryClassSource {
    * }
    */
   public void parsePermittedSubclassesAttr(ClassFileReader reader, Object tag) {
-    System.out.println("Parsing PermittedSubclasses attribute");
 
     int classCount = readU2();
-    System.out.println("Found " + classCount + " permitted subclasses");
 
     setPermittedSubclassCount(reader, tag, classCount);
 
     for (int i = 0; i < classCount; i++) {
       int cpIdx = readU2();
       String subclassName = classNameAt(cpIdx);
-      System.out.println("Permitted subclass[" + i + "] = " + subclassName);
       setPermittedSubclass(reader, tag, i, subclassName);
     }
 
     setPermittedSubclassesDone(reader, tag);
-    System.out.println("PermittedSubclasses attribute parsing complete");
   }
 
   /**
