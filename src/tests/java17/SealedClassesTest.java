@@ -5,173 +5,156 @@ import org.junit.Test;
 
 import java.lang.annotation.*;
 
-
 public class SealedClassesTest extends TestJPF {
 
-    // Section 1: Basic Sealed Classes and Interfaces
     @Test
     public void testBasicSealedInterface() {
         if (verifyNoPropertyViolation()) {
-            Shape circle = new Circle(5);
-            Shape rectangle = new Rectangle(3, 4);
-            assertTrue(circle instanceof Circle);
-            assertTrue(rectangle instanceof Rectangle);
-            assertEquals(5, circle.value());
-            assertEquals(12, rectangle.value());
+            Notification email = new Email("Subject: Meeting");
+            Notification sms = new SMS("555-1234");
+            assertTrue(email instanceof Email);
+            assertTrue(sms instanceof SMS);
+            assertEquals("Subject: Meeting", email.getContent());
+            assertEquals("555-1234", sms.getContent());
         }
     }
 
     @Test
     public void testBasicSealedClass() {
         if (verifyNoPropertyViolation()) {
-            Animal dog = new Dog("Woof");
-            Animal cat = new Cat("Meow");
-            assertEquals("Woof", dog.sound());
-            assertEquals("Meow", cat.sound());
+            Payment card = new CreditCard(150.0);
+            Payment paypal = new PayPal("user@example.com");
+            assertEquals(150.0, card.amount(), 0.001);
+            assertEquals("user@example.com", paypal.account());
         }
     }
 
-    // Section 2: Generics
     @Test
     public void testSealedClassWithGenerics() {
         if (verifyNoPropertyViolation()) {
-            Box<Integer> intBox = new IntBox(10);
-            Box<String> stringBox = new StringBox("Hello");
-            assertEquals(Integer.valueOf(10), intBox.getValue());
-            assertEquals("Hello", stringBox.getValue());
-            assertTrue(intBox instanceof IntBox);
-            assertTrue(stringBox instanceof StringBox);
+            Response<Integer> ok = new Success<>(200);
+            Response<String> fail = new Failure<>("Error");
+            assertEquals(Integer.valueOf(200), ok.payload());
+            assertEquals("Error", fail.payload());
+            assertTrue(ok instanceof Success);
+            assertTrue(fail instanceof Failure);
         }
     }
 
     @Test
     public void testGenericSealedInterface() {
         if (verifyNoPropertyViolation()) {
-            Container<String> container = new StringContainer("Test");
-            assertEquals("Test", container.content());
+            Wrapper<Double> wrap = new DoubleWrapper(3.14);
+            assertEquals(3.14, wrap.value(), 0.001);
         }
     }
 
-    // Section 3: Annotations
     @Test
     public void testAnnotatedSealedClass() {
         if (verifyNoPropertyViolation()) {
-            AnnotatedSealedClass obj = new AnnotatedSubclass();
-            assertTrue(obj.getClass().isAnnotationPresent(CustomAnnotation.class));
-            CustomAnnotation annotation = obj.getClass().getAnnotation(CustomAnnotation.class);
-            assertEquals("Subclass", annotation.value());
+            LabeledProcess process = new LabeledTask();
+            assertTrue(process.getClass().isAnnotationPresent(ProcessLabel.class));
+            ProcessLabel label = process.getClass().getAnnotation(ProcessLabel.class);
+            assertEquals("Task", label.value());
         }
     }
 
-    // Section 4: Records
     @Test
     public void testSealedClassWithRecord() {
         if (verifyNoPropertyViolation()) {
-            Vehicle car = new Car(4);
-            Vehicle truck = new Truck();
-            assertEquals("Car", car.getType());
-            assertEquals("Truck", truck.getType());
+            Transport bike = new Bicycle(2);
+            Transport bus = new Bus(40);
+            assertEquals("Bicycle", bike.type());
+            assertEquals("Bus", bus.type());
         }
     }
 
     @Test
     public void testRecordImplementingSealedInterface() {
         if (verifyNoPropertyViolation()) {
-            Expr expr = new Constant(5);
-            assertEquals(5, expr.value());
+            Command start = new Start("Init");
+            assertEquals("Init", start.name());
         }
     }
 
-    // ADDED: Test for record deconstruction with sealed classes
     @Test
     public void testRecordDeconstructionWithSealedClasses() {
         if (verifyNoPropertyViolation()) {
-            Plus p = new Plus(new Constant(5), new Constant(7));
-            var left = p.left();
-            var right = p.right();
-            assertEquals(5, left.value());
-            assertEquals(7, right.value());
+            Stop stop = new Stop("Shutdown", 10);
+            var name = stop.name();
+            var code = stop.code();
+            assertEquals("Shutdown", name);
+            assertEquals(10, code);
         }
     }
 
-    // Section 5: Lambdas and Functional Interfaces
     @Test
     public void testSealedFunctionalInterfaceWithLambda() {
         if (verifyNoPropertyViolation()) {
-            Operation add = new AddOperation();
-            Operation multiply = new MultiplyOperation();
-            assertEquals(5, add.apply(2, 3));
-            assertEquals(6, multiply.apply(2, 3));
-            assertTrue(add instanceof Operation);
-            assertTrue(multiply instanceof Operation);
+            Calculator sum = new Sum();
+            Calculator prod = new Product();
+            assertEquals(9, sum.compute(4, 5));
+            assertEquals(20, prod.compute(4, 5));
+            assertTrue(sum instanceof Calculator);
+            assertTrue(prod instanceof Calculator);
         }
     }
 
-    // Section 6: Pattern Matching
     @Test
     public void testPatternMatchingWithSealedClasses() {
         if (verifyNoPropertyViolation()) {
-            Expr expr = new Plus(new Constant(3), new Constant(4));
-            if (expr instanceof Constant c) {
-                fail("Should be Plus, not Constant");
-            } else if (expr instanceof Plus p) {
-                assertEquals(3, p.left().value());
-                assertEquals(4, p.right().value());
+            Command cmd = new Stop("End", 0);
+            if (cmd instanceof Start s) {
+                fail("Should be Stop, not Start");
+            } else if (cmd instanceof Stop st) {
+                assertEquals("End", st.name());
+                assertEquals(0, st.code());
             } else {
-                fail("Unexpected Expr type");
+                fail("Unexpected Command type");
             }
         }
     }
 
-
-
-    // ADDED: Test for type-specific behavior
     @Test
     public void testTypeSpecificBehavior() {
         if (verifyNoPropertyViolation()) {
-            Shape[] shapes = {new Circle(5), new Rectangle(4, 6)};
-            StringBuilder result = new StringBuilder();
-
-            for (Shape shape : shapes) {
-                if (shape instanceof Circle c) {
-                    result.append("Circle: ").append(c.value());
-                } else if (shape instanceof Rectangle r) {
-                    result.append("Rectangle: ").append(r.value());
+            Notification[] notes = {new Email("Info"), new SMS("999-8888")};
+            StringBuilder sb = new StringBuilder();
+            for (Notification note : notes) {
+                if (note instanceof Email e) {
+                    sb.append("Email: ").append(e.getContent());
+                } else if (note instanceof SMS s) {
+                    sb.append("SMS: ").append(s.getContent());
                 }
             }
-
-            assertEquals("Circle: 5Rectangle: 24", result.toString());
+            assertEquals("Email: InfoSMS: 999-8888", sb.toString());
         }
     }
 
-    // Section 7: Inheritance and Hierarchies
     @Test
     public void testMultiLevelSealedHierarchy() {
         if (verifyNoPropertyViolation()) {
-            TopLevel top = new MiddleLevelImpl();
-            assertTrue(top instanceof MiddleLevelImpl);
+            LevelOne l1 = new LevelThreeImpl();
+            assertTrue(l1 instanceof LevelThreeImpl);
         }
     }
 
-    // Section 8: Nested and Inner Classes
     @Test
     public void testNestedSealedClasses() {
         if (verifyNoPropertyViolation()) {
-            Outer outer = new Outer();
-            Outer.NestedSealed shape = outer.new NestedImpl();
-            assertTrue(shape instanceof Outer.NestedSealed);
-            assertTrue(shape instanceof Outer.NestedImpl);
+            ContainerClass container = new ContainerClass();
+            ContainerClass.NestedAction action = container.new NestedActionImpl();
+            assertTrue(action instanceof ContainerClass.NestedAction);
+            assertTrue(action instanceof ContainerClass.NestedActionImpl);
         }
     }
 
-
-    // Section 10: Null Handling
     @Test
     public void testNullHandlingWithSealedTypes() {
         if (verifyNoPropertyViolation()) {
-            NullableShape shape = null;
-            if (shape instanceof NullableCircle c) {
-                fail("Null should not match NullableCircle");
+            NullableNotification note = null;
+            if (note instanceof NullableEmail e) {
+                fail("Null should not match NullableEmail");
             } else {
                 assertTrue(true); // Null case handled correctly
             }
@@ -181,166 +164,165 @@ public class SealedClassesTest extends TestJPF {
     @Test
     public void testAbstractPermittedSubclass() {
         if (verifyNoPropertyViolation()) {
-            AbstractSealed obj = new ConcreteSubclass();
-            assertTrue(obj instanceof ConcreteSubclass);
+            AbstractProcess proc = new ConcreteProcess();
+            assertTrue(proc instanceof ConcreteProcess);
         }
     }
 
     @Test
     public void testSealedClassWithPrivateConstructor() {
         if (verifyNoPropertyViolation()) {
-            PrivateConstructorSealed obj = new PrivateConstructorSubclass();
-            assertTrue(obj instanceof PrivateConstructorSubclass);
+            PrivateSealed ps = new PrivateSealedImpl();
+            assertTrue(ps instanceof PrivateSealedImpl);
         }
     }
 
     @Test
     public void testSealedInterfaceWithDefaultMethods() {
         if (verifyNoPropertyViolation()) {
-            SealedWithDefault impl = new DefaultImpl();
-            assertEquals("Default", impl.defaultMethod());
-            assertEquals("Custom", impl.customMethod());
+            SealedWithDefaultMethod impl = new DefaultMethodImpl();
+            assertEquals("DefaultValue", impl.defaultValue());
+            assertEquals("Special", impl.specialValue());
         }
     }
 
-
+    // --- Sealed Types Definitions ---
 
     // Basic Sealed Interface
-    sealed interface Shape permits Circle, Rectangle {
-        int value();
+    sealed interface Notification permits Email, SMS {
+        String getContent();
     }
-    final class Circle implements Shape {
-        private final int radius;
-        Circle(int radius) { this.radius = radius; }
-        @Override public int value() { return radius; }
+    final class Email implements Notification {
+        private final String subject;
+        Email(String subject) { this.subject = subject; }
+        @Override public String getContent() { return subject; }
     }
-    final class Rectangle implements Shape {
-        private final int width, height;
-        Rectangle(int width, int height) { this.width = width; this.height = height; }
-        @Override public int value() { return width * height; }
+    final class SMS implements Notification {
+        private final String number;
+        SMS(String number) { this.number = number; }
+        @Override public String getContent() { return number; }
     }
 
     // Basic Sealed Class
-    sealed abstract class Animal permits Dog, Cat {
-        public abstract String sound();
+    sealed abstract class Payment permits CreditCard, PayPal {
+        public abstract double amount();
+        public abstract String account();
     }
-    final class Dog extends Animal {
-        private final String sound;
-        Dog(String sound) { this.sound = sound; }
-        @Override public String sound() { return sound; }
+    final class CreditCard extends Payment {
+        private final double amt;
+        CreditCard(double amt) { this.amt = amt; }
+        @Override public double amount() { return amt; }
+        @Override public String account() { return null; }
     }
-    final class Cat extends Animal {
-        private final String sound;
-        Cat(String sound) { this.sound = sound; }
-        @Override public String sound() { return sound; }
+    final class PayPal extends Payment {
+        private final String email;
+        PayPal(String email) { this.email = email; }
+        @Override public double amount() { return 0; }
+        @Override public String account() { return email; }
     }
 
     // Generics
-    sealed interface Box<T> permits IntBox, StringBox {
-        T getValue();
+    sealed interface Response<T> permits Success, Failure {
+        T payload();
     }
-    final class IntBox implements Box<Integer> {
-        private final Integer value;
-        IntBox(Integer value) { this.value = value; }
-        @Override public Integer getValue() { return value; }
+    final class Success<T> implements Response<T> {
+        private final T value;
+        Success(T value) { this.value = value; }
+        @Override public T payload() { return value; }
     }
-    final class StringBox implements Box<String> {
-        private final String value;
-        StringBox(String value) { this.value = value; }
-        @Override public String getValue() { return value; }
+    final class Failure<T> implements Response<T> {
+        private final T error;
+        Failure(T error) { this.error = error; }
+        @Override public T payload() { return error; }
     }
-    sealed interface Container<T> permits StringContainer {
-        T content();
+    sealed interface Wrapper<T> permits DoubleWrapper {
+        T value();
     }
-    final class StringContainer implements Container<String> {
-        private final String content;
-        StringContainer(String content) { this.content = content; }
-        @Override public String content() { return content; }
+    final class DoubleWrapper implements Wrapper<Double> {
+        private final Double val;
+        DoubleWrapper(Double val) { this.val = val; }
+        @Override public Double value() { return val; }
     }
 
     // Annotations
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
-    @interface CustomAnnotation {
+    @interface ProcessLabel {
         String value();
     }
-    @CustomAnnotation("SealedClass")
-    sealed class AnnotatedSealedClass permits AnnotatedSubclass {}
-    @CustomAnnotation("Subclass")
-    final class AnnotatedSubclass extends AnnotatedSealedClass {}
+    @ProcessLabel("Labeled")
+    sealed class LabeledProcess permits LabeledTask {}
+    @ProcessLabel("Task")
+    final class LabeledTask extends LabeledProcess {}
 
     // Records
-    public sealed interface Vehicle permits Car, Truck {
-        String getType();
+    public sealed interface Transport permits Bicycle, Bus {
+        String type();
     }
-    public record Car(int wheels) implements Vehicle {
+    public record Bicycle(int wheels) implements Transport {
         @Override
-        public String getType() { return "Car"; }
+        public String type() { return "Bicycle"; }
     }
-    public static final class Truck implements Vehicle {
+    public static final class Bus implements Transport {
+        private final int seats;
+        public Bus(int seats) { this.seats = seats; }
         @Override
-        public String getType() { return "Truck"; }
+        public String type() { return "Bus"; }
     }
-    sealed interface Expr permits Constant, Plus {
-        int value();
+    sealed interface Command permits Start, Stop {
+        String name();
     }
-    record Constant(int value) implements Expr {}
-    record Plus(Expr left, Expr right) implements Expr {
-        @Override public int value() { return left.value() + right.value(); }
-    }
+    record Start(String name) implements Command {}
+    record Stop(String name, int code) implements Command {}
 
     // Lambdas and Functional Interfaces
-    sealed interface Operation permits AddOperation, MultiplyOperation {
-        int apply(int a, int b);
+    sealed interface Calculator permits Sum, Product {
+        int compute(int a, int b);
     }
-    final class AddOperation implements Operation {
-        @Override public int apply(int a, int b) { return a + b; }
+    final class Sum implements Calculator {
+        @Override public int compute(int a, int b) { return a + b; }
     }
-    final class MultiplyOperation implements Operation {
-        @Override public int apply(int a, int b) { return a * b; }
+    final class Product implements Calculator {
+        @Override public int compute(int a, int b) { return a * b; }
     }
 
     // Inheritance and Hierarchies
-    sealed interface TopLevel permits MiddleLevel {}
-    sealed interface MiddleLevel extends TopLevel permits MiddleLevelImpl {}
-    final class MiddleLevelImpl implements MiddleLevel {}
+    sealed interface LevelOne permits LevelTwo {}
+    sealed interface LevelTwo extends LevelOne permits LevelThreeImpl {}
+    final class LevelThreeImpl implements LevelTwo {}
 
     // Nested Classes
-    class Outer {
-        sealed interface NestedSealed permits NestedImpl {}
-        final class NestedImpl implements NestedSealed {}
+    class ContainerClass {
+        sealed interface NestedAction permits NestedActionImpl {}
+        final class NestedActionImpl implements NestedAction {}
     }
-
 
     // Null Handling
-    sealed interface NullableShape permits NullableCircle {}
-    final class NullableCircle implements NullableShape {
-        private final int radius;
-        NullableCircle(int radius) { this.radius = radius; }
+    sealed interface NullableNotification permits NullableEmail {}
+    final class NullableEmail implements NullableNotification {
+        private final String msg;
+        NullableEmail(String msg) { this.msg = msg; }
     }
 
-    abstract sealed class AbstractSealed permits ConcreteSubclass {}
-    final class ConcreteSubclass extends AbstractSealed {}
-    sealed class PrivateConstructorSealed permits PrivateConstructorSubclass {
-        private PrivateConstructorSealed() {}
+    abstract sealed class AbstractProcess permits ConcreteProcess {}
+    final class ConcreteProcess extends AbstractProcess {}
+    sealed class PrivateSealed permits PrivateSealedImpl {
+        private PrivateSealed() {}
     }
-    final class PrivateConstructorSubclass extends PrivateConstructorSealed {
-        public PrivateConstructorSubclass() { super(); }
+    final class PrivateSealedImpl extends PrivateSealed {
+        public PrivateSealedImpl() { super(); }
     }
 
-    sealed interface SealedWithDefault permits DefaultImpl {
-        default String defaultMethod() {
-            return "Default";
+    sealed interface SealedWithDefaultMethod permits DefaultMethodImpl {
+        default String defaultValue() {
+            return "DefaultValue";
         }
-
-        String customMethod();
+        String specialValue();
     }
-
-    final class DefaultImpl implements SealedWithDefault {
+    final class DefaultMethodImpl implements SealedWithDefaultMethod {
         @Override
-        public String customMethod() {
-            return "Custom";
+        public String specialValue() {
+            return "Special";
         }
     }
-
 }
