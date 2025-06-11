@@ -17,7 +17,13 @@
  */
 package gov.nasa.jpf.vm;
 
+import gov.nasa.jpf.jvm.ClassFile;
+import gov.nasa.jpf.jvm.JVMClassInfo;
+
+import java.lang.invoke.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -49,6 +55,7 @@ public class BootstrapMethodInfo {
   private int[] cpArgs;
   private Object[] resolvedArgs;
   private String[] recordComponents;
+  private Class<?>[] argTypes;
 
   public enum BMType{
     STRING_CONCATENATION,
@@ -57,7 +64,98 @@ public class BootstrapMethodInfo {
     RECORDS, // For record synthetic methods
     DYNAMIC // this one for new type for generic bootstrap methods
   }
+
   BMType bmType;
+
+
+  public void parseArgumentTypes() {
+    if (dynamicDescriptor == null) return;
+
+    // getting parameter types from method descriptor (e.g., "(Ljava/lang/String;I)V")
+    int start = dynamicDescriptor.indexOf('(');
+    int end = dynamicDescriptor.indexOf(')');
+    if (start == -1 || end == -1) return;
+
+    String paramDesc = dynamicDescriptor.substring(start + 1, end);
+    this.argTypes = parseTypes(paramDesc);
+  }
+
+  private Class<?>[] parseTypes(String desc) {
+    List<Class<?>> types = new ArrayList<>();
+    int i = 0;
+    while (i < desc.length()) {
+      char c = desc.charAt(i);
+      switch (c) {
+        case 'B': types.add(byte.class); i++; break;
+        case 'C': types.add(char.class); i++; break;
+        case 'D': types.add(double.class); i++; break;
+        case 'F': types.add(float.class); i++; break;
+        case 'I': types.add(int.class); i++; break;
+        case 'J': types.add(long.class); i++; break;
+        case 'S': types.add(short.class); i++; break;
+        case 'Z': types.add(boolean.class); i++; break;
+        case 'L':
+          int end = desc.indexOf(';', i);
+          String clsName = desc.substring(i + 1, end).replace('/', '.');
+          try {
+            types.add(Class.forName(clsName));
+          } catch (ClassNotFoundException e) {
+            types.add(Object.class); // fallback here
+          }
+          i = end + 1;
+          break;
+        case '[':
+          // handling arrays as objects
+          types.add(Object.class);
+          while (desc.charAt(i) == '[') i++;
+          if (desc.charAt(i) == 'L') i = desc.indexOf(';', i) + 1;
+          else i++;
+          break;
+        default:
+          i++;
+      }
+    }
+    return types.toArray(new Class<?>[0]);
+  }
+
+  public void parseSamArgumentTypes() {
+    System.out.println("[DEBUG] Parsing SAM descriptor: " + samDescriptor);
+    if (samDescriptor == null) return;
+
+    int start = samDescriptor.indexOf('(');
+    int end = samDescriptor.indexOf(')');
+    if (start == -1 || end == -1) {
+      System.out.println("[ERROR] Invalid SAM descriptor format");
+      return;
+    }
+
+    String paramDesc = samDescriptor.substring(start + 1, end);
+    System.out.println("[DEBUG] Parameter descriptor: " + paramDesc);
+
+    this.argTypes = parseTypes(paramDesc);
+    System.out.println("[DEBUG] Parsed argTypes: " + Arrays.toString(argTypes));
+  }
+
+  public void resolveBootstrapArguments() {
+    if (cpArgs == null || cpArgs.length == 0) {
+      resolvedArgs = new Object[0];
+      return;
+    }
+
+    resolvedArgs = new Object[cpArgs.length];
+    ClassFile cf = null;
+
+    if (enclosingClass instanceof JVMClassInfo) {
+      cf = ((JVMClassInfo) enclosingClass).getClassFile();
+    }
+
+    if (cf != null) {
+      for (int i = 0; i < cpArgs.length; i++) {
+        resolvedArgs[i] = cf.getConstantValue(cpArgs[i]);
+      }
+    }
+  }
+
   public BootstrapMethodInfo(int lambdaRefKind, ClassInfo enclosingClass, MethodInfo lambdaBody, String samDescriptor,
                              String bmArg, BMType bmType) {
     this.lambdaRefKind = lambdaRefKind;
@@ -90,6 +188,7 @@ public class BootstrapMethodInfo {
     this.dynamicMethodName = methodName;
     this.dynamicParameters = parameters;
     this.dynamicDescriptor = descriptor;
+    parseArgumentTypes();
   }
 
   public void setResolvedArgs(Object[] args) {
@@ -98,6 +197,65 @@ public class BootstrapMethodInfo {
 
   // this can be useful cause we're using proper descriptor instead of the sam
   public void setRecordComponents(String components) { this.recordComponents = components.split(";");}
+
+  public void prepareForCallSiteGeneration() {
+    // Resolve bootstrap arguments if not already done
+    if (resolvedArgs == null) resolveBootstrapArguments();
+
+    switch (bmType) {
+      case STRING_CONCATENATION:
+      case LAMBDA_EXPRESSION:
+      case SERIALIZABLE_LAMBDA_EXPRESSION:
+        if (samDescriptor != null) parseSamArgumentTypes();
+        break;
+      case RECORDS:
+      case DYNAMIC:
+        if (dynamicDescriptor != null) parseArgumentTypes();
+        break;
+    }
+
+    System.out.println("[DEBUG] Prepared CallSite generation for " + bmType + " with " + (resolvedArgs != null ? resolvedArgs.length : 0) + " resolved args");
+  }
+
+  public CallSite generateCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
+    if (resolvedArgs == null) resolveBootstrapArguments();
+    switch (bmType) {
+      case STRING_CONCATENATION:
+        return createStringConcatCallSite(lookup, name, methodType);
+      case LAMBDA_EXPRESSION:
+      case SERIALIZABLE_LAMBDA_EXPRESSION:
+        return createLambdaCallSite(lookup, name, methodType);
+      case RECORDS:
+        return createRecordCallSite(lookup, name, methodType);
+      case DYNAMIC:
+        return createDynamicCallSite(lookup, name, methodType);
+      default:
+        throw new BootstrapMethodError("Unsupported bootstrap method type: " + bmType);
+    }
+  }
+
+  private CallSite createStringConcatCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
+    // TODO: we need to implement a JPFStringConcatHelper first to handle the recipes
+    throw new UnsupportedOperationException("Later");
+  }
+
+  private CallSite createLambdaCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
+    // TODO: Implement proper Lambda CallSite generation
+    throw new UnsupportedOperationException("Later");
+
+  }
+
+  private CallSite createRecordCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
+    // TODO: Implement proper record CallSite generation
+    throw new UnsupportedOperationException("Later");
+  }
+
+  private CallSite createDynamicCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
+    // TODO: Implement proper dynamic CallSite generation
+    throw new UnsupportedOperationException("later");
+  }
+
+
 
   @Override
   public String toString() {
