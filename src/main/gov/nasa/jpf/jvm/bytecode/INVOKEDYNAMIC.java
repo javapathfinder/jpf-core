@@ -17,25 +17,25 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.FieldInfo;
-import gov.nasa.jpf.vm.ByteArrayFields;
-import gov.nasa.jpf.vm.BootstrapMethodInfo;
-import gov.nasa.jpf.vm.ClassInfo;
 import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.FunctionObjectFactory;
 import gov.nasa.jpf.vm.Instruction;
-import gov.nasa.jpf.vm.LoadOnJPFRequired;
 import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
-import gov.nasa.jpf.vm.VM;
+import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.StackFrame;
+import gov.nasa.jpf.vm.ClassInfo;
+import gov.nasa.jpf.vm.BootstrapMethodInfo;
+import gov.nasa.jpf.vm.ByteArrayFields;
+import gov.nasa.jpf.vm.FieldInfo;
 
 import java.lang.invoke.CallSite;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -67,6 +67,8 @@ public class INVOKEDYNAMIC extends Instruction {
 
   public INVOKEDYNAMIC () {}
 
+  private static final Map<String, CallSite> callSiteCache = new ConcurrentHashMap<>();
+
   protected INVOKEDYNAMIC (int bmIndex, String methodName, String descriptor){
     bootstrapMethodIndex = bmIndex;
     samMethodName = methodName;
@@ -96,11 +98,6 @@ public class INVOKEDYNAMIC extends Instruction {
             samMethodName + '(' + args + "):" + functionalInterfaceName;
   }
 
-  /**
-   * For now, INVOKEDYNAMIC works only in the context of lambda expressions.
-   * Executing this returns an object that implements the functional interface
-   * and contains a method which captures the behavior of the lambda expression.
-   */
   private boolean deepEquals(ThreadInfo ti, Object val1, Object val2, String sig) {
     // identity check and null handling
     if (val1 == val2) return true;
@@ -125,6 +122,7 @@ public class INVOKEDYNAMIC extends Instruction {
 
     return false;
   }
+
   private boolean comparePrimitives(Object val1, Object val2, char typeChar) {
     switch (typeChar) {
       case 'Z': return ((Boolean) val1).booleanValue() == ((Boolean) val2).booleanValue();
@@ -138,6 +136,7 @@ public class INVOKEDYNAMIC extends Instruction {
       default: return false;
     }
   }
+
   private Object getArrayElement(ElementInfo ei, int index, char type) {
     switch (type) {
       case 'Z': return ei.getBooleanElement(index);
@@ -151,6 +150,7 @@ public class INVOKEDYNAMIC extends Instruction {
       default:  return ei.getReferenceElement(index);
     }
   }
+
   private boolean compareReferenceTypes(ThreadInfo ti, Object val1, Object val2, String sig) {
     // string comparison
     if ("Ljava/lang/String;".equals(sig)) return compareStrings(ti, (ElementInfo) val1, (ElementInfo) val2);
@@ -193,6 +193,7 @@ public class INVOKEDYNAMIC extends Instruction {
             || typeChar == 'S' || typeChar == 'I' || typeChar == 'J'
             || typeChar == 'F' || typeChar == 'D');
   }
+
   private boolean compareStrings(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2) {
     byte coder1 = ei1.getByteField("coder");
     byte coder2 = ei2.getByteField("coder");
@@ -202,6 +203,7 @@ public class INVOKEDYNAMIC extends Instruction {
 
     return coder1 == coder2 && Arrays.equals(bytes1, bytes2);
   }
+
   private boolean compareRecords(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2, ClassInfo ci) {
     if (!ci.equals(ei2.getClassInfo())) return false;
 
@@ -215,6 +217,7 @@ public class INVOKEDYNAMIC extends Instruction {
 
     return true;
   }
+
   private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
     ElementInfo thisEi = ti.getThisElementInfo();
     ElementInfo otherEi = ti.getHeap().get(otherRef);
@@ -286,82 +289,135 @@ public class INVOKEDYNAMIC extends Instruction {
     return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
 
-  private Instruction executeDynamicBootstrap(ThreadInfo ti, StackFrame frame, BootstrapMethodInfo bmi) {
-   // TODO : work to be done here later
+  private CallSite createCallSite(ThreadInfo ti, ClassInfo enclosingClass, BootstrapMethodInfo bmi) throws Throwable {
+    // TODO : we will create a lookup object and generate call site using BootstrapMethodInfo
     return null;
   }
+
+  private String createCallSiteKey(ThreadInfo ti) {
+    // unique key for the call site
+    String key = getMethodInfo().getFullName() + ":" + getPosition() + ":" + bootstrapMethodIndex;
+    System.out.println("[DEBUG] Generated CallSite key: " + key);
+    return key;
+  }
+
+  private Instruction executeCallSite(ThreadInfo ti, CallSite callSite, BootstrapMethodInfo bmi) throws Throwable {
+    System.out.println("[DEBUG] ===== EXECUTING CALLSITE =====");
+    StackFrame frame = ti.getModifiableTopFrame();
+
+    MethodHandle target = callSite.getTarget();
+    MethodType type = target.type();
+
+    System.out.println("[DEBUG] CallSite target type: " + type);
+    System.out.println("[DEBUG] Parameter count: " + type.parameterCount());
+    System.out.println("[DEBUG] Parameter types: " + Arrays.toString(type.parameterArray()));
+    System.out.println("[DEBUG] Return type: " + type.returnType());
+
+    switch (bmi.getBmType()) {
+      case STRING_CONCATENATION:
+        return executeStringConcatCallSite(ti, target, type, bmi);
+      case LAMBDA_EXPRESSION:
+      case SERIALIZABLE_LAMBDA_EXPRESSION:
+        return executeLambdaCallSite(ti, target, type, bmi);
+      case RECORDS:
+        return executeRecordCallSite(ti, target, type, bmi);
+      case DYNAMIC:
+        return executeDynamicCallSite(ti, target, type, bmi);
+      default:
+        throw new UnsupportedOperationException("Unsupported CallSite type: " + bmi.getBmType());
+    }
+  }
+
+  private Instruction executeRecordCallSite(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) throws Throwable {
+    System.out.println("[DEBUG] === RECORD CALLSITE EXECUTION ===");
+    // TODO: work to be done here
+    // delegate the existing record logic for now
+    ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
+    return executeRecord(ti, enclosingClass, bmi);
+  }
+
+  private Instruction executeDynamicCallSite(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) throws Throwable {
+    System.out.println("[DEBUG] === DYNAMIC CALLSITE EXECUTION ===");
+    // TODO: work to be done here
+    // delegating the existing dynamic logic
+    StackFrame frame = ti.getModifiableTopFrame();
+    return executeDynamicBootstrap(ti, frame, bmi);
+  }
+
+  private Instruction executeLambdaCallSite(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) throws Throwable {
+    // TODO: work to be done here
+    return null;
+  }
+
+  private Instruction executeStringConcatCallSite(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) throws Throwable {
+    // TODO: work to be done here
+    return null;
+  }
+
+  private Instruction executeDynamicBootstrap(ThreadInfo ti, StackFrame frame, BootstrapMethodInfo bmi) {
+    return null;
+  }
+
+  private Instruction executeLambda(ThreadInfo ti, BootstrapMethodInfo bmi) {
+    return null;
+  }
+
+  private Instruction executeRecord(ThreadInfo ti, ClassInfo enclosingClass, BootstrapMethodInfo bmi) {
+    StackFrame frame = ti.getModifiableTopFrame();
+    String methodName = this.samMethodName;
+    if ("equals".equals(methodName)) {
+      int otherRef = frame.peek();
+      frame.pop(2);
+      boolean result = computeRecordEquals(ti, enclosingClass, otherRef);
+      frame.push(result ? 1 : 0);
+    } else if ("hashCode".equals(methodName)) {
+      frame.pop(1);
+      int hashCode = computeRecordHashCode(ti, enclosingClass);
+      frame.push(hashCode);
+    } else if ("toString".equals(methodName)) {
+      frame.pop(1);
+      int stringRef = computeRecordToString(ti, enclosingClass);
+      frame.pushRef(stringRef);
+    } else {
+      throw new IllegalStateException("Unsupported record method: " + methodName);
+    }
+    return getNext();
+  }
+
   @Override
   public Instruction execute (ThreadInfo ti) {
-    StackFrame frame = ti.getModifiableTopFrame();
-    ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
-    BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
+    System.out.println("[DEBUG] ========== INVOKEDYNAMIC CALLSITE GENERATION START ==========");
+    System.out.println("[DEBUG] INVOKEDYNAMIC PC before: " + ti.getPC());
+    System.out.println("[DEBUG] INVOKEDYNAMIC instruction length: " + getLength());
+    System.out.println("[DEBUG] Bootstrap method index: " + bootstrapMethodIndex);
 
-    String bootstrapMethodName = (bmi.getLambdaBody() != null) ? bmi.getLambdaBody().getName() : this.samMethodName;
+    try {
+      StackFrame frame = ti.getModifiableTopFrame();
+      ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
+      BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
 
-    if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS) {
-      String methodName = this.samMethodName;
+      System.out.println("[DEBUG] Bootstrap method type: " + bmi.getBmType());
+      System.out.println("[DEBUG] SAM method name: " + samMethodName);
+      System.out.println("[DEBUG] Functional interface: " + functionalInterfaceName);
 
-      if ("equals".equals(methodName)) {
-        int otherRef = frame.peek();
-        frame.pop(2);
-        boolean result = computeRecordEquals(ti, enclosingClass, otherRef);
-        frame.push(result ? 1 : 0);
-      } else if ("hashCode".equals(methodName)) {
-        frame.pop(1);
-        int hashCode = computeRecordHashCode(ti, enclosingClass);
-        frame.push(hashCode);
-      } else if ("toString".equals(methodName)) {
-        frame.pop(1);
-        int stringRef = computeRecordToString(ti, enclosingClass);
-        frame.push(stringRef);
+      String callSiteKey = createCallSiteKey(ti);
+      System.out.println("[DEBUG] CallSite key: " + callSiteKey);
+
+      // check if we have something in the cache
+      CallSite callSite = callSiteCache.get(callSiteKey);
+      if (callSite == null) {
+        System.out.println("[DEBUG] CallSite not found in cache - creating new one");
+        callSite = createCallSite(ti, enclosingClass, bmi);
+        callSiteCache.put(callSiteKey, callSite);
+        System.out.println("[DEBUG] CallSite created and cached: " + callSite);
       } else {
-        throw new IllegalStateException("Unsupported record method: " + methodName);
+        System.out.println("[DEBUG] CallSite found in cache: " + callSite);
       }
 
-      return getNext(ti);
-    }else if (bmi.getBmType() == BootstrapMethodInfo.BMType.DYNAMIC){
-      return executeDynamicBootstrap(ti, frame, bmi);
-    }
-    ElementInfo ei = ti.getHeap().get(funcObjRef);
-    if(ei==null || ei!=lastFuncObj || freeVariableTypes.length>0) {
-      ClassInfo fiClassInfo;
+      return executeCallSite(ti, callSite, bmi);
 
-      // First, resolve the functional interface
-      try {
-        fiClassInfo = ti.resolveReferencedClass(functionalInterfaceName);
-      } catch(LoadOnJPFRequired lre) {
-        return ti.getPC();
-      }
-
-      if (fiClassInfo.initializeClass(ti)) {
-        return ti.getPC();
-      }
-
-
-
-      VM vm = VM.getVM();
-      FunctionObjectFactory funcObjFactory = vm.getFunctionObjectFacotry();
-
-      Object[] freeVariableValues = frame.getArgumentsValues(ti, freeVariableTypes);
-
-      funcObjRef = funcObjFactory.getFunctionObject(bootstrapMethodIndex, ti, fiClassInfo, samMethodName, bmi,
-              freeVariableTypeNames, freeVariableValues);
-      lastFuncObj = ti.getHeap().get(funcObjRef);
-    }
-
-    frame.pop(freeVariableSize);
-    frame.pushRef(funcObjRef);
-
-    if (funcObjRef == MJIEnv.NULL) {
-      // In case of string concat, we return a null ref as a dummy arg.
-      // It is here only to be popped at the helper function's
-      // (java.lang.String.generateStringByConcatenatingArgs) return.
-      // We continue execution from the newly created stack frame (in the helper function).
-      return ti.getPC();
-    } else {
-      // In other cases (for lambda expr), this return value shouldn't be null.
-      // We continue execution from the following bytecode.
-      return getNext(ti);
+    } catch (Throwable e) {
+      return ti.createAndThrowException("java.lang.BootstrapMethodError", "CallSite execution failed: " + e.getMessage());
     }
   }
 }
