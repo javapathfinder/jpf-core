@@ -235,8 +235,44 @@ public class BootstrapMethodInfo {
   }
 
   private CallSite createStringConcatCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
-    // TODO: we need to implement a JPFStringConcatHelper first to handle the recipes
-    throw new UnsupportedOperationException("Later");
+    System.out.println("[DEBUG] Creating string concat CallSite");
+    System.out.println("[DEBUG] Resolved args available: " + (resolvedArgs != null ? resolvedArgs.length : 0));
+
+    //  recipe and constants
+    String recipe = "";
+    Object[] constants = new Object[0];
+
+    if (resolvedArgs != null && resolvedArgs.length > 0) {
+      if (resolvedArgs[0] instanceof String) {
+        recipe = (String) resolvedArgs[0];
+        System.out.println("[DEBUG] Using recipe from resolved args: " + JPFStringConcatHelper.escapeUnicode(recipe));
+      }
+      if (resolvedArgs.length > 1) {
+        constants = Arrays.copyOfRange(resolvedArgs, 1, resolvedArgs.length);
+        System.out.println("[DEBUG] Using constants: " + Arrays.toString(constants));
+      }
+    } else if (bmArg != null && !bmArg.isEmpty()) {
+      recipe = bmArg;
+      System.out.println("[DEBUG] Using recipe from bmArg: " + JPFStringConcatHelper.escapeUnicode(recipe));
+    } else {
+      System.err.println("[ERROR] No recipe available for string concatenation!");
+      // Generate a default recipe based on method type parameters
+      StringBuilder defaultRecipe = new StringBuilder();
+      for (int i = 0; i < methodType.parameterCount(); i++) {
+        defaultRecipe.append('\u0001');
+      }
+      recipe = defaultRecipe.toString();
+      System.out.println("[WARNING] Using default recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
+    }
+
+    System.out.println("[DEBUG] Final recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
+    System.out.println("[DEBUG] Final constants: " + Arrays.toString(constants));
+    System.out.println("[DEBUG] MethodType: " + methodType);
+
+    // Create signature-specific MethodHandle
+    MethodHandle target = createSignatureSpecificHandle(lookup, methodType, recipe, constants);
+
+    return new ConstantCallSite(target);
   }
 
   private CallSite createLambdaCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
@@ -255,7 +291,79 @@ public class BootstrapMethodInfo {
     throw new UnsupportedOperationException("later");
   }
 
+  private MethodHandle createSignatureSpecificHandle(MethodHandles.Lookup lookup, MethodType methodType,
+                                                     String recipe, Object[] constants) throws Throwable {
 
+    Class<?>[] paramTypes = methodType.parameterArray();
+    System.out.println("[DEBUG] Creating handle for param types: " + Arrays.toString(paramTypes));
+    return createVarArgsHandle(lookup, methodType, recipe, constants, paramTypes);
+  }
+
+  private MethodHandle createVarArgsHandle(MethodHandles.Lookup lookup, MethodType methodType,
+                                           String recipe, Object[] constants, Class<?>[] paramTypes) throws Throwable {
+
+    System.out.println("[DEBUG] Creating varargs handle for " + paramTypes.length + " parameters");
+    System.out.println("[DEBUG] Parameter types: " + Arrays.toString(paramTypes));
+
+    // Create a MethodHandle that accepts individual arguments (not an array)
+    MethodHandle target = MethodHandles.lookup().findStatic(
+            BootstrapMethodInfo.class, "concatVarArgsIndividual",
+            MethodType.methodType(String.class, String.class, Class[].class, Object[].class, Object[].class)
+    ).bindTo(recipe).bindTo(paramTypes).bindTo(constants);
+
+    target = target.asCollector(Object[].class, paramTypes.length);
+
+    target = target.asType(methodType);
+
+    return target;
+  }
+
+  public static String concatVarArgsIndividual(String recipe, Class<?>[] argTypes, Object[] constants, Object[] args) {
+    System.out.println("[DEBUG] concatVarArgsIndividual called with:");
+    System.out.println("[DEBUG]   recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
+    System.out.println("[DEBUG]   argTypes: " + Arrays.toString(argTypes));
+    System.out.println("[DEBUG]   constants: " + Arrays.toString(constants));
+    System.out.println("[DEBUG]   args: " + Arrays.toString(args));
+
+    return JPFStringConcatHelper.concatenate(recipe, argTypes, constants, args);
+  }
+
+  public MethodType createMethodType() {
+    String descriptor = (samDescriptor != null) ? samDescriptor : dynamicDescriptor;
+    if (descriptor == null) {
+      // Fallback for minimal signature
+      return MethodType.methodType(Object.class);
+    }
+
+    try {
+      Class<?>[] paramTypes = parseMethodDescriptorParams(descriptor);
+      Class<?> returnType = parseMethodDescriptorReturn(descriptor);
+      return MethodType.methodType(returnType, paramTypes);
+    } catch (Exception e) {
+      System.err.println("[WARNING] Failed to parse method type from: " + descriptor);
+      return MethodType.methodType(Object.class);
+    }
+  }
+
+  private Class<?>[] parseMethodDescriptorParams(String descriptor) {
+    int start = descriptor.indexOf('(');
+    int end = descriptor.indexOf(')');
+    if (start == -1 || end == -1) return new Class<?>[0];
+
+    String paramDesc = descriptor.substring(start + 1, end);
+    return parseTypes(paramDesc);
+  }
+
+  private Class<?> parseMethodDescriptorReturn(String descriptor) {
+    int end = descriptor.indexOf(')');
+    if (end == -1 || end >= descriptor.length() - 1) return Object.class;
+
+    String returnDesc = descriptor.substring(end + 1);
+    if (returnDesc.equals("V")) return void.class;
+
+    Class<?>[] returnTypes = parseTypes(returnDesc);
+    return (returnTypes.length > 0) ? returnTypes[0] : Object.class;
+  }
 
   @Override
   public String toString() {
@@ -293,5 +401,7 @@ public class BootstrapMethodInfo {
   public String getDynamicParameters() { return dynamicParameters; }
 
   public String getDynamicDescriptor() { return dynamicDescriptor; }
+
+  public Class<?>[] getArgumentTypes() {return argTypes != null ? argTypes : new Class<?>[0];}
 
 }

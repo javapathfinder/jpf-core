@@ -17,16 +17,7 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.Instruction;
-import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.Types;
-import gov.nasa.jpf.vm.ThreadInfo;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.ClassInfo;
-import gov.nasa.jpf.vm.BootstrapMethodInfo;
-import gov.nasa.jpf.vm.ByteArrayFields;
-import gov.nasa.jpf.vm.FieldInfo;
+import gov.nasa.jpf.vm.*;
 
 import java.lang.invoke.CallSite;
 
@@ -68,7 +59,15 @@ public class INVOKEDYNAMIC extends Instruction {
   public INVOKEDYNAMIC () {}
 
   private static final Map<String, CallSite> callSiteCache = new ConcurrentHashMap<>();
-
+  // ==> debug
+  private int countPlaceholders(String recipe) {
+    int count = 0;
+    for (char c : recipe.toCharArray()) {
+      if (c == '\u0001') count++;
+    }
+    return count;
+  }
+  // ==> debug
   protected INVOKEDYNAMIC (int bmIndex, String methodName, String descriptor){
     bootstrapMethodIndex = bmIndex;
     samMethodName = methodName;
@@ -289,9 +288,175 @@ public class INVOKEDYNAMIC extends Instruction {
     return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
 
+  private Object[] popArguments(StackFrame frame, Class<?>[] argTypes) {
+    System.out.println("[DEBUG] Popping " + argTypes.length + " arguments from stack");
+
+    Object[] args = new Object[argTypes.length];
+    for (int i = argTypes.length - 1; i >= 0; i--) {
+      Class<?> type = argTypes[i];
+
+      System.out.println("[DEBUG] Popping arg " + i + " of type " + type.getSimpleName() + " (stack pos before pop: " + frame.getTopPos() + ")");
+
+      if (type == double.class) {
+        long bits = frame.popLong();
+        args[i] = Double.longBitsToDouble(bits);
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (double)");
+      } else if (type == long.class) {
+        args[i] = frame.popLong();
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (long)");
+      } else if (type == float.class) {
+        int bits = frame.pop();
+        args[i] = Float.intBitsToFloat(bits);
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (float)");
+      } else if (type == int.class) {
+        args[i] = frame.pop();
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (int)");
+      } else if (type == char.class) {
+        args[i] = (char) frame.pop();
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (char)");
+      } else if (type == short.class) {
+        args[i] = (short) frame.pop();
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (short)");
+      } else if (type == byte.class) {
+        args[i] = (byte) frame.pop();
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (byte)");
+      } else if (type == boolean.class) {
+        args[i] = frame.pop() != 0;
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (boolean)");
+      }
+      // Handle String
+      else if (type == String.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+          System.out.println("[DEBUG] Arg " + i + ": null (String)");
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          if (ei != null && ei.isStringObject()) {
+            args[i] = ei.asString();
+            System.out.println("[DEBUG] Arg " + i + ": \"" + args[i] + "\" (String)");
+          } else {
+            args[i] = (ei != null) ? ei.toString() : null;
+            System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (non-String reference)");
+          }
+        }
+      }
+      // boxed primitive types
+      else if (type == Byte.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getByteField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Byte)");
+      } else if (type == Integer.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getIntField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Integer)");
+      } else if (type == Character.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getCharField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Character)");
+      } else if (type == Double.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getDoubleField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Double)");
+      } else if (type == Float.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getFloatField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Float)");
+      } else if (type == Long.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getLongField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Long)");
+      } else if (type == Short.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getShortField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Short)");
+      } else if (type == Boolean.class) {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei.getBooleanField("value");
+        }
+        System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (Boolean)");
+      }
+      // other object types
+      else {
+        int ref = frame.pop();
+        if (ref == MJIEnv.NULL) {
+          args[i] = null;
+          System.out.println("[DEBUG] Arg " + i + ": null (object)");
+        } else {
+          ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+          args[i] = ei;
+          System.out.println("[DEBUG] Arg " + i + ": " + args[i] + " (object)");
+        }
+      }
+    }
+
+    return args;
+  }
+
   private CallSite createCallSite(ThreadInfo ti, ClassInfo enclosingClass, BootstrapMethodInfo bmi) throws Throwable {
-    // TODO : we will create a lookup object and generate call site using BootstrapMethodInfo
-    return null;
+    System.out.println("[DEBUG] ===== CREATING CALLSITE =====");
+    System.out.println("[DEBUG] Bootstrap method type: " + bmi.getBmType());
+    System.out.println("[DEBUG] Dynamic class: " + bmi.getDynamicClassName());
+    System.out.println("[DEBUG] Dynamic method: " + bmi.getDynamicMethodName());
+
+    // Prepare for CallSite generation
+    bmi.prepareForCallSiteGeneration();
+    System.out.println("[DEBUG] Bootstrap method prepared for CallSite generation");
+
+    // Create lookup object
+    MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+    System.out.println("[DEBUG] Created lookup object: " + lookup);
+
+    // Create method type from descriptors
+    MethodType methodType = bmi.createMethodType();
+    System.out.println("[DEBUG] Created method type: " + methodType);
+
+    // Generate CallSite using BootstrapMethodInfo
+    CallSite callSite = bmi.generateCallSite(lookup, samMethodName, methodType);
+    System.out.println("[DEBUG] Generated CallSite: " + callSite);
+    System.out.println("[DEBUG] CallSite target: " + callSite.getTarget());
+    System.out.println("[DEBUG] CallSite target type: " + callSite.getTarget().type());
+
+    return callSite;
   }
 
   private String createCallSiteKey(ThreadInfo ti) {
@@ -350,8 +515,35 @@ public class INVOKEDYNAMIC extends Instruction {
   }
 
   private Instruction executeStringConcatCallSite(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) throws Throwable {
-    // TODO: work to be done here
-    return null;
+    System.out.println("[DEBUG] === STRING CONCAT CALLSITE EXECUTION START ===");
+    StackFrame frame = ti.getModifiableTopFrame();
+
+    String recipe = bmi.getBmArg();
+    int placeholderCount = countPlaceholders(recipe);
+
+    System.out.println("[DEBUG] Recipe has " + placeholderCount + " placeholders");
+    System.out.println("[DEBUG] Recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
+
+    // Parse argument types
+    bmi.parseSamArgumentTypes();
+    Class<?>[] argTypes = bmi.getArgumentTypes();
+
+    System.out.println("[DEBUG] Parsed argument types: " + (argTypes != null ? Arrays.toString(argTypes) : "null"));
+
+    // Pop arguments from stack - keep your exact logic
+    Object[] args = popArguments(frame, argTypes);
+
+    // Execute through MethodHandle
+    System.out.println("[DEBUG] Invoking MethodHandle with args: " + Arrays.toString(args));
+    Object result = target.invokeWithArguments(args);
+    System.out.println("[DEBUG] MethodHandle returned: " + result);
+
+    // Push result - keep your exact logic
+    ElementInfo stringEI = ti.getHeap().newString((String) result, ti);
+    frame.pushRef(stringEI.getObjectRef());
+
+    System.out.println("[DEBUG] === STRING CONCAT CALLSITE SUCCESS ===");
+    return getNext();
   }
 
   private Instruction executeDynamicBootstrap(ThreadInfo ti, StackFrame frame, BootstrapMethodInfo bmi) {
