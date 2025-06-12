@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0.
+ * 
+ *        http://www.apache.org/licenses/LICENSE-2.0. 
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * See the License for the specific language governing permissions and 
  * limitations under the License.
  */
 
@@ -174,7 +174,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
 
     } else if (name == ClassFile.RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR){
       cf.parseTypeAnnotationsAttr(this, null);
-
+      
     } else if (name == ClassFile.RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS_ATTR){
       cf.parseParameterAnnotationsAttr(this, null);
 
@@ -223,7 +223,6 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
 
     pw.println();
   }
-
   @Override
   public void setPermittedSubclassCount(ClassFile cf, Object tag, int count) {
     pw.printf("%spermitted subclass count=%d\n", indent, count);
@@ -239,7 +238,6 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
   public void setPermittedSubclassesDone(ClassFile cf, Object tag) {
     decIndent();
   }
-
   @Override
   public void setRecordComponentsDone(ClassFile cf, Object tag) {
     decIndent();
@@ -441,7 +439,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     pw.printf( ", bootstrap method count=%d\n", count);
     incIndent();
   }
-
+  
   @Override
   public void setBootstrapMethod (ClassFile cf, Object tag, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
     String refTypeName = cf.getRefTypeName(refKind);
@@ -457,7 +455,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     decIndent();
     decIndent();
   }
-
+  
   String getBootstrapMethodArgAsString (ClassFile cf, int cpIdx){
     StringBuilder sb = new StringBuilder();
     Object cpValue = cf.getCpValue(cpIdx);
@@ -466,7 +464,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     sb.append(" (");
     sb.append( cpValue);
     sb.append("): ");
-
+    
     if (cpValue instanceof ClassFile.CpInfo){
       switch ((ClassFile.CpInfo)cpValue){
         case MethodType:
@@ -474,7 +472,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
           break;
         case MethodHandle:
           int methodRefIdx = cf.mhMethodRefIndexAt(cpIdx);
-
+          
           sb.append( cf.getRefTypeName(cf.mhRefTypeAt(cpIdx)));
           sb.append(' ');
           sb.append( cf.methodClassNameAt(methodRefIdx));
@@ -488,15 +486,15 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     } else {
       sb.append( cpValue.toString());
     }
-
+    
     return sb.toString();
   }
-
+  
   @Override
   public void setBootstrapMethodsDone (ClassFile cf, Object tag) {
     decIndent();
   }
-
+  
   @Override
   public void setAnnotationCount(ClassFile cf, Object tag, int annotationCount){
     pw.printf( " count=%d\n", annotationCount);
@@ -510,7 +508,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
   public void setAnnotationsDone(ClassFile cf, Object tag){
     decIndent();
   }
-
+  
   // Java 8 type annotations
 
   @Override
@@ -520,15 +518,15 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
   }
 
   @Override
-  public void setTypeParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setTypeParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                          int typeIndex, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, type index=%d)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, type index=%d)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType), ClassFile.getTypePathEncoding(typePath), typeIndex);
   }
   @Override
-  public void setSuperTypeAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setSuperTypeAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                      int superTypeIdx, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, super type index=%d)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, super type index=%d)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType),  ClassFile.getTypePathEncoding(typePath), superTypeIdx);
   }
   @Override
@@ -544,48 +542,48 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
             ClassFile.getTargetTypeName(targetType), ClassFile.getTypePathEncoding(typePath));
   }
   @Override
-  public void setFormalParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setFormalParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                            int formalParamIdx, short[] typePath, String annotationType){
     pw.printf("%s[%d]: %s (%s, type path=%s, formal param index=%d)", indent, annotationIndex, annotationType,
             ClassFile.getTargetTypeName(targetType),  ClassFile.getTypePathEncoding(typePath), formalParamIdx);
   }
   @Override
-  public void setThrowsAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setThrowsAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                   int throwsTypeIdx, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, throws index=%d)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, throws index=%d)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType),  ClassFile.getTypePathEncoding(typePath), throwsTypeIdx);
   }
   @Override
-  public void setVariableAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setVariableAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                     long[] scopeEntries, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, scope=%s)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, scope=%s)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType), ClassFile.getTypePathEncoding(typePath), ClassFile.getScopeEncoding(scopeEntries));
     // 2do
   }
   @Override
-  public void setExceptionParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setExceptionParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                               int exceptionIndex, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, catch type index=%d)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, catch type index=%d)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType),  ClassFile.getTypePathEncoding(typePath), exceptionIndex);
   }
   @Override
-  public void setBytecodeAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setBytecodeAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                     int offset, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, bytecode offset=%d)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, bytecode offset=%d)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType), ClassFile.getTypePathEncoding(typePath), offset);
   }
   @Override
-  public void setBytecodeTypeParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType,
+  public void setBytecodeTypeParameterAnnotation(ClassFile cf, Object tag, int annotationIndex, int targetType, 
                                            int offset, int typeArgIdx, short[] typePath, String annotationType){
-    pw.printf("%s[%d]: %s (%s, type path=%s, bytecode offset=%d, type arg=%d)", indent, annotationIndex, annotationType,
+    pw.printf("%s[%d]: %s (%s, type path=%s, bytecode offset=%d, type arg=%d)", indent, annotationIndex, annotationType, 
             ClassFile.getTargetTypeName(targetType), ClassFile.getTypePathEncoding(typePath), offset, typeArgIdx);
   }
-
+  
   @Override
   public void setTypeAnnotationsDone(ClassFile cf, Object tag) {
     decIndent();
   }
-
+    
   @Override
   public void setAnnotationValueCount(ClassFile cf, Object tag, int annotationIndex, int nValuePairs){
     pw.printf(" valueCount=%d\n", nValuePairs);
@@ -779,26 +777,26 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
           pw.print(cf.utf8At(cf.u2(j+3)));
           pw.println("\")}");
           break;
-
+          
         case ClassFile.METHOD_HANDLE:
           pw.print("method_handle {");
           pw.print("(\"");
           pw.println("\")}");
           break;
-
+          
         case ClassFile.METHOD_TYPE:
           pw.print("method_type {");
           pw.print("(\"");
           pw.println("\")}");
           break;
-
+          
         case ClassFile.INVOKE_DYNAMIC:
           pw.print("invoke_dynamic {bootstrap=#");
           pw.print(cf.u2(j+1));
           pw.print("(\"");
           pw.println("\")}");
           break;
-
+          
         default:
           pw.print("ERROR: illegal tag" + cf.u1(j));
       }
@@ -836,6 +834,6 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
 
   @Override
   public void setAnnotationFieldValue(ClassFile cf, Object tag, int annotationIndex, int valueIndex, String elementName, int arrayIndex) {
-
+    
   }
 }
