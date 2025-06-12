@@ -43,6 +43,8 @@ public class JVMClassInfo extends ClassInfo {
   // To store partially resolved classes in setBootstrapMethod
   protected static HashMap resolvedClasses = new HashMap<String, JVMClassInfo>();
   protected ClassFile classFile;
+  protected String[] permittedSubclassNames;
+  protected boolean isSealed;
 
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
@@ -53,6 +55,22 @@ public class JVMClassInfo extends ClassInfo {
       this.cb = cb;
       
       cf.parse(this);
+    }
+
+    @Override
+    public void setPermittedSubclassCount(ClassFile cf, Object tag, int count) {
+      JVMClassInfo.this.isSealed = true;
+      permittedSubclassNames = new String[count];
+    }
+
+    @Override
+    public void setPermittedSubclass(ClassFile cf, Object tag, int index, String subclassName) {
+      permittedSubclassNames[index] = subclassName;
+    }
+
+    @Override
+    public void setPermittedSubclassesDone(ClassFile cf, Object tag) {
+      permittedSubclassNames = Misc.stripNullElements(permittedSubclassNames);
     }
 
     @Override
@@ -88,7 +106,8 @@ public class JVMClassInfo extends ClassInfo {
         
       } else if (name == ClassFile.RECORD_ATTR){
         cf.parseRecordAttribute(this,JVMClassInfo.this);
-
+      } else if (name == ClassFile.PERMITTED_SUBCLASSES_ATTR){
+        cf.parsePermittedSubclassesAttr(this,null);
       }
     }
     

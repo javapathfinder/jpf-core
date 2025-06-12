@@ -374,6 +374,26 @@ public class ClassLoaderInfo
       setAttributes(ci);
       resolvedClasses.put(typeName, ci);
     }
+    // This is the existing check for sealed superclasses
+    if (ci.getSuperClass() != null && ci.getSuperClass().isSealed()) {
+      if (!ci.getSuperClass().isPermittedSubclass(ci.getName())) {
+        throw new ClassInfoException(
+                "Class " + ci.getName() + " is not permitted to extend sealed class " + ci.getSuperClass().getName(), this,
+                "java.lang.IllegalAccessError",
+                ci.getName()
+        );
+      }
+    }
+    // interface check
+    for (ClassInfo iface : ci.getInterfaceClassInfos()) {
+      if (iface.isSealed() && !iface.isPermittedSubclass(ci.getName())) {
+        throw new ClassInfoException(
+                "Class " + ci.getName() + " is not permitted to implement sealed interface " + iface.getName(), this,
+                "java.lang.IllegalAccessError",
+                ci.getName()
+        );
+      }
+    }
     
     return ci;
   }

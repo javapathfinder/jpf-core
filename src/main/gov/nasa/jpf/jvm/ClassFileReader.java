@@ -204,4 +204,11 @@ public interface ClassFileReader {
   void setRecordComponentAttribute(ClassFile cf, Object tag, int componentIndex, int attrIndex, String attrName, int attrLength);
 
   void setRecordComponentsDone(ClassFile cf, Object tag);
+
+  //--- sealed classes
+  void setPermittedSubclassCount(ClassFile cf, Object tag, int count);
+
+  void setPermittedSubclass(ClassFile cf, Object tag, int index, String subclassName);
+
+  void setPermittedSubclassesDone(ClassFile cf, Object tag);
 }

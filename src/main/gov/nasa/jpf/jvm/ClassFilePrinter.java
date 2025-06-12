@@ -223,7 +223,21 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
 
     pw.println();
   }
+  @Override
+  public void setPermittedSubclassCount(ClassFile cf, Object tag, int count) {
+    pw.printf("%spermitted subclass count=%d\n", indent, count);
+    incIndent();
+  }
 
+  @Override
+  public void setPermittedSubclass(ClassFile cf, Object tag, int index, String subclassName) {
+    pw.printf("%s[%d]: %s\n", indent, index, subclassName);
+  }
+
+  @Override
+  public void setPermittedSubclassesDone(ClassFile cf, Object tag) {
+    decIndent();
+  }
   @Override
   public void setRecordComponentsDone(ClassFile cf, Object tag) {
     decIndent();
@@ -398,7 +412,7 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
     }
   }
 
-  
+
   @Override
   public void setSourceFile(ClassFile cf, Object tag, String pathName){
     pw.printf(", path=%s\n", pathName);
