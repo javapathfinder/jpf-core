@@ -17,57 +17,53 @@
  */
 package gov.nasa.jpf.jvm.bytecode;
 
-import gov.nasa.jpf.vm.FieldInfo;
-import gov.nasa.jpf.vm.ByteArrayFields;
-import gov.nasa.jpf.vm.BootstrapMethodInfo;
-import gov.nasa.jpf.vm.ClassInfo;
 import gov.nasa.jpf.vm.ElementInfo;
-import gov.nasa.jpf.vm.FunctionObjectFactory;
 import gov.nasa.jpf.vm.Instruction;
-import gov.nasa.jpf.vm.LoadOnJPFRequired;
 import gov.nasa.jpf.vm.MJIEnv;
-import gov.nasa.jpf.vm.StackFrame;
-import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.Types;
-import gov.nasa.jpf.vm.VM;
+import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.ClassInfo;
+import gov.nasa.jpf.vm.BootstrapMethodInfo;
+import gov.nasa.jpf.vm.StackFrame;
+import gov.nasa.jpf.vm.ByteArrayFields;
+import gov.nasa.jpf.vm.FieldInfo;
+import gov.nasa.jpf.vm.JPFStringConcatHelper;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
- *
+ * @author Mahmoud Khawaja <mahmoud.khawaja97@gmail.com>
  * Invoke dynamic method. It allows dynamic linkage between a call site and a method implementation.
- *
- * ..., [arg1, [arg2 ...]]  => ...
  */
 public class INVOKEDYNAMIC extends Instruction {
 
-  // index of a bootstrap method (index to the array bootstrapMethods[] declared in ClassInfo
-  // containing this bytecode instruction)
-  int bootstrapMethodIndex;
+  // ==================== FIELDS ====================
 
-  // Free variables are those that are not defined within the lamabda body and
-  // are captured from the lexical scope. Note that for instance lambda methods
-  // the first captured variable always represents "this"
+  int bootstrapMethodIndex;
   String[] freeVariableTypeNames;
   byte[] freeVariableTypes;
   int freeVariableSize;
-
   String functionalInterfaceName;
-
   String samMethodName;
-
   int funcObjRef = MJIEnv.NULL;
-
   ElementInfo lastFuncObj = null;
 
-  public INVOKEDYNAMIC () {}
+  private static final Map<String, CallSite> callSiteCache = new ConcurrentHashMap<>();
 
-  protected INVOKEDYNAMIC (int bmIndex, String methodName, String descriptor){
+  // ==================== CONSTRUCTORS ====================
+  public INVOKEDYNAMIC() {}
+
+  protected INVOKEDYNAMIC(int bmIndex, String methodName, String descriptor) {
     bootstrapMethodIndex = bmIndex;
     samMethodName = methodName;
     freeVariableTypeNames = Types.getArgumentTypeNames(descriptor);
@@ -76,8 +72,10 @@ public class INVOKEDYNAMIC extends Instruction {
     freeVariableSize = Types.getArgumentsSize(descriptor);
   }
 
+  // ==================== BASIC INSTRUCTION METHODS ====================
+
   @Override
-  public int getByteCode () {
+  public int getByteCode() {
     return 0xBA;
   }
 
@@ -86,9 +84,7 @@ public class INVOKEDYNAMIC extends Instruction {
     StringBuilder args = new StringBuilder();
     if (freeVariableTypeNames != null) {
       for (int i = 0; i < freeVariableTypeNames.length; i++) {
-        if (i > 0) {
-          args.append(",");
-        }
+        if (i > 0) args.append(",");
         args.append(freeVariableTypeNames[i]);
       }
     }
@@ -96,35 +92,394 @@ public class INVOKEDYNAMIC extends Instruction {
             samMethodName + '(' + args + "):" + functionalInterfaceName;
   }
 
-  /**
-   * For now, INVOKEDYNAMIC works only in the context of lambda expressions.
-   * Executing this returns an object that implements the functional interface
-   * and contains a method which captures the behavior of the lambda expression.
-   */
+  // ==================== MAIN EXECUTION ====================
+
+  @Override
+  public Instruction execute(ThreadInfo ti) {
+    debugLog("[INVOKEDYNAMIC] Starting execution at PC: " + ti.getPC());
+
+    try {
+      ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
+      BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
+
+      debugLog("Bootstrap method type: " + bmi.getBmType());
+      debugLog("SAM method name: " + samMethodName);
+
+      String callSiteKey = createCallSiteKey(ti);
+      CallSite callSite = getOrCreateCallSite(callSiteKey, ti, enclosingClass, bmi);
+
+      return executeCallSite(ti, callSite, bmi);
+
+    } catch (Throwable e) {
+      return ti.createAndThrowException("java.lang.BootstrapMethodError",
+              "CallSite execution failed: " + e.getMessage());
+    }
+  }
+
+  // ==================== CALLSITE MANAGEMENT ====================
+
+  private String createCallSiteKey(ThreadInfo ti) {
+    return getMethodInfo().getFullName() + ":" + getPosition() + ":" + bootstrapMethodIndex;
+  }
+
+  private CallSite getOrCreateCallSite(String key, ThreadInfo ti, ClassInfo enclosingClass,
+                                       BootstrapMethodInfo bmi) throws Throwable {
+    CallSite callSite = callSiteCache.get(key);
+    if (callSite == null) {
+      debugLog("Creating new CallSite");
+      callSite = createCallSite(ti, enclosingClass, bmi);
+      callSiteCache.put(key, callSite);
+    } else {
+      debugLog("Using cached CallSite");
+    }
+    return callSite;
+  }
+
+  private CallSite createCallSite(ThreadInfo ti, ClassInfo enclosingClass,
+                                  BootstrapMethodInfo bmi) throws Throwable {
+    bmi.prepareForCallSiteGeneration();
+    MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+
+    MethodType methodType = (bmi.getBmType() == BootstrapMethodInfo.BMType.STRING_CONCATENATION)
+            ? createStringConcatMethodType(bmi)
+            : bmi.createMethodType();
+
+    debugLog("Created method type: " + methodType);
+    return bmi.generateCallSite(lookup, samMethodName, methodType);
+  }
+
+  // ==================== CALLSITE EXECUTION ====================
+
+  private Instruction executeCallSite(ThreadInfo ti, CallSite callSite,
+                                      BootstrapMethodInfo bmi) throws Throwable {
+    MethodHandle target = callSite.getTarget();
+    MethodType type = target.type();
+
+    debugLog("Executing CallSite type: " + bmi.getBmType());
+    debugLog("Target type: " + type);
+
+    switch (bmi.getBmType()) {
+      case STRING_CONCATENATION:
+        return executeStringConcatenation(ti, target, type, bmi);
+      case LAMBDA_EXPRESSION:
+      case SERIALIZABLE_LAMBDA_EXPRESSION:
+        return executeLambda(ti, target, type, bmi);
+      case RECORDS:
+        return executeRecord(ti, bmi);
+      case DYNAMIC:
+        return executeDynamic(ti, bmi);
+      default:
+        throw new UnsupportedOperationException("Unsupported CallSite type: " + bmi.getBmType());
+    }
+  }
+
+  // ==================== STRING CONCATENATION EXECUTION ====================
+
+  private Instruction executeStringConcatenation(ThreadInfo ti, MethodHandle target,
+                                                 MethodType type, BootstrapMethodInfo bmi) throws Throwable {
+    debugLog("[STRING_CONCAT] Starting execution");
+    StackFrame frame = ti.getModifiableTopFrame();
+
+    String recipe = bmi.getBmArg();
+    debugLog("Recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
+    debugLog("Recipe placeholders: " + countPlaceholders(recipe));
+
+    // Pop arguments and execute
+    Object[] args = popArguments(frame, type.parameterArray());
+    String result = (String) target.invokeWithArguments(args);
+
+    debugLog("Concatenation result: " + result);
+
+    // Push result
+    ElementInfo stringEI = ti.getHeap().newString(result, ti);
+    frame.pushRef(stringEI.getObjectRef());
+
+    return getNext();
+  }
+
+  private MethodType createStringConcatMethodType(BootstrapMethodInfo bmi) {
+    debugLog("Creating string concatenation method type");
+
+    List<Class<?>> paramTypes = new ArrayList<>();
+    if (freeVariableTypeNames != null) {
+      for (String typeName : freeVariableTypeNames) {
+        Class<?> paramType = convertTypeNameToClass(typeName);
+        paramTypes.add(paramType);
+        debugLog("Added parameter type: " + paramType.getSimpleName());
+      }
+    }
+
+    return MethodType.methodType(String.class, paramTypes.toArray(new Class<?>[0]));
+  }
+
+  private int countPlaceholders(String recipe) {
+    int count = 0;
+    for (char c : recipe.toCharArray()) {
+      if (c == '\u0001') count++;
+    }
+    return count;
+  }
+
+  // ==================== ARGUMENT HANDLING ====================
+
+  private Object[] popArguments(StackFrame frame, Class<?>[] argTypes) {
+    debugLog("Popping " + argTypes.length + " arguments");
+
+    Object[] args = new Object[argTypes.length];
+    for (int i = argTypes.length - 1; i >= 0; i--) {
+      args[i] = popSingleArgument(frame, argTypes[i]);
+      debugLog("Arg[" + i + "]: " + args[i] + " (" + argTypes[i].getSimpleName() + ")");
+    }
+    return args;
+  }
+
+  private Object popSingleArgument(StackFrame frame, Class<?> type) {
+    // Handle primitive types
+    if (type.isPrimitive()) {
+      return popPrimitiveArgument(frame, type);
+    }
+
+    // Handle reference types
+    int ref = frame.pop();
+    if (ref == MJIEnv.NULL) {
+      return null;
+    }
+
+    ElementInfo ei = ThreadInfo.getCurrentThread().getHeap().get(ref);
+    if (ei == null) {
+      return null;
+    }
+
+    if (ei.isStringObject()) {
+      return ei.asString();
+    }
+
+    return convertBoxedPrimitive(ei, type);
+  }
+
+  private Object popPrimitiveArgument(StackFrame frame, Class<?> type) {
+    if (type == double.class) {
+      return Double.longBitsToDouble(frame.popLong());
+    } else if (type == long.class) {
+      return frame.popLong();
+    } else if (type == float.class) {
+      return Float.intBitsToFloat(frame.pop());
+    } else if (type == int.class) {
+      return frame.pop();
+    } else if (type == char.class) {
+      return (char) frame.pop();
+    } else if (type == short.class) {
+      return (short) frame.pop();
+    } else if (type == byte.class) {
+      return (byte) frame.pop();
+    } else if (type == boolean.class) {
+      return frame.pop() != 0;
+    }
+    throw new IllegalArgumentException("Unknown primitive type: " + type);
+  }
+
+  private Object convertBoxedPrimitive(ElementInfo ei, Class<?> expectedType) {
+    String className = ei.getClassInfo().getName();
+
+    switch (className) {
+        case "java.lang.Byte":    return ei.getByteField("value");
+      case "java.lang.Character": return ei.getCharField("value");
+      case "java.lang.Short":   return ei.getShortField("value");
+      case "java.lang.Integer": return ei.getIntField("value");
+      case "java.lang.Long":    return ei.getLongField("value");
+      case "java.lang.Float":   return Float.intBitsToFloat(ei.getIntField("value"));
+      case "java.lang.Double":  return Double.longBitsToDouble(ei.getLongField("value"));
+      case "java.lang.Boolean": return ei.getBooleanField("value");
+      case "java.lang.String":  return ei.asString();
+      default: return ei;
+    }
+  }
+
+  // ==================== TYPE CONVERSION ====================
+
+  private Class<?> convertTypeNameToClass(String typeName) {
+    switch (typeName) {
+      case "boolean": return boolean.class;
+      case "byte":    return byte.class;
+      case "char":    return char.class;
+      case "short":   return short.class;
+      case "int":     return int.class;
+      case "long":    return long.class;
+      case "float":   return float.class;
+      case "double":  return double.class;
+      case "java.lang.String":    return String.class;
+      case "java.lang.Character": return Character.class;
+      case "java.lang.Byte":      return Byte.class;
+      case "java.lang.Integer":   return Integer.class;
+      case "java.lang.Long":      return Long.class;
+      case "java.lang.Float":     return Float.class;
+      case "java.lang.Double":    return Double.class;
+      case "java.lang.Boolean":   return Boolean.class;
+      case "java.lang.Short":     return Short.class;
+      default: return Object.class;
+    }
+  }
+
+  // ==================== RECORD OPERATIONS ====================
+
+  private Instruction executeRecord(ThreadInfo ti, BootstrapMethodInfo bmi) {
+    debugLog("[RECORD] Executing: " + samMethodName);
+    StackFrame frame = ti.getModifiableTopFrame();
+    ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
+
+    switch (samMethodName) {
+      case "equals":
+        return executeRecordEquals(ti, frame, enclosingClass, bmi);
+      case "hashCode":
+        return executeRecordHashCode(ti, frame, enclosingClass, bmi);
+      case "toString":
+        return executeRecordToString(ti, frame, enclosingClass, bmi);
+      default:
+        throw new IllegalStateException("Unsupported record method: " + samMethodName);
+    }
+  }
+
+  private Instruction executeRecordEquals(ThreadInfo ti, StackFrame frame,
+                                          ClassInfo enclosingClass, BootstrapMethodInfo bmi) {
+    int otherRef = frame.peek();
+    frame.pop(2);
+    boolean result = computeRecordEquals(ti, enclosingClass, otherRef);
+    frame.push(result ? 1 : 0);
+    return getNext();
+  }
+
+  private Instruction executeRecordHashCode(ThreadInfo ti, StackFrame frame,
+                                            ClassInfo enclosingClass, BootstrapMethodInfo bmi) {
+    frame.pop(1);
+    int hashCode = computeRecordHashCode(ti, enclosingClass);
+    frame.push(hashCode);
+    return getNext();
+  }
+
+  private Instruction executeRecordToString(ThreadInfo ti, StackFrame frame,
+                                            ClassInfo enclosingClass, BootstrapMethodInfo bmi) {
+    frame.pop(1);
+    int stringRef = computeRecordToString(ti, enclosingClass);
+    frame.pushRef(stringRef);
+    return getNext();
+  }
+
+  // ==================== RECORD COMPUTATION METHODS ====================
+
+  private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
+    ElementInfo thisEi = ti.getThisElementInfo();
+    ElementInfo otherEi = ti.getHeap().get(otherRef);
+
+    if (otherEi == null || !ci.equals(otherEi.getClassInfo())) {
+      return false;
+    }
+
+    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    String[] components = bmi.getBmArg().split(";");
+
+    for (String compName : components) {
+      FieldInfo fi = ci.getDeclaredInstanceField(compName);
+      Object thisVal = thisEi.getFieldValueObject(compName);
+      Object otherVal = otherEi.getFieldValueObject(compName);
+
+      if (!deepEquals(ti, thisVal, otherVal, fi.getSignature())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private int computeRecordHashCode(ThreadInfo ti, ClassInfo ci) {
+    ElementInfo ei = ti.getThisElementInfo();
+    if (ei == null) {
+      throw new IllegalStateException("No 'this' instance for hashCode computation");
+    }
+
+    int hash = 0;
+    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    String[] components = bmi.getBmArg().split(";");
+
+    for (String compName : components) {
+      Object value = ei.getFieldValueObject(compName);
+      hash = 31 * hash + (value != null ? value.hashCode() : 0);
+    }
+    return hash;
+  }
+
+  private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
+    ElementInfo ei = ti.getThisElementInfo();
+    String fullName = ci.getName();
+    String simpleName = fullName.substring(Math.max(fullName.lastIndexOf('.'),
+            fullName.lastIndexOf('$')) + 1);
+
+    StringBuilder sb = new StringBuilder(simpleName).append("[");
+    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
+    String[] components = bmi.getBmArg().split(";");
+
+    for (int i = 0; i < components.length; i++) {
+      String compName = components[i];
+      Object value = ei.getFieldValueObject(compName);
+      String valueStr = formatRecordComponent(ti, value);
+
+      sb.append(compName).append("=").append(valueStr);
+      if (i < components.length - 1) sb.append(", ");
+    }
+
+    sb.append("]");
+    return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
+  }
+
+  private String formatRecordComponent(ThreadInfo ti, Object value) {
+    if (value instanceof ElementInfo && ((ElementInfo) value).getClassInfo().isRecord()) {
+      ElementInfo valueEi = (ElementInfo) value;
+      ClassInfo nestedCi = valueEi.getClassInfo();
+
+      StackFrame currentFrame = ti.getModifiableTopFrame();
+      int originalThis = currentFrame.getThis();
+      currentFrame.setThis(valueEi.getObjectRef());
+
+      int stringRef = computeRecordToString(ti, nestedCi);
+      String result = ti.getHeap().get(stringRef).asString();
+
+      currentFrame.setThis(originalThis);
+      return result;
+    }
+    return String.valueOf(value);
+  }
+
+  // ==================== DEEP EQUALS IMPLEMENTATION ====================
+
   private boolean deepEquals(ThreadInfo ti, Object val1, Object val2, String sig) {
-    // identity check and null handling
     if (val1 == val2) return true;
     if (val1 == null || val2 == null) return false;
 
     char typeChar = sig.charAt(0);
 
-    // arrays
-    if (typeChar == '[') {
-      return compareArrays(ti, val1, val2, sig);
-    }
-
-    // primitive types
-    if (isPrimitiveType(typeChar)) {
-      return comparePrimitives(val1, val2, typeChar);
-    }
-
-    // reference types (objects)
-    if (typeChar == 'L') {
-      return compareReferenceTypes(ti, val1, val2, sig);
-    }
+    if (typeChar == '[') return compareArrays(ti, val1, val2, sig);
+    if (isPrimitiveType(typeChar)) return comparePrimitives(val1, val2, typeChar);
+    if (typeChar == 'L') return compareReferenceTypes(ti, val1, val2, sig);
 
     return false;
   }
+
+  private boolean compareArrays(ThreadInfo ti, Object val1, Object val2, String sig) {
+    ElementInfo ei1 = ti.getHeap().get((Integer) val1);
+    ElementInfo ei2 = ti.getHeap().get((Integer) val2);
+
+    if (ei1 == null || ei2 == null || !ei1.isArray() || !ei2.isArray()) return false;
+    if (ei1.arrayLength() != ei2.arrayLength()) return false;
+
+    String componentSig = sig.substring(1);
+    char compType = componentSig.charAt(0);
+
+    for (int i = 0; i < ei1.arrayLength(); i++) {
+      Object elem1 = getArrayElement(ei1, i, compType);
+      Object elem2 = getArrayElement(ei2, i, compType);
+      if (!deepEquals(ti, elem1, elem2, componentSig)) return false;
+    }
+    return true;
+  }
+
   private boolean comparePrimitives(Object val1, Object val2, char typeChar) {
     switch (typeChar) {
       case 'Z': return ((Boolean) val1).booleanValue() == ((Boolean) val2).booleanValue();
@@ -138,6 +493,45 @@ public class INVOKEDYNAMIC extends Instruction {
       default: return false;
     }
   }
+
+  private boolean compareReferenceTypes(ThreadInfo ti, Object val1, Object val2, String sig) {
+    if ("Ljava/lang/String;".equals(sig)) {
+      return compareStrings(ti, (ElementInfo) val1, (ElementInfo) val2);
+    }
+
+    ElementInfo ei1 = (ElementInfo) val1;
+    ElementInfo ei2 = (ElementInfo) val2;
+    ClassInfo ci = ei1.getClassInfo();
+
+    if (ci.isRecord()) {
+      return compareRecords(ti, ei1, ei2, ci);
+    }
+
+    return ei1 == ei2;
+  }
+
+  private boolean compareStrings(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2) {
+    byte coder1 = ei1.getByteField("coder");
+    byte coder2 = ei2.getByteField("coder");
+
+    byte[] bytes1 = ((ByteArrayFields) ti.getHeap().get(ei1.getReferenceField("value")).getFields()).asByteArray();
+    byte[] bytes2 = ((ByteArrayFields) ti.getHeap().get(ei2.getReferenceField("value")).getFields()).asByteArray();
+
+    return coder1 == coder2 && Arrays.equals(bytes1, bytes2);
+  }
+
+  private boolean compareRecords(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2, ClassInfo ci) {
+    if (!ci.equals(ei2.getClassInfo())) return false;
+
+    FieldInfo[] fields = ci.getDeclaredInstanceFields();
+    for (FieldInfo fi : fields) {
+      Object v1 = ei1.getFieldValueObject(fi.getName());
+      Object v2 = ei2.getFieldValueObject(fi.getName());
+      if (!deepEquals(ti, v1, v2, fi.getSignature())) return false;
+    }
+    return true;
+  }
+
   private Object getArrayElement(ElementInfo ei, int index, char type) {
     switch (type) {
       case 'Z': return ei.getBooleanElement(index);
@@ -151,217 +545,28 @@ public class INVOKEDYNAMIC extends Instruction {
       default:  return ei.getReferenceElement(index);
     }
   }
-  private boolean compareReferenceTypes(ThreadInfo ti, Object val1, Object val2, String sig) {
-    // string comparison
-    if ("Ljava/lang/String;".equals(sig)) return compareStrings(ti, (ElementInfo) val1, (ElementInfo) val2);
-
-    // record comparison
-    ElementInfo ei1 = (ElementInfo) val1;
-    ElementInfo ei2 = (ElementInfo) val2;
-    ClassInfo ci = ei1.getClassInfo();
-
-    if (ci.isRecord()) return compareRecords(ti, ei1, ei2, ci);
-
-    //object comparison -> default (reference equality)
-    return ei1 == ei2;
-  }
-
-  private boolean compareArrays(ThreadInfo ti, Object val1, Object val2, String sig) {
-    ElementInfo ei1 = ti.getHeap().get((Integer) val1);
-    ElementInfo ei2 = ti.getHeap().get((Integer) val2);
-
-    // Basic validation
-    if (ei1 == null || ei2 == null || !ei1.isArray() || !ei2.isArray()) return false;
-    if (ei1.arrayLength() != ei2.arrayLength()) return false;
-
-    String componentSig = sig.substring(1);
-    char compType = componentSig.charAt(0);
-
-    // Compare each element
-    for (int i = 0; i < ei1.arrayLength(); i++) {
-      Object elem1 = getArrayElement(ei1, i, compType);
-      Object elem2 = getArrayElement(ei2, i, compType);
-
-      if (!deepEquals(ti, elem1, elem2, componentSig)) return false;
-    }
-
-    return true;
-  }
 
   private boolean isPrimitiveType(char typeChar) {
     return (typeChar == 'Z' || typeChar == 'B' || typeChar == 'C'
             || typeChar == 'S' || typeChar == 'I' || typeChar == 'J'
             || typeChar == 'F' || typeChar == 'D');
   }
-  private boolean compareStrings(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2) {
-    byte coder1 = ei1.getByteField("coder");
-    byte coder2 = ei2.getByteField("coder");
 
-    byte[] bytes1 = ((ByteArrayFields) ti.getHeap().get(ei1.getReferenceField("value")).getFields()).asByteArray();
-    byte[] bytes2 = ((ByteArrayFields) ti.getHeap().get(ei2.getReferenceField("value")).getFields()).asByteArray();
+  // ==================== STUB METHODS ====================
 
-    return coder1 == coder2 && Arrays.equals(bytes1, bytes2);
-  }
-  private boolean compareRecords(ThreadInfo ti, ElementInfo ei1, ElementInfo ei2, ClassInfo ci) {
-    if (!ci.equals(ei2.getClassInfo())) return false;
-
-    FieldInfo[] fields = ci.getDeclaredInstanceFields();
-    for (FieldInfo fi : fields) {
-      Object v1 = ei1.getFieldValueObject(fi.getName());
-      Object v2 = ei2.getFieldValueObject(fi.getName());
-
-      if (!deepEquals(ti, v1, v2, fi.getSignature())) return false;
-    }
-
-    return true;
-  }
-  private boolean computeRecordEquals(ThreadInfo ti, ClassInfo ci, int otherRef) {
-    ElementInfo thisEi = ti.getThisElementInfo();
-    ElementInfo otherEi = ti.getHeap().get(otherRef);
-    if (otherEi == null || !ci.equals(otherEi.getClassInfo())) {
-      return false;
-    }
-    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
-    String[] components = bmi.getBmArg().split(";");
-    for (String compName : components) {
-      FieldInfo fi = ci.getDeclaredInstanceField(compName);
-      Object thisVal = thisEi.getFieldValueObject(compName);
-      Object otherVal = otherEi.getFieldValueObject(compName);
-      // here, we will omputes equality for a record by comparing all components with deepEquals.
-      boolean equal = deepEquals(ti, thisVal, otherVal, fi.getSignature());
-      //System.out.println("Comparing " + compName + ": thisVal=" + thisVal + ", otherVal=" + otherVal + ", Result=" + equal);
-      if (!equal) return false;
-    }
-    return true;
-  }
-
-  private int computeRecordHashCode(ThreadInfo ti, ClassInfo ci) {
-    ElementInfo ei = ti.getThisElementInfo();
-    if (ei == null) {
-      throw new IllegalStateException("No 'this' instance for hashCode computation");
-    }
-    int hash = 0;
-    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
-    String[] components = bmi.getBmArg().split(";");
-    for (String compName : components) {
-      Object value = ei.getFieldValueObject(compName);
-      hash = 31 * hash + (value != null ? value.hashCode() : 0);
-    }
-    // System.out.println("Computed hashCode: " + hash);
-    return hash;
-  }
-
-  private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
-    ElementInfo ei = ti.getThisElementInfo();
-    String fullName = ci.getName();
-    // we will extract the name from the fall name
-    // NestedRecordTest$Rectangle -> will get Rectangle
-    String simpleName = fullName.substring(Math.max(fullName.lastIndexOf('.'), fullName.lastIndexOf('$')) + 1);
-    StringBuilder sb = new StringBuilder(simpleName).append("[");
-    BootstrapMethodInfo bmi = ci.getBootstrapMethodInfo(bootstrapMethodIndex);
-    // splitting bootstrap args -> left;size
-    String[] components = bmi.getBmArg().split(";");
-    for (int i = 0; i < components.length; i++) {
-      String compName = components[i];
-      Object value = ei.getFieldValueObject(compName);
-      String valueStr;
-      if (value instanceof ElementInfo && ((ElementInfo) value).getClassInfo().isRecord()) {
-        //compute to string recursively for nested records
-        ElementInfo valueEi = (ElementInfo) value;
-        ClassInfo nestedCi = valueEi.getClassInfo();
-        // Temporarily set 'this' to the nested record and compute its toString
-        StackFrame currentFrame = ti.getModifiableTopFrame();
-        int originalThis = currentFrame.getThis();
-        currentFrame.setThis(valueEi.getObjectRef());
-        int stringRef = computeRecordToString(ti, nestedCi);
-        valueStr = ti.getHeap().get(stringRef).asString();
-        // restore original 'this'
-        currentFrame.setThis(originalThis);
-      } else valueStr = String.valueOf(value); // for primitives or non-records
-
-      sb.append(compName).append("=").append(valueStr);
-      if (i < components.length - 1) sb.append(", ");
-    }
-    sb.append("]");
-    return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
-  }
-
-  private Instruction executeDynamicBootstrap(ThreadInfo ti, StackFrame frame, BootstrapMethodInfo bmi) {
-   // TODO : work to be done here later
+  private Instruction executeLambda(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) {
+    // TODO: Implement lambda execution
     return null;
   }
-  @Override
-  public Instruction execute (ThreadInfo ti) {
-    StackFrame frame = ti.getModifiableTopFrame();
-    ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
-    BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
 
-    String bootstrapMethodName = (bmi.getLambdaBody() != null) ? bmi.getLambdaBody().getName() : this.samMethodName;
+  private Instruction executeDynamic(ThreadInfo ti, BootstrapMethodInfo bmi) {
+    // TODO: Implement dynamic execution
+    return null;
+  }
 
-    if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS) {
-      String methodName = this.samMethodName;
+  // ==================== UTILITY METHODS ====================
 
-      if ("equals".equals(methodName)) {
-        int otherRef = frame.peek();
-        frame.pop(2);
-        boolean result = computeRecordEquals(ti, enclosingClass, otherRef);
-        frame.push(result ? 1 : 0);
-      } else if ("hashCode".equals(methodName)) {
-        frame.pop(1);
-        int hashCode = computeRecordHashCode(ti, enclosingClass);
-        frame.push(hashCode);
-      } else if ("toString".equals(methodName)) {
-        frame.pop(1);
-        int stringRef = computeRecordToString(ti, enclosingClass);
-        frame.push(stringRef);
-      } else {
-        throw new IllegalStateException("Unsupported record method: " + methodName);
-      }
-
-      return getNext(ti);
-    }else if (bmi.getBmType() == BootstrapMethodInfo.BMType.DYNAMIC){
-      return executeDynamicBootstrap(ti, frame, bmi);
-    }
-    ElementInfo ei = ti.getHeap().get(funcObjRef);
-    if(ei==null || ei!=lastFuncObj || freeVariableTypes.length>0) {
-      ClassInfo fiClassInfo;
-
-      // First, resolve the functional interface
-      try {
-        fiClassInfo = ti.resolveReferencedClass(functionalInterfaceName);
-      } catch(LoadOnJPFRequired lre) {
-        return ti.getPC();
-      }
-
-      if (fiClassInfo.initializeClass(ti)) {
-        return ti.getPC();
-      }
-
-
-
-      VM vm = VM.getVM();
-      FunctionObjectFactory funcObjFactory = vm.getFunctionObjectFacotry();
-
-      Object[] freeVariableValues = frame.getArgumentsValues(ti, freeVariableTypes);
-
-      funcObjRef = funcObjFactory.getFunctionObject(bootstrapMethodIndex, ti, fiClassInfo, samMethodName, bmi,
-              freeVariableTypeNames, freeVariableValues);
-      lastFuncObj = ti.getHeap().get(funcObjRef);
-    }
-
-    frame.pop(freeVariableSize);
-    frame.pushRef(funcObjRef);
-
-    if (funcObjRef == MJIEnv.NULL) {
-      // In case of string concat, we return a null ref as a dummy arg.
-      // It is here only to be popped at the helper function's
-      // (java.lang.String.generateStringByConcatenatingArgs) return.
-      // We continue execution from the newly created stack frame (in the helper function).
-      return ti.getPC();
-    } else {
-      // In other cases (for lambda expr), this return value shouldn't be null.
-      // We continue execution from the following bytecode.
-      return getNext(ti);
-    }
+  private void debugLog(String message) {
+    System.out.println("[DEBUG] " + message);
   }
 }

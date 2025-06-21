@@ -46,6 +46,10 @@ public class JVMClassInfo extends ClassInfo {
   protected String[] permittedSubclassNames;
   protected boolean isSealed;
 
+  public ClassFile getClassFile() {
+    return this.classFile;
+  }
+
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
     protected JVMCodeBuilder cb;
