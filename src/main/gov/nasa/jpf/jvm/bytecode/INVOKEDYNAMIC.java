@@ -28,6 +28,9 @@ import gov.nasa.jpf.vm.StackFrame;
 import gov.nasa.jpf.vm.ByteArrayFields;
 import gov.nasa.jpf.vm.FieldInfo;
 import gov.nasa.jpf.vm.JPFStringConcatHelper;
+import gov.nasa.jpf.vm.LoadOnJPFRequired;
+import gov.nasa.jpf.vm.FunctionObjectFactory;
+import gov.nasa.jpf.vm.VM;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
@@ -104,10 +107,13 @@ public class INVOKEDYNAMIC extends Instruction {
 
       debugLog("Bootstrap method type: " + bmi.getBmType());
       debugLog("SAM method name: " + samMethodName);
+      // direct approach
+      if (bmi.getBmType() == BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION || bmi.getBmType() == BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION) {
+        return executeLambda(ti, null, null, bmi);
+      }
 
       String callSiteKey = createCallSiteKey(ti);
       CallSite callSite = getOrCreateCallSite(callSiteKey, ti, enclosingClass, bmi);
-
       return executeCallSite(ti, callSite, bmi);
 
     } catch (Throwable e) {
@@ -218,6 +224,47 @@ public class INVOKEDYNAMIC extends Instruction {
       if (c == '\u0001') count++;
     }
     return count;
+  }
+
+  // ==================== LAMBDA HANDLING ====================
+
+  private Instruction executeLambda(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) {
+    debugLog("[LAMBDA] Executing lambda expression");
+    StackFrame frame = ti.getModifiableTopFrame();
+
+    ElementInfo ei = ti.getHeap().get(funcObjRef);
+    if(ei == null || ei != lastFuncObj || freeVariableTypes.length > 0) {
+      ClassInfo fiClassInfo;
+
+      // First, resolve the functional interface
+      try {
+        fiClassInfo = ti.resolveReferencedClass(functionalInterfaceName);
+      } catch(LoadOnJPFRequired lre) {
+        return ti.getPC();
+      }
+
+      if (fiClassInfo.initializeClass(ti)) {
+        return ti.getPC();
+      }
+
+      VM vm = VM.getVM();
+      FunctionObjectFactory funcObjFactory = vm.getFunctionObjectFacotry();
+
+      Object[] freeVariableValues = frame.getArgumentsValues(ti, freeVariableTypes);
+
+      funcObjRef = funcObjFactory.getFunctionObject(bootstrapMethodIndex, ti, fiClassInfo, samMethodName, bmi,
+              freeVariableTypeNames, freeVariableValues);
+      lastFuncObj = ti.getHeap().get(funcObjRef);
+    }
+
+    frame.pop(freeVariableSize);
+    frame.pushRef(funcObjRef);
+
+    if (funcObjRef == MJIEnv.NULL) {
+      return ti.getPC();
+    } else {
+      return getNext();
+    }
   }
 
   // ==================== ARGUMENT HANDLING ====================
@@ -553,11 +600,6 @@ public class INVOKEDYNAMIC extends Instruction {
   }
 
   // ==================== STUB METHODS ====================
-
-  private Instruction executeLambda(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) {
-    // TODO: Implement lambda execution
-    return null;
-  }
 
   private Instruction executeDynamic(ThreadInfo ti, BootstrapMethodInfo bmi) {
     // TODO: Implement dynamic execution

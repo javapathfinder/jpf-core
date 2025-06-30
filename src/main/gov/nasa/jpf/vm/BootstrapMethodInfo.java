@@ -163,9 +163,6 @@ public class BootstrapMethodInfo {
   private CallSite createCallSiteByType(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
       return switch (bmType) {
           case STRING_CONCATENATION -> createStringConcatCallSite(lookup, name, methodType);
-          case LAMBDA_EXPRESSION, SERIALIZABLE_LAMBDA_EXPRESSION -> createLambdaCallSite(lookup, name, methodType);
-          case RECORDS -> createRecordCallSite(lookup, name, methodType);
-          case DYNAMIC -> createDynamicCallSite(lookup, name, methodType);
           default -> throw new BootstrapMethodError("Unsupported bootstrap method type: " + bmType);
       };
   }
@@ -336,20 +333,6 @@ public class BootstrapMethodInfo {
     return (enclosingClass instanceof JVMClassInfo)
             ? ((JVMClassInfo) enclosingClass).getClassFile()
             : null;
-  }
-
-  // ==================== STUB METHODS FOR FUTURE IMPLEMENTATION ====================
-
-  private CallSite createLambdaCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
-    throw new UnsupportedOperationException("later");
-  }
-
-  private CallSite createRecordCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
-    throw new UnsupportedOperationException("later");
-  }
-
-  private CallSite createDynamicCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
-    throw new UnsupportedOperationException("later");
   }
 
   // ==================== PUBLIC METHODS ====================
