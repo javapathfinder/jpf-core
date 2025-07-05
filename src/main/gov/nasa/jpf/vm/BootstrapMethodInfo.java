@@ -100,6 +100,19 @@ public class BootstrapMethodInfo {
     this.dynamicDescriptor = null;
     this.bmArg = "";
   }
+  /**
+   * Constructor for record
+   */
+  public BootstrapMethodInfo(ClassInfo enclosingClass, String recordComponents) {
+    this.enclosingClass = enclosingClass;
+    this.bmType = BMType.RECORDS;
+    this.bmArg = recordComponents != null ? recordComponents : "";
+    this.cpArgs = null;
+    this.lambdaRefKind = 0;
+    this.lambdaBody = null;
+    this.samDescriptor = null;
+    this.dynamicDescriptor = null;
+  }
 
   // ==================== CONFIGURATION METHODS ====================
 
