@@ -64,6 +64,7 @@ public class SharedSecrets {
   private static JavaObjectInputFilterAccess javaObjectInputFilterAccess;
   private static JavaObjectInputStreamReadString javaObjectInputStreamReadString;
   private static JavaNetUriAccess javaNetUriAccess;
+  private static JavaNetSocketAccess javaNetSocketAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -87,6 +88,16 @@ public class SharedSecrets {
       }
     }
     return javaLangInvokeAccess;
+  }
+
+  public static void setJavaNetSocketAccess(JavaNetSocketAccess jnsa) {
+    javaNetSocketAccess = jnsa;
+  }
+
+  public static JavaNetSocketAccess getJavaNetSocketAccess() {
+    if (javaNetSocketAccess == null)
+      unsafe.ensureClassInitialized(java.net.ServerSocket.class);
+    return javaNetSocketAccess;
   }
 
   public static void setJavaNetAccess(JavaNetAccess jna) {
