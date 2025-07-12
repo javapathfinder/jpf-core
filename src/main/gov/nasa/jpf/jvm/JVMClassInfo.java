@@ -199,10 +199,19 @@ public class JVMClassInfo extends ClassInfo {
     }
     private void objectMethodsBootstrap(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
                                         String parameters, String descriptor, int[] cpArgs) {
-        handleDynamicBootstrapMethod(cf, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
-        // we are here using proper descriptor instead of sam
-        bootstrapMethods[idx].setRecordComponents(cf.getBmArgString(cpArgs[1]));
+      String recordComponents = cf.getBmArgString(cpArgs[1]);
+
+      bootstrapMethods[idx] = new BootstrapMethodInfo(JVMClassInfo.this, recordComponents);
+
+      bootstrapMethods[idx].setDynamicMetadata(refKind, cls, mth, parameters, descriptor);
+
+      Object[] resolvedArgs = new Object[cpArgs.length];
+      for (int i = 0; i < cpArgs.length; i++) {
+        resolvedArgs[i] = cf.getConstantValue(cpArgs[i]);
+      }
+      bootstrapMethods[idx].setResolvedArgs(resolvedArgs);
     }
+
 
     private void stringConcatenation(ClassFile cf, int idx, int refKind, String cls, String mth, String parameters, String descriptor, int[] cpArgs){
       String clsName = cls;

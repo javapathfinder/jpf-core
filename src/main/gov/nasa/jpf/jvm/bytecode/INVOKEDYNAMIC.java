@@ -108,8 +108,11 @@ public class INVOKEDYNAMIC extends Instruction {
       debugLog("Bootstrap method type: " + bmi.getBmType());
       debugLog("SAM method name: " + samMethodName);
       // direct approach
+
       if (bmi.getBmType() == BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION || bmi.getBmType() == BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION) {
         return executeLambda(ti, null, null, bmi);
+      }else if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS) {
+        return executeRecord(ti, bmi);
       }
 
       String callSiteKey = createCallSiteKey(ti);
@@ -158,25 +161,12 @@ public class INVOKEDYNAMIC extends Instruction {
 
   private Instruction executeCallSite(ThreadInfo ti, CallSite callSite,
                                       BootstrapMethodInfo bmi) throws Throwable {
+    // call site generation works only in the context of string concat
     MethodHandle target = callSite.getTarget();
     MethodType type = target.type();
-
     debugLog("Executing CallSite type: " + bmi.getBmType());
     debugLog("Target type: " + type);
-
-    switch (bmi.getBmType()) {
-      case STRING_CONCATENATION:
-        return executeStringConcatenation(ti, target, type, bmi);
-      case LAMBDA_EXPRESSION:
-      case SERIALIZABLE_LAMBDA_EXPRESSION:
-        return executeLambda(ti, target, type, bmi);
-      case RECORDS:
-        return executeRecord(ti, bmi);
-      case DYNAMIC:
-        return executeDynamic(ti, bmi);
-      default:
-        throw new UnsupportedOperationException("Unsupported CallSite type: " + bmi.getBmType());
-    }
+    return executeStringConcatenation(ti, target, type, bmi);
   }
 
   // ==================== STRING CONCATENATION EXECUTION ====================
@@ -597,13 +587,6 @@ public class INVOKEDYNAMIC extends Instruction {
     return (typeChar == 'Z' || typeChar == 'B' || typeChar == 'C'
             || typeChar == 'S' || typeChar == 'I' || typeChar == 'J'
             || typeChar == 'F' || typeChar == 'D');
-  }
-
-  // ==================== STUB METHODS ====================
-
-  private Instruction executeDynamic(ThreadInfo ti, BootstrapMethodInfo bmi) {
-    // TODO: Implement dynamic execution
-    return null;
   }
 
   // ==================== UTILITY METHODS ====================
