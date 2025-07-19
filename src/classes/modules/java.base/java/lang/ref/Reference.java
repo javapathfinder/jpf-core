@@ -64,4 +64,10 @@ public abstract class Reference<T> {
   public T get () {
     return ref;
   }
+
+  /**
+   * Added for Java 9+ compatibility – JPF handles the body via a native peer.
+   */
+  public static native void reachabilityFence (Object obj);
+
 }
