@@ -65,7 +65,8 @@ public class SharedSecrets {
   private static JavaObjectInputStreamReadString javaObjectInputStreamReadString;
   private static JavaNetUriAccess javaNetUriAccess;
   private static JavaNetSocketAccess javaNetSocketAccess;
-
+  private static JavaNetInetAddressAccess javaNetInetAddressAccess;
+  private static JavaSecurityAccess javaSecurityAccess;
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
     return javaLangAccess;
@@ -98,6 +99,22 @@ public class SharedSecrets {
     if (javaNetSocketAccess == null)
       unsafe.ensureClassInitialized(java.net.ServerSocket.class);
     return javaNetSocketAccess;
+  }
+
+  public static void setJavaNetInetAddressAccess(JavaNetInetAddressAccess jniaAccess) {
+    javaNetInetAddressAccess = jniaAccess;
+  }
+
+  public static JavaNetInetAddressAccess getJavaNetInetAddressAccess() {
+    return javaNetInetAddressAccess;
+  }
+
+  public static void setJavaSecurityAccess (JavaSecurityAccess jsa){
+    javaSecurityAccess = jsa;
+  }
+
+  public static JavaSecurityAccess getJavaSecurityAccess(){
+    return javaSecurityAccess;
   }
 
   public static void setJavaNetAccess(JavaNetAccess jna) {
@@ -172,7 +189,28 @@ public class SharedSecrets {
   public static JavaIOFileDescriptorAccess getJavaIOFileDescriptorAccess() {
     if (javaIOFileDescriptorAccess == null) {
       unsafe.ensureClassInitialized(FileDescriptor.class);
-      throw new UnsupportedOperationException("sun.misc.SharedSecrets.getJavaIOFileDescriptorAccess() not supported yet");
+
+      javaIOFileDescriptorAccess = new JavaIOFileDescriptorAccess() {
+        @Override
+        public void set(FileDescriptor fdObj, int fd) {
+          // mock implementation for JPF compatibility
+        }
+
+        @Override
+        public int get(FileDescriptor fdObj) {
+          return -1;
+        }
+
+        @Override
+        public void setHandle(FileDescriptor fdObj, long h) {
+          // Mock implementation for JPF compatibility
+        }
+
+        @Override
+        public long getHandle(FileDescriptor fdObj) {
+          return -1L;
+        }
+      };
     }
 
     return javaIOFileDescriptorAccess;
