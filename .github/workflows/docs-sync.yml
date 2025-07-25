@@ -29,6 +29,7 @@ jobs:
         with:
           repository: Mahmoud-Khawaja/Mahmoud-Khawaja.github.io
           token: ${{ secrets.DOCS_PAT }}
+          ref: main
           path: target
 
       - name: Prepare target directory
