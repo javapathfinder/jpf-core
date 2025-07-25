@@ -1,5 +1,6 @@
 title: Java PathFinder Documentation
 description: JPF is an extensible software model checking framework for Java bytecode programs
+
 url: "https://mahmoud-khawaja.github.io"
 baseurl: "/jpf-core"
 
@@ -34,6 +35,7 @@ collections:
     output: true
     permalink: /papers/:name/
 
+# Default layout for each collection
 defaults:
   - scope:
       path: ""
