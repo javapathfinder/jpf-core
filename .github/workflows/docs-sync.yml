@@ -1,0 +1,57 @@
+name: Publish JPF Documentation to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "docs/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          path: source
+
+      - name: Checkout GitHub Pages repository
+        uses: actions/checkout@v4
+        with:
+          repository: javapathfinder/javapathfinder.github.io
+          token: ${{ secrets.DOCS_PAT }}
+          path: target
+
+      - name: Prepare target directory
+        run: |
+          rm -rf target/jpf-core
+          mkdir -p target/jpf-core
+
+      - name: Copy documentation files
+        run: |
+          cp -r source/docs/* target/jpf-core/
+          if [ -d "source/docs/graphics" ]; then
+            cp -r source/docs/graphics target/jpf-core/
+          fi
+          touch target/.nojekyll
+
+      - name: Commit and push changes
+        run: |
+          cd target
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to deploy"
+            exit 0
+          fi
+          git commit -m "Update JPF-core documentation from commit ${{ github.sha }}"
+          git push origin main
