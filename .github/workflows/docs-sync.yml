@@ -1,4 +1,4 @@
-name: Publish JPF Documentation to GitHub Pages
+name: Publish JPF Documentation toHub Pages
 
 on:
   push:
@@ -43,7 +43,6 @@ jobs:
           if [ -d "source/docs/graphics" ]; then
             cp -r source/docs/graphics target/jpf-core/
           fi
-          
 
       - name: Commit and push changes
         run: |
