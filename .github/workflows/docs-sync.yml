@@ -43,7 +43,7 @@ jobs:
           if [ -d "source/docs/graphics" ]; then
             cp -r source/docs/graphics target/jpf-core/
           fi
-          touch target/.nojekyll
+          
 
       - name: Commit and push changes
         run: |
