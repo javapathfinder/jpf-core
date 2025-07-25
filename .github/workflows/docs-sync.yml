@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - add-install-docs
     paths:
       - "docs/**"
   workflow_dispatch:
