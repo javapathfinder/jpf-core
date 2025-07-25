@@ -26,7 +26,7 @@ jobs:
       - name: Checkout GitHub Pages repository
         uses: actions/checkout@v4
         with:
-          repository: javapathfinder/javapathfinder.github.io
+          repository: Mahmoud-Khawaja/Mahmoud-Khawaja.github.io
           token: ${{ secrets.DOCS_PAT }}
           path: target
 
