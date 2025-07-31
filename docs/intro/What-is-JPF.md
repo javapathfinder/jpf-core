@@ -40,4 +40,3 @@ The second answer is that - as of this writing - there are bugs *only* JPF can f
 
 
 
-{% include navigation.html %}

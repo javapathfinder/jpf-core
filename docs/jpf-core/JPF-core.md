@@ -46,4 +46,3 @@ jpf-core uses many JPF properties, most of which you can find in the `defaults.p
     - `error` error description
     - `snapshot` thread stacks 
     - `trace` instruction/statement trace (can be long and memory-expensive)
-{% include navigation.html %}

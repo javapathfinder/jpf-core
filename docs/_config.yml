@@ -3,19 +3,13 @@ description: JPF is an extensible software model checking framework for Java byt
 baseurl: "/jpf-core"
 url: "https://mahmoud-khawaja.github.io"
 
-theme: minima
 
 plugins:
   - jekyll-feed
   - jekyll-sitemap
-  - jekyll-relative-links
 
 markdown: kramdown
 highlighter: rouge
-
-relative_links:
-  enabled: true
-  collections: false
 
 defaults:
   - scope:

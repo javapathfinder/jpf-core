@@ -61,4 +61,3 @@ If you want to go with Eclipse and have to rebuild the JPF [Eclipse plugin.](./e
 
 If you want to use the [NetBeans plugin.](./netbeans-jpf), the minimal NetBeans version is 6.5.
 
-{% include navigation.html %}

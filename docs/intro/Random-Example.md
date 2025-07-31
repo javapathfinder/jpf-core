@@ -93,4 +93,3 @@ What has happened? By specifying "+vm.enumerate_random=true" we told JPF to cons
 Here is a graphical representation of this search process. It should be noted that JPF per default only runs up to the point where it finds an error or there are no more choices left to explore. But if we would somehow fix the `"a=0,b=2"` case, JPF would still find the `"a=1,b=1"` case in the next run, since it systematically tries all choices. No matter what error it finds, JPF also keeps the complete trace (execution path) how it got to this error (denoted by the red arrows), which means we don't have to debug the program to find out.
 
 ![Figure 2: Random example.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/sw-model-checking-2.svg)
-{% include navigation.html %}

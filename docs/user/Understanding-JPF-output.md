@@ -94,4 +94,3 @@ The system consists of three major components: (1) the Reporter, (2) any number 
 
 
 Again, there is separate [report system API.](Reporting-System) documentation if you are interested in JPF development.
-{% include navigation.html %}

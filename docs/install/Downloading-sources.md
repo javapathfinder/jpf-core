@@ -89,4 +89,3 @@ Now, your local repostory is synchronized, but you need to update your remote (f
 
 If you want to contribute to the project, you must make changes in your local repository and push them to your forked remote repository. In this situation, your remote repository is ahead of ours, and you must **create a pull request**. For more info, please, check the [Creating a Pull Request.](https://help.github.com/articles/creating-a-pull-request/) guide.
 
-{% include navigation.html %}

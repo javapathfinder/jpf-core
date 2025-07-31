@@ -28,4 +28,3 @@ A sample site.properties file is attached to this page. Note that the "`${..}`" 
 Each installed project is defined by a "`<project-name> = <project-directory>`" key/value pair. The project name is usually the same as the repository name.
 
 Note that we don't require anymore that all projects are in the extensions list, **but** jpf-core (or wherever your JPF core classes are) now needs to be in there. In fact, you probably want to have only `jpf-core` in `extensions`, and use the `@using <project-name>` for the other ones from either your project properties (jpf.properties, for project dependencies) or - usually - from your application properties (*.jpf) files. See [JPF configuration.](Configuring-JPF) for details.
-{% include navigation.html %}

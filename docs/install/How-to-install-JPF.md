@@ -15,4 +15,3 @@ Here are the details:
   - [Building, testing, and running.](Build,-Test,-Run)
   - [Installing the Eclipse plugin.](Eclipse-Plugin)
   - [Installing the NetBeans plugin.](NetBeans-Plugin)
-{% include navigation.html %}
