@@ -11,11 +11,9 @@ Here you will find detailed instructions on how to install and set up Java PathF
 
 ### Important Pages
 
-- [How to Install JPF](How-to-install-JPF.md)
-- [Building, Testing, and Running](Build,-Test,-Run.md)
-- [System Requirements](System-requirements.md)
-- [Downloading Binary Snapshots](Downloading-binary-snapshots.md)
-- [Downloading Sources](Downloading-sources.md)
-- [Eclipse Plugin](Eclipse-Plugin.md)
-
-
+- [How to Install JPF](How-to-install-JPF.html)
+- [Building, Testing, and Running](Build,-Test,-Run.html)
+- [System Requirements](System-requirements.html)
+- [Downloading Binary Snapshots](Downloading-binary-snapshots.html)
+- [Downloading Sources](Downloading-sources.html)
+- [Eclipse Plugin](Eclipse-Plugin.html)
