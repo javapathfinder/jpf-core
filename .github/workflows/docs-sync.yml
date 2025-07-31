@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+      - add-install-docs
     paths:
       - "docs/**"
   workflow_dispatch:
@@ -17,32 +18,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout jpf-core source (your docs)
       - name: Checkout source repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: source
 
+      # 2. Checkout your Pages repo
       - name: Checkout GitHub Pages repository
         uses: actions/checkout@v4
         with:
-          repository: javapathfinder/javapathfinder.github.io
+          repository: Mahmoud-Khawaja/Mahmoud-Khawaja.github.io
           token: ${{ secrets.DOCS_PAT }}
+          ref: main
           path: target
 
+      # 3. Prepare a clean target directory
       - name: Prepare target directory
         run: |
           rm -rf target/jpf-core
           mkdir -p target/jpf-core
 
+      # 4. Copy all docs (including graphics)
       - name: Copy documentation files
         run: |
           cp -r source/docs/* target/jpf-core/
           if [ -d "source/docs/graphics" ]; then
             cp -r source/docs/graphics target/jpf-core/
           fi
-          touch target/.nojekyll
 
+      # 5. Commit & push if there are changes
       - name: Commit and push changes
         run: |
           cd target
