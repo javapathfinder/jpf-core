@@ -1,25 +1,29 @@
+/* Basic reset and base fonts */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
         Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
     line-height: 1.6;
-    margin: 2em;
-    max-width: 900px;
-    background-color: #f9f9f9;
-    color: #222;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
+    color: #333;
 }
 
+/* Navigation Bar */
 .site-navigation {
     background-color: #2c3e50;
-    padding: 1rem 2rem;
+    padding: 1rem 0;
     margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 900px;
-    margin: auto;
+    padding: 0 1rem;
 }
 
 .nav-brand {
@@ -44,8 +48,8 @@ body {
     color: #ecf0f1;
     text-decoration: none;
     font-weight: 600;
-    padding: 0.3rem 0.5rem;
-    border-radius: 3px;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     transition: background-color 0.3s ease;
 }
 
@@ -54,15 +58,64 @@ body {
     background-color: #34495e;
 }
 
+/* Main content */
 main {
+    max-width: 900px;
+    margin: 0 auto;
     background: white;
     padding: 2rem;
     border-radius: 6px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
 
-@media (max-width: 600px) {
+h1 {
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 0.5rem;
+}
+
+/* Links */
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Lists */
+ul, ol {
+    margin-bottom: 1rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* Code blocks */
+pre, code {
+    background-color: #f4f4f4;
+    border-radius: 3px;
+}
+
+code {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.9em;
+}
+
+pre {
+    padding: 1rem;
+    overflow-x: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
     .nav-container {
         flex-direction: column;
         align-items: flex-start;
@@ -76,5 +129,11 @@ main {
     .nav-menu li {
         margin-left: 0;
         margin-right: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    main {
+        margin: 0 1rem;
+        padding: 1rem;
     }
 }

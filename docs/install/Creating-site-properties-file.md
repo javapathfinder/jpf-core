@@ -1,4 +1,4 @@
-The site.properties file tells JPF at startup time where to look for installed projects, so that it can add classpaths accordingly without you having to type off your fingers. It is a normal [Java properties](./(http://en.wikipedia.org/wiki/.properties) file, which supports a few additional things like key expansion.
+The site.properties file tells JPF at startup time where to look for installed projects, so that it can add classpaths accordingly without you having to type off your fingers. It is a normal [Java properties.](http://en.wikipedia.org/wiki/.properties) file, which supports a few additional things like key expansion.
 
 While you can tell JPF at startup time where to look for `site.properties`, we recommend using the default location, which is **`<user.home>/.jpf/site.properties`**. If you don't know what value the standard Java system property `user.home` has on your machine, please run the attached Java program. On Unix systems, this is your home directory.
 
@@ -27,5 +27,5 @@ A sample site.properties file is attached to this page. Note that the "`${..}`" 
 
 Each installed project is defined by a "`<project-name> = <project-directory>`" key/value pair. The project name is usually the same as the repository name.
 
-Note that we don't require anymore that all projects are in the extensions list, **but** jpf-core (or wherever your JPF core classes are) now needs to be in there. In fact, you probably want to have only `jpf-core` in `extensions`, and use the `@using <project-name>` for the other ones from either your project properties (jpf.properties, for project dependencies) or - usually - from your application properties (*.jpf) files. See [JPF configuration](./(Configuring-JPF) for details.
+Note that we don't require anymore that all projects are in the extensions list, **but** jpf-core (or wherever your JPF core classes are) now needs to be in there. In fact, you probably want to have only `jpf-core` in `extensions`, and use the `@using <project-name>` for the other ones from either your project properties (jpf.properties, for project dependencies) or - usually - from your application properties (*.jpf) files. See [JPF configuration.](Configuring-JPF) for details.
 {% include navigation.html %}

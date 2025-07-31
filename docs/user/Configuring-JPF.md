@@ -14,7 +14,7 @@ We achieve this by means of a central dictionary object (`gov.nasa.jpf.Config`) 
 
 Initialization happens in a prioritized order, which means you can override anything from later configuration stages, all the way up to command line parameters. Actually, this can be even overridden by using the `Verify` API from system under test code, but this is a developer topic. Here is the blueprint, which we will examine in order of execution:
 
-![Figure: Configuring JPF](./(https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/properties.svg){align=center width=800}
+![Figure: Configuring JPF.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/properties.svg){align=center width=800}
 
 
 ## Property Types ##
@@ -22,7 +22,7 @@ Initialization happens in a prioritized order, which means you can override anyt
 Property specifications are processed in a hierarchical order: site properties, project properties, application properties and command line properties. Later stages can override previous stages. Each property is a `<key>=<value>` pair, but we do support some special notations (see below) for key/value expansion, value extension, and pseudo properties that act as directives.
 
 ### Site Properties ###
-The site.properties file is machine specific and not part of any JPF project, which means you have to create a [ site.properties](./(wiki:install/site-properties) file as part of the install process. A sample site.properties might look like:
+The site.properties file is machine specific and not part of any JPF project, which means you have to create a [ site.properties.](wiki:install/site-properties) file as part of the install process. A sample site.properties might look like:
 
 ~~~~~~~~
 jpf-core = ${user.home}/projects/jpf/jpf-core
@@ -146,7 +146,7 @@ Depending on the number of installed and loaded projects, you can easily end up 
 
 ## Details on various options ##
 
-* [Randomization](./(Randomization-options-in-JPF)
+* [Randomization.](Randomization-options-in-JPF)
 
 * Error Reporting
 {% include navigation.html %}

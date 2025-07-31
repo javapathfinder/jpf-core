@@ -1,7 +1,7 @@
 # Running JPF from within NetBeans with netbeans-jpf plugin #
 netbeans-jpf can be easily configured to run JPF at the click of a mouse.
 
- 1. Install netbeans-jpf (see: [Installing the NetBeans JPF plugin](./(NetBeans-Plugin))
+ 1. Install netbeans-jpf (see: [Installing the NetBeans JPF plugin.](NetBeans-Plugin))
  2. Make sure the correct `site.properties` file is being used for JPF (The default is usually correct)\
      To see which `site.properties` file is being used:
    3. From the NetBeans top menu go to "Tools"->"Options" (Alt+T followed by Alt+O)

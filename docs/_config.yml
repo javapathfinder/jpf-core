@@ -1,8 +1,7 @@
 title: Java PathFinder Documentation
 description: JPF is an extensible software model checking framework for Java bytecode programs
-
-url: "https://mahmoud-khawaja.github.io"
 baseurl: "/jpf-core"
+url: "https://mahmoud-khawaja.github.io"
 
 theme: minima
 
@@ -16,55 +15,11 @@ highlighter: rouge
 
 relative_links:
   enabled: true
-  collections: true
+  collections: false
 
-collections:
-  install:
-    output: true
-    permalink: /install/:name/
-  intro:
-    output: true
-    permalink: /intro/:name/
-  jpf-core:
-    output: true
-    permalink: /jpf-core/:name/
-  user:
-    output: true
-    permalink: /user/:name/
-  papers:
-    output: true
-    permalink: /papers/:name/
-
-# Default layout for each collection
 defaults:
   - scope:
       path: ""
-      type: "pages"
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "install"
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "intro"
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "jpf-core"
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "user"
-    values:
-      layout: "default"
-  - scope:
-      path: ""
-      type: "papers"
     values:
       layout: "default"
 
@@ -73,5 +28,7 @@ exclude:
   - Gemfile
   - Gemfile.lock
   - .gitignore
+  - _includes/add_navigation.sh
+  - _includes/fix_links.sh
 
 github_username: javapathfinder

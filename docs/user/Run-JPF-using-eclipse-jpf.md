@@ -2,7 +2,7 @@
 
 eclipse-jpf can be easily configured to run JPF from within Eclipse
 
- 1. Install eclipse-jpf (see [Installing Eclipse JPF plugin](./(Eclipse-Plugin))
+ 1. Install eclipse-jpf (see [Installing Eclipse JPF plugin.](Eclipse-Plugin))
  2. Make sure that the correct site.properties file is being used for JPF (The default is usually correct)
    To see which site.properties file is being used:
    3. From the Eclipse top menu go to **Window**->**Preferences**

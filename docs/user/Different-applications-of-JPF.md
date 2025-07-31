@@ -20,13 +20,13 @@ Even if your program does not have a lot of execution alternatives, you can make
 ## JPF Application Types ##
 There are three basic JPF application types, each of them having different strengths and weaknesses: JPF- aware, unaware, and "enabled" programs.
 
-![Figure: JPF application types](./(https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/app-types.svg){align=center width=800}
+![Figure: JPF application types.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/app-types.svg){align=center width=800}
 
 ### JPF Unaware Programs ###
 This is the usual case - you run JPF on an application that is not aware of verification in general, or JPF in particular. It just runs on any VM that is Java compatible. The typical reason to check such an application with JPF is to look for violations of so called non-functional properties that are hard to test for, such as deadlocks or race conditions. JPF is especially good at finding and explaining concurrency related defects, but you have to know the costs: JPF is much slower than a production VM (for a reason - it does a lot more than a normal byte code interpreter), and it might not support all the Java libraries that are used by the system under test.
 
 ### JPF Dependent Programs ###
-On the other side of the spectrum we have applications that are models - their only purpose in life is to be verified by JPF (e.g. to check a certain algorithm), so Java just happens to be the implementation language because that is what JPF understands. Typically, these applications are based on a domain specific framework (such as the [statechart extension](./(../projects/jpf-statechart) that has been written so that JPF can verify the model. As a consequence, the model applications themselves are usually small, scale well, and do not require additional property specification. The downside is that it is quite expensive to develop the underlying domain frameworks.
+On the other side of the spectrum we have applications that are models - their only purpose in life is to be verified by JPF (e.g. to check a certain algorithm), so Java just happens to be the implementation language because that is what JPF understands. Typically, these applications are based on a domain specific framework (such as the [statechart extension.](../projects/jpf-statechart) that has been written so that JPF can verify the model. As a consequence, the model applications themselves are usually small, scale well, and do not require additional property specification. The downside is that it is quite expensive to develop the underlying domain frameworks.
 
 ### JPF Enabled Programs ###
 The third category probably has the best return on investment - programs that can run on any VM, but contain Java annotations that represent properties which cannot easily be expressed with standard Java language. 

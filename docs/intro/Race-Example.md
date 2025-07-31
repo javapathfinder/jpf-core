@@ -61,14 +61,14 @@ java.lang.ArithmeticException: division by zero
 ====================================================== trace #1
 ------------------------------------------------------ transition #0 thread: 0
 gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main}
-      [insn w/o sources](./(282)
+      [insn w/o sources.](282)
   Racer.java:15                  : Racer racer = new Racer();
   Racer.java:1                   : public class Racer implements Runnable {
-      [insn w/o sources](./(1)
+      [insn w/o sources.](1)
   Racer.java:3                   : int d = 42;
   Racer.java:15                  : Racer racer = new Racer();
   Racer.java:16                  : Thread t = new Thread(racer);
-      [insn w/o sources](./(51)
+      [insn w/o sources.](51)
   Racer.java:16                  : Thread t = new Thread(racer);
   Racer.java:17                  : t.start();
 ------------------------------------------------------ transition #1 thread: 0
@@ -76,7 +76,7 @@ gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main,Thread-0}
   Racer.java:17                  : t.start();
   Racer.java:19                  : doSomething(1000);                   // (3)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
-      [insn w/o sources](./(2)
+      [insn w/o sources.](2)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
   Racer.java:7                   : }
   Racer.java:20                  : int c = 420 / racer.d;               // (4)
@@ -84,7 +84,7 @@ gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main,Thread-0}
 gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {main,>Thread-0}
   Racer.java:10                  : doSomething(1000);                   // (1)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
-      [insn w/o sources](./(2)
+      [insn w/o sources.](2)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
   Racer.java:7                   : }
   Racer.java:11                  : d = 0;                               // (2)

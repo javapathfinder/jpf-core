@@ -1,4 +1,4 @@
-There are three different ways a JPF run can produce output, each of them with a different purpose, but all controlled by the [general JPF configuration mechanism](./(Configuring-JPF):
+There are three different ways a JPF run can produce output, each of them with a different purpose, but all controlled by the [general JPF configuration mechanism.](Configuring-JPF):
 
   1. System under test output - what is the SUT doing?\
 
@@ -64,7 +64,7 @@ $ jpf +log.output=<host>:<port> ... MyTestApp
 The default host is "localhost", default port is 20000. If these are suitable settings, you can start the `LogConsole` without parameters, and just specify `+log.output=socket` when running JPF.
 
 
-If you develop your own JPF classes, please also check the [JPF logging API](./(Logging-system) page.
+If you develop your own JPF classes, please also check the [JPF logging API.](Logging-system) page.
 
 ## Reports ##
 
@@ -93,5 +93,5 @@ Last not least, the finished list of topics that usually summarizes the JPF run:
 The system consists of three major components: (1) the Reporter, (2) any number of format specific Publisher objects, and (3) any number of tool-, property- and Publisher-specific PublisherExtension objects. Here is the blueprint:
 
 
-Again, there is separate [report system API](./(Reporting-System) documentation if you are interested in JPF development.
+Again, there is separate [report system API.](Reporting-System) documentation if you are interested in JPF development.
 {% include navigation.html %}

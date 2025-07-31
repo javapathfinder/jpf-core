@@ -9,9 +9,9 @@ The ExceptionInjector is a listener that can throw user configured exceptions at
 
   <exception-spec> := <type>'@'<location> \
 
-  <type> := <exception-classname>[[string-literal](./('(') ')'](./ \
+  <type> := <exception-classname>[[string-literal.]('(') ')'](./ \
 
-  <location> := <classname>':'line | <classname>'.'<method-spec>[ [[BR](./(':'line](./)]
+  <location> := <classname>':'line | <classname>'.'<method-spec>[ [[BR.](':'line](./)]
 ~~~~~~~~
 
 Relative line numbers count from the first executable statement in the method body. They are mostly used to have tests that are more robust against changes in the target source file.
