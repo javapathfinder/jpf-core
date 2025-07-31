@@ -1,0 +1,21 @@
+---
+title: Installation Guide
+layout: default
+---
+
+# Installation
+
+Welcome to the Installation section of the JPF documentation.
+
+Here you will find detailed instructions on how to install and set up Java PathFinder.
+
+### Important Pages
+
+- [How to Install JPF](How-to-install-JPF.md)
+- [Building, Testing, and Running](Build,-Test,-Run.md)
+- [System Requirements](System-requirements.md)
+- [Downloading Binary Snapshots](Downloading-binary-snapshots.md)
+- [Downloading Sources](Downloading-sources.md)
+- [Eclipse Plugin](Eclipse-Plugin.md)
+
+

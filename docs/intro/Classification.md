@@ -23,3 +23,4 @@ JPF's flexibility is achieved by an architecture that provides a large number of
  * publishers - to generate specific reports
 
 In general, flexibility through configuration is JPF's answer to the scalability problem of software model checking.
+{% include navigation.html %}

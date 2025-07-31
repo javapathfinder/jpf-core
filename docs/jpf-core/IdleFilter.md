@@ -61,7 +61,7 @@ does terminate due to state matching and produces the following report
 ~~~~~~~~ {.bash}
 ...
 ====================================================== search started: 4/8/10 4:14 PM
-[WARNING] IdleFilter breaks transition on suspicious loop in thread: main
+[WARNING](./ IdleFilter breaks transition on suspicious loop in thread: main
         at gov.nasa.jpf.test.mc.basic.IdleLoopTest.testBreak(gov/nasa/jpf/test/mc/basic/IdleLoopTest.java:42)
 ...
 ====================================================== results
@@ -92,8 +92,9 @@ JPF comes back quickly with the result
 
 ~~~~~~~~ {.bash}
 ====================================================== search started: 4/8/10 4:20 PM
-[WARNING] IdleFilter jumped past loop in: main
+[WARNING](./ IdleFilter jumped past loop in: main
         at gov.nasa.jpf.test.mc.basic.IdleLoopTest.testJump(gov/nasa/jpf/test/mc/basic/IdleLoopTest.java:74)
 Ok, jumped past loop
 ...
 ~~~~~~~~
+{% include navigation.html %}

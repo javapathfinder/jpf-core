@@ -9,9 +9,9 @@ The ExceptionInjector is a listener that can throw user configured exceptions at
 
   <exception-spec> := <type>'@'<location> \
 
-  <type> := <exception-classname>[[string-literal]('(') ')'] \
+  <type> := <exception-classname>[[string-literal](./('(') ')'](./ \
 
-  <location> := <classname>':'line | <classname>'.'<method-spec>[ [[BR](':'line])]
+  <location> := <classname>':'line | <classname>'.'<method-spec>[ [[BR](./(':'line](./)]
 ~~~~~~~~
 
 Relative line numbers count from the first executable statement in the method body. They are mostly used to have tests that are more robust against changes in the target source file.
@@ -22,9 +22,9 @@ If a line is specified (either absolute or method-body relative), the exception 
 
 If more than one exception specification is given, these need to be separated by semicolons ';' (commas cannot be used because they can appear within argument type lists of the target method).
 
-Method argument types have to be specified the same way as they are reported by 'javap', i.e. with fully qualified type names in dot notation (e.g. "`foo(java.lang.String,int[])`"). Return types can be omitted.  
+Method argument types have to be specified the same way as they are reported by 'javap', i.e. with fully qualified type names in dot notation (e.g. "`foo(java.lang.String,int[](./)`"). Return types can be omitted.  
 
-`ei.throw_first` [`boolean`] - if true, throw exception on first bytecode instruction associated with the given (absolute or relative) source line. If false, throw on last associated bytecode instruction
+`ei.throw_first` [`boolean`](./ - if true, throw exception on first bytecode instruction associated with the given (absolute or relative) source line. If false, throw on last associated bytecode instruction
  
 
 ## Examples ##
@@ -61,7 +61,7 @@ The application property file
 
 ~~~~~~~~ {.bash}
 target = yxz.MyClass
-ei.exception = Zapp("gotcha")@xyz.MyClass.foo(int[]):2
+ei.exception = Zapp("gotcha")@xyz.MyClass.foo(int[](./):2
 ~~~~~~~~
 on file
 ~~~~~~~~ {.java}
@@ -69,7 +69,7 @@ on file
     ..
     public class MyClass {
       ..
-      void foo (int[] whatever) {
+      void foo (int[](./ whatever) {
         // some comment (doesn't count for line offsets)
 +0:     int n = ..       // first statement line in foo()
 +1:     // some more comment (does count for line offsets)
@@ -103,3 +103,4 @@ will throw an exception on the first call of File.createTempFile(), regardless o
       }
      ..
 ~~~~~~~~    
+{% include navigation.html %}

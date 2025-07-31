@@ -6,9 +6,9 @@ We therefore restrict ourselves here to what the *jpf core* is, but keep in mind
 
 ## The Core : a VM that supports Model Checking ##
 
-![Figure 1: High level view of JPF](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/jpf-basic.svg)
+![Figure 1: High level view of JPF](./(https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/jpf-basic.svg)
 
-The JPF core is a Virtual Machine (VM) for Java™ bytecode. That means that JPF is a program which executes the system under test (SUT). The VM of JPF is able to handle bytecode instructions that are created by a standard Java compiler. While execution semantics of Java bytecodes are clearly defined in [Sun's Java virtual machine specifications](http://java.sun.com/docs/books/jvms/second_edition/html/VMSpecTOC.doc.html/), we have little hardwired semantics in JPF - the VM instruction set is represented by a set of classes that can be replaced. 
+The JPF core is a Virtual Machine (VM) for Java™ bytecode. That means that JPF is a program which executes the system under test (SUT). The VM of JPF is able to handle bytecode instructions that are created by a standard Java compiler. While execution semantics of Java bytecodes are clearly defined in [Sun's Java virtual machine specifications](./(http://java.sun.com/docs/books/jvms/second_edition/html/VMSpecTOC.doc.html/), we have little hardwired semantics in JPF - the VM instruction set is represented by a set of classes that can be replaced. 
 JPF is a special VM. JPF itself is written in Java, so it is not as fast as your normal Java. That implies  that JPF is VM which is running on top of another VM. 
 
 As JPF executes the SUT, it checks for certain properties which are given to JPF as input. Some of the properties that can be checked by JPF are unhandled exceptions, deadlocks, and user-defined assertions which are used to test properties of the code's behavior.
@@ -40,3 +40,4 @@ The second answer is that - as of this writing - there are bugs *only* JPF can f
 
 
 
+{% include navigation.html %}

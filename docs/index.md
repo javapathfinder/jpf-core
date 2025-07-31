@@ -3,6 +3,9 @@ title: Java PathFinder Documentation
 layout: default
 ---
 
+{% include navigation.html %}
+
+
 # Java PathFinder (JPF)
 
 Java PathFinder is an extensible software model checking framework for Java bytecode programs.
@@ -17,9 +20,9 @@ Java PathFinder is an extensible software model checking framework for Java byte
 
 ## Quick Start
 
-1. Begin with the [Installation guide](install/How-to-install-JPF.md).
-2. Review the [Introduction](intro/Introduction.md).
-3. Explore usage in the [User Guide](user/How-to-use-JPF.md).
+1. Begin with the [Installation guide](./(install/How-to-install-JPF.html).
+2. Review the [Introduction](./(intro/Introduction.html).
+3. Explore usage in the [User Guide](./(user/How-to-use-JPF.html).
 
 ## Community and Support
 

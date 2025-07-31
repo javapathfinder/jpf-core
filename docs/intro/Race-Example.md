@@ -16,7 +16,7 @@ public class Racer implements Runnable {
           d = 0;                               // (2)
      }
  
-     public static void main (String[] args){
+     public static void main (String[](./ args){
           Racer racer = new Racer();
           Thread t = new Thread(racer);
           t.start();
@@ -61,14 +61,14 @@ java.lang.ArithmeticException: division by zero
 ====================================================== trace #1
 ------------------------------------------------------ transition #0 thread: 0
 gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main}
-      [insn w/o sources](282)
+      [insn w/o sources](./(282)
   Racer.java:15                  : Racer racer = new Racer();
   Racer.java:1                   : public class Racer implements Runnable {
-      [insn w/o sources](1)
+      [insn w/o sources](./(1)
   Racer.java:3                   : int d = 42;
   Racer.java:15                  : Racer racer = new Racer();
   Racer.java:16                  : Thread t = new Thread(racer);
-      [insn w/o sources](51)
+      [insn w/o sources](./(51)
   Racer.java:16                  : Thread t = new Thread(racer);
   Racer.java:17                  : t.start();
 ------------------------------------------------------ transition #1 thread: 0
@@ -76,7 +76,7 @@ gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main,Thread-0}
   Racer.java:17                  : t.start();
   Racer.java:19                  : doSomething(1000);                   // (3)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
-      [insn w/o sources](2)
+      [insn w/o sources](./(2)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
   Racer.java:7                   : }
   Racer.java:20                  : int c = 420 / racer.d;               // (4)
@@ -84,7 +84,7 @@ gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main,Thread-0}
 gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {main,>Thread-0}
   Racer.java:10                  : doSomething(1000);                   // (1)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
-      [insn w/o sources](2)
+      [insn w/o sources](./(2)
   Racer.java:6                   : try { Thread.sleep(n); } catch (InterruptedException ix) {}
   Racer.java:7                   : }
   Racer.java:11                  : d = 0;                               // (2)
@@ -103,3 +103,4 @@ gov.nasa.jpf.jvm.choice.ThreadChoiceFromSet {>main}
 Looking at the output created by our test program, we see the result `"10"` printed twice, but that doesn't confuse us anymore. From our first example, we know this simply means that JPF first tried two scheduling sequences that normally terminated the program without provoking the defect, before finally picking the one that causes the error.
 
 It still might be a bit confusing that the printed trace contains some source lines twice. Ignoring the details of its choice generation mechanism, this is caused by JPF executing bytecode instructions, not source lines, and a single source line can easily get translated into a number of bytecode instructions. This would go away if we configure JPF so that it reports the executed bytecode, but at the cost of much larger trace that is harder to read. What is more interesting is that JPF tells us about the thread choices it made in each transition (the lines starting with `gov.nasa.jpf.jvm.ThreadChoice..`).
+{% include navigation.html %}

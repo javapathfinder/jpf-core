@@ -1,0 +1,20 @@
+---
+title: User Guide
+layout: default
+---
+
+# User Guide
+
+Practical instructions and user-oriented information on JPF.
+
+### Sections Include:
+
+- [Configuring JPF](Configuring-JPF.md)
+- [How to use JPF](How-to-use-JPF.md)
+- [Different Applications of JPF](Different-applications-of-JPF.md)
+- [Run JPF using Eclipse](Run-JPF-using-eclipse-jpf.md)
+- [Run JPF using NetBeans](Run-JPF-using-NetBeans.md)
+- [Runtime Components](Runtime-components-of-JPF.md)
+- [Understanding JPF Output](Understanding-JPF-output.md)
+- [Verify API of JPF](Verify-API-of-JPF.md)
+- ... plus config subfolder topics

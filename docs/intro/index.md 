@@ -1,0 +1,16 @@
+---
+title: Introduction
+layout: default
+---
+
+# Introduction
+
+This section explains the background and concepts behind JPF.
+
+### Key Documents
+
+- [What is JPF?](What-is-JPF.md)
+- [Classification](Classification.md)
+- [Race Example](Race-Example.md)
+- [Random Example](Random-Example.md)
+- [Testing vs. Model Checking](Testing-vs.-Model-Checking.md)

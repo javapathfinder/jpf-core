@@ -33,7 +33,7 @@ public class MyClass {
 
 This does not change execution of your program in any way, and also does not affect backtracking within JPF (i.e. values are properly restored). It only tells JPF to ignore marked fields when hashing/matching program states.
 
-There is a [jpf-aprop](wiki:projects/jpf-aprop) JPF module that is dedicated to Java annotation based program properties such as `@Nonnull`, `@NonShared`, `@Immutable`, `@Requires` and many others.
+There is a [jpf-aprop](./(wiki:projects/jpf-aprop) JPF module that is dedicated to Java annotation based program properties such as `@Nonnull`, `@NonShared`, `@Immutable`, `@Requires` and many others.
 
 ## The Verify API ##
 
@@ -64,9 +64,9 @@ double d = Verify.getDoubleFromSet(-42.0, 0.0, 42.0 ..); // evaluates all given 
 
 CGs don't stop at value sets that can be completely enumerated based on their type (like boolean, and - at least theoretically - integers). JPF also supports configured heuristics based choice generators, where the values sets are application dependent and can be specified in property files.
 
-![Figure: Data ChoiceGenerators](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/choicegen-example.svg){align=center width=750}
+![Figure: Data ChoiceGenerators](./(https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/choicegen-example.svg){align=center width=750}
 
-Choice generator implementation is described in a [separate section](wiki:devel/choicegenerator) of this documentation.
+Choice generator implementation is described in a [separate section](./(wiki:devel/choicegenerator) of this documentation.
 
 ### Search Pruning ###
 
@@ -115,10 +115,11 @@ Verify.beginAtomic();
 Verify.endAtomic();
 ~~~~~~~~
 
-Direct atomicity control was mainly used before the automatic, on-the-fly partial order reduction (POR) was implemented, and only remains relevant for applications that are (still) problematic with respect to POR. JPF's on-the-fly POR implementation is described in a [separate section](Partial-Order-Reduction) of this documentation.
+Direct atomicity control was mainly used before the automatic, on-the-fly partial order reduction (POR) was implemented, and only remains relevant for applications that are (still) problematic with respect to POR. JPF's on-the-fly POR implementation is described in a [separate section](./(Partial-Order-Reduction) of this documentation.
 
 ### Other Usages ###
 
-Some `Verify` methods support collecting information during JPF execution, which is persistent and can be later-on queried by JPF embedding code (programs that execute JPF). This uses an MJI trick where the [native peer](Mangling-for-MJI) class (`JPF_gov_nasa_jpf_vm_Verify`) is used to set some data during JPF execution, which can be later-on retrieved by model class code (through `gov.nasa.jpf.vm.Verify`) that is executed outside of JPF. This is currently used to implement counters, which in turn are used to verify JPF itself.
+Some `Verify` methods support collecting information during JPF execution, which is persistent and can be later-on queried by JPF embedding code (programs that execute JPF). This uses an MJI trick where the [native peer](./(Mangling-for-MJI) class (`JPF_gov_nasa_jpf_vm_Verify`) is used to set some data during JPF execution, which can be later-on retrieved by model class code (through `gov.nasa.jpf.vm.Verify`) that is executed outside of JPF. This is currently used to implement counters, which in turn are used to verify JPF itself.
 
 It should be noted that while most of the Verify APIs have alternative implementations that enable execution outside of JPF, applications using them at least don't build outside the JPF environment. Their use therefore is only recommended for JPF specific test drivers.
+{% include navigation.html %}

@@ -11,7 +11,7 @@ This listener adds some special capabilities for `java.lang.AssertionError` proc
 
 ~~~~~~~~ {.java}
 public class CatchAll {
-  public static void main(String[] args){
+  public static void main(String[](./ args){
     try {
       int d = 42;
       //.. some stuff
@@ -51,7 +51,7 @@ d below threshold
 
 ~~~~~~~~ {.java}
 public class GoOn {
-  public static void main (String[] args){
+  public static void main (String[](./ args){
     int d = 42;
     // lots of computations...
     assert d > 50 : "d below threshold";
@@ -86,3 +86,4 @@ java.lang.ArithmeticException: division by zero
 	at GoOn.main(GoOn.java:8)
 ...
 ~~~~~~~~
+{% include navigation.html %}
