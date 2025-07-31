@@ -44,9 +44,6 @@ jobs:
       - name: Copy documentation files
         run: |
           cp -r source/docs/* target/jpf-core/
-          if [ -d "source/docs/graphics" ]; then
-            cp -r source/docs/graphics target/jpf-core/
-          fi
 
       # 5. Commit & push if there are changes
       - name: Commit and push changes
