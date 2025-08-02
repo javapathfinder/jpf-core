@@ -108,12 +108,7 @@ body {
     50% { transform: scale(1.1); }
 }
 
-/* Enhanced Search */
-.header-search {
-    flex: 1;
-    max-width: 400px;
-    min-width: 250px;
-}
+
 
 .search-form {
     display: flex;

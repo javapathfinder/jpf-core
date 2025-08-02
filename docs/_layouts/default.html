@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title | default: site.title }} | Java PathFinder Documentation</title>
   <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -12,7 +13,7 @@
 <!-- Skip link for accessibility -->
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
-<!-- Enhanced header with search -->
+<!-- Single unified header with navigation -->
 <header class="site-header">
   <div class="header-container">
     <div class="header-brand">
@@ -22,19 +23,14 @@
       </a>
     </div>
 
-    <!-- Search functionality -->
-    <div class="header-search">
-      <form class="search-form" role="search">
-        <input type="search" class="search-input" placeholder="Search documentation..." aria-label="Search">
-        <button type="submit" class="search-button" aria-label="Submit search">
-          <i class="fas fa-search"></i>
-        </button>
-      </form>
-    </div>
+    <!-- Main navigation -->
+    <nav class="main-nav" role="navigation">
+      {% include navigation.html %}
+    </nav>
 
-    <!-- GitHub link -->
+    <!-- GitHub link only -->
     <div class="header-actions">
-      <a href="https://github.com/javapathfinder/jpf-core" class="github-link" aria-label="View on GitHub">
+      <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
         <i class="fab fa-github"></i>
         <span>GitHub</span>
       </a>
@@ -42,53 +38,30 @@
   </div>
 </header>
 
-<!-- Enhanced navigation -->
-<nav class="main-navigation" role="navigation" aria-label="Main navigation">
-  {% include navigation.html %}
-</nav>
+<!-- Main content -->
+<main id="main-content" class="main-content" role="main">
+  {% unless page.layout == 'home' %}
+  <header class="page-header">
+    <h1 class="page-title">{{ page.title }}</h1>
+    {% if page.description %}
+    <p class="page-description">{{ page.description }}</p>
+    {% endif %}
+  </header>
+  {% endunless %}
 
-<!-- Main content area -->
-<div class="site-content">
-  <div class="content-container">
-    <!-- Main content -->
-    <main id="main-content" class="main-content {% if page.layout == 'home' %}full-width{% endif %}" role="main">
-      <!-- Page header -->
-      {% unless page.layout == 'home' %}
-      <header class="page-header">
-        <h1 class="page-title">{{ page.title }}</h1>
-        {% if page.description %}
-        <p class="page-description">{{ page.description }}</p>
-        {% endif %}
-      </header>
-      {% endunless %}
-
-      <!-- Content -->
-      <div class="content">
-        {{ content }}
-      </div>
-    </main>
+  <div class="content">
+    {{ content }}
   </div>
-</div>
+</main>
 
-<!-- Enhanced footer -->
-<footer class="site-footer" role="contentinfo">
+<!-- Simple footer -->
+<footer class="site-footer">
   <div class="footer-container">
-    <div class="footer-content">
-      <div class="footer-section">
-        <h3>Java PathFinder</h3>
-        <p>An extensible software model checking framework for Java bytecode programs.</p>
-      </div>
-      <div class="footer-section">
-        <h3>Quick Links</h3>
-        <ul>
-          <li><a href="{{ site.baseurl }}/install/How-to-install-JPF.html">Installation</a></li>
-          <li><a href="{{ site.baseurl }}/intro/Introduction.html">Getting Started</a></li>
-          <li><a href="https://github.com/javapathfinder/jpf-core">GitHub</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; {{ "now" | date: "%Y" }} Java PathFinder. Documentation licensed under MIT License.</p>
+    <p>&copy; {{ "now" | date: "%Y" }} Java PathFinder. Open source under Apache 2.0 License.</p>
+    <div class="footer-links">
+      <a href="https://github.com/javapathfinder/jpf-core">GitHub</a>
+      <a href="mailto:java-pathfinder@googlegroups.com">Mailing List</a>
+      <a href="https://github.com/javapathfinder/jpf-core/issues">Issues</a>
     </div>
   </div>
 </footer>
