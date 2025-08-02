@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ page.title | default: site.title }} | Java PathFinder Documentation</title>
   <meta name="description" content="{{ page.description | default: site.description }}">
-  <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<!-- Skip link for accessibility -->
+<!-- Skip link -->
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
-<!-- Single unified header with navigation -->
+<!-- Header with navigation -->
 <header class="site-header">
   <div class="header-container">
     <div class="header-brand">
@@ -24,11 +23,11 @@
     </div>
 
     <!-- Main navigation -->
-    <nav class="main-nav" role="navigation">
+    <nav class="main-nav">
       {% include navigation.html %}
     </nav>
 
-    <!-- GitHub link only -->
+    <!-- GitHub link -->
     <div class="header-actions">
       <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
         <i class="fab fa-github"></i>
@@ -39,7 +38,7 @@
 </header>
 
 <!-- Main content -->
-<main id="main-content" class="main-content" role="main">
+<main id="main-content" class="main-content">
   {% unless page.layout == 'home' %}
   <header class="page-header">
     <h1 class="page-title">{{ page.title }}</h1>
@@ -57,11 +56,15 @@
 <!-- Simple footer -->
 <footer class="site-footer">
   <div class="footer-container">
-    <p>&copy; {{ "now" | date: "%Y" }} Java PathFinder. Open source under Apache 2.0 License.</p>
-    <div class="footer-links">
-      <a href="https://github.com/javapathfinder/jpf-core">GitHub</a>
-      <a href="mailto:java-pathfinder@googlegroups.com">Mailing List</a>
-      <a href="https://github.com/javapathfinder/jpf-core/issues">Issues</a>
+    <div class="footer-content">
+      <div class="footer-section">
+        <p>&copy; {{ "now" | date: "%Y" }} Java PathFinder. Open source under Apache 2.0 License.</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/javapathfinder/jpf-core">GitHub</a>
+        <a href="mailto:java-pathfinder@googlegroups.com">Contact</a>
+        <a href="https://github.com/javapathfinder/jpf-core/issues">Issues</a>
+      </div>
     </div>
   </div>
 </footer>
