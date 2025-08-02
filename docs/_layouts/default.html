@@ -3,13 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ page.title | default: site.title }} | Java PathFinder Docs</title>
-  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <title>{{ page.title | default: site.title }} | Java PathFinder Documentation</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+
+  <!-- Enhanced favicon support -->
+  <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
+
+  <!-- Enhanced CSS with modern features -->
+  <link rel="stylesheet" href="{{ '/assets/css/enhanced-style.css' | relative_url }}">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Prism.js for better code highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css">
 </head>
 <body>
-{% include navigation.html %}
-<main>
-  {{ content }}
-</main>
+<!-- Skip link for accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- Enhanced header with search -->
+<header class="site-header">
+  <div class="header-container">
+    <div class="header-brand">
+      <a href="{{ site.baseurl }}/" class="brand-link">
+        <i class="fas fa-code-branch"></i>
+        <span>JPF Documentation</span>
+      </a>
+    </div>
+
+    <!-- Search functionality -->
+    <div class="header-search">
+      <form class="search-form" role="search">
+        <input type="search"
+               class="search-input"
+               placeholder="Search documentation..."
+               aria-label="Search">
+        <button type="submit" class="search-button" aria-label="Submit search">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- GitHub link -->
+    <div class="header-actions">
+      <a href="https://github.com/javapathfinder/jpf-core"
+         class="github-link"
+         aria-label="View on GitHub">
+        <i class="fab fa-github"></i>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- Enhanced navigation -->
+<nav class="main-navigation" role="navigation" aria-label="Main navigation">
+  {% include enhanced-navigation.html %}
+</nav>
+
+<!-- Breadcrumb navigation -->
+{% if page.title != 'Java PathFinder Documentation' %}
+<nav class="breadcrumb-nav" aria-label="Breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb">
+      <li><a href="{{ site.baseurl }}/">Home</a></li>
+      {% if page.parent %}
+      <li><a href="{{ site.baseurl }}/{{ page.parent | downcase | replace: ' ', '-' }}/">{{ page.parent }}</a></li>
+      {% endif %}
+      <li aria-current="page">{{ page.title }}</li>
+    </ol>
+  </div>
+</nav>
+{% endif %}
+
+<!-- Main content area with sidebar -->
+<div class="site-content">
+  <div class="content-container">
+
+    <!-- Sidebar for section navigation -->
+    {% if page.layout != 'home' %}
+    <aside class="sidebar" role="complementary">
+      <div class="sidebar-content">
+        <!-- Table of Contents -->
+        <div class="toc-section">
+          <h3>On This Page</h3>
+          <div id="table-of-contents"></div>
+        </div>
+
+        <!-- Section navigation -->
+        {% if page.section %}
+        <div class="section-nav">
+          <h3>{{ page.section }}</h3>
+          {% include section-nav.html section=page.section %}
+        </div>
+        {% endif %}
+      </div>
+    </aside>
+    {% endif %}
+
+    <!-- Main content -->
+    <main id="main-content"
+          class="main-content {% if page.layout == 'home' %}full-width{% endif %}"
+          role="main">
+
+      <!-- Page header -->
+      {% unless page.layout == 'home' %}
+      <header class="page-header">
+        <h1 class="page-title">{{ page.title }}</h1>
+        {% if page.description %}
+        <p class="page-description">{{ page.description }}</p>
+        {% endif %}
+
+        <!-- Edit link -->
+        <div class="page-meta">
+          <a href="https://github.com/Mahmoud-Khawaja/jpf-core/edit/add-install-docs/docs/{{ page.path }}"
+             class="edit-link">
+            <i class="fas fa-edit"></i> Edit this page
+          </a>
+        </div>
+      </header>
+      {% endunless %}
+
+      <!-- Content -->
+      <div class="content">
+        {{ content }}
+      </div>
+
+      <!-- Page navigation -->
+      {% unless page.layout == 'home' %}
+      <nav class="page-nav" aria-label="Page navigation">
+        {% if page.prev_page %}
+        <a href="{{ page.prev_page.url | relative_url }}" class="nav-link prev">
+          <i class="fas fa-chevron-left"></i>
+          <span>{{ page.prev_page.title }}</span>
+        </a>
+        {% endif %}
+
+        {% if page.next_page %}
+        <a href="{{ page.next_page.url | relative_url }}" class="nav-link next">
+          <span>{{ page.next_page.title }}</span>
+          <i class="fas fa-chevron-right"></i>
+        </a>
+        {% endif %}
+      </nav>
+      {% endunless %}
+    </main>
+  </div>
+</div>
+
+<!-- Enhanced footer -->
+<footer class="site-footer" role="contentinfo">
+  <div class="footer-container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Java PathFinder</h3>
+        <p>An extensible software model checking framework for Java bytecode programs.</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="{{ site.baseurl }}/install/How-to-install-JPF.html">Installation</a></li>
+          <li><a href="{{ site.baseurl }}/intro/Introduction.html">Getting Started</a></li>
+          <li><a href="https://github.com/javapathfinder/jpf-core">GitHub</a></li>
+          <li><a href="mailto:java-pathfinder@googlegroups.com">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Community</h3>
+        <ul>
+          <li><a href="{{ site.baseurl }}/papers/Related-publications.html">Publications</a></li>
+          <li><a href="https://groups.google.com/g/java-pathfinder">Mailing List</a></li>
+          <li><a href="https://github.com/javapathfinder/jpf-core/issues">Issues</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; {{ "now" | date: "%Y" }} Java PathFinder. Documentation licensed under MIT License.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Enhanced JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-java.min.js"></script>
+<script src="{{ '/assets/js/enhanced-docs.js' | relative_url }}"></script>
 </body>
 </html>
