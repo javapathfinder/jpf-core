@@ -446,13 +446,6 @@ li {
     position: relative;
 }
 
-ul li::before {
-    content: '▶';
-    color: var(--secondary-color);
-    font-size: 0.8em;
-    margin-right: 0.5rem;
-}
-
 /* Enhanced Code Blocks */
 pre, code {
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
