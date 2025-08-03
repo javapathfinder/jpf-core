@@ -12,9 +12,10 @@
 <!-- Skip link -->
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
-<!-- Header with navigation -->
+<!-- Fixed Header with Clean Layout -->
 <header class="site-header">
   <div class="header-container">
+    <!-- Brand Section -->
     <div class="header-brand">
       <a href="{{ site.baseurl }}/" class="brand-link">
         <i class="fas fa-code-branch"></i>
@@ -22,12 +23,12 @@
       </a>
     </div>
 
-    <!-- Main navigation -->
+    <!-- Navigation Section -->
     <nav class="main-nav">
       {% include navigation.html %}
     </nav>
 
-    <!-- GitHub link -->
+    <!-- Actions Section -->
     <div class="header-actions">
       <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
         <i class="fab fa-github"></i>
@@ -53,7 +54,7 @@
   </div>
 </main>
 
-<!-- Simple footer -->
+<!-- Clean Footer -->
 <footer class="site-footer">
   <div class="footer-container">
     <div class="footer-content">
@@ -68,7 +69,5 @@
     </div>
   </div>
 </footer>
-
-<script src="{{ '/assets/js/enhanced-docs.js' | relative_url }}"></script>
 </body>
 </html>
