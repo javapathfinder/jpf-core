@@ -89,3 +89,4 @@ This is optional, you only need to do this if you want to be able to run your JP
 
 ### 6. publish your repository ###
 You can publish this wherever you want ([sourceforge](http://sourceforge.net), [bitbucket](http://bitbucket.org), [google code](http://code.google.com), or [github](http://github.com) are suitable free site supporting Mercurial), or ask us to host it on the JPF server. If you decide to use a 3rd party hosting service, please let us/the JPF community know about it (e.g. by posting to the mailing list at [java-pathfinder@googlegroups.com](https://groups.google.com/forum/#!forum/java-pathfinder).
+{% include navigation.html %}

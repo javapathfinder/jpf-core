@@ -24,3 +24,4 @@ There are several things we can do. First, we can optimize the model checker, wh
 
 JPF does all of the above to curb the state space explosion, and most things are configured instead of hardwired, so you don't depend on built-in heuristics. But no matter how much we shrink the state space, JPF can still observe a lot more about the program execution than normal tests (i.e. we can be more precise with our oracles), and it still knows about the execution history in case we find a defect, which is always just the first part - we also need to understand it so that it can be fixed eventually. 
 
+{% include navigation.html %}

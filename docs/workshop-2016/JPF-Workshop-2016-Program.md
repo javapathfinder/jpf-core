@@ -63,3 +63,4 @@ In short, if you like model checking or beer, don’t miss this talk!
 
 | **16:30-17:50** JPF Open Discussion
 | **17:50-18:00** Closing 
+{% include navigation.html %}

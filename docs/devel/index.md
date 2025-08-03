@@ -3,6 +3,9 @@ title: Developer Guide
 layout: default
 ---
 
+{% include navigation.html %}
+
+
 # Developer Guide
 
 From the previous sections, you have learned that JPF has one recurring, major theme: it is not a monolithic system, but rather a configured collection of components that implement different functions like state space search strategies, report generation and much more.

@@ -66,3 +66,4 @@ Even with all these optimizations, some unwanted transition breakers are likely 
 
 Especially the last issue might be subject to further enhancements
 
+{% include navigation.html %}

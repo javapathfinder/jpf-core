@@ -55,3 +55,4 @@ A word of caution: if - during JPF startup - you encounter a message like
 it means the `classpath` setting is wrong and JPF loads some of the standard library classes that have to be replaced with its own versions  - they need to be *modeled* (like `java.lang.Thread`, `java.lang.Class` and others - all part of jpf-classes.jar within the jpf-core module).
 
 This can also happen later-on with less essential library classes that are not part of jpf-core, but should be loaded from one of the installed extensions. In this case, this usually shows up as an `UnsatisfiedLinkError`
+{% include navigation.html %}

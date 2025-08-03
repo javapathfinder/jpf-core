@@ -17,3 +17,4 @@ We do have to bother you with some basic concepts though. Keep in mind that JPF 
 On the other hand, JPF is also not a "works-or-fails" tool. Depending on how much time you want to invest, you can adapt it to almost all application types and verification goals. And since JPF is open sourced, chances are somebody has already done that
 
 A comprehensive tutorial into JPF is also available as a book. A draft is [openly accessible.](https://www.eecs.yorku.ca/course_archive/2020-21/W/4315/material/book.pdf).
+{% include navigation.html %}

@@ -28,3 +28,4 @@ Attach your feature jar to the features page, and your plugin jar to the plugins
 > **Tip:** when updating your update site, be sure to sync your plugin and feature with new, higher, revision numbers.  Now rebuild the local site.  Delete all the corresponding attachments in the wiki, and repopulate with the updated versions.
 
 > **Bonus tip:** Once everything is working, you can delete the link to the update site.  This will prevent your visitors from accidentally going to an uninteresting page.  You can always access this page directly from the browser by entering `JPFHOME/HOME/update`.
+{% include navigation.html %}

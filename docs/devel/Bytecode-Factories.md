@@ -68,3 +68,4 @@ vm.insn_factory.class = gov.nasa.jpf.numeric.NumericInstructionFactory
 
 which can be either done from the command line or from within a *.jpf property file
 
+{% include navigation.html %}

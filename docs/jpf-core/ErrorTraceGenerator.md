@@ -30,3 +30,4 @@ Length of Error Trace: 35
 Configuration: **+listener=gov.nasa.jpf.listener.ErrorTraceGenerator**
 
 Note the Error trace generator does not have the same memory bottlenecks as **report.console.property_violation=trace** that stores every bytecode instruction executed along the path from the start of the program to the error state. The error trace generator dynamically recreates the counterexample by tracing back to the start from the error state. The head of the error trace (list shown in the example) represents the last instruction in the error trace while the tail represents the first instruction.  
+{% include navigation.html %}

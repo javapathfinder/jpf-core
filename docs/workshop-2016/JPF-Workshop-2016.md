@@ -27,3 +27,4 @@ collaboration and define future needs for Java program analysis.
    * [Program](JPF-Workshop-2016-Program)
    * [Travel](JPF-Workshop-2016-Travel)
    * [Registration](JPF-Workshop-2016-Registration)
+{% include navigation.html %}

@@ -9,3 +9,4 @@
  8. Select **install**
  9. Agree to the License agreement
  10. Restart Netbeans
+{% include navigation.html %}

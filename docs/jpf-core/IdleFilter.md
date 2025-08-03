@@ -97,3 +97,4 @@ JPF comes back quickly with the result
 Ok, jumped past loop
 ...
 ~~~~~~~~
+{% include navigation.html %}

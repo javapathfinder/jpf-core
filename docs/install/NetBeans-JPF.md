@@ -8,3 +8,4 @@ The main functions are
  - wait for editor positioning requests from the JPF shell, and show the corresponding source lines
 
 Why is this named differently than all the other projects? Because it is a different kind of project: this is *not* a normal JPF project, i.e. it is not a freeform NetBeans project with the usual JPF directory structure and artifacts. It is a NetBeans module, and it's main artifact is a *.nbm file in the build directory.
+{% include navigation.html %}

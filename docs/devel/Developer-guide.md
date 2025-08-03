@@ -20,3 +20,4 @@ This not only makes JPF a suitable system for research, but chances are that if 
  * [Coding conventions](Coding-convention)
  * [Hosting an Eclipse plugin update site](Host-Eclipse-plugin-update-site) 
 
+{% include navigation.html %}

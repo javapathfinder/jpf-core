@@ -16,3 +16,4 @@
 * Oksana Tkachuk, Amazon Web Services
 * Willem Visser, Stellenbosch University
 * Guowei Yang, Texas State University
+{% include navigation.html %}

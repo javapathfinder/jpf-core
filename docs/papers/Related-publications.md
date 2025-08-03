@@ -131,3 +131,4 @@ csl: ./chicago-author-date.csl
 @damorim:pacheco:2006
 
 ## References ##
+{% include navigation.html %}

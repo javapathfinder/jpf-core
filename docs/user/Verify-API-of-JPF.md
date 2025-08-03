@@ -122,3 +122,4 @@ Direct atomicity control was mainly used before the automatic, on-the-fly partia
 Some `Verify` methods support collecting information during JPF execution, which is persistent and can be later-on queried by JPF embedding code (programs that execute JPF). This uses an MJI trick where the [native peer.](Mangling-for-MJI) class (`JPF_gov_nasa_jpf_vm_Verify`) is used to set some data during JPF execution, which can be later-on retrieved by model class code (through `gov.nasa.jpf.vm.Verify`) that is executed outside of JPF. This is currently used to implement counters, which in turn are used to verify JPF itself.
 
 It should be noted that while most of the Verify APIs have alternative implementations that enable execution outside of JPF, applications using them at least don't build outside the JPF environment. Their use therefore is only recommended for JPF specific test drivers.
+{% include navigation.html %}
