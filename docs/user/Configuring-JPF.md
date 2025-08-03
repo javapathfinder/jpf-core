@@ -14,7 +14,7 @@ We achieve this by means of a central dictionary object (`gov.nasa.jpf.Config`) 
 
 Initialization happens in a prioritized order, which means you can override anything from later configuration stages, all the way up to command line parameters. Actually, this can be even overridden by using the `Verify` API from system under test code, but this is a developer topic. Here is the blueprint, which we will examine in order of execution:
 
-![Figure: Configuring JPF.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/properties.svg){align=center width=800}
+![Figure: Configuring JPF.]({{ site.baseurl }}/graphics/properties.svg)
 
 
 ## Property Types ##

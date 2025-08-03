@@ -1,7 +1,7 @@
 # JPF components #
 Java is more than a programming language. It is a set of layers that starts with a platform specific VM implementation (which is referred to as the *host VM*) that sits on top of native libraries written for and using your operating system. To this stack, we add JPF - a Java application that runs on top of the "host VM", but is itself a VM which then executes your System Under Test (SUT).
 
-![Figure 1: Different layers involved when using JPF.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/jpf-layers.svg)
+![Figure 1: Different layers involved when using JPF.]({{ site.baseurl }}/graphics/jpf-layers.svg)
 
 With all this recursion, it is easy to get confused about what Java code gets processed at which level. To make things worse,  most of the standard library class files (java.* classes) and some of the annotations get processed by both VMs, but of course in different instantiations. Purpose of this page is to shed some light on what code is associated with the different layers and parts of the system.
 
@@ -12,7 +12,7 @@ In order to untangle, we have to step back and look at what components are invol
 
 Remember the [What is JPF.](What-is-JPF) diagram from the introduction? This is a more detailed version of it. 
 
-![Figure 2: JPF infrastructure.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/jpf-intro-new.svg)
+![Figure 2: JPF infrastructure.]({{ site.baseurl }}/graphics/jpf-intro-new.svg)
 
 Let us walk this diagram left-to-right. We start with the compiled Java application we want to verify. This is of course not part of the JPF distribution, but will be executed by JPF, so the corresponding class files do not have to be visible to the host VM (that runs JPF). However, the application code might use classes and interfaces that reside in the JPF distribution. Together, the application and such modeling libraries and/or annotations form the System under Test (SUT)
 

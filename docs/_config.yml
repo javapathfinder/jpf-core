@@ -12,6 +12,10 @@ defaults:
     values:
       layout: "default"
 
+plugins:
+  - jekyll-relative-links
+
+
 exclude:
   - README.md
   - Gemfile

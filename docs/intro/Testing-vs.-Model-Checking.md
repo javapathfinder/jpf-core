@@ -2,11 +2,11 @@ So what JPF does is test our program for defects? No, it usually does more, at l
 
 Software testing is an empirical set of techniques where you execute your program with a number of inputs in order to find out if it behaves correctly. This comes with two parts that involve the right choices: test input and test oracle.
 
-![Figure 1: Testing.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/states-testing.svg)
+![Figure 1: Testing.]({{ site.baseurl }}/graphics/states-testing.svg)
 
 Testing techniques differ on how we choose the input (random, "interesting" problem domain values like corner cases etc.), and on how much knowledge about the SUT and its execution environment we assume (black/grey/white box), which especially affects how we can define and check correct behavior. This involves a lot of educated guesses, or as Edsger Dijkstra has put it: "program testing can at best show the presence of errors but never their absence". We usually compensate this by performing "enough" tests - which would be the next guess. Testing complex systems can easily turn into finding a needle in a haystack. If you are a good tester, you make the right guesses and hit the defect that is inevitably there. If not, don't worry - your users will find it later.
 
-![Figure 2: Model checking.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/states-mc.svg)
+![Figure 2: Model checking.]({{ site.baseurl }}/graphics/states-mc.svg)
 
 [Model Checking.](http://en.wikipedia.org/wiki/Model_checking) as a [Formal Method.](http://en.wikipedia.org/wiki/Formal_methods) does not depend on guesses. At least as the theory goes, if there is a violation of a given specification, model checking will find it. Model checking is supposed to be a rigorous method that exhaustively explores all possible SUT behaviors. 
 
@@ -14,7 +14,7 @@ To illustrate this, look at the [Random value example.](random-example), which s
 
 With the random example, we can at least see the choices in our program. Consider a concurrent program, such as [Data race example.](race-example) - do you know where the operating system switches between threads? All we know is that different scheduling sequences can lead to different program behavior (e.g. if there are data races), but there is little we can do in our tests to force scheduling variation. There are program/test spec combinations which are "untestable". Being a virtual machine, our software model checker doesn't suffer the same fate - it has complete control over all threads of our program, and can execute all scheduling combinations.
 
-![Figure 3: Threads interleaving.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/interleavings.svg){align=center width=550}
+![Figure 3: Threads interleaving.]({{ site.baseurl }}/graphics/interleavings.svg)
 
 That is the theory. In reality "all possible" can be a pretty large number - too large for existing computing resources or our patience. Just assume the number of different scheduling sequences of a program consisting of N threads P,,1,, .. P,,N,, that each have n,,i,, atomic instruction sequences.
 

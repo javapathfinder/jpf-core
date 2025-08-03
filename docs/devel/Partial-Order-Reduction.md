@@ -30,7 +30,7 @@ Each bytecode instruction type corresponds to a concrete gov.nasa.jpf.Instructio
  * **Object Reachability** - besides direct synchronization instructions, field access is the major type of interaction between threads. However, not all putX / getX instructions have to be considered, only the ones referring to objects that are reachable by at least two threads can cause data races. While reachability analysis is an expensive operation, the VM already performs a similar task during garbage collection, which is extended to support POR.
  * **Thread and Lock Information** - even if the instruction type and the object reachability suggest scheduling relevance, there is no need to break the current transition in case there is no other runnable thread. In addition, lock acquisition and release (`monitorenter`, `monitorexit`) do not have to be considered as transition boundaries if there they happen recursively - only the first and the last lock operation can lead to rescheduling.
 
-![Figure 1: Scheduling Relevance Filters](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/por-scheduling-relevance.svg){align=center width=650}
+![Figure 1: Scheduling Relevance Filters]({{ site.baseurl }}/graphics/por-scheduling-relevance.svg)
 
 While JPF uses these informations to automatically deduce scheduling relevance, there exist three mechanisms to explicitly control transition boundaries (i.e. potential thread interleavings)
 
@@ -42,7 +42,7 @@ While JPF uses these informations to automatically deduce scheduling relevance, 
 
 The main effort of JPFs POR support relates to extending its precise mark and sweep collector. POR reachability is a subset of collector reachability, hence the mechanism piggybacks on the mark phase object traversal. It is complicated by the fact that certain reference chains exist only in the (hidden) VM implementation layer. For instance, every thread has a reference to its ThreadGroup, and the ThreadGroup objects in turn have references to all included threads, hence - from a garbage collection perspective - all threads within a group are mutually reachable. If the application under test does not use Java reflection and runtime queries like thread enumeration, POR reachability should follow accessibility rules as closely as possible. While JPF's POR does not yet support protected and private access modifiers, it includes a mechanism to specify that certain fields should not be used to promote POR reachability. This attribute is set via the configured Attributor at class load time.
 
-![Figure 2: Mark Phase of Reachability Analysis](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/por-mark.svg){align=center width=460}
+![Figure 2: Mark Phase of Reachability Analysis]({{ site.baseurl }}/graphics/por-mark.svg)
 
 With this mechanism, calculating POR reachability becomes a straight forward approach that is divided into two phases. Phase 1 non-recursively marks all objects of the root set (mostly static fields and thread stacks), recording the id of the referencing thread. In case an object is reachable from a static field, or from two threads, it's status is set to shared. Phase 2 recursively traverses all heap objects, propagating either a set shared status or the referencing thread id through all reference fields that are not marked as reachability firewalls. Again, if the traversal hits an object that is already marked as referenced by another thread, it promotes the object status to shared, and from there propagates the shared status instead of the thread id.
 

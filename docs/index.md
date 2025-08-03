@@ -25,4 +25,3 @@ Java PathFinder is an extensible software model checking framework for Java byte
 
 - Repository: https://github.com/javapathfinder/jpf-core
 - Issues: https://github.com/javapathfinder/jpf-core/issues
-- Mailing List: java-pathfinder@googlegroups.com

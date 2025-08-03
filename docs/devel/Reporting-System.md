@@ -7,7 +7,7 @@ The JPF report system consists of three major components:
 
 Here is the blueprint:
 
-![Figure: JPF Report System](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/report.svg){align=center width=800}
+![Figure: JPF Report System]({{ site.baseurl }}/graphics/report.svg)
 
 The `Reporter` is the data collector. It also manages and notifies `Publisher` extensions when a certain output phase is reached. The `Publishers` are the format (e.g. text, XML) specific output producers, the most prominent one being the `ConsolePublisher` (for normal, readable text output on consoles). `PublisherExtensions` can be registered for specific `Publishers` at startup time, e.g. from Listeners implementing properties or analysis modes such as `DeadlockAnalyzer`. This is so common that the `ListenerAdapter` actually implements all the required interface methods so that you just have to override the ones you are interested in.
 

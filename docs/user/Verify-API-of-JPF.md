@@ -64,7 +64,7 @@ double d = Verify.getDoubleFromSet(-42.0, 0.0, 42.0 ..); // evaluates all given 
 
 CGs don't stop at value sets that can be completely enumerated based on their type (like boolean, and - at least theoretically - integers). JPF also supports configured heuristics based choice generators, where the values sets are application dependent and can be specified in property files.
 
-![Figure: Data ChoiceGenerators.](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/choicegen-example.svg){align=center width=750}
+![Figure: Data ChoiceGenerators.]({{ site.baseurl }}/graphics/choicegen-example.svg)
 
 Choice generator implementation is described in a [separate section.](wiki:devel/choicegenerator) of this documentation.
 

@@ -5,7 +5,7 @@ When it comes to executing a bytecode, the VM simply calls the `execute()` metho
 
 The trick is now that JPF uses a configurable [abstract factory](http://en.wikipedia.org/wiki/Abstract_factory_pattern) to choose and instantiate the `Instruction` classes. By providing your own concrete `InstructionFactory`, together with a set of related `Instruction` classes, you can change the execution semantics of Java.
 
-![Figure: Bytecode Factories](https://github.com/javapathfinder/jpf-core/blob/master/docs/graphics/bc-factory.svg){align=center width=850}
+![Figure: Bytecode Factories]({{ site.baseurl }}/graphics/bc-factory.svg)
 
 ## Usages ##
 
