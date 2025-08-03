@@ -270,7 +270,7 @@ body {
 
 /* Page Header */
 .page-header {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    background: linear-gradient(118deg, #1f3055 0%, var(--accent) 100%);
     color: var(--white);
     padding: 3rem 2rem;
 }
