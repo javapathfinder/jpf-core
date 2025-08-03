@@ -3,7 +3,6 @@ title: Developer Guide
 layout: default
 ---
 
-{% include navigation.html %}
 
 
 # Developer Guide

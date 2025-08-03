@@ -18,4 +18,3 @@ The `compile` Ant target uses the standard `javac` command which requires a full
 <tools contains programs and libraries that are used by the build process (like ant.jar and junit.jar in jpf-core).>
 
 For convenience reasons, JPF modules come with corresponding NetBeans and Eclipse configurations, i.e. can be directly opened as projects within these IDEs.
-{% include navigation.html %}

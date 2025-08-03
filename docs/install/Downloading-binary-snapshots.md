@@ -15,4 +15,3 @@ jpf/
 ~~~~~~~~
 
 Many JPF modules are still fast moving, so we recommend using the source repositories to stay up-to-date. Our policy is to only push changes to this server which pass all regression tests
-{% include navigation.html %}

@@ -86,4 +86,3 @@ java.lang.ArithmeticException: division by zero
 	at GoOn.main(GoOn.java:8)
 ...
 ~~~~~~~~
-{% include navigation.html %}

@@ -330,4 +330,3 @@ Most listeners tend to fall into three major categories:
 2. complex properties - is configured with an application specific mode property file.
 3. JPF debugging - is specified via the command line (`+key=value` overrides).
 
-{% include navigation.html %}

@@ -3,7 +3,6 @@ title: Java PathFinder Documentation
 layout: default
 ---
 
-{% include navigation.html %}
 
 
 # Java PathFinder (JPF)

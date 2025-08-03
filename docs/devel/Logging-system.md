@@ -28,4 +28,3 @@ class MyClass .. {
 ~~~~~~~~
 
 Note that there is only one instance for each `Logger` ID, i.e. you can have a corresponding static field in all your relevant classes, and don't have to share the fields. Another aspect that is mostly important for the lower log levels (e.g. `FINE`) is that you should't concatenate log messages in operations that occur frequently, since the corresponding `StringBuilder` instances can cause performance degradations even if the log level is not set (the arguments still get evaluated). In this case, encapsulate the logging in `log.isLoggable(level){..}` blocks.
-{% include navigation.html %}

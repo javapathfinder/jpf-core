@@ -18,4 +18,3 @@ oldclassic
 * Click on "Run" to verify the application in JPF. The output of the program and the results will be displayed on the eclipse console window. 
 
 Alternatively you pick the run-jpf-core launch configuration and add the `<application-main-class>` of the system under test. The eclipse IDE detects the various launch configurations. When you click on the Run button they appear on the left column, pick "run-jpf-core". It is, however, recommended you run the application with the eclipse plugin for better performance and ease of usability.  
-{% include navigation.html %}

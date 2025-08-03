@@ -90,4 +90,3 @@ Within this file, you have to provide the scripts to run the actions defined in 
    ...
 ~~~~~~~~
 
-{% include navigation.html %}

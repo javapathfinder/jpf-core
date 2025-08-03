@@ -37,4 +37,3 @@
 **16:30-16:40** Closing
 
 **17:30-la:te** Workshop Dinner
-{% include navigation.html %}

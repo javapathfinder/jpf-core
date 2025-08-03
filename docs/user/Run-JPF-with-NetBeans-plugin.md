@@ -10,4 +10,3 @@ netbeans-jpf can be easily configured to run JPF at the click of a mouse.
    6. Make sure that "Path to `site.properties`" is defined properly, uncheck "Use default `site.properties` location" to change the path
  7. From either the "Projects" or "Files" view (on the left of the main NetBeans screen by default,) select the JPF properties file (i.e., a file with a `.jpf` extension) you would like to run. Right click on this file and select the "Verify..." menu item to run JPF.
  8. To view the results, make sure that the "Output" View is open (On the bottom of the main NetBeans screen by default)
-{% include navigation.html %}

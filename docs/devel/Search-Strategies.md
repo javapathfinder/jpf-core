@@ -73,4 +73,3 @@ The actual execution is again delegated to bytecode specific Instruction instanc
 This package is relatively small and mainly contains the `Search` class, which is an abstract base for search policies. The major method that encapsulates the policy is `Search.search()`, which is the VM driver (that calls the methods`forward`, `backtrack` and `restore`). This package also contains the plain-vanilla depth-first search policy `DFSearch`.
 More policies can be found in the sub-package `gov.nasa.jpf.search.heuristic`, which uses a `HeuristicSearch` class in conjunction with configurable heuristic objects to prioritize a queue of potential successor states.
 
-{% include navigation.html %}

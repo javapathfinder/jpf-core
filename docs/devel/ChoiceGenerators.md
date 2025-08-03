@@ -209,4 +209,3 @@ If you really want to see the context, there are a number of additional methods 
 
 How does the system detect if a `ChoiceGenerator` is cascaded or not? Very simple - within `SystemState.setNextChoiceGenerator(cg)`, we just check if `SystemState` already had a registered next `ChoiceGenerator`, and if so, we set a cascaded attribute for this one. Other than that, we just maintain normal linear `ChoiceGenerator` linkage, which is accessible through `ChoiceGenerator.getPreviousChoiceGenerator()`. If you want to iterate through a cascade yourself, use the `ChoiceGenerator.getCascadedParent()` method, which returns `null` if there is none. Just be aware of that the last registered `ChoiceGenerator` (i.e. what `SystemState.getChoiceGenerator()` returns) does *not* have the cascaded attribute set (i.e. `ChoiceGenerator.isCascaded()` returns `false`).    
 
-{% include navigation.html %}

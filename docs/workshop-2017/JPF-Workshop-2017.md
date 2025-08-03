@@ -42,4 +42,3 @@ To apply, please send an email to \<nastaran.shafiei [at] gmail.com\> after the 
    * [Committee](JPF-Workshop-2017-Committee)
    * [Accepted Papers](JPF-Workshop-2017-Accepted-Papers)
    * [Program](JPF-Workshop-2017-Program)
-{% include navigation.html %}

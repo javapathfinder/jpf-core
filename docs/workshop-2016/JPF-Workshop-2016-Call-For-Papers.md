@@ -77,4 +77,3 @@ paper is not required to participate, enjoy, and learn about JPF.
 - Elena Sherman, Boise State University
 - Oksana Tkachuk, NASA Ames Research Center
 - Arnaud Venet, Google
-{% include navigation.html %}
