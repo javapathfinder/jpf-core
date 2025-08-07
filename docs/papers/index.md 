@@ -5,7 +5,6 @@ description: Papers and references related to JPF.
 permalink: /papers/
 ---
 
-{% include Sidebar.md %}
 
 # Related Publications
 

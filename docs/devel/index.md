@@ -5,7 +5,6 @@ description: Under-the-hood details for extending and contributing to JPF.
 permalink: /devel/
 ---
 
-{% include Sidebar.md %}
 
 # Developer Guide
 

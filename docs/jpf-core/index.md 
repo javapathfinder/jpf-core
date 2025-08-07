@@ -5,7 +5,6 @@ description: Core components and features of the JPF VM.
 permalink: /jpf-core/
 ---
 
-{% include Sidebar.md %}
 
 # JPF-Core Overview
 

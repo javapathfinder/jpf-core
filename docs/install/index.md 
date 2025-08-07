@@ -5,7 +5,6 @@ description: How to obtain, build, and install JPF.
 permalink: /install/
 ---
 
-{% include Sidebar.md %}
 
 # Installation
 

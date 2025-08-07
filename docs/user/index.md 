@@ -5,7 +5,6 @@ description: Practical instructions and user-oriented information on JPF.
 permalink: /user/
 ---
 
-{% include Sidebar.md %}
 
 # User Guide
 
