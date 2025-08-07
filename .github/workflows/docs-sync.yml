@@ -12,20 +12,31 @@ on:
 
 permissions:
   contents: read
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout jpf-core source (your docs)
+      # 1. Checkout source
       - name: Checkout source repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: source
 
-      # 2. Checkout your Pages repo
+      # 2. Build the Jekyll site from docs/
+      - name: Setup Ruby and build Jekyll
+        working-directory: source/docs
+        run: |
+          gem install bundler
+          bundle config set path vendor/bundle
+          bundle install
+          bundle exec jekyll build \
+            --source . \
+            --destination ../built-site \
+            --baseurl /jpf-core
+
+      # 3. Checkout Pages repo
       - name: Checkout GitHub Pages repository
         uses: actions/checkout@v4
         with:
@@ -34,27 +45,27 @@ jobs:
           ref: main
           path: target
 
-      # 3. Prepare a clean target directory
+      # 4. Prepare target
       - name: Prepare target directory
         run: |
           rm -rf target/jpf-core
           mkdir -p target/jpf-core
 
-      # 4. Copy all docs (including graphics)
-      - name: Copy documentation files
+      # 5. Copy built HTML and assets
+      - name: Copy generated site
         run: |
-          cp -r source/docs/* target/jpf-core/
+          cp -r source/built-site/* target/jpf-core/
 
-      # 5. Commit & push if there are changes
+      # 6. Commit & push
       - name: Commit and push changes
         run: |
           cd target
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
+          git add jpf-core
           if git diff --staged --quiet; then
             echo "No changes to deploy"
             exit 0
           fi
-          git commit -m "Update JPF-core documentation from commit ${{ github.sha }}"
+          git commit -m "Update JPF documentation from ${{ github.sha }}"
           git push origin main
