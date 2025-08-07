@@ -1,8 +1,10 @@
 ---
-title: "Google Summer of Code"
 layout: page
+title: Google Summer of Code
 permalink: /gsoc/
 ---
+
+{% include Sidebar.md %}
 
 # JPF & Google Summer of Code
 

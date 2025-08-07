@@ -1,7 +1,11 @@
 ---
-title: Introduction
 layout: default
+title: Introduction
+description: Background and concepts behind JPF.
+permalink: /intro/
 ---
+
+{% include Sidebar.md %}
 
 # Introduction
 

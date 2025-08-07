@@ -1,8 +1,10 @@
 ---
-title: "JPF Workshops"
 layout: page
+title: JPF Workshops
 permalink: /workshops/
 ---
+
+{% include Sidebar.md %}
 
 # JPF Workshops
 

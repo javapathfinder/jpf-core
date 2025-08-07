@@ -1,13 +1,17 @@
 ---
-title: User Guide
 layout: default
+title: User Guide
+description: Practical instructions and user-oriented information on JPF.
+permalink: /user/
 ---
+
+{% include Sidebar.md %}
 
 # User Guide
 
 Practical instructions and user-oriented information on JPF.
 
-### Sections Include:
+### Sections Include
 
 - [How to use JPF](How-to-use-JPF.html)
 - [Configuring JPF](Configuring-JPF.html)

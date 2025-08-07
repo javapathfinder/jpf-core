@@ -1,7 +1,11 @@
 ---
-title: Related Publications
 layout: default
+title: Related Publications
+description: Papers and references related to JPF.
+permalink: /papers/
 ---
+
+{% include Sidebar.md %}
 
 # Related Publications
 
@@ -9,9 +13,7 @@ This section lists papers and references related to JPF.
 
 - [Related Publications](Related-publications.html)
 
-### Supporting Files:
+### Supporting Files
 
 - `chicago-author-date.csl`
 - `references.bib`
-
-(These are citation style and bibliography files, typically for generating references.)
