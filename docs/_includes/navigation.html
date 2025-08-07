@@ -2,19 +2,8 @@
 <nav class="site-navigation">
     <ul class="nav-menu">
         {% for item in site.navigation %}
-        <li class="nav-item{% if item.dropdown %} dropdown{% endif %}">
-            <a href="{{ site.baseurl }}{{ item.url }}">{{ item.title }}</a>
-
-            {% if item.dropdown %}
-            <ul class="dropdown-menu">
-                {% assign collection_name = item.title | downcase | replace: ' ', '' %}
-                {% for post in site[collection_name] %}
-                <li>
-                    <a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+        <li class="nav-item">
+            <a href="{{ site.baseurl }}{{ item.url | relative_url }}">{{ item.title }}</a>
         </li>
         {% endfor %}
     </ul>

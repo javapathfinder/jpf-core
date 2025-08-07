@@ -50,10 +50,8 @@ navigation:
     url: "/devel/"
   - title: "GSoC"
     url: "/gsoc/"
-    dropdown: true
   - title: "Workshops"
     url: "/workshops/"
-    dropdown: true
   - title: "Projects"
     url: "/projects/"
 
