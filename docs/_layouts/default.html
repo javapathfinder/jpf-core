@@ -1,3 +1,4 @@
+<!-- File: docs/_layouts/default.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,26 +10,26 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<!-- Skip link -->
+<!-- Skip link for accessibility -->
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
-<!-- Fixed Header with Clean Layout -->
+<!-- Fixed Header -->
 <header class="site-header">
   <div class="header-container">
-    <!-- Brand Section -->
+    <!-- Brand -->
     <div class="header-brand">
       <a href="{{ site.baseurl }}/" class="brand-link">
         <i class="fas fa-code-branch"></i>
-        <span>JPF Documentation</span>
+        <span>{{ site.title }}</span>
       </a>
     </div>
 
-    <!-- Navigation Section -->
+    <!-- Navigation -->
     <nav class="main-nav">
       {% include navigation.html %}
     </nav>
 
-    <!-- Actions Section -->
+    <!-- GitHub Action Link -->
     <div class="header-actions">
       <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
         <i class="fab fa-github"></i>
@@ -38,7 +39,7 @@
   </div>
 </header>
 
-<!-- Main content -->
+<!-- Main Content -->
 <main id="main-content" class="main-content">
   {% unless page.layout == 'home' %}
   <header class="page-header">
@@ -54,7 +55,7 @@
   </div>
 </main>
 
-<!-- Clean Footer -->
+<!-- Footer -->
 <footer class="site-footer">
   <div class="footer-container">
     <div class="footer-content">
