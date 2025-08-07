@@ -8,9 +8,8 @@ permalink: /gsoc/
 
 Below is a list of our GSoC project ideas and past pages:
 
-{% assign gsoc_docs = site.collections.gsoc.docs | sort: "date" | reverse %}
-{% for post in gsoc_docs %}
+{% for post in site.gsoc %}
 {% unless post.relative_path == page.relative_path %}
-- [{{ post.data.title }}]({{ post.url | relative_url }})
+- [{{ post.title }}]({{ post.url | relative_url }})
   {% endunless %}
   {% endfor %}
