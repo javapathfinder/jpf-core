@@ -3,7 +3,7 @@
     <ul class="nav-menu">
         {% for item in site.navigation %}
         <li class="nav-item">
-            <a href="{{ site.baseurl }}{{ item.url | relative_url }}">{{ item.title }}</a>
+            <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
         </li>
         {% endfor %}
     </ul>
