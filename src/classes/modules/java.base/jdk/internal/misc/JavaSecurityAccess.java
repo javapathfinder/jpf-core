@@ -4,7 +4,7 @@ import java.security.PrivilegedAction;
 import java.security.PrivilegedExceptionAction;
 
 /**
- * Minimal stub for JPF – contains only the methods
+ * Minimal stub for JPF --- contains only the methods
  * used by ProtectionDomain / AccessController.
  */
 // Provides access to package-private methods in java.net.InetAddress that Java 11 networking code requires
