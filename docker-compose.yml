@@ -6,5 +6,5 @@ services:
     working_dir: /opt/jpf/jpf-core
     volumes:
       - .:/opt/jpf/jpf-core
-      - ~/.gradle:/home/jpf/.gradle
+      - ~/.gradle:/root/.gradle
     entrypoint: bash
