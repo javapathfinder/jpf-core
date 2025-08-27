@@ -3,8 +3,8 @@ services:
     image: jpf-local
     build:
       context: .
-    working_dir: /opt/jpf/jpf-core
+    working_dir: /home/jpf-core
     volumes:
-      - .:/opt/jpf/jpf-core
+      - .:/home/jpf-core
       - ~/.gradle:/root/.gradle
     entrypoint: bash
