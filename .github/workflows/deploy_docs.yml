@@ -1,0 +1,30 @@
+name: Deploy Docs to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  
+    paths:
+      - "docs/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v3
+
+      - name: Clone GitHub Pages repo
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAGES_TOKEN }}@github.com/jpf-core/jpf-core.github.io.git gh-pages
+
+      - name: Copy documentation into Pages repo
+        run: |
+          rsync -av --delete docs/ gh-pages/
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Update docs from jpf-core" || echo "No changes to commit"
+          git push origin main
