@@ -1,6 +1,6 @@
 services:
   jpf-dev:
-    image: jpf-local
+    image: jpf-core
     build:
       context: .
     working_dir: /home/jpf-core
