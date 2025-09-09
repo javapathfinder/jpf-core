@@ -1,0 +1,21 @@
+.gradle
+build/
+target/
+out/
+bin/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# IDE/project settings
+.vscode/
+.idea/
+*.iml
+
+.dockerignore
+
+.git
+.gitignore

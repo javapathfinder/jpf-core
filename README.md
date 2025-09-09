@@ -32,3 +32,23 @@ community.
 
 Happy Verification
 *-- the Java PathFinder team*
+
+
+---
+
+## Running with Docker
+
+You can build and run JPF inside a container using the provided `Dockerfile` and `docker-compose.yml`.
+
+### 1. Build the image
+```bash
+docker-compose build
+```
+### 2. Start a container
+```bash
+docker-compose run --rm jpf-dev
+```
+### 3. Build JPF
+```bash
+./gradlew clean build
+```
