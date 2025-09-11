@@ -1,0 +1,4 @@
+title: "Java PathFinder"
+description: "Documentation for jpf-core"
+theme: minima   # You can also try 'jekyll-theme-slate' or other supported themes
+markdown: kramdown
