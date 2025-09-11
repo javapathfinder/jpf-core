@@ -1,4 +1,12 @@
-title: "Java PathFinder"
-description: "Documentation for jpf-core"
-theme: minima   # You can also try 'jekyll-theme-slate' or other supported themes
+title: "JPF Core Documentation"
+description: "Java Pathfinder documentation migrated from Wiki"
+theme: minima   # GitHub provides minima theme by default
 markdown: kramdown
+
+# Optional: If your site is published at /jpf-core/
+baseurl: /jpf-core
+url: https://anniemandal24.github.io
+
+# Navigation (optional if you want sidebar links)
+plugins:
+  - jekyll-feed
