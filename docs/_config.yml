@@ -6,6 +6,14 @@ url: "https://mahmoud-khawaja.github.io"
 markdown: kramdown
 highlighter: rouge
 
+plugins:
+  - jekyll-relative-links
+  - jekyll-optional-front-matter
+
+relative_links:
+  enabled: true
+  collections: true
+
 collections:
   gsoc:
     output: true
@@ -55,8 +63,6 @@ navigation:
   - title: "Projects"
     url: "/projects/"
 
-plugins:
-  - jekyll-relative-links
 
 exclude:
   - README.md

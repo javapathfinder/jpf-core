@@ -1,60 +1,51 @@
-name: Publish JPF Documentation to GitHub Pages
+name: Deploy JPF Documentation to GitHub Pages
 
 on:
   push:
     branches:
+      - add-install-docs
       - main
       - master
-      - add-install-docs
     paths:
       - "docs/**"
+      - ".github/workflows/docs-sync.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout jpf-core source (your docs)
-      - name: Checkout source repository
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
         with:
-          fetch-depth: 0
-          path: source
+          source: ./docs
+          destination: ./_site
 
-      # 2. Checkout your Pages repo
-      - name: Checkout GitHub Pages repository
-        uses: actions/checkout@v4
-        with:
-          repository: Mahmoud-Khawaja/Mahmoud-Khawaja.github.io
-          token: ${{ secrets.DOCS_PAT }}
-          ref: main
-          path: target
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
 
-      # 3. Prepare a clean target directory
-      - name: Prepare target directory
-        run: |
-          rm -rf target/jpf-core
-          mkdir -p target/jpf-core
-
-      # 4. Copy all docs (including graphics)
-      - name: Copy documentation files
-        run: |
-          cp -r source/docs/* target/jpf-core/
-
-      # 5. Commit & push if there are changes
-      - name: Commit and push changes
-        run: |
-          cd target
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add .
-          if git diff --staged --quiet; then
-            echo "No changes to deploy"
-            exit 0
-          fi
-          git commit -m "Update JPF-core documentation from commit ${{ github.sha }}"
-          git push origin main
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
