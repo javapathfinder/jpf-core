@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default  
 title: Google Summer of Code
 permalink: /gsoc/
 ---
@@ -9,7 +9,7 @@ permalink: /gsoc/
 Below is a list of our GSoC project ideas and past pages:
 
 {% for post in site.gsoc %}
-{% unless post.relative_path == page.relative_path %}
+{% unless post.url == page.url %}
 - [{{ post.title }}]({{ post.url | relative_url }})
   {% endunless %}
   {% endfor %}
