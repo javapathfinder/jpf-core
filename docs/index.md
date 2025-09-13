@@ -3,13 +3,13 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 
 ---
 
-* [Introduction](Introduction) - a brief introduction into model checking and JPF
+* [Introduction](intro/) - a brief introduction into model checking and JPF
     <!--* [What is JPF?](What-is-JPF)
     * [Testing vs. Model Checking](Testing-vs.-Model-Checking)
          - [Random value example](Random-Example)
          - [Data race example](Race-Example)
     * [JPF key features](Classification)-->
-* [How to obtain and install JPF](How-to-install-JPF) - everything to get it running on your machine
+* [How to obtain and install JPF](install/) - everything to get it running on your machine
     <!-- [System requirements](System-requirements)
     - Downloading [binary snapshots](Downloading-binary-snapshots) and [sources](Downloading-sources)
     - [Creating a site properties file](Creating-site-properties-file)
@@ -17,14 +17,14 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
     - Installing the JPF plugins
          - [Eclipse](Eclipse-Plugin) 
          - [NetBeans](NetBeans-Plugin)-->  
-* [How to use JPF](How-to-use-JPF) - the user manual for JPF
+* [How to use JPF](user/) - the user manual for JPF
     <!-- [Different applications of JPF](Different-applications-of-JPF)
     - [JPF's runtime components](Runtime-components-of-JPF)
     - [Starting JPF](Running-JPF)
     - [Configuring JPF](Configuring-JPF)
     - [Understanding JPF output](Understanding-JPF-output)
     - [Using JPF's Verify API in the system under test](Verify-API-of-JPF)-->
-* [Developer guide](Developer-guide) - what's under the hood
+* [Developer guide](devel/) - what's under the hood
     <!--[Top-level design](Search-Strategies)
     * Key mechanisms, such as 
         - [ChoiceGenerators](ChoiceGenerators)
@@ -42,44 +42,44 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
     * [Writing JPF tests](Writing-JPF-tests)
     * [Coding conventions](Coding-Convention)
     * [Hosting an Eclipse plugin update site](Host-Eclipse-plugin-update-site)-->
-* [JPF core project](JPF-core) - description and link to jpf-core
+* [JPF core project](jpf-core/) - description and link to jpf-core
 * [Projects](Projects) - link to currently active and legacy extensions of JPF
-* [Workshops](JPF-Workshops) - link to annual workshops on JPF
-* [Google Summer of Code](Google-Summer-of-Code) - link to JPF's participation in the Google Summer of Code program, current ideas page [here](_gsoc/GSoC-2023-Project-Ideas).
+* [Workshops](workshops/) - link to annual workshops on JPF
+* [Google Summer of Code](gsoc/) - link to JPF's participation in the Google Summer of Code program, current ideas page [here](gsoc/GSoC-2025-Project-Ideas).
 * [Mailing list](https://groups.google.com/forum/#!forum/java-pathfinder) - discussion about JPF takes place in Google Groups [JPF Google Group](https://groups.google.com/forum/#!forum/java-pathfinder)
 * [Discord](https://discord.gg/sX4YZUVHK7) - join our [Discord server](https://discord.gg/sX4YZUVHK7) for more discussions
 <!--* [Related research and publications](Related-publications)-->
 
 ---
-<!--*  02/08/2025 [GSoC 2025](https://summerofcode.withgoogle.com): The JPF team will apply again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](https://github.com/javapathfinder/jpf-core/wiki/JPF-Google-Summer-of-Code-2025) page.-->
+<!--*  02/08/2025 [GSoC 2025](https://summerofcode.withgoogle.com): The JPF team will apply again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2025) page.-->
 
 #### Latest JPF News
-*  02/28/2025 [GSoC 2025](https://summerofcode.withgoogle.com): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](https://github.com/javapathfinder/jpf-core/wiki/JPF-Google-Summer-of-Code-2025) page.
-*  02/23/2024 [GSoC 2024](https://summerofcode.withgoogle.com): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](https://github.com/javapathfinder/jpf-core/wiki/JPF-Google-Summer-of-Code-2024) page.
+*  02/28/2025 [GSoC 2025](https://summerofcode.withgoogle.com): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2025) page.
+*  02/23/2024 [GSoC 2024](https://summerofcode.withgoogle.com): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2024) page.
 *  07/21/2022 JPF is now on [Twitter](https://twitter.com/Java_Pathfinder)! Follow us and check out our feed for the latest news and updates.
 *  05/13/2022 [JPF Workshop 2022](https://github.com/javapathfinder/jpf-core/wiki/Java-Pathfinder-Workshop-2022) will be co-located with [ASE 2022](https://conf.researchr.org/track/ase-2022/ase-2022-workshops) in the Oakland Center, Michigan, United States. Please consider submitting a paper.
-*  03/09/2022 [GSoC 2022](https://summerofcode.withgoogle.com): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](_gsoc/JPF-Google-Summer-of-Code-2022) page.
-*  11/23/2021 [JPF 2021](https://github.com/javapathfinder/jpf-core/wiki/JPF-Day-2021-(Online)): The JPF team organizes a virtual JPF day this year! Check our [call for participation](https://github.com/javapathfinder/jpf-core/wiki/JPF-Day-2021-(Online)).
-*  03/09/2021 [GSoC 2021](https://developers.google.com/open-source/gsoc/): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](_gsoc/JPF-Google-Summer-of-Code-2021) page.
-*  02/21/2020 The JPF team has been accepted to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2020! To learn more, please visit the [JPF/GSoC](_gsoc/JPF-Google-Summer-of-Code-2020) page.
-*  07/24/2019 [JPF Workshop 2019](https://2019.ase-conferences.org/home/jpf-2019). The workshop will be co-located with [ASE](https://2019.ase-conferences.org/) in San Diego, CA.
-*  02/26/2019 The JPF team has been accepted to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2019! To learn more, please visit the [JPF/GSoC](_gsoc/JPF-Google-Summer-of-Code-2019) page.
-*  05/08/2018 [JPF Workshop 2018](https://2018.fseconference.org/track/jpf-2018-papers) will be co-located with [FSE 2018](https://conf.researchr.org/home/fse-2018) in Lake Buena Vista, FL. Please consider submitting a paper.
-*  01/23/2018 The JPF team is applying to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2018. To learn more, please visit the [JPF/GSoC](_gsoc/JPF-Google-Summer-of-Code-2018) page.
-*  05/01/2017 [JPF Workshop 2017](JPF-Workshop-2017) will be co-located with [ASE 2017](http://ase2017.org) in Champaign, IL. Please consider submitting a paper.
-*  02/27/2017 JPF got accepted for [GSoC 2017](https://summerofcode.withgoogle.com/organizations/5314871315922944/). Please visit our [ideas page](JPF-and-Google-Summer-of-Code-2017-Project-Ideas), and let us know if you have a topic in mind.
-*  01/19/2017 The JPF team is applying to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2017. To learn more, please visit the [JPF/GSoC](Google-Summer-of-Code-2017) page.
-*  06/01/2016 [JPF Workshop 2016](JPF-Workshop-2016) will be co-located with [FSE 2016](http://www.cs.ucdavis.edu/fse2016/) in Seattle, WA, on November 18, 2016. Please consider submitting a paper.
+*  03/09/2022 [GSoC 2022](https://summerofcode.withgoogle.com): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2022) page.
+*  11/23/2021 [JPF 2021](JPF-Day-2021-\(Online\)): The JPF team organizes a virtual JPF day this year! Check our [call for participation](JPF-Day-2021-\(Online\)).
+*  03/09/2021 [GSoC 2021](https://developers.google.com/open-source/gsoc/): The JPF team has been accepted again as mentor organization for the GSoC program! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2021) page.
+*  02/21/2020 The JPF team has been accepted to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2020! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2020) page.
+*  07/24/2019 [JPF Workshop 2019](workshops/workshop-2019/JPF-Workshop-2019). The workshop will be co-located with [ASE](https://2019.ase-conferences.org/) in San Diego, CA.
+*  02/26/2019 The JPF team has been accepted to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2019! To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2019) page.
+*  05/08/2018 [JPF Workshop 2018](workshops/workshop-2018/JPF-Workshop-2018) will be co-located with [FSE 2018](https://conf.researchr.org/home/fse-2018) in Lake Buena Vista, FL. Please consider submitting a paper.
+*  01/23/2018 The JPF team is applying to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2018. To learn more, please visit the [JPF/GSoC](gsoc/JPF-Google-Summer-of-Code-2018) page.
+*  05/01/2017 [JPF Workshop 2017](workshops/workshop-2017/JPF-Workshop-2017) will be co-located with [ASE 2017](http://ase2017.org) in Champaign, IL. Please consider submitting a paper.
+*  02/27/2017 JPF got accepted for [GSoC 2017](https://summerofcode.withgoogle.com/organizations/5314871315922944/). Please visit our [ideas page](gsoc/GSoC-2017-Project-Ideas), and let us know if you have a topic in mind.
+*  01/19/2017 The JPF team is applying to the [GSoC](https://developers.google.com/open-source/gsoc/) program for 2017. To learn more, please visit the [JPF/GSoC](gsoc/Google-Summer-of-Code-2017) page.
+*  06/01/2016 [JPF Workshop 2016](workshops/workshop-2016/JPF-Workshop-2016) will be co-located with [FSE 2016](http://www.cs.ucdavis.edu/fse2016/) in Seattle, WA, on November 18, 2016. Please consider submitting a paper.
 *  04/22/2016 JPF student proposals accepted for GSoC 2016 [announced](https://summerofcode.withgoogle.com/organizations/5791763432210432/#projects) - Congratulations to the students!
-*  02/29/2016 JPF got accepted for [GSoC 2016](https://summerofcode.withgoogle.com/organizations/5791763432210432/). Please visit our [ideas page](Google-Summer-of-Code-2016-Project-Ideas), and let us know if you would like to propose a project.
+*  02/29/2016 JPF got accepted for [GSoC 2016](https://summerofcode.withgoogle.com/organizations/5791763432210432/). Please visit our [ideas page](gsoc/GSoC-2016-Project-Ideas), and let us know if you would like to propose a project.
 <details close>
 <summary>Old news</summary>
 <ul>
 <li>17/08/2015 JPF Workshop 2015 Accepted Papers are announced. Please visit <a href="http://ase2015.unl.edu">ASE 2015</a> for registration, date and venue information.</li> 
-<li>10/03/2014 JPF Workshop 2014 <a href="https://github.com/javapathfinder/jpf-core/wiki/JPF-Workshop-2014-Accepted-Papers">Accepted Papers</a>. Please visit <a href="http://soarlab.org/events/jpf2014/">SOAR Lab</a> for registration, date and venue information.</li> 
-<li>10/01/2013 JPF Workshop 2013 <a href="JPF-Workshop-2013-Accepted-Papers">Accepted Papers</a>. Please note <a href="http://ti.arc.nasa.gov/events/jpf-workshop-2013">JPF Workshop 2013</a> website is down due to the shutdown, please visit <a href="http://ase2013.org">ASE 2013</a> for registration, date and venue information.</li>
+<li>10/03/2014 JPF Workshop 2014 <a href="workshops/workshop-2014/JPF-Workshop-2014-Accepted-Papers">Accepted Papers</a>. Please visit <a href="http://soarlab.org/events/jpf2014/">SOAR Lab</a> for registration, date and venue information.</li> 
+<li>10/01/2013 JPF Workshop 2013 <a href="workshops/workshop-2013/JPF-Workshop-2013-Accepted-Papers">Accepted Papers</a>. Please note <a href="http://ti.arc.nasa.gov/events/jpf-workshop-2013">JPF Workshop 2013</a> website is down due to the shutdown, please visit <a href="http://ase2013.org">ASE 2013</a> for registration, date and venue information.</li>
 
-<li>06/20/2013 <a href="http://ti.arc.nasa.gov/events/jpf-workshop-2013/">JPF Workshop 2013</a> will be co-located with <a href="http://ase2013.org">ASE 2013</a> Please submit papers.<\li>
+<li>06/20/2013 <a href="http://ti.arc.nasa.gov/events/jpf-workshop-2013/">JPF Workshop 2013</a> will be co-located with <a href="http://ase2013.org">ASE 2013</a> Please submit papers.</li>
 
 <li>05/27/2013 JPF student proposals accepted for GSoC 2013 <a href="https://www.google-melange.com/archive/gsoc/2013/orgs/javapathfinder">announced</a> - Congratulations to the students!</li>
 
@@ -91,7 +91,7 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 
 <li>03/26/2012 GSoC Student Applications period is open until April 6. Please submit your proposal at <a href="https://www.google-melange.com/archive/gsoc/2012/orgs/javapathfinder">JPF GSoC page</a>. </li>
 
-<li>03/16/2012 JPF has been accepted as mentoring org. for GSoC 2012. Visit <a href="https://github.com/javapathfinder/jpf-core/wiki/JPF-and-Google-Summer-of-Code-2012">our ideas page</a>. </li>
+<li>03/16/2012 JPF has been accepted as mentoring org. for GSoC 2012. Visit <a href="gsoc/JPF-and-Google-Summer-of-Code-2012">our ideas page</a>. </li>
 
 <li>10/14/2011 A hands-on JPF tutorial will be held on Nov 7th at Lawrence, Kansas co-located with <a href="http://www.continuinged.ku.edu/programs/ase">ASE 2011</a>. </li>
 
@@ -99,7 +99,7 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 
 <li>03/25/2011 JPF student proposals accepted for GSoC 2011 <a href="https://www.google-melange.com/archive/gsoc/2011/orgs/javapathfinder">announced</a> - Congratulations to the students! </li>
 
-<li>03/18/2011 JPF has been accepted as mentoring org. for GSoC 2011. Visit <a href="https://github.com/javapathfinder/jpf-core/wiki/JPF-and-Google-Summer-of-Code-2011">our ideas page</a>. </li>
+<li>03/18/2011 JPF has been accepted as mentoring org. for GSoC 2011. Visit <a href="gsoc/JPF-and-Google-Summer-of-Code-2011">our ideas page</a>. </li>
 
 <li>11/30/2010<a href="JPF-Version-6-released">JPF version 6 released</a> - update your <a href="https://github.com/javapathfinder/jpf-core">jpf-core</a>.</li>
 
@@ -111,7 +111,7 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 
 <li>02/14/2010 <a href="http://selab.fbk.eu/issta2010/index.php?p=tutorials">ISSTA 2010 Tutorial on Automated Testing with Java PathFinder</a> announced.</li>
 
-<li>02/12/2010 Call for Google Summer of Code 2010 project proposals out - visit <a href="https://github.com/javapathfinder/jpf-core/wiki/JPF-and-Google-Summer-of-Code-2010">our SoC page</a>.</li>
+<li>02/12/2010 Call for Google Summer of Code 2010 project proposals out - visit <a href="gsoc/JPF-and-Google-Summer-of-Code-2010">our SoC page</a>.</li>
 
 <li>01/30/2010 <a href="http://groups.google.com/group/java-pathfinder">JPF Google group</a> replaces old mailing lists.</li>
 
@@ -124,4 +124,3 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 </details>
 
 ---
-  
