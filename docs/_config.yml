@@ -33,13 +33,13 @@ defaults:
       path: "_gsoc"
       type: "gsoc"
     values:
-      layout: "page"
+      layout: "default"
       category: "GSoC"
   - scope:
       path: "_workshops"
       type: "workshops"
     values:
-      layout: "page"
+      layout: "default"
       category: "Workshops"
 
 # Navigation structure
