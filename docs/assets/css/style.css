@@ -349,14 +349,7 @@ body::before {
     overflow: hidden;
 }
 
-.ideas-tab::after {
-    position: absolute;
-    top: 50%;
-    right: var(--space-3);
-    transform: translateY(-50%);
-    font-size: 16px;
-    animation: sparkle 2s ease-in-out infinite;
-}
+
 
 @keyframes sparkle {
     0%, 100% { opacity: 0.5; transform: translateY(-50%) scale(1); }
