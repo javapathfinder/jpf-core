@@ -12,7 +12,7 @@ From the previous sections, you know that JPF is a collection of interchangeable
 
 ## Core Mechanisms
 
-- [ChoiceGenerators](ChoiceGenerators.html) – Non-deterministic choice handling
+- [ChoiceGenerators](ChoiceGenerators) – Non-deterministic choice handling
 - [Partial Order Reduction](Partial-Order-Reduction.html) – State-space optimization
 - [Slot and Field Attributes](Slot-and-field-attributes.html) – Custom data storage
 
