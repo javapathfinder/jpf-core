@@ -546,16 +546,7 @@ a:not([class]) {
     transition: color 0.3s ease;
 }
 
-a:not([class])::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 1px;
-    background: var(--gradient-primary);
-    transition: width 0.3s ease;
-}
+
 
 a:not([class]):hover {
     color: var(--primary-hover);
