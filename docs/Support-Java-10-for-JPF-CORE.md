@@ -12,8 +12,8 @@ JEPs that introduce internal changes to JPF include, but not limited to:
 
 **JDK Release Notes**
 
-* [JDK 9 Release Notes](http://www.oracle.com/technetwork/java/javase/9-relnote-issues-3704069.html)
-* [JDK 10 Release Notes](http://www.oracle.com/technetwork/java/javase/10-relnote-issues-4108729.html)
+* [JDK 9 Release Notes](http://www.oracle.com/technetwork/java/javase/9-relnote-issues-3704069)
+* [JDK 10 Release Notes](http://www.oracle.com/technetwork/java/javase/10-relnote-issues-4108729)
 
 [jep-220]: http://openjdk.java.net/jeps/220
 [jep-254]: http://openjdk.java.net/jeps/254

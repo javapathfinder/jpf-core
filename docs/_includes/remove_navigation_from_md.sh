@@ -1,10 +1,10 @@
 #!/bin/bash
-# remove_navigation_from_md.sh
+# remove_html_extension_from_md.sh
 
-find docs -name "*.md" -type f | while read -r file; do
-    # Remove the navigation include line
-    sed -i.bak '/{% include navigation.html %}/d' "$file"
-    echo "Removed navigation include from: $file"
+find docs -name "*.md" -type f -print0 | while IFS= read -r -d '' file; do
+    # Remove .html everywhere in the file
+    sed -i.bak 's/\.html//g' "$file"
+    echo "Removed .html extensions from: $file"
 done
 
 # Clean up backup files

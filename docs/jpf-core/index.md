@@ -12,8 +12,8 @@ Documentation focused on the JPF Core components and features.
 
 ### Documents
 
-- [JPF Core](JPF-core.html)
-- [Assertion Property](AssertionProperty.html)
-- [Error Trace Generator](ErrorTraceGenerator.html)
-- [Exception Injector](ExceptionInjector.html)
-- [Idle Filter](IdleFilter.html)
+- [JPF Core](JPF-core)
+- [Assertion Property](AssertionProperty)
+- [Error Trace Generator](ErrorTraceGenerator)
+- [Exception Injector](ExceptionInjector)
+- [Idle Filter](IdleFilter)

@@ -4,7 +4,7 @@ The Java Pathfinder (JPF) team is a mentor organization for the [Google Summer o
 
 ## Java Pathfinder ##
 
-The development of [Java Pathfinder (JPF)](https://github.com/javapathfinder/jpf-core/wiki)  started at [NASA Ames Research Center](http://www.nasa.gov/centers/ames/home/index.html) in 1999. It became an open-source project in 2005, and it is now released under the [Apache license, 2.0](http://www.apache.org/licenses/LICENSE-2.0). JPF's infrastructure is refactored as a Java virtual machine (JVM), and itself is written in Java. JPF is applied directly on the code, and it can be used to verify code that is compiled into bytecode.
+The development of [Java Pathfinder (JPF)](https://github.com/javapathfinder/jpf-core/wiki)  started at [NASA Ames Research Center](http://www.nasa.gov/centers/ames/home/index) in 1999. It became an open-source project in 2005, and it is now released under the [Apache license, 2.0](http://www.apache.org/licenses/LICENSE-2.0). JPF's infrastructure is refactored as a Java virtual machine (JVM), and itself is written in Java. JPF is applied directly on the code, and it can be used to verify code that is compiled into bytecode.
 
 JPF is a very flexible tool. It offers a highly configurable structure, and introduces numerous extension mechanisms which make it a suitable engine for many existing tools. JPF has been used for a variety of application domains and research topics such as verification of multi-threaded applications, graphical user interfaces, networking, and distributed applications. 
 

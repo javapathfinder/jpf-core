@@ -154,7 +154,7 @@ This project may use components such as jpf-symbc, jpf-concolic and jpf-abstract
 SPF constraints need to be refactored to allow different kinds of constraints to be combined during the construction of a path condition. An example of how it should be after the refactoring is the Abstract Syntax Tree constructed by [GREEN](http://dl.acm.org/citation.cfm?id=2393665).
 
 #### "Higher Order" veritesting 
-<!-- Bringing in runtime information to improve the performance of static regions as an improvement to the [veritesting implemented as a Google Summer of Code 2017 project](https://jpf.byu.edu/gsoc17/projects/projects.html#increasing-spf-performance-with-bounded-static-symbolic-execution). -->
+<!-- Bringing in runtime information to improve the performance of static regions as an improvement to the [veritesting implemented as a Google Summer of Code 2017 project](https://jpf.byu.edu/gsoc17/projects/projects#increasing-spf-performance-with-bounded-static-symbolic-execution). -->
 
 It is well known that one of the limiting factors in symbolic execution is the path explosion problem; complex programs have billions of paths that make exhaustive exploration computationally infeasible. Recently, an approach for dramatically reducing the number of paths was proposed by Brumley in the paper: Enhancing Symbolic Execution with Veritesting, which led to dramatic performance improvements for an x86-assembly-based symbolic execution engine. This engine, run against the Debian Linux distribution, found over 11000 crash bugs and 154 privilege escalation bugs in the distribution, and achieved far greater coverage than previous approaches.
 

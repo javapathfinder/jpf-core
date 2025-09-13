@@ -47,7 +47,7 @@ test - Runs core regression tests.
 
 ### Within Eclipse
 
-Eclipse comes with Gradle support by default since the Neon release. If you use an older version for some reason, consider installing the [Buildship Plugin.](https://github.com/eclipse/buildship/blob/master/docs/user/Installation.html) for Gradle support.
+Eclipse comes with Gradle support by default since the Neon release. If you use an older version for some reason, consider installing the [Buildship Plugin.](https://github.com/eclipse/buildship/blob/master/docs/user/Installation) for Gradle support.
 
 To import the project into Eclipse, proceed with the following steps:
 

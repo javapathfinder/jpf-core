@@ -10,7 +10,7 @@ permalink: /papers/
 
 This section lists papers and references related to JPF.
 
-- [Related Publications](Related-publications.html)
+- [Related Publications](Related-publications)
 
 ### Supporting Files
 

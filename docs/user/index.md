@@ -12,11 +12,11 @@ Practical instructions and user-oriented information on JPF.
 
 ### Sections Include
 
-- [How to use JPF](How-to-use-JPF.html)
-- [Configuring JPF](Configuring-JPF.html)
-- [Different Applications of JPF](Different-applications-of-JPF.html)
-- [Run JPF using Eclipse](Run-JPF-using-Eclipse.html)
-- [Run JPF using NetBeans](Run-JPF-using-NetBeans.html)
-- [Runtime Components](Runtime-components-of-JPF.html)
-- [Understanding JPF Output](Understanding-JPF-output.html)
-- [Verify API of JPF](Verify-API-of-JPF.html)
+- [How to use JPF](How-to-use-JPF)
+- [Configuring JPF](Configuring-JPF)
+- [Different Applications of JPF](Different-applications-of-JPF)
+- [Run JPF using Eclipse](Run-JPF-using-Eclipse)
+- [Run JPF using NetBeans](Run-JPF-using-NetBeans)
+- [Runtime Components](Runtime-components-of-JPF)
+- [Understanding JPF Output](Understanding-JPF-output)
+- [Verify API of JPF](Verify-API-of-JPF)
