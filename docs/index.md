@@ -4,46 +4,11 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 ---
 
 * [Introduction](intro/) - a brief introduction into model checking and JPF
-    <!--* [What is JPF?](What-is-JPF)
-    * [Testing vs. Model Checking](Testing-vs.-Model-Checking)
-         - [Random value example](Random-Example)
-         - [Data race example](Race-Example)
-    * [JPF key features](Classification)-->
 * [How to obtain and install JPF](install/) - everything to get it running on your machine
-    <!-- [System requirements](System-requirements)
-    - Downloading [binary snapshots](Downloading-binary-snapshots) and [sources](Downloading-sources)
-    - [Creating a site properties file](Creating-site-properties-file)
-    - [Building, testing, and running](Build,-Test,-Run)
-    - Installing the JPF plugins
-         - [Eclipse](Eclipse-Plugin) 
-         - [NetBeans](NetBeans-Plugin)-->  
 * [How to use JPF](user/) - the user manual for JPF
-    <!-- [Different applications of JPF](Different-applications-of-JPF)
-    - [JPF's runtime components](Runtime-components-of-JPF)
-    - [Starting JPF](Running-JPF)
-    - [Configuring JPF](Configuring-JPF)
-    - [Understanding JPF output](Understanding-JPF-output)
-    - [Using JPF's Verify API in the system under test](Verify-API-of-JPF)-->
 * [Developer guide](devel/) - what's under the hood
-    <!--[Top-level design](Search-Strategies)
-    * Key mechanisms, such as 
-        - [ChoiceGenerators](ChoiceGenerators)
-        - [Partial order reduction](Partial-Order-Reduction)
-        - [Slot and field attributes](Slot-and-field-attributes)
-    * Extension mechanisms, such as
-        - [Listeners](Listeners)
-        - [Search Strategies](Search-Strategies)
-        - [Model Java Interface (MJI)](Model-Java-Interface)
-        - [Bytecode Factories](Bytecode-Factories)
-    * Common utility infrastructures, such as
-        - [Logging system](Logging-system)
-        - [Reporting system](Reporting-system)
-    * [Running JPF from within your application](Running-JPF-from-application)
-    * [Writing JPF tests](Writing-JPF-tests)
-    * [Coding conventions](Coding-Convention)
-    * [Hosting an Eclipse plugin update site](Host-Eclipse-plugin-update-site)-->
 * [JPF core project](jpf-core/) - description and link to jpf-core
-* [Projects](Projects) - link to currently active and legacy extensions of JPF
+* [Projects](Projects/) - link to currently active and legacy extensions of JPF
 * [Workshops](workshops/) - link to annual workshops on JPF
 * [Google Summer of Code](gsoc/) - link to JPF's participation in the Google Summer of Code program, current ideas page [here](gsoc/GSoC-2025-Project-Ideas).
 * [Mailing list](https://groups.google.com/forum/#!forum/java-pathfinder) - discussion about JPF takes place in Google Groups [JPF Google Group](https://groups.google.com/forum/#!forum/java-pathfinder)
