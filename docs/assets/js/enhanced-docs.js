@@ -1,21 +1,16 @@
+/* JPF Core Documentation - Clean JavaScript */
+
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
-    initMobileNav();
-    initHeaderScroll();
-    initDropdowns();
-    initCodeCopy();
-    initSmoothScroll();
-    initActiveLinks();
-
     // Mobile Navigation
-    function initMobileNav() {
+    const setupMobileNav = () => {
         const header = document.querySelector('.header-container');
         const nav = document.querySelector('.main-nav');
-        const headerActions = document.querySelector('.header-actions');
         
         if (!header || !nav) return;
 
+        // Create mobile toggle if it doesn't exist
         let toggle = document.querySelector('.mobile-toggle');
         if (!toggle && window.innerWidth <= 768) {
             toggle = document.createElement('button');
@@ -23,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
             toggle.setAttribute('aria-label', 'Toggle navigation');
             toggle.innerHTML = '<span></span><span></span><span></span>';
             
-            header.insertBefore(toggle, headerActions);
+            // Insert before nav
+            header.insertBefore(toggle, nav);
         }
 
         if (toggle) {
@@ -33,38 +29,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
             });
 
+            // Close on outside click
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.main-nav') && !e.target.closest('.mobile-toggle')) {
-                    closeMobileNav();
+                    toggle.classList.remove('active');
+                    nav.classList.remove('open');
+                    document.body.style.overflow = '';
                 }
             });
 
+            // Close on escape
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeMobileNav();
+                if (e.key === 'Escape' && nav.classList.contains('open')) {
+                    toggle.classList.remove('active');
+                    nav.classList.remove('open');
+                    document.body.style.overflow = '';
                 }
             });
         }
+    };
 
-        function closeMobileNav() {
-            if (toggle && nav) {
-                toggle.classList.remove('active');
-                nav.classList.remove('open');
-                document.body.style.overflow = '';
-            }
-        }
-    }
-
-    function initHeaderScroll() {
+    // Header Hide/Show on Scroll
+    const setupHeaderScroll = () => {
         const header = document.querySelector('.site-header');
         if (!header) return;
 
         let lastScroll = 0;
         let ticking = false;
 
-        function updateHeader() {
+        const updateHeader = () => {
             const currentScroll = window.pageYOffset;
             
+            // Only hide header when scrolling down past 100px
             if (currentScroll > 100 && currentScroll > lastScroll) {
                 header.classList.add('hidden');
             } else {
@@ -73,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             lastScroll = currentScroll;
             ticking = false;
-        }
+        };
 
         window.addEventListener('scroll', () => {
             if (!ticking) {
@@ -81,34 +77,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 ticking = true;
             }
         });
-    }
+    };
 
-    function initDropdowns() {
+    // Dropdown Menus
+    const setupDropdowns = () => {
         const dropdowns = document.querySelectorAll('.dropdown');
         
         dropdowns.forEach(dropdown => {
             const toggle = dropdown.querySelector('a');
             
-            // Add arrow if not present
-            if (toggle && !toggle.querySelector('.dropdown-arrow')) {
-                const arrow = document.createElement('span');
-                arrow.className = 'dropdown-arrow';
-                arrow.textContent = ' ▾';
-                toggle.appendChild(arrow);
+            // Add arrow indicator
+            if (toggle && !toggle.querySelector('.arrow')) {
+                toggle.innerHTML += ' <span class="arrow">▾</span>';
             }
 
-            // Mobile click behavior
-            if (window.innerWidth <= 768 && toggle) {
-                toggle.addEventListener('click', (e) => {
+            // Mobile: click to toggle
+            if (window.innerWidth <= 768) {
+                toggle?.addEventListener('click', (e) => {
                     e.preventDefault();
                     dropdown.classList.toggle('open');
                 });
             }
         });
-    }
+    };
 
-    function initCodeCopy() {
+    // Copy Code Functionality
+    const setupCodeCopy = () => {
         document.querySelectorAll('pre').forEach(pre => {
+            // Skip if button already exists
             if (pre.querySelector('.copy-btn')) return;
 
             const button = document.createElement('button');
@@ -121,14 +117,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 try {
                     await navigator.clipboard.writeText(text);
-                    button.textContent = '✓ Copied';
-                    button.style.background = 'var(--color-teal-600)';
+                    button.textContent = 'Copied!';
                     setTimeout(() => {
                         button.textContent = 'Copy';
-                        button.style.background = '';
                     }, 2000);
                 } catch (err) {
-                    // Fallback
+                    // Fallback for older browsers
                     const textarea = document.createElement('textarea');
                     textarea.value = text;
                     textarea.style.position = 'fixed';
@@ -138,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
                     
-                    button.textContent = '✓ Copied';
+                    button.textContent = 'Copied!';
                     setTimeout(() => {
                         button.textContent = 'Copy';
                     }, 2000);
@@ -147,9 +141,10 @@ document.addEventListener('DOMContentLoaded', function() {
             
             pre.appendChild(button);
         });
-    }
+    };
 
-    function initSmoothScroll() {
+    // Smooth Scrolling for Anchors
+    const setupSmoothScroll = () => {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
@@ -158,47 +153,92 @@ document.addEventListener('DOMContentLoaded', function() {
                 const target = document.querySelector(href);
                 if (target) {
                     e.preventDefault();
-                    const headerHeight = 80;
-                    const targetPosition = target.offsetTop - headerHeight;
+                    const headerHeight = document.querySelector('.site-header')?.offsetHeight || 0;
+                    const targetPosition = target.offsetTop - headerHeight - 20;
                     
                     window.scrollTo({
                         top: targetPosition,
                         behavior: 'smooth'
                     });
                     
+                    // Update URL
                     history.pushState(null, null, href);
                 }
             });
         });
-    }
+    };
 
-    function initActiveLinks() {
+    // Active Navigation Links
+    const setupActiveLinks = () => {
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.nav-menu a');
         
         navLinks.forEach(link => {
-            const linkPath = link.pathname?.replace(/\/$/, '') || '';
+            // Remove trailing slashes for comparison
+            const linkPath = link.pathname.replace(/\/$/, '');
             const pagePath = currentPath.replace(/\/$/, '');
             
-            if (linkPath && (linkPath === pagePath || pagePath.startsWith(linkPath + '/'))) {
+            if (linkPath === pagePath) {
                 link.classList.add('active');
-                
-                // Mark parent dropdown as active
-                const parentDropdown = link.closest('.dropdown');
-                if (parentDropdown) {
-                    const dropdownToggle = parentDropdown.querySelector('a');
-                    if (dropdownToggle) dropdownToggle.classList.add('active');
-                }
             }
         });
-    }
+    };
 
+    // Table of Contents Generation (if needed)
+    const generateTOC = () => {
+        const tocContainer = document.querySelector('.toc-container');
+        const content = document.querySelector('.content');
+        
+        if (!tocContainer || !content) return;
+        
+        const headings = content.querySelectorAll('h2, h3');
+        if (headings.length < 3) return; // Don't generate TOC for short pages
+        
+        const toc = document.createElement('nav');
+        toc.className = 'table-of-contents';
+        toc.innerHTML = '<h4>Contents</h4>';
+        
+        const list = document.createElement('ul');
+        
+        headings.forEach((heading, index) => {
+            // Add ID if missing
+            if (!heading.id) {
+                heading.id = 'section-' + index;
+            }
+            
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#' + heading.id;
+            link.textContent = heading.textContent;
+            
+            if (heading.tagName === 'H3') {
+                item.style.marginLeft = '20px';
+            }
+            
+            item.appendChild(link);
+            list.appendChild(item);
+        });
+        
+        toc.appendChild(list);
+        tocContainer.appendChild(toc);
+    };
+
+    // Handle window resize
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            initMobileNav();
-            initDropdowns();
+            setupMobileNav();
+            setupDropdowns();
         }, 250);
     });
+
+    // Initialize everything
+    setupMobileNav();
+    setupHeaderScroll();
+    setupDropdowns();
+    setupCodeCopy();
+    setupSmoothScroll();
+    setupActiveLinks();
+    generateTOC();
 });

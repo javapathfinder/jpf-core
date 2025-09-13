@@ -11,7 +11,7 @@
     --bg-light: #F8F9FA;
     --bg-code: #2D3748;
     --border: #E2E8F0;
-
+    
     /* Layout */
     --header-height: 64px;
     --container-width: 1200px;
@@ -220,13 +220,13 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 16px;
 }
 
-h1 {
+h1 { 
     font-size: 32px;
     padding-bottom: 12px;
     border-bottom: 2px solid var(--primary);
 }
 
-h2 {
+h2 { 
     font-size: 28px;
     color: var(--primary);
 }
@@ -414,15 +414,15 @@ blockquote {
     :root {
         --header-height: 56px;
     }
-
+    
     .header-container {
         padding: 0 16px;
     }
-
+    
     .mobile-toggle {
         display: block;
     }
-
+    
     .main-nav {
         position: fixed;
         top: var(--header-height);
@@ -434,22 +434,22 @@ blockquote {
         overflow-y: auto;
         border-top: 1px solid var(--border);
     }
-
+    
     .main-nav.open {
         left: 0;
     }
-
+    
     .nav-menu {
         flex-direction: column;
         padding: 16px;
         gap: 4px;
     }
-
+    
     .nav-menu a {
         padding: 12px 16px;
         font-size: 16px;
     }
-
+    
     .dropdown-menu {
         position: static;
         opacity: 1;
@@ -460,40 +460,40 @@ blockquote {
         margin: 4px 0 8px 16px;
         background: var(--bg-light);
     }
-
+    
     .github-link {
         padding: 6px 16px;
         font-size: 13px;
     }
-
+    
     .main-content {
         margin-top: calc(var(--header-height) + 20px);
         padding: 0 16px;
     }
-
+    
     .page-title {
         font-size: 28px;
     }
-
+    
     h1 { font-size: 26px; }
     h2 { font-size: 22px; }
     h3 { font-size: 18px; }
-
+    
     pre {
         padding: 16px;
         font-size: 13px;
     }
-
+    
     table {
         display: block;
         overflow-x: auto;
     }
-
+    
     .footer-content {
         flex-direction: column;
         text-align: center;
     }
-
+    
     .footer-links {
         flex-direction: column;
         gap: 12px;
@@ -504,7 +504,7 @@ blockquote {
     .page-title {
         font-size: 24px;
     }
-
+    
     .page-description {
         font-size: 16px;
     }
@@ -517,11 +517,11 @@ blockquote {
     .mobile-toggle {
         display: none;
     }
-
+    
     .main-content {
         margin: 0;
     }
-
+    
     a {
         color: inherit;
         text-decoration: underline;
