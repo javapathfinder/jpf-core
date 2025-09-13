@@ -512,6 +512,7 @@ h1 {
     border-bottom: 2px solid transparent;
     background-clip: border-box;
     -webkit-background-clip: border-box;
+    border-image: linear-gradient(90deg, var(--primary) 0%, #3978ad 100%) 1;
 }
 
 h2 {
@@ -816,6 +817,7 @@ blockquote::before {
         padding: 0 var(--space-4);
     }
     
+    /* Hide desktop navigation and GitHub link */
     .main-nav,
     .github-link {
         display: none;
