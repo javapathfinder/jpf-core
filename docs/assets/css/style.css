@@ -108,23 +108,8 @@ body::before {
     z-index: 0;
 }
 
-/* Skip Link */
-.skip-link {
-    position: absolute;
-    top: -40px;
-    left: 0;
-    background: var(--gradient-primary);
-    color: white;
-    padding: var(--space-2) var(--space-4);
-    text-decoration: none;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    z-index: 10000;
-}
 
-.skip-link:focus {
-    top: var(--space-2);
-}
+
 
 /* Header - Glass Morphism */
 .site-header {
@@ -525,10 +510,8 @@ h1 {
     font-size: 36px;
     padding-bottom: var(--space-3);
     border-bottom: 2px solid transparent;
-    background: linear-gradient(90deg, var(--primary) 0%, var(--accent-purple) 100%);
     background-clip: border-box;
     -webkit-background-clip: border-box;
-    border-image: linear-gradient(90deg, var(--primary) 0%, var(--accent-purple) 100%) 1;
 }
 
 h2 {
@@ -655,7 +638,6 @@ pre code {
     margin-top: var(--space-4);
 }
 
-/* Copy Button */
 .copy-btn {
     position: absolute;
     top: var(--space-3);
@@ -684,7 +666,6 @@ pre:hover .copy-btn {
     transform: scale(1.05);
 }
 
-/* Tables - Modern Design */
 table {
     width: 100%;
     border-collapse: separate;
@@ -729,7 +710,6 @@ tr:hover td {
     color: var(--text-primary);
 }
 
-/* Blockquotes - Card Style */
 blockquote {
     margin: var(--space-5) 0;
     padding: var(--space-4);
@@ -753,7 +733,6 @@ blockquote::before {
     opacity: 0.2;
 }
 
-/* Footer - Enhanced */
 .site-footer {
     margin-top: var(--space-8);
     padding: var(--space-6) 0;
@@ -828,7 +807,6 @@ blockquote::before {
     width: 100%;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     :root {
         --header-height: 60px;
@@ -838,7 +816,6 @@ blockquote::before {
         padding: 0 var(--space-4);
     }
     
-    /* Hide desktop navigation and GitHub link */
     .main-nav,
     .github-link {
         display: none;
