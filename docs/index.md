@@ -8,7 +8,7 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 * [How to use JPF](user/) - the user manual for JPF
 * [Developer guide](devel/) - what's under the hood
 * [JPF core project](jpf-core/) - description and link to jpf-core
-* [Projects](Projects/) - link to currently active and legacy extensions of JPF
+* [Projects](Projects) - link to currently active and legacy extensions of JPF
 * [Workshops](workshops/) - link to annual workshops on JPF
 * [Google Summer of Code](gsoc/) - link to JPF's participation in the Google Summer of Code program, current ideas page [here](gsoc/GSoC-2025-Project-Ideas).
 * [Mailing list](https://groups.google.com/forum/#!forum/java-pathfinder) - discussion about JPF takes place in Google Groups [JPF Google Group](https://groups.google.com/forum/#!forum/java-pathfinder)
