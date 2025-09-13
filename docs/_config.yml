@@ -36,8 +36,6 @@ navigation:
     url: "/gsoc/"
   - title: "Workshops"
     url: "/workshops/"
-  - title: "Projects"
-    url: "/projects/"
 
 exclude:
   - README.md
