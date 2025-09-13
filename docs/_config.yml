@@ -32,10 +32,10 @@ navigation:
     url: "/jpf-core/"
   - title: "Developer"
     url: "/devel/"
-  - title: "GSoC"
-    url: "/gsoc/"
   - title: "Workshops"
     url: "/workshops/"
+  - title: "GSoC"
+    url: "/gsoc/"
 
 exclude:
   - README.md

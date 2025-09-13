@@ -1,4 +1,3 @@
-/* JPF Core Documentation - Enhanced Beautiful Dark Theme */
 
 :root {
     /* Dark Theme - Same Colors, Better Design */
@@ -69,7 +68,6 @@
     --shadow-glow: 0 0 40px rgba(88, 166, 255, 0.1);
 }
 
-/* Base Reset */
 * {
     margin: 0;
     padding: 0;
@@ -92,7 +90,6 @@ body {
     position: relative;
 }
 
-/* Background Pattern */
 body::before {
     content: '';
     position: fixed;
@@ -111,7 +108,6 @@ body::before {
 
 
 
-/* Header - Glass Morphism */
 .site-header {
     position: fixed;
     top: 0;
@@ -194,7 +190,6 @@ body::before {
     filter: drop-shadow(0 0 8px rgba(88, 166, 255, 0.5));
 }
 
-/* Navigation */
 .main-nav {
     flex: 1;
     display: flex;
@@ -300,7 +295,6 @@ body::before {
     display: none;
 }
 
-/* GitHub Link - Desktop */
 .github-link {
     display: inline-flex;
     align-items: center;
@@ -356,7 +350,6 @@ body::before {
 }
 
 .ideas-tab::after {
-    content: '✨';
     position: absolute;
     top: 50%;
     right: var(--space-3);

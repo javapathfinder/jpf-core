@@ -1,10 +1,16 @@
 <!-- File: docs/_includes/navigation.html -->
 <nav class="site-navigation">
-    <ul class="nav-menu">
-        {% for item in site.navigation %}
-        <li class="nav-item">
-            <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
-        </li>
-        {% endfor %}
-    </ul>
+  <ul class="nav-menu">
+    {% for item in site.navigation %}
+      <li class="nav-item">
+        <a
+          href="{{ item.url | relative_url }}"
+          {% if item.title == "GSoC" %}class="ideas-tab"{% endif %}
+        >
+          {{ item.title }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
 </nav>
+
