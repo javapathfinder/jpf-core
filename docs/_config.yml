@@ -12,37 +12,13 @@ plugins:
 
 relative_links:
   enabled: true
-  collections: true
-
-collections:
-  gsoc:
-    output: true
-    permalink: /gsoc/:name/
-    sort_by: date
-  workshops:
-    output: true
-    permalink: /workshops/:name/
-    sort_by: date
 
 defaults:
   - scope:
       path: ""
     values:
       layout: "default"
-  - scope:
-      path: "_gsoc"
-      type: "gsoc"
-    values:
-      layout: "default"
-      category: "GSoC"
-  - scope:
-      path: "_workshops"
-      type: "workshops"
-    values:
-      layout: "default"
-      category: "Workshops"
 
-# Navigation structure
 navigation:
   - title: "Home"
     url: "/"
@@ -62,7 +38,6 @@ navigation:
     url: "/workshops/"
   - title: "Projects"
     url: "/projects/"
-
 
 exclude:
   - README.md
