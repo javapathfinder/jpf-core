@@ -3,7 +3,6 @@ name: Deploy JPF Documentation to GitHub Pages
 on:
   push:
     branches:
-      - add-install-docs
       - main
       - master
     paths:

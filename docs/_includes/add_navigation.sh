@@ -1,10 +1,7 @@
 #!/bin/bash
-# add_navigation.sh
 
 find docs -name "*.md" -type f | while read -r file; do
-    # Check if file already has the include
     if ! grep -q "{% include navigation.html %}" "$file"; then
-        # Create temporary file with navigation added after front matter
         awk '
         /^---$/ && !seen_front_matter {
             if (NR == 1) {

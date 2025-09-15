@@ -406,7 +406,6 @@ body::before {
     transform: rotate(-45deg) translate(6px, -6px);
 }
 
-/* Main Content */
 #main-content {
     max-width: var(--container-max);
     margin: calc(var(--header-height) + var(--space-7)) auto var(--space-8);
@@ -415,7 +414,6 @@ body::before {
     z-index: 1;
 }
 
-/* Page Header - Enhanced */
 .page-header {
     margin-bottom: var(--space-7);
     padding: var(--space-8) 0 var(--space-6);
@@ -482,7 +480,6 @@ body::before {
     margin: 0 auto;
 }
 
-/* Typography - Enhanced */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: 1.25;

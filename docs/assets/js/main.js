@@ -1,9 +1,7 @@
-/* JPF Core Documentation - Enhanced JavaScript */
 
 document.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
-    // Initialize components
     initMobileMenu();
     initHeaderScroll();
     initDropdowns();
@@ -12,14 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
     initActiveLinks();
     initAnimations();
 
-    // Mobile Menu - Complete Redesign
     function initMobileMenu() {
         const header = document.querySelector('.header-container');
         const body = document.body;
         
         if (!header) return;
 
-        // Create mobile toggle if it doesn't exist
         let toggle = document.querySelector('.mobile-toggle');
         if (!toggle && window.innerWidth <= 768) {
             toggle = document.createElement('button');
@@ -28,26 +24,22 @@ document.addEventListener('DOMContentLoaded', function() {
             toggle.setAttribute('aria-expanded', 'false');
             toggle.innerHTML = '<span></span><span></span><span></span>';
             
-            // Add to header (replacing the desktop nav area on mobile)
             const headerActions = document.querySelector('.header-actions');
             if (headerActions) {
                 header.appendChild(toggle);
             }
         }
 
-        // Create mobile menu container if it doesn't exist
         let mobileMenu = document.querySelector('.mobile-menu');
         if (!mobileMenu && window.innerWidth <= 768) {
             mobileMenu = createMobileMenu();
             body.appendChild(mobileMenu);
             
-            // Create overlay
             const overlay = document.createElement('div');
             overlay.className = 'mobile-menu-overlay';
             body.appendChild(overlay);
         }
 
-        // Toggle menu
         if (toggle && mobileMenu) {
             toggle.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -61,7 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Close menu functions
         function openMobileMenu() {
             if (mobileMenu && toggle) {
                 mobileMenu.classList.add('open');
@@ -82,17 +73,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Close on overlay click
         document.querySelector('.mobile-menu-overlay')?.addEventListener('click', closeMobileMenu);
 
-        // Close on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeMobileMenu();
             }
         });
 
-        // Close menu when clicking a link
         if (mobileMenu) {
             mobileMenu.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
@@ -105,24 +93,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Create Mobile Menu Structure
     function createMobileMenu() {
         const menu = document.createElement('nav');
         menu.className = 'mobile-menu';
         menu.setAttribute('aria-label', 'Mobile navigation');
         
-        // Get existing nav items
         const desktopNav = document.querySelector('.nav-menu');
         if (!desktopNav) return menu;
         
         const mobileNav = document.createElement('ul');
         mobileNav.className = 'mobile-menu-nav';
         
-        // Clone navigation items
         desktopNav.querySelectorAll('> li').forEach(item => {
             const clone = item.cloneNode(true);
             
-            // Handle dropdowns
             if (clone.classList.contains('dropdown')) {
                 clone.classList.add('mobile-dropdown');
                 const toggle = clone.querySelector('a');
@@ -155,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return menu;
     }
 
-    // Header Scroll Effect
     function initHeaderScroll() {
         const header = document.querySelector('.site-header');
         if (!header) return;
@@ -166,14 +149,12 @@ document.addEventListener('DOMContentLoaded', function() {
         function updateHeader() {
             const currentScroll = window.pageYOffset;
             
-            // Add/remove scrolled class for visual effects
             if (currentScroll > 10) {
                 header.classList.add('scrolled');
             } else {
                 header.classList.remove('scrolled');
             }
             
-            // Hide/show header on scroll
             if (currentScroll > 100 && currentScroll > lastScroll && window.innerWidth > 768) {
                 header.classList.add('hidden');
             } else {
@@ -192,14 +173,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Dropdown Menus (Desktop)
     function initDropdowns() {
         const dropdowns = document.querySelectorAll('.dropdown');
         
         dropdowns.forEach(dropdown => {
             const toggle = dropdown.querySelector('a');
             
-            // Add arrow indicator if not present
             if (toggle && !toggle.querySelector('.arrow')) {
                 const arrow = document.createElement('span');
                 arrow.className = 'arrow';
@@ -257,7 +236,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Smooth Scrolling
     function initSmoothScroll() {
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
@@ -282,7 +260,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Active Navigation Links
     function initActiveLinks() {
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.nav-menu a, .mobile-menu-nav a');
@@ -306,9 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Page Animations
     function initAnimations() {
-        // Animate content on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -323,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }, observerOptions);
 
-        // Observe elements
         document.querySelectorAll('.content > h2, .content > h3, .content > p, .content > ul, .content > ol').forEach(el => {
             el.style.opacity = '0';
             el.style.transform = 'translateY(20px)';
@@ -332,16 +306,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Handle window resize
     let resizeTimer;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
-            // Reinitialize mobile menu if needed
             if (window.innerWidth <= 768) {
                 initMobileMenu();
             } else {
-                // Clean up mobile menu on desktop
                 document.querySelector('.mobile-menu')?.remove();
                 document.querySelector('.mobile-menu-overlay')?.remove();
                 document.querySelector('.mobile-toggle')?.remove();
@@ -350,7 +321,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
 
-    // Add loading animation to links
     document.querySelectorAll('a').forEach(link => {
         if (link.getAttribute('href')?.startsWith('http') && !link.getAttribute('href').includes(window.location.hostname)) {
             link.setAttribute('target', '_blank');
