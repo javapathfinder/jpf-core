@@ -142,9 +142,7 @@ public class BootstrapMethodInfo {
     if (resolvedArgs == null) {
       resolveBootstrapArguments();
     }
-
     parseTypesBasedOnBMType();
-    logPreparationComplete();
   }
 
   public CallSite generateCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
@@ -181,9 +179,6 @@ public class BootstrapMethodInfo {
   }
 
   private CallSite createStringConcatCallSite(MethodHandles.Lookup lookup, String name, MethodType methodType) throws Throwable {
-    debugLog("Creating string concat CallSite");
-    debugLog("Using actual methodType: " + methodType);
-
     StringConcatConfig config = extractStringConcatConfig(methodType);
     MethodHandle target = createStringConcatHandle(lookup, methodType, config);
 
@@ -194,10 +189,6 @@ public class BootstrapMethodInfo {
     Class<?>[] paramTypes = methodType.parameterArray();
     String recipe = extractRecipe();
     Object[] constants = extractConstants();
-
-    debugLog("Recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
-    debugLog("Constants: " + Arrays.toString(constants));
-    debugLog("Parameter types: " + Arrays.toString(paramTypes));
 
     return new StringConcatConfig(recipe, constants, paramTypes);
   }
@@ -211,7 +202,6 @@ public class BootstrapMethodInfo {
       return bmArg;
     }
 
-    debugLog("No recipe available - creating default");
     return "";
   }
 
@@ -248,12 +238,10 @@ public class BootstrapMethodInfo {
   }
 
   public void parseSamArgumentTypes() {
-    debugLog("Parsing SAM descriptor: " + samDescriptor);
     if (samDescriptor == null) return;
 
     String parameterDescriptor = extractParameterDescriptor(samDescriptor);
     this.argumentTypes = parseTypeDescriptor(parameterDescriptor);
-    debugLog("Parsed argTypes: " + Arrays.toString(argumentTypes));
   }
 
   private String extractParameterDescriptor(String descriptor) {
@@ -261,7 +249,6 @@ public class BootstrapMethodInfo {
     int end = descriptor.indexOf(')');
 
     if (start == -1 || end == -1) {
-      debugLog("Invalid descriptor format: " + descriptor);
       return "";
     }
 
@@ -297,7 +284,6 @@ public class BootstrapMethodInfo {
       Class<?> returnType = extractReturnType(descriptor);
       return MethodType.methodType(returnType, paramTypes);
     } catch (Exception e) {
-      debugLog("Failed to parse method type from: " + descriptor);
       return MethodType.methodType(Object.class);
     }
   }
@@ -351,24 +337,7 @@ public class BootstrapMethodInfo {
   // ==================== PUBLIC METHODS ====================
 
   public static String concatVarArgsIndividual(String recipe, Class<?>[] argTypes, Object[] constants, Object[] args) {
-    debugLog("concatVarArgsIndividual called");
-    debugLog("Recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
-    debugLog("ArgTypes: " + Arrays.toString(argTypes));
-    debugLog("Constants: " + Arrays.toString(constants));
-    debugLog("Args: " + Arrays.toString(args));
-
     return JPFStringConcatHelper.concatenate(recipe, argTypes, constants, args);
-  }
-
-  // ==================== UTILITY METHODS ====================
-
-  private void logPreparationComplete() {
-    debugLog("Prepared CallSite generation for " + bmType +
-            " with " + (resolvedArgs != null ? resolvedArgs.length : 0) + " resolved args");
-  }
-
-  private static void debugLog(String message) {
-    System.out.println("[DEBUG] " + message);
   }
 
   // ==================== GETTERS ====================
