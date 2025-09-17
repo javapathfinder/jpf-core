@@ -99,16 +99,12 @@ public class INVOKEDYNAMIC extends Instruction {
 
   @Override
   public Instruction execute(ThreadInfo ti) {
-    debugLog("[INVOKEDYNAMIC] Starting execution at PC: " + ti.getPC());
 
     try {
       ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
       BootstrapMethodInfo bmi = enclosingClass.getBootstrapMethodInfo(bootstrapMethodIndex);
 
-      debugLog("Bootstrap method type: " + bmi.getBmType());
-      debugLog("SAM method name: " + samMethodName);
       // direct approach
-
       if (bmi.getBmType() == BootstrapMethodInfo.BMType.LAMBDA_EXPRESSION || bmi.getBmType() == BootstrapMethodInfo.BMType.SERIALIZABLE_LAMBDA_EXPRESSION) {
         return executeLambda(ti, null, null, bmi);
       }else if (bmi.getBmType() == BootstrapMethodInfo.BMType.RECORDS) {
@@ -135,11 +131,8 @@ public class INVOKEDYNAMIC extends Instruction {
                                        BootstrapMethodInfo bmi) throws Throwable {
     CallSite callSite = callSiteCache.get(key);
     if (callSite == null) {
-      debugLog("Creating new CallSite");
       callSite = createCallSite(ti, enclosingClass, bmi);
       callSiteCache.put(key, callSite);
-    } else {
-      debugLog("Using cached CallSite");
     }
     return callSite;
   }
@@ -153,7 +146,6 @@ public class INVOKEDYNAMIC extends Instruction {
             ? createStringConcatMethodType(bmi)
             : bmi.createMethodType();
 
-    debugLog("Created method type: " + methodType);
     return bmi.generateCallSite(lookup, samMethodName, methodType);
   }
 
@@ -164,8 +156,6 @@ public class INVOKEDYNAMIC extends Instruction {
     // call site generation works only in the context of string concat
     MethodHandle target = callSite.getTarget();
     MethodType type = target.type();
-    debugLog("Executing CallSite type: " + bmi.getBmType());
-    debugLog("Target type: " + type);
     return executeStringConcatenation(ti, target, type, bmi);
   }
 
@@ -173,18 +163,14 @@ public class INVOKEDYNAMIC extends Instruction {
 
   private Instruction executeStringConcatenation(ThreadInfo ti, MethodHandle target,
                                                  MethodType type, BootstrapMethodInfo bmi) throws Throwable {
-    debugLog("[STRING_CONCAT] Starting execution");
     StackFrame frame = ti.getModifiableTopFrame();
 
     String recipe = bmi.getBmArg();
-    debugLog("Recipe: " + JPFStringConcatHelper.escapeUnicode(recipe));
-    debugLog("Recipe placeholders: " + countPlaceholders(recipe));
 
     // Pop arguments and execute
     Object[] args = popArguments(frame, type.parameterArray());
     String result = (String) target.invokeWithArguments(args);
 
-    debugLog("Concatenation result: " + result);
 
     // Push result
     ElementInfo stringEI = ti.getHeap().newString(result, ti);
@@ -194,32 +180,21 @@ public class INVOKEDYNAMIC extends Instruction {
   }
 
   private MethodType createStringConcatMethodType(BootstrapMethodInfo bmi) {
-    debugLog("Creating string concatenation method type");
 
     List<Class<?>> paramTypes = new ArrayList<>();
     if (freeVariableTypeNames != null) {
       for (String typeName : freeVariableTypeNames) {
         Class<?> paramType = convertTypeNameToClass(typeName);
         paramTypes.add(paramType);
-        debugLog("Added parameter type: " + paramType.getSimpleName());
       }
     }
 
     return MethodType.methodType(String.class, paramTypes.toArray(new Class<?>[0]));
   }
 
-  private int countPlaceholders(String recipe) {
-    int count = 0;
-    for (char c : recipe.toCharArray()) {
-      if (c == '\u0001') count++;
-    }
-    return count;
-  }
-
   // ==================== LAMBDA HANDLING ====================
 
   private Instruction executeLambda(ThreadInfo ti, MethodHandle target, MethodType type, BootstrapMethodInfo bmi) {
-    debugLog("[LAMBDA] Executing lambda expression");
     StackFrame frame = ti.getModifiableTopFrame();
 
     ElementInfo ei = ti.getHeap().get(funcObjRef);
@@ -260,12 +235,10 @@ public class INVOKEDYNAMIC extends Instruction {
   // ==================== ARGUMENT HANDLING ====================
 
   private Object[] popArguments(StackFrame frame, Class<?>[] argTypes) {
-    debugLog("Popping " + argTypes.length + " arguments");
 
     Object[] args = new Object[argTypes.length];
     for (int i = argTypes.length - 1; i >= 0; i--) {
       args[i] = popSingleArgument(frame, argTypes[i]);
-      debugLog("Arg[" + i + "]: " + args[i] + " (" + argTypes[i].getSimpleName() + ")");
     }
     return args;
   }
@@ -360,7 +333,6 @@ public class INVOKEDYNAMIC extends Instruction {
   // ==================== RECORD OPERATIONS ====================
 
   private Instruction executeRecord(ThreadInfo ti, BootstrapMethodInfo bmi) {
-    debugLog("[RECORD] Executing: " + samMethodName);
     StackFrame frame = ti.getModifiableTopFrame();
     ClassInfo enclosingClass = this.getMethodInfo().getClassInfo();
 
@@ -587,11 +559,5 @@ public class INVOKEDYNAMIC extends Instruction {
     return (typeChar == 'Z' || typeChar == 'B' || typeChar == 'C'
             || typeChar == 'S' || typeChar == 'I' || typeChar == 'J'
             || typeChar == 'F' || typeChar == 'D');
-  }
-
-  // ==================== UTILITY METHODS ====================
-
-  private void debugLog(String message) {
-    System.out.println("[DEBUG] " + message);
   }
 }

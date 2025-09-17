@@ -34,16 +34,11 @@ public class JPFStringConcatHelper {
 
         argTypes = validateArgTypes(argTypes, args);
 
-        System.out.println("[DEBUG] concatenate() called with:");
-        System.out.println("  recipe: " + recipe);
-        System.out.println("  argTypes: " + Arrays.toString(argTypes));
-        logArguments(args);
 
         if (recipe == null || recipe.isEmpty()) {
             return handleEmptyRecipe(args, argTypes);
         }
 
-        System.out.println("CONCAT: recipe=" + escapeUnicode(recipe) + ", args=" + Arrays.toString(args));
 
         StringBuilder sb = new StringBuilder();
         int argIndex = 0;
@@ -62,9 +57,6 @@ public class JPFStringConcatHelper {
                 if (constIndex >= 0 && constIndex < constants.length) {
                     Object constant = constants[constIndex];
                     sb.append(constant != null ? constant : "null");
-                } else {
-                    sb.append("[invalid_constant_index:").append(constIndex).append("]");
-                    System.out.println("WARNING: Invalid constant index: " + constIndex);
                 }
             } else {
                 sb.append(c);
@@ -72,7 +64,6 @@ public class JPFStringConcatHelper {
         }
 
         String result = sb.toString();
-        System.out.println("Concat result: " + result);
         return result;
     }
 
@@ -91,23 +82,6 @@ public class JPFStringConcatHelper {
             }
         }
         return argTypes;
-    }
-
-    private static void logArguments(Object[] args) {
-        for (int i = 0; i < args.length; i++) {
-            Object arg = args[i];
-            if (arg instanceof ElementInfo) {
-                ElementInfo ei = (ElementInfo) arg;
-                if (ei.isStringObject()) {
-                    System.out.printf("  args[%d]: \"%s\" (String)%n", i, ei.asString());
-                } else {
-                    System.out.printf("  args[%d]: %s (non-String ElementInfo)%n", i, ei);
-                }
-            } else {
-                System.out.printf("  args[%d]: %s (%s)%n",
-                        i, arg, (arg != null) ? arg.getClass().getSimpleName() : "null");
-            }
-        }
     }
 
     private static String handleEmptyRecipe(Object[] args, Class<?>[] argTypes) {
