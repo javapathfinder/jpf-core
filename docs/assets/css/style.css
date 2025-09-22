@@ -118,6 +118,10 @@
     box-shadow: var(--shadow-lg);
 }
 
+[data-theme="light"] .theme-toggle {
+    background: var(--bg-primary);
+}
+
 .theme-toggle:hover {
     transform: scale(1.1);
     box-shadow: var(--shadow-glow);
