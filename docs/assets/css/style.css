@@ -99,25 +99,67 @@
  }
 
  /*  Toggle  */
- .theme-toggle {
-     display: inline-flex;
-     align-items: center;
-     gap: 8px;
-     padding: 8px;
-     background: var(--bg-elevated);
-     border: 1px solid var(--border-subtle);
-     border-radius: 9999px;
-     cursor: pointer;
-     transition: all var(--theme-transition);
-     margin-left: 12px;
-     min-width: 44px; height: 44px; justify-content: center;
- }
- .theme-toggle:active { transform: scale(0.98); }
- .theme-toggle .icon { width: 18px; height: 18px; color: var(--text-secondary); transition: all var(--theme-transition); }
- .theme-toggle .dark-icon { opacity: 1; }
- .theme-toggle .light-icon { opacity: 0; position: absolute; }
- [data-theme="light"] .theme-toggle .dark-icon { opacity: 0; }
- [data-theme="light"] .theme-toggle .light-icon { opacity: 1; position: static; }
+.theme-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: var(--bg-glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-subtle);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--theme-transition);
+    z-index: 1001;
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-glow);
+    background: var(--bg-elevated);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.theme-toggle .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+    transition: all var(--theme-transition);
+}
+
+.theme-toggle:hover .icon {
+    color: var(--primary);
+}
+
+.theme-toggle .dark-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.theme-toggle .light-icon {
+    opacity: 0;
+    transform: rotate(180deg) scale(0.8);
+    position: absolute;
+}
+
+[data-theme="light"] .theme-toggle .dark-icon {
+    opacity: 0;
+    transform: rotate(-180deg) scale(0.8);
+}
+
+[data-theme="light"] .theme-toggle .light-icon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    position: static;
+}
 
 * {
     margin: 0;
@@ -944,6 +986,20 @@ blockquote::before {
     .mobile-ideas-tab {
         background: linear-gradient(135deg, #F0883E 0%, #F85149 100%) !important;
         color: white !important;
+    }
+
+    @media (max-width: 768px) {
+        .theme-toggle {
+            bottom: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+        }
+
+        .theme-toggle .icon {
+            width: 18px;
+            height: 18px;
+        }
     }
     
     /* Overlay */
