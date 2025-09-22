@@ -66,7 +66,58 @@
     --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
     --shadow-lg: 0 12px 48px rgba(0, 0, 0, 0.12);
     --shadow-glow: 0 0 40px rgba(88, 166, 255, 0.1);
+
+    --theme-transition: 0.3s ease;
 }
+
+
+ /* light theme */
+
+ [data-theme="light"] {
+     --bg-primary: #FFFFFF;
+     --bg-secondary: #F6F8FA;
+     --bg-elevated: #FAFBFC;
+     --bg-overlay: #F0F3F6;
+     --bg-glass: rgba(255,255,255,0.85);
+     --text-primary: #24292F;
+     --text-secondary: #656D76;
+     --text-muted: #8B949E;
+     --text-link: #0969DA;
+     --border-default: #D1D9E0;
+     --border-muted: #D8DEE4;
+     --border-subtle: rgba(175,184,193,0.2);
+     --primary: #0969DA;
+     --primary-hover: #0550AE;
+     --primary-bg: rgba(9,105,218,0.1);
+     --gradient-primary: linear-gradient(135deg, #0969DA 0%, #0550AE 100%);
+     --gradient-dark: linear-gradient(180deg, rgba(255,255,255, 0) 0%, rgba(246,248,250,0.8) 100%);
+     --gradient-header: linear-gradient(90deg, #FFFFFF 0%, #F6F8FA 50%, #FFFFFF 100%);
+     --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+     --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+     --shadow-lg: 0 12px 48px rgba(0,0,0,0.08);
+     --shadow-glow: 0 0 40px rgba(9,105,218,0.1);
+ }
+
+ /*  Toggle  */
+ .theme-toggle {
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+     padding: 8px;
+     background: var(--bg-elevated);
+     border: 1px solid var(--border-subtle);
+     border-radius: 9999px;
+     cursor: pointer;
+     transition: all var(--theme-transition);
+     margin-left: 12px;
+     min-width: 44px; height: 44px; justify-content: center;
+ }
+ .theme-toggle:active { transform: scale(0.98); }
+ .theme-toggle .icon { width: 18px; height: 18px; color: var(--text-secondary); transition: all var(--theme-transition); }
+ .theme-toggle .dark-icon { opacity: 1; }
+ .theme-toggle .light-icon { opacity: 0; position: absolute; }
+ [data-theme="light"] .theme-toggle .dark-icon { opacity: 0; }
+ [data-theme="light"] .theme-toggle .light-icon { opacity: 1; position: static; }
 
 * {
     margin: 0;

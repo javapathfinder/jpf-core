@@ -10,33 +10,29 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<!-- Skip link for accessibility -->
-<a href="#main-content" class="skip-link">Skip to main content</a>
 
-<!-- Fixed Header -->
 <header class="site-header">
-  <div class="header-container">
-    <!-- Brand -->
-    <div class="header-brand">
-      <a href="{{ '/' | relative_url }}" class="brand-link">
-        <i class="fas fa-code-branch"></i>
-        <span>{{ site.title }}</span>
-      </a>
+    <div class="header-container">
+        <div class="header-brand">
+            <a href="{{ '/' | relative_url }}" class="brand-link">
+                <i class="fas fa-code-branch"></i>
+                <span>{{ site.title }}</span>
+            </a>
+        </div>
+        <nav class="main-nav">
+            {% include navigation.html %}
+        </nav>
+        <div class="header-actions">
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark theme">
+                <i class="fas fa-moon icon dark-icon"></i>
+                <i class="fas fa-sun icon light-icon"></i>
+            </button>
+            <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+        </div>
     </div>
-
-    <!-- Navigation -->
-    <nav class="main-nav">
-      {% include navigation.html %}
-    </nav>
-
-    <!-- GitHub Action Link -->
-    <div class="header-actions">
-      <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
-        <i class="fab fa-github"></i>
-        <span>GitHub</span>
-      </a>
-    </div>
-  </div>
 </header>
 
 <!-- Main Content -->
@@ -69,5 +65,63 @@
     </div>
   </div>
 </footer>
+
+<script>
+    (function() {
+        const THEME_STORAGE_KEY = 'jpf-theme';
+        const THEMES = { LIGHT: 'light', DARK: 'dark' };
+        const themeToggleDesktop = document.getElementById('theme-toggle');
+        function getStoredTheme() {
+            try { return localStorage.getItem(THEME_STORAGE_KEY); } catch { return null; }
+        }
+        function setStoredTheme(theme) {
+            try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch {}
+        }
+        function getSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return THEMES.LIGHT;
+            return THEMES.DARK;
+        }
+        function getCurrentTheme() {
+            const stored = getStoredTheme();
+            return stored || getSystemTheme();
+        }
+        function applyTheme(theme) {
+            if (theme === THEMES.LIGHT)
+                document.documentElement.setAttribute('data-theme', THEMES.LIGHT);
+            else
+                document.documentElement.removeAttribute('data-theme');
+            const label = theme === THEMES.LIGHT ? 'Switch to dark theme' : 'Switch to light theme';
+            if (themeToggleDesktop) {
+                themeToggleDesktop.setAttribute('aria-label', label);
+                themeToggleDesktop.setAttribute('title', label);
+            }
+        }
+        function toggleTheme() {
+            const current = getCurrentTheme();
+            const next = current === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+            setStoredTheme(next);
+            applyTheme(next);
+            document.body.classList.add('theme-transitioning');
+            setTimeout(() => document.body.classList.remove('theme-transitioning'), 300);
+        }
+        if (themeToggleDesktop) {
+            themeToggleDesktop.addEventListener('click', toggleTheme);
+        }
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+            mediaQuery.addEventListener('change', (e) => {
+                if (!getStoredTheme()) applyTheme(e.matches ? THEMES.LIGHT : THEMES.DARK);
+            });
+        }
+        document.addEventListener('keydown', e => {
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+        applyTheme(getCurrentTheme());
+    })();
+</script>
+
 </body>
 </html>
