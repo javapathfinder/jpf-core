@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk-slim
+FROM eclipse-temurin:11-jdk-jammy
 
 RUN apt-get update && apt-get install -y \
     git \
