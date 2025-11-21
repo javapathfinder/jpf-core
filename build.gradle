@@ -123,7 +123,10 @@ tasks.register('createJpfClassesJar', Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from sourceSets.classes.java.destinationDirectory
+
+    from(sourceSets.classes.java.destinationDirectory) {
+        exclude "org/junit/*.class"
+    }
     from sourceSets.annotations.java.destinationDirectory
     from(sourceSets.main.java.destinationDirectory) {
         include "gov/nasa/jpf/JPFShell.class"
@@ -296,6 +299,9 @@ tasks.register('parallelTest', Test) {
 
     testLogging {
         events "passed", "skipped", "failed"
+        afterTest { desc, result ->
+            println "Total time of ${desc.name} was ${result.endTime - result.startTime} ms"
+        }
     }
 
     afterSuite { testDescriptor, result ->
@@ -333,6 +339,10 @@ tasks.register('singleThreadTest', Test) {
 
     testLogging {
         events "passed", "skipped", "failed"
+
+        afterTest { desc, result ->
+            println "Total time of ${desc.name} was ${result.endTime - result.startTime} ms"
+        }
     }
 
     afterSuite { testDescriptor, result ->
