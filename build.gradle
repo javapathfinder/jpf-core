@@ -299,9 +299,6 @@ tasks.register('parallelTest', Test) {
 
     testLogging {
         events "passed", "skipped", "failed"
-        afterTest { desc, result ->
-            println "Total time of ${desc.name} was ${result.endTime - result.startTime} ms"
-        }
     }
 
     afterSuite { testDescriptor, result ->
@@ -340,9 +337,6 @@ tasks.register('singleThreadTest', Test) {
     testLogging {
         events "passed", "skipped", "failed"
 
-        afterTest { desc, result ->
-            println "Total time of ${desc.name} was ${result.endTime - result.startTime} ms"
-        }
     }
 
     afterSuite { testDescriptor, result ->
