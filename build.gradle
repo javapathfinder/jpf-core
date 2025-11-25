@@ -336,7 +336,6 @@ tasks.register('singleThreadTest', Test) {
 
     testLogging {
         events "passed", "skipped", "failed"
-
     }
 
     afterSuite { testDescriptor, result ->
