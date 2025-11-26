@@ -123,7 +123,10 @@ tasks.register('createJpfClassesJar', Jar) {
     dependsOn compile
     dependsOn copyResources
 
-    from sourceSets.classes.java.destinationDirectory
+
+    from(sourceSets.classes.java.destinationDirectory) {
+        exclude "org/junit/*.class"
+    }
     from sourceSets.annotations.java.destinationDirectory
     from(sourceSets.main.java.destinationDirectory) {
         include "gov/nasa/jpf/JPFShell.class"
