@@ -6,15 +6,10 @@ JPF is partitioned into separate projects that all follow the same directory lay
  
 The main artifacts are the *.jar files created and stored in the `build` directory. We can divide this into classes that are executed by the host VM (i.e. have to be in JPF's `native_classpath` setting), and classes that are executed by JPF itself (i.e. have to be in JPF's `classpath` setting). The first category includes [listeners](Listeners) and [native peers](Model-Java-Interface), the second one model classes (compiled from `src/classes`) and annotations, i.e. the system under test code.
 
-The build process is [Ant](http://ant.apache.org/) based, which means every source distribution comes with a build.xml script that implements the basic build targets `clean`, `compile`, `build` and `test`.
+The build process is Gradle based, which means every source distribution comes with Gradle wrapper scripts that implement the basic build targets `clean`, `compile`, `buildJars` and `test`.
 
-We do not include required 3rd party runtime and build libraries in the project distributions.
-The `compile` Ant target uses the standard `javac` command which requires a full JDK installation. `test` generally executes a JUnit based regression test suite. Both JUnit and Ant libraries are also need to be installed.
-
-<included in the jpf-core distribution, which also contains the minimal RunAnt.jar executable jar which can be distributed with other JPF projects to use the jpf-core provided 3rd party build tools.>
+We do not include required 3rd party runtime and build libraries in the project distributions. The `compile` task uses the standard `javac` command which requires a full JDK installation. `test` generally executes a JUnit based regression test suite.
 
 <The `lib` directory contains 3rd party libraries that are required at runtime of the project (like bcel.jar in jpf-core).>
 
-<tools contains programs and libraries that are used by the build process (like ant.jar and junit.jar in jpf-core).>
-
-For convenience reasons, JPF modules come with corresponding NetBeans and Eclipse configurations, i.e. can be directly opened as projects within these IDEs.
+For convenience reasons, JPF modules come with corresponding NetBeans configurations, i.e. can be directly opened as projects within this IDE.

@@ -82,3 +82,18 @@ local
 temp.ser
 output.txt
 file
+
+# Bundler
+Gemfile.lock
+.bundle/
+vendor/
+
+# Jekyll build output
+_site/
+
+# macOS system files
+.DS_Store
+
+# Temporary files
+.sass-cache/
+.jekyll-cache/

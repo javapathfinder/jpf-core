@@ -52,21 +52,4 @@ The changes now can be pushed to the central repository using the following comm
 
 ## Mercurial Support within NetBeans ##
 
-There is no need to install any plugins, NetBeans is distributed with Mercurial support.
-
-
-## Mercurial Plugin for Eclipse ##
-
-To work within Eclipse
-
-* Download and install the [MercurialEclipse](http://javaforge.com/project/HGE) plugin, which at the time of this writing is available from the update site: http://cbes.javaforge.com/update (the usual Eclipse spiel: **Help** -> **Install New Software...** -> **add site**, enter the update URL above) 
-
-* In the eclipse menu: **File** -> **Import** -> **Mercurial** -> **Clone repository using Mercurial** -> **Next**
-
-* In the repository location, URL, specify http://babelfish.arc.nasa.gov/hg/jpf/jpf-core
-
-* Check the box for 'Search for .project files in clone and use them to create projects'
-
-* Click on **Finish** 
-
-The steps listed above will clone the repository in your workspace. Right clicking on the project will show a 'Team' option that allows to perform all the version control operations. 
+There is no need to install any plugins, NetBeans is distributed with Mercurial support. 

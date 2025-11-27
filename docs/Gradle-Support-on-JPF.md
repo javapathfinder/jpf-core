@@ -1,4 +1,4 @@
-The JPF project has been using [Ant](https://ant.apache.org/) to automate the build process since it was published. Although Ant is a popular build tool for Java project it has some drawbacks such as the lack of automatic dependency resolution and the large and verbose XML-based script file. Given the necessity to move to a more flexible alternative, we migrated to [Gradle](https://gradle.org/) as the standard builder for JPF. In the following, we summarize what has been achieved and what is remaining.
+The JPF project has migrated to [Gradle](https://gradle.org/) as the standard build tool. Gradle provides automatic dependency resolution and a more flexible build configuration compared to the previous build system. In the following, we summarize what has been achieved and what is remaining.
 
 ## Gradle Support to JPF-core
 
