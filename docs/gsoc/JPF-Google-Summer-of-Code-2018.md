@@ -1,22 +1,16 @@
-This page is from 2018. In case you are looking for 2019:
+# JPF Google Summer of Code 2018 (Archive)
 
-# [[JPF Google Summer of Code 2019]]
+This is an archived page from GSoC 2018. For current opportunities, see the [main GSoC page](index).
 
-The Java Pathfinder (JPF) team is applying to the [Google Summer of Code](https://developers.google.com/open-source/gsoc/) (GSoC) program for 2018. The GSoC program, is a program where Google sponsors university students to write code for open source projects at selected mentoring organizations. Each student is guided by a mentor throughout the program. The length of the program is about three month, and it can be done remotely, and are generally fun. You can learn about the program rules and your eligibility [here](https://summerofcode.withgoogle.com/rules/).
+Java Pathfinder (JPF) participated in [Google Summer of Code](https://developers.google.com/open-source/gsoc/) 2018. You can learn more about JPF at the [JPF wiki](https://github.com/javapathfinder/jpf-core/wiki).
 
-## Java Pathfinder ##
+## Project Ideas ##
 
-The development of [Java Pathfinder (JPF)](https://github.com/javapathfinder/jpf-core/wiki)  started at [NASA Ames Research Center](http://www.nasa.gov/centers/ames/home/index) in 1999. It became an open-source project in 2005, and it is now released under the [Apache license, 2.0](http://www.apache.org/licenses/LICENSE-2.0). JPF's infrastructure is refactored as a Java virtual machine (JVM), and itself is written in Java. JPF is applied directly on the code, and it can be used to verify code that is compiled into bytecode.
+Project ideas for 2018 can be found [here](GSoC-2018-Project-Ideas).
 
-JPF is a very flexible tool. It offers a highly configurable structure, and introduces numerous extension mechanisms which make it a suitable engine for many existing tools. JPF has been used for a variety of application domains and research topics such as verification of multi-threaded applications, graphical user interfaces, networking, and distributed applications. 
+## Contact (Archive) ##
 
-Today, JPF is a mature tool with hundreds of active users. It is used as both a research platform and a production tool. Although it has had major contributions from industry and research labs, the main user community is academic - there are contributors from more than 20 universities worldwide.
-
-You can learn more about JPF at the [JPF wiki](https://github.com/javapathfinder/jpf-core/wiki).
-
-## Interested Students - Contact Us ##
-
-You can find existing project ideas [here](GSoC-2018-Project-Ideas). If you are interested in a JPF related project which is not listed here, we would love to hear about it. If you have any questions or suggestions regarding JPF and GSoC, email us at \<jpf.gsoc [at] gmail.com\>. Please be sure to describe your interests and background. The more we know about you, the better we will be able to answer you questions about JPF and its potential projects. Join our IRC channel #jpf on freenode to engage in a discussion about all things JPF.
+For current JPF discussions, join our [Discord server](https://discord.gg/sX4YZUVHK7).
 
 ## Timeline ##
 

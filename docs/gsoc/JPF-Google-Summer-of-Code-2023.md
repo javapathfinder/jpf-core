@@ -1,25 +1,16 @@
-## Ideas: [[GSoC 2023 Project Ideas]]
+# JPF Google Summer of Code 2023 (Archive)
 
-The Java Pathfinder (JPF) team will apply again as a mentor organization for the [Google Summer of Code](https://summerofcode.withgoogle.com/) (GSoC) program this year 2023.
-<!--The Java Pathfinder (JPF) team will be again a mentor organization for the [Google Summer of Code](https://summerofcode.withgoogle.com/) (GSoC) program this year 2022.-->
-The GSoC program, is a program where Google sponsors student developers to write code for open source projects at selected mentoring organizations. Each student is guided by a mentor throughout the program. The complete length of the program is about three months, which are done remotely, and it is generally fun. You can learn about the program rules and your eligibility [here](https://summerofcode.withgoogle.com/rules/).
+This is an archived page from GSoC 2023. For current opportunities, see the [main GSoC page](index).
 
-## Java Pathfinder ##
+Java Pathfinder (JPF) participated in [Google Summer of Code](https://summerofcode.withgoogle.com/) 2023. You can learn more about JPF at the [JPF wiki](https://github.com/javapathfinder/jpf-core/wiki).
 
-The development of [Java Pathfinder (JPF)](https://github.com/javapathfinder/jpf-core/wiki) started at [NASA Ames Research Center](http://www.nasa.gov/centers/ames/home/index) in 1999. It became an open-source project in 2005, and it is now released under the [Apache license, 2.0](http://www.apache.org/licenses/LICENSE-2.0). JPF's infrastructure is refactored as a Java virtual machine (JVM), and itself is written in Java. JPF is applied directly on the code, and it can be used to verify code that is compiled into Java bytecode.
+## Project Ideas ##
 
-JPF is a very flexible tool. It offers a highly configurable structure, and introduces numerous extension mechanisms which make it a suitable engine for many existing tools. JPF has been used for a variety of application domains and research topics such as verification of multi-threaded applications, graphical user interfaces, networking, and distributed applications. 
+Project ideas for 2023 can be found on the [[GSoC 2023 Project Ideas]] page.
 
-Today, JPF is a mature tool with hundreds of active users. It is used as both a research platform and a production tool. Although it has had major contributions from industry and research labs, the main user community is academic - there are contributors from more than 20 universities worldwide.
+## Contact (Archive) ##
 
-You can learn more about JPF at the [JPF wiki](https://github.com/javapathfinder/jpf-core/wiki).
-
-## Interested Students - Contact Us ##
-
-*Note that JPF has not been yet accepted for GSoC 2023 and that our [project ideas](https://github.com/javapathfinder/jpf-core/wiki/GSoC-2023-Project-Ideas) are still being extended and refined.*
-
-You can find existing project ideas on our [[GSoC 2023 Project Ideas]] page. If you are interested in a JPF related project which is not listed here, we would love to hear about it. If you have any questions or suggestions regarding JPF and GSoC, use our Google Group: https://groups.google.com/g/java-pathfinder.
-Please be sure to describe your interests and background. The more we know about you, the better we will be able to answer you questions about JPF and its potential projects.
+For current JPF discussions, join our [Discord server](https://discord.gg/sX4YZUVHK7).
 
 ## Timeline ##
 

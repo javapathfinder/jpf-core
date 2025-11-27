@@ -1,10 +1,12 @@
-<div id="footerContent" style="text-align: center;"><pdf:pagenumber></pdf:pagenumber></div>
+# JPF Google Summer of Code 2011 (Archive)
 
-Java Pathfinder (JPF) is here again in 2011\. We are planning to participate with a number of exciting projects as part of Google Summer of Code (GSoC) 2011\. If you are new to the Google Summer of Code program, this is an annual event where Google sponsors students to work on selected open source projects, each student being supported by an experienced mentor. Projects have about 3 month scope, carry a relatively low administrative overhead, can be done remotely, and are generally fun. You also get a cool t-shirt, so what's not to like.
+This is an archived page from GSoC 2011. For current opportunities, see the [main GSoC page](index).
 
-### Interested Students - Contact Us
+Java Pathfinder (JPF) participated in Google Summer of Code (GSoC) 2011 with a number of exciting projects.
 
-If you have any questions or suggestions regarding JPF and GSoC, email us at <**jpf.gsoc [at] gmail.com**>. Please be sure to describe your interests and background. The more we know about you, the better we will be able to answer any questions you may have about JPF and/or its potential projects. If you are interested in a project that is not listed here but is relevant to JPF, we would love to hear about it. Join our IRC channel #jpf on freenode to engage in a discussion about all things JPF.
+### Contact (Archive)
+
+For current JPF discussions, join our [Discord server](https://discord.gg/sX4YZUVHK7).
 
 ### Timeline
 

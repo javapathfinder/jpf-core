@@ -1,10 +1,12 @@
-First things first - **we are go for GSoC 2010**, JPF has been accepted by Google as a mentoring organization. If you are new to the [<span class="icon">​</span>Google Summer of Code (SoC) program](http://socghop.appspot.com/), this is an annual event where Google sponsors students to work on selected open source projects, each student being supported by an experienced mentor. Projects have about 3 month scope, carry a relatively low administrative overhead, can be done remotely, and are generally fun. You also get a cool t-shirt, so what's not to like.
+# JPF Google Summer of Code 2010 (Archive)
 
-A word of caution though - JPF seems to stick. Although spread over the whole world, many of the original contributors are still around (and actually mentors). Several students of our last SoC continue to work on JPF, got subsequent internships and even jobs based on that work. We fully expect you to fall for the CS micro-cosmos that is JPF.
+This is an archived page from GSoC 2010. For current opportunities, see the [main GSoC page](index).
 
-### Interested Students - Contact Us
+Java Pathfinder (JPF) participated in Google Summer of Code 2010 as a mentoring organization.
 
-If you have any questions or suggestions regarding JPF and GSoC, email us at <**jpf.gsoc [at] gmail.com**>. Please be sure to describe your interests and background. The more we know about you, the better we will be able to answer any questions you may have about JPF and/or its potential projects. If you are interested in a project that is not listed here but is relevant to JPF, we would love to hear about it. Join our IRC channel #jpf on freenode to engage in a discussion about all things JPF.
+### Contact (Archive)
+
+For current JPF discussions, join our [Discord server](https://discord.gg/sX4YZUVHK7).
 
 ### Timeline
 
