@@ -135,6 +135,20 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 
 	private native String init(byte bytes[], int offset, int length, String charsetName);
 
+    String(AbstractStringBuilder asb, Void v) {
+        byte asbCoder = asb.getCoder();
+
+        // If Latin1: length bytes
+        // If UTF16: length * 2 bytes (shifted left by 1)
+        int length = asb.length();
+        int byteLength = length << asbCoder;
+
+        // We must copy because the builder's array is mutable and usually larger than needed.
+        this.value = java.util.Arrays.copyOf(asb.getValue(), byteLength);
+
+        // 4. Set the coder
+        this.coder = asbCoder;
+    }
 
 	@SuppressWarnings("removal") // SecurityManager
 	public String(byte x[], int offset, int length, Charset cset) {
