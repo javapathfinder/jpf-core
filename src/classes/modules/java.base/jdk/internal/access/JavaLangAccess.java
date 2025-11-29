@@ -22,6 +22,9 @@ import jdk.internal.reflect.ConstantPool;
 import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
 
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+
 /**
  * this is a placeholder for a Java 6 class, which we only have here to
  * support both Java 1.5 and 6 with the same set of env/ classes
@@ -50,4 +53,8 @@ public interface JavaLangAccess {
     StackTraceElement getStackTraceElement(Throwable t, int i);
 
     Module defineUnnamedModule(ClassLoader loader);
+
+    Module addEnableNativeAccess(Module m);
+
+    byte[] getBytesNoRepl(String s, Charset cs) throws CharacterCodingException;
 }
