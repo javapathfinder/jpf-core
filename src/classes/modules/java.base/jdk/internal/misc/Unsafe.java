@@ -400,5 +400,12 @@ public class Unsafe {
 
   public native double getDouble (long address);
   public native void putDouble (long address, double val);
-  
+
+  public Object staticFieldBase(Field f) {
+      return f.getDeclaringClass();
+  }
+
+  public long staticFieldOffset(java.lang.reflect.Field f) {
+      return objectFieldOffset(f);
+  }
 }

@@ -19,6 +19,7 @@ package jdk.internal.access;
 import jdk.internal.misc.Unsafe;
 
 import java.io.*;
+import java.util.concurrent.ForkJoinPool;
 import java.util.jar.JarFile;
 
 /**
@@ -66,6 +67,7 @@ public class SharedSecrets {
   private static JavaSecurityAccess javaSecurityAccess;
   private static JavaIOPrintStreamAccess javaIOPrintStreamAccess;
   private static JavaLangRefAccess javaLangRefAccess;
+  private static JavaUtilConcurrentFJPAccess javaUtilConcurrentFJPAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -271,4 +273,15 @@ public class SharedSecrets {
       }
       return javaLangRefAccess;
   }
+
+    public static void setJavaUtilConcurrentFJPAccess(JavaUtilConcurrentFJPAccess access) {
+        javaUtilConcurrentFJPAccess = access;
+    }
+
+    public static JavaUtilConcurrentFJPAccess getJavaUtilConcurrentFJPAccess() {
+        if (javaUtilConcurrentFJPAccess == null) {
+            unsafe.ensureClassInitialized(java.util.concurrent.ForkJoinPool.class);
+        }
+        return javaUtilConcurrentFJPAccess;
+    }
 }

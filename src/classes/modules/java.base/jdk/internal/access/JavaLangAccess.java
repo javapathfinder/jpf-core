@@ -19,8 +19,10 @@
 package jdk.internal.access;
 
 import jdk.internal.reflect.ConstantPool;
+import jdk.internal.vm.ThreadContainer;
 import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
+import jdk.internal.vm.ThreadContainer;
 
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -57,4 +59,6 @@ public interface JavaLangAccess {
     Module addEnableNativeAccess(Module m);
 
     byte[] getBytesNoRepl(String s, Charset cs) throws CharacterCodingException;
+
+    void start(Thread thread, ThreadContainer container);
 }
