@@ -17,10 +17,9 @@
  */
 package jdk.internal.access;
 import jdk.internal.misc.Unsafe;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.ObjectInputFilter;
-import java.io.ObjectInputStream;
+
+import java.io.*;
+import java.util.concurrent.ForkJoinPool;
 import java.util.jar.JarFile;
 
 /**
@@ -66,6 +65,9 @@ public class SharedSecrets {
   private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
   private static JavaLangReflectAccess javaLangReflectAccess;
   private static JavaSecurityAccess javaSecurityAccess;
+  private static JavaIOPrintStreamAccess javaIOPrintStreamAccess;
+  private static JavaLangRefAccess javaLangRefAccess;
+  private static JavaUtilConcurrentFJPAccess javaUtilConcurrentFJPAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -226,4 +228,60 @@ public class SharedSecrets {
   public static void setJavaSecurityAccess(JavaSecurityAccess jsa) {
     javaSecurityAccess = jsa;
   }
+
+  public static JavaIOPrintStreamAccess getJavaIOPrintStreamAccess() {
+      if (javaIOPrintStreamAccess == null) {
+          unsafe.ensureClassInitialized(java.io.PrintStream.class);
+      }
+      return javaIOPrintStreamAccess;
+  }
+
+  public static void setJavaIOCPrintStreamAccess(JavaIOPrintStreamAccess access) {
+      javaIOPrintStreamAccess = access;
+  }
+
+  public static void setJavaLangRefAccess(JavaLangRefAccess jlra) {
+      javaLangRefAccess = jlra;
+  }
+
+  public static JavaLangRefAccess getJavaLangRefAccess() {
+      if (javaLangRefAccess == null) {
+          // Fallback: Create a default implementation if one wasn't registered
+          javaLangRefAccess = new JavaLangRefAccess() {
+              @Override
+              public void startThreads() {
+                  // JPF manages threads internally; no-op is safe here
+              }
+
+              @Override
+              public boolean waitForReferenceProcessing() throws InterruptedException {
+                  // Return false to indicate no processing is currently blocking
+                  return false;
+              }
+
+              @Override
+              public void runFinalization() {
+                  // No-op for JPF context
+              }
+
+              @Override
+              public <T> java.lang.ref.ReferenceQueue<T> newNativeReferenceQueue() {
+                  // Return a standard queue to satisfy the JDK requirement
+                  return new java.lang.ref.ReferenceQueue<>();
+              }
+          };
+      }
+      return javaLangRefAccess;
+  }
+
+    public static void setJavaUtilConcurrentFJPAccess(JavaUtilConcurrentFJPAccess access) {
+        javaUtilConcurrentFJPAccess = access;
+    }
+
+    public static JavaUtilConcurrentFJPAccess getJavaUtilConcurrentFJPAccess() {
+        if (javaUtilConcurrentFJPAccess == null) {
+            unsafe.ensureClassInitialized(java.util.concurrent.ForkJoinPool.class);
+        }
+        return javaUtilConcurrentFJPAccess;
+    }
 }

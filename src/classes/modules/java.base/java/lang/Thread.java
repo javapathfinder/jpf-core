@@ -216,6 +216,10 @@ public class Thread implements Runnable {
     return isDaemon;
   }
 
+  public boolean isVirtual() {
+      return false;
+  }
+
   public native long getId();
 
   public StackTraceElement[] getStackTrace() {

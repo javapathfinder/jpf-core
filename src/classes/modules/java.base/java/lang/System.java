@@ -22,10 +22,12 @@ import jdk.internal.access.SharedSecrets;
 import jdk.internal.reflect.ConstantPool;
 import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
+import jdk.internal.vm.ThreadContainer;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.channels.Channel;
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
@@ -119,6 +121,21 @@ public class System {
       @Override
       public Module defineUnnamedModule(ClassLoader loader) {
         return new Module(loader);
+      }
+
+      @Override
+      public Module addEnableNativeAccess(Module m) {
+          return m;
+      }
+
+      @Override
+      public byte[] getBytesNoRepl(String s, Charset cs) {
+          return s.getBytes(cs);
+      }
+
+      @Override
+      public void start(Thread t, ThreadContainer container) {
+          t.start();
       }
     };
   }
