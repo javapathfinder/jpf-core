@@ -17,10 +17,8 @@
  */
 package jdk.internal.access;
 import jdk.internal.misc.Unsafe;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.ObjectInputFilter;
-import java.io.ObjectInputStream;
+
+import java.io.*;
 import java.util.jar.JarFile;
 
 /**
@@ -66,6 +64,7 @@ public class SharedSecrets {
   private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
   private static JavaLangReflectAccess javaLangReflectAccess;
   private static JavaSecurityAccess javaSecurityAccess;
+  private static JavaIOPrintStreamAccess javaIOPrintStreamAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -226,4 +225,15 @@ public class SharedSecrets {
   public static void setJavaSecurityAccess(JavaSecurityAccess jsa) {
     javaSecurityAccess = jsa;
   }
+
+    public static JavaIOPrintStreamAccess getJavaIOPrintStreamAccess() {
+        if (javaIOPrintStreamAccess == null) {
+            unsafe.ensureClassInitialized(java.io.PrintStream.class);
+        }
+        return javaIOPrintStreamAccess;
+    }
+
+    public static void setJavaIOCPrintStreamAccess(JavaIOPrintStreamAccess access) {
+        javaIOPrintStreamAccess = access;
+    }
 }
