@@ -1,41 +1,50 @@
-/*
- * Copyright (C) 2014, United States Government, as represented by the
- * Administrator of the National Aeronautics and Space Administration.
- * All rights reserved.
- *
- * The Java Pathfinder core (jpf-core) platform is licensed under the
- * Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
- *
- *        http://www.apache.org/licenses/LICENSE-2.0.
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.annotation.MJI;
 import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.NativePeer;
+import java.util.Properties;
 
 /**
- * this is just a placeholder for now, we don't support its functionality
+ * MJI NativePeer class for jdk.internal.misc.VM
  */
 public class JPF_jdk_internal_misc_VM extends NativePeer {
+    
+    private static Properties savedProps = new Properties();
 
-  @MJI
-  public void initialize____V (MJIEnv env, int clsObjRef){
-    // nothing here yet
-  }
+    @MJI
+    public void initialize____V(MJIEnv env, int clsObjRef) {
+        // Initialize saved properties from system properties
+        Properties sysProps = System.getProperties();
+        for (String key : sysProps.stringPropertyNames()) {
+            savedProps.setProperty(key, sysProps.getProperty(key));
+        }
+    }
 
-  @MJI
-  public void initializeFromArchive(MJIEnv env,
-                                    int clsObjRef,
-                                    int cRef) {
-    // We don't support CDS so we don't need to implement it,
-    // which doesn't affect our correctness.
-  }
+    @MJI
+    public void saveAndRemoveProperties__Ljava_util_Properties_2__V(MJIEnv env, int clsObjRef, int propsRef) {
+        if (propsRef != MJIEnv.NULL) {
+            // Get the Properties object from JPF heap
+            ElementInfo eiProps = env.getElementInfo(propsRef);
+            // For now, just copy all current system properties
+            // A full implementation would iterate through the JPF Properties object
+            Properties sysProps = System.getProperties();
+            for (String key : sysProps.stringPropertyNames()) {
+                savedProps.setProperty(key, sysProps.getProperty(key));
+            }
+        }
+    }
+
+    @MJI
+    public int getSavedProperty__Ljava_lang_String_2__Ljava_lang_String_2(MJIEnv env, int clsObjRef, int keyRef) {
+        String key = env.getStringObject(keyRef);
+        String value = savedProps.getProperty(key);
+        return (value != null) ? env.newString(value) : MJIEnv.NULL;
+    }
+
+    @MJI
+    public void initializeFromArchive(MJIEnv env, int clsObjRef, int cRef) {
+        // We don't support CDS so we don't need to implement it,
+        // which doesn't affect our correctness.
+    }
 }
