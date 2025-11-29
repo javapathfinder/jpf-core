@@ -65,6 +65,7 @@ public class SharedSecrets {
   private static JavaLangReflectAccess javaLangReflectAccess;
   private static JavaSecurityAccess javaSecurityAccess;
   private static JavaIOPrintStreamAccess javaIOPrintStreamAccess;
+  private static JavaLangRefAccess javaLangRefAccess;
 
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
@@ -226,14 +227,48 @@ public class SharedSecrets {
     javaSecurityAccess = jsa;
   }
 
-    public static JavaIOPrintStreamAccess getJavaIOPrintStreamAccess() {
-        if (javaIOPrintStreamAccess == null) {
-            unsafe.ensureClassInitialized(java.io.PrintStream.class);
-        }
-        return javaIOPrintStreamAccess;
-    }
+  public static JavaIOPrintStreamAccess getJavaIOPrintStreamAccess() {
+      if (javaIOPrintStreamAccess == null) {
+          unsafe.ensureClassInitialized(java.io.PrintStream.class);
+      }
+      return javaIOPrintStreamAccess;
+  }
 
-    public static void setJavaIOCPrintStreamAccess(JavaIOPrintStreamAccess access) {
-        javaIOPrintStreamAccess = access;
-    }
+  public static void setJavaIOCPrintStreamAccess(JavaIOPrintStreamAccess access) {
+      javaIOPrintStreamAccess = access;
+  }
+
+  public static void setJavaLangRefAccess(JavaLangRefAccess jlra) {
+      javaLangRefAccess = jlra;
+  }
+
+  public static JavaLangRefAccess getJavaLangRefAccess() {
+      if (javaLangRefAccess == null) {
+          // Fallback: Create a default implementation if one wasn't registered
+          javaLangRefAccess = new JavaLangRefAccess() {
+              @Override
+              public void startThreads() {
+                  // JPF manages threads internally; no-op is safe here
+              }
+
+              @Override
+              public boolean waitForReferenceProcessing() throws InterruptedException {
+                  // Return false to indicate no processing is currently blocking
+                  return false;
+              }
+
+              @Override
+              public void runFinalization() {
+                  // No-op for JPF context
+              }
+
+              @Override
+              public <T> java.lang.ref.ReferenceQueue<T> newNativeReferenceQueue() {
+                  // Return a standard queue to satisfy the JDK requirement
+                  return new java.lang.ref.ReferenceQueue<>();
+              }
+          };
+      }
+      return javaLangRefAccess;
+  }
 }

@@ -18,8 +18,15 @@
 
 package jdk.internal.access;
 
-import java.io.PrintStream;
+import java.lang.ref.ReferenceQueue;
 
-public interface JavaIOPrintStreamAccess {
-    Object lock(PrintStream ps);
+public interface JavaLangRefAccess {
+
+    void startThreads();
+
+    boolean waitForReferenceProcessing() throws InterruptedException;
+
+    void runFinalization();
+
+    <T> ReferenceQueue<T> newNativeReferenceQueue();
 }
