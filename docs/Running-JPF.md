@@ -1,11 +1,9 @@
-There are five general ways to run JPF, depending on your execution environment (command prompt or IDE) and desired level of configuration support. This page has to cover quite some ground, so bear with us
+There are several general ways to run JPF, depending on your execution environment and desired level of configuration support.
 
  1. [from a command prompt (operating system shell)](#command-line)
- 2. [from an IDE (NetBeans, Eclipse) without using JPF plugins](#running-jpf-from-within-ide-without-plugins)
- 3. [from an IDE with JPF plugins installed](#running-jpf-from-within-ide-with-plugins)
- 4. [from within a JUnit test class](#launching-jpf-from-junit-tests)
- 5. [single tests from command line](#explicitly-running-tests-from-the-command-line)
- 6. [explicitly from an arbitrary Java program](#explicitly-launching-jpf-from-a-java-program)
+ 2. [from within a JUnit test class](#launching-jpf-from-junit-tests)
+ 3. [single tests from command line](#explicitly-running-tests-from-the-command-line)
+ 4. [explicitly from an arbitrary Java program](#explicitly-launching-jpf-from-a-java-program)
 
 ## Command Line ##
 
@@ -84,7 +82,7 @@ There are two ways to specify what application JPF should analyze
 > jpf ... MyApplication.jpf
 ~~~~~~~~
 
-We recommend using the second way, since it enables you to store all required settings in a text file that can be kept together with the SUT sources, and also allows you to start JPF from within !NetBeans or Eclipse just by selecting the *.jpf file (this is mainly what the IDE plugins are for). Please note that application property files require a "`target`" entry, as in
+We recommend using the second way, since it enables you to store all required settings in a text file that can be kept together with the SUT sources. Please note that application property files require a "`target`" entry, as in
 
 ~~~~~~~~ {.bash}
 # JPF application property file to verify x.y.MyApplication
@@ -94,27 +92,9 @@ target.args = arg1,arg2
 ...
 ~~~~~~~~
 
-## Running JPF from within IDE without plugins ##
-
-You can start JPF from within !NetBeans or Eclipse without having the IDE specific JPF plugins installed. In this case, JPF uses the standard IDE consoles to report verification results. For details, please refer to the following pages:
-
- * [Running JPF from within NetBeans without plugin](Run-JPF-using-NetBeans)
- * [Running JPF from Eclipse without plugin](Run-JPF-using-Eclipse)
-
-Note that this is **not** the recommended way to run JPF from within an IDE, unless you want to debug JPF or your classes.
-
-## Running JPF from within IDE with plugins ##
-
-You can simplify launching JPF from within !NetBeans or Eclipse by using the respective plugins that are available from this server. In this case, you just have to create/select an application property (*.jpf) file within your test project, and use the IDE context menu to start a graphical JPF user interface. These so called "JPF shells" are separate applications (that can be configured through normal JPF properties), i.e. appear in a separate window, but can still communicate with the IDE, e.g. to position editor windows. You can find more details on
-
- * [Running JPF from within NetBeans with netbeans-jpf plugin](Run-JPF-with-NetBeans-plugin)
- * [Running JPF from Eclipse with eclipse-jpf plugin](Run-JPF-using-eclipse-jpf)
-
-This is becoming the primary method of running JPF. The benefits are twofold: (1) this is executed outside of the IDE process, i.e. it doesn't crash the IDE if JPF runs out of memory, and (2) it makes use of all your standard JPF configuration (site.properties and jpf.properties), in the same way like running JPF from a command-line. 
-
 ## Launching JPF from JUnit tests ##
 
-JPF comes with [JUnit](http://www.junit.org) based testing infrastructure that is used for its own regression test suite. This mechanism can also be used to create your own test drivers that are executed by JUnit, e.g. through an [Ant](http://ant.apache.org) build script. The source structure of your tests is quite simple
+JPF comes with [JUnit](http://www.junit.org) based testing infrastructure that is used for its own regression test suite. This mechanism can also be used to create your own test drivers that are executed by JUnit. The source structure of your tests is quite simple
 
 ~~~~~~~~ {.java}
 import gov.nasa.jpf.util.test.JPFTestSuite;
@@ -132,35 +112,11 @@ public class MyTest extends TestJPF {
   //.. more @Test methods
 ~~~~~~~~
 
-From a JUnit perspective, this is a completely normal test class. You can therefore execute such a test with the standard `<junit>` [Ant](http://ant.apache.org) task, like
+From a JUnit perspective, this is a completely normal test class. You can execute such tests using Gradle's test task (`./gradlew test`).
 
-~~~~~~~~ {.xml}
-    <property file="${user.home}/.jpf/site.properties"/>
-    <property file="${jpf-core}/jpf.properties"/>
-    ...
-    <junit printsummary="on" showoutput="off" haltonfailure="yes"
-           fork="yes" forkmode="perTest" maxmemory="1024m">
-      ...
-      <classpath>
-        ...
-        <pathelement location="${jpf-core}/build/jpf.jar"/>
-      </classpath>
+Only jpf.jar needs to be in the host VM classpath when compiling and running the test, since `gov.nasa.jpf.util.test.TestJPF` will use the normal JPF configuration (site.properties and configured jpf.properties) to set up the required `native_classpath`, `classpath`, 'test_classpath` and `sourcepath` settings at runtime. Please refer to the [JPF configuration](Configuring-JPF) page for details.
 
-      <batchtest todir="build/tests">
-        <fileset dir="build/tests">
-          ...
-          <include name="**/*Test.class"/>
-        </fileset>
-      </batchtest>
-    </junit>
-    ...
-~~~~~~~~
-
-Only jpf.jar needs to be in the host VM classpath when compiling and running the test, since `gov.nasa.jpf.util.test.TestJPF` will use the normal JPF configuration (site.properties and configured jpf.properties) to set up the required `native_classpath`, `classpath`, 'test_classpath` and `sourcepath` settings at runtime. Please refer to the [JPF configuration](Configuring-JPF) page for details. 
-
-If you don't have control over the build.xml because of the IDE specific project type (e.g. if your SUT is configured as a NetBeans "Class Library Project"), you have to add jpf.jar as an external jar to your IDE project configuration.
-
-In addition to adding jpf.jar to your build.xml or your IDE project configuration, you might want to add a jpf.properties file to the root directory of your project, to set up things like where JPF finds classes and sources it should analyze (i.e. settings that should be common for all your tests). A generic example could be 
+You might want to add a jpf.properties file to the root directory of your project, to set up things like where JPF finds classes and sources it should analyze (i.e. settings that should be common for all your tests). A generic example could be 
 
 ~~~~~~~~ {.bash}
   # example of JPF project properties file to set project specific paths
@@ -179,12 +135,6 @@ In addition to adding jpf.jar to your build.xml or your IDE project configuratio
   listener.javax.annotation.Nonnull=.aprop.listener.NonnullChecker
   ...
 ~~~~~~~~
-
-You can find project examples here
-
- * [standard NetBeans project](../projects/standardnbproject) ("Java Class Library" or "Java Application")
- * Freeform NetBeans project (with user supplied build.xml)
- * standard Eclipse project (with user supplied build.xml)
 
 Please refer to the [Verify API](Verify-API-of-JPF) and the [JPF tests](Writing-JPF-tests) pages for details about JPF APIs (like `verifyNoPropertyViolation(..)` or `Verify.getInt(min,max)`) you can use within your test classes.
 

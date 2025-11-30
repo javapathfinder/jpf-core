@@ -1,6 +1,6 @@
 # Project Ideas
 
-Please note that this list is not exclusive. If you have other ideas and topics related to JPF, please let us know on the [JPF Google group](https://groups.google.com/forum/#!forum/java-pathfinder). A possible proposal template can be found at the bottom of our GSoC page: [[JPF Google Summer of Code 2019]].
+Please note that this list is not exclusive. If you have other ideas and topics related to JPF, please let us know on our [Discord server](https://discord.gg/sX4YZUVHK7). A possible proposal template can be found at the bottom of our GSoC page: [[JPF Google Summer of Code 2019]].
 
 ### JPF Infrastructure
 
@@ -109,8 +109,8 @@ This is a high-priority project, as support for Java 8 is limited to the near fu
 jpf-symbc is essentially a (symbolic) JVM that currently supports only Java 8. The goal of this project is to make it up-to-date with new features of Java 11.
 This is a high-priority project, as support for Java 8 is limited to the near future.
 
-#### Support for gradle for jpf-core and extensions
-We have recently moved the build for jpf-core from ant to gradle. However, gradle support for Java 11 is broken, and we have not migrated extension to gradle yet (or even the extension template). The goal of this project is to (1) fix gradle support for Java 11 (branch "java-10-gradle"), (2) to update the extension template, including gradle support and updated documentation, and (3) update widely used extensions with gradle support.
+#### Support for Gradle for jpf-core and extensions
+JPF has migrated from Ant to Gradle as the standard build tool. The goal of this project is to (1) ensure gradle support works correctly for Java 11, (2) update the extension template with gradle support and updated documentation, and (3) update widely used extensions with gradle support.
 
 
 #### Method Summaries, extended

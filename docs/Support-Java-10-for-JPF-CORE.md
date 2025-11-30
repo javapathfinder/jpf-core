@@ -140,10 +140,7 @@ Changes made to MJI model classes, primarily to prevent NoSuchMethodError(s):
 
 ### Handling Access Warnings 
 
-[JEP 260][jep-260] encapsulates most of the JDK's internal APIs, so that they are inaccessible by default. So to break the encapsulation, and to access them in non-modular context, `--add-reads`, `--add-exports`, or `--add-opens` command-line options are being passed to relevant ant compile and run targets.
-
-    <compilerarg value="--add-exports"/>
-    <compilerarg value="java.base/jdk.internal.misc=ALL-UNNAMED"/>
+[JEP 260][jep-260] encapsulates most of the JDK's internal APIs, so that they are inaccessible by default. So to break the encapsulation, and to access them in non-modular context, `--add-reads`, `--add-exports`, or `--add-opens` command-line options are being passed to relevant Gradle compile and run tasks.
 
 | Summary                                                                     | PR(s)                |
 | --------------------------------------------------------------------------- |:--------------------:|
@@ -151,7 +148,7 @@ Changes made to MJI model classes, primarily to prevent NoSuchMethodError(s):
 
 | Summary                                                                     | Commit(s)            |
 | --------------------------------------------------------------------------- |:--------------------:|
-| Modify ant target -compile-classes                                          | [880b4ca][880b4ca]   |
+| Modify compile-classes task                                                 | [880b4ca][880b4ca]   |
 
 ### Deprecations in the JDK
 

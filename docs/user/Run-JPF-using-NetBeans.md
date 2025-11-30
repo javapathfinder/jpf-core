@@ -1,6 +1,8 @@
 # Running JPF from within NetBeans without JPF plugin #
 
-Please Note that the following description assumes NetBeans "freeform projects". In general, it is much better to use the JPF plugins, which not only make the configuration steps described below obsolete, but also work with other NetBeans project types.
+> **Note:** This documentation is outdated. JPF now uses Gradle as its build system, and IDE-specific plugins are no longer actively maintained. You can run JPF from any IDE by using Gradle tasks or by running JPF from the command line as described in [Running JPF](Running-JPF).
+
+Please Note that the following description assumes NetBeans "freeform projects" and the legacy Ant build system. In general, it is much better to use the JPF plugins, which not only make the configuration steps described below obsolete, but also work with other NetBeans project types.
 
 Since the NetBeans build process is Ant based, and Ant can read a subset of JPF configuration files, integration is fairly straight forward. Every JPF project comes with its own build.xml, and a `.../nbproject` directory that holds a NetBeans specific project.xml and ide-file-target.xml file, which can serve as templates for your own projects.
 
