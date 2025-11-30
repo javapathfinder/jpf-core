@@ -13,6 +13,8 @@
          - [sources](Downloading-sources)
     - [Creating a site properties file](Creating-site-properties-file)
     - [Building, testing, and running](Build,-Test,-Run)
+    - JPF plugins
+         - [NetBeans](NetBeans-Plugin)
 ---
 * [How to use JPF](How-to-use-JPF)
     - [Different applications of JPF](Different-applications-of-JPF)

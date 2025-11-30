@@ -19,3 +19,4 @@ Here you will find detailed instructions on how to install and set up Java PathF
 - [System Requirements](System-requirements)
 - [Downloading Binary Snapshots](Downloading-binary-snapshots)
 - [Downloading Sources](Downloading-sources)
+- [NetBeans Plugin](NetBeans-Plugin)

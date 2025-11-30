@@ -39,11 +39,15 @@ If you want to download the JPF source repositories, you need to install the [Gi
 ```
 
 If you are new to Git, check the [official website.](https://git-scm.com/) to learn the basics. You can also find some GUI Clients for different platforms.
-Note that all major IDEs come with Git support by default.
+Note that all major IDEs (e.g., NetBeans) come with Git support by default.
 
 For more information about Git and how to use it to clone the repository, refer to the [Downloading Sources.](https://github.com/javapathfinder/jpf-core/wiki/Downloading-sources) page.
 
 ***
 
 That's all you need! We build JPF with the Gradle Build System, and we provide a wrapper in our repository that requires you nothing but Java. Check the [Build, Test, and Run.](https://github.com/javapathfinder/jpf-core/wiki/Build,-Test,-Run) page for more information.
+
+## JPF IDE plugins ##
+
+If you want to use the [NetBeans plugin.](./netbeans-jpf), the minimal NetBeans version is 6.5.
 

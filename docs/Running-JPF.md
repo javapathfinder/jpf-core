@@ -1,9 +1,11 @@
 There are several general ways to run JPF, depending on your execution environment and desired level of configuration support.
 
  1. [from a command prompt (operating system shell)](#command-line)
- 2. [from within a JUnit test class](#launching-jpf-from-junit-tests)
- 3. [single tests from command line](#explicitly-running-tests-from-the-command-line)
- 4. [explicitly from an arbitrary Java program](#explicitly-launching-jpf-from-a-java-program)
+ 2. [from NetBeans without using JPF plugins](#running-jpf-from-within-netbeans-without-plugins)
+ 3. [from NetBeans with JPF plugins installed](#running-jpf-from-within-netbeans-with-plugins)
+ 4. [from within a JUnit test class](#launching-jpf-from-junit-tests)
+ 5. [single tests from command line](#explicitly-running-tests-from-the-command-line)
+ 6. [explicitly from an arbitrary Java program](#explicitly-launching-jpf-from-a-java-program)
 
 ## Command Line ##
 
@@ -82,7 +84,7 @@ There are two ways to specify what application JPF should analyze
 > jpf ... MyApplication.jpf
 ~~~~~~~~
 
-We recommend using the second way, since it enables you to store all required settings in a text file that can be kept together with the SUT sources. Please note that application property files require a "`target`" entry, as in
+We recommend using the second way, since it enables you to store all required settings in a text file that can be kept together with the SUT sources, and also allows you to start JPF from within NetBeans just by selecting the *.jpf file (this is mainly what the IDE plugins are for). Please note that application property files require a "`target`" entry, as in
 
 ~~~~~~~~ {.bash}
 # JPF application property file to verify x.y.MyApplication
@@ -91,6 +93,22 @@ target.args = arg1,arg2
 # Note that target_args in JPF 6 changed to target.args in JPF 7.
 ...
 ~~~~~~~~
+
+## Running JPF from within NetBeans without plugins ##
+
+You can start JPF from within NetBeans without having the IDE specific JPF plugins installed. In this case, JPF uses the standard IDE consoles to report verification results. For details, please refer to the following page:
+
+ * [Running JPF from within NetBeans without plugin](Run-JPF-using-NetBeans)
+
+Note that this is **not** the recommended way to run JPF from within an IDE, unless you want to debug JPF or your classes.
+
+## Running JPF from within NetBeans with plugins ##
+
+You can simplify launching JPF from within NetBeans by using the respective plugin that is available from this server. In this case, you just have to create/select an application property (*.jpf) file within your test project, and use the IDE context menu to start a graphical JPF user interface. These so called "JPF shells" are separate applications (that can be configured through normal JPF properties), i.e. appear in a separate window, but can still communicate with the IDE, e.g. to position editor windows. You can find more details on:
+
+ * [Running JPF from within NetBeans with netbeans-jpf plugin](Run-JPF-with-NetBeans-plugin)
+
+This is becoming the primary method of running JPF. The benefits are twofold: (1) this is executed outside of the IDE process, i.e. it doesn't crash the IDE if JPF runs out of memory, and (2) it makes use of all your standard JPF configuration (site.properties and jpf.properties), in the same way like running JPF from a command-line. 
 
 ## Launching JPF from JUnit tests ##
 
@@ -135,6 +153,11 @@ You might want to add a jpf.properties file to the root directory of your projec
   listener.javax.annotation.Nonnull=.aprop.listener.NonnullChecker
   ...
 ~~~~~~~~
+
+You can find project examples here
+
+ * [standard NetBeans project](../projects/standardnbproject) ("Java Class Library" or "Java Application")
+ * Freeform NetBeans project (with user supplied build.xml)
 
 Please refer to the [Verify API](Verify-API-of-JPF) and the [JPF tests](Writing-JPF-tests) pages for details about JPF APIs (like `verifyNoPropertyViolation(..)` or `Verify.getInt(min,max)`) you can use within your test classes.
 

@@ -11,3 +11,5 @@ The build process is [Gradle](https://gradle.org/) based, which means every sour
 We do not include required 3rd party runtime libraries in the project distributions. Gradle automatically manages build dependencies. The `build` task uses the standard `javac` command which requires a full JDK installation. `test` generally executes a JUnit based regression test suite.
 
 The `lib` directory contains 3rd party libraries that are required at runtime of the project (like bcel.jar in jpf-core).
+
+For convenience reasons, JPF modules come with corresponding NetBeans configurations, i.e. can be directly opened as projects within NetBeans.

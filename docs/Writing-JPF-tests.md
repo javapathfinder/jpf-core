@@ -110,9 +110,15 @@ d = 42
 
 ## Running JPF tests under JUnit ##
 
-This is the preferred way to execute JPF regression tests. Please note that you should not have any inner classes, interfaces, annotation types etc. with a name ending with `"Test"` since JUnit would interpret these as test cases and most likely complain about missing constructors and `main()` methods.
+This is the preferred way to execute JPF regression tests.
+
+Most JPF projects have build.gradle files you can use as examples.
+
+Please note this means that you should not have any inner classes, interfaces, annotation types etc. with a name ending with `"Test"` since JUnit would interpret these as test cases and most likely complain about missing constructors and `main()` methods.
 
 ## Debugging tests ##
 
-Typically, JPF tests are only executed from within an IDE if they fail and need to be debugged. You can use your IDE's standard debugging features to debug JPF test classes.
+Typically, JPF tests are only executed from within an IDE if they fail and need to be debugged. 
+
+Under NetBeans, this can be done by selecting the test class, and then executing the *Debug File* command from the context menu. This will pop up a dialog that lets you enter a specific test method to debug. This method requires a properly set up ide-file-target.xml, which comes with most JPF projects.
 
