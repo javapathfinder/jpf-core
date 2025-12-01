@@ -7,7 +7,7 @@ There are two stable branches in our repository:
 1. `java-8`: It provides Java 8 support using Gradle build system.
 2. `java-11`: It provides Java 11 support using Gradle build system and is also the **default** branch now.
 
-Feel free to fork the desired repository. Contributions are welcome, and we invite you to subscribe to our mailing list: java-pathfinder@googlegroups.com
+Feel free to fork the desired repository. Contributions are welcome, and we invite you to join our [Discord server](https://discord.gg/sX4YZUVHK7) for discussions and support.
 
 Git is a [Distributed Version Control System.](http://betterexplained.com/articles/intro-to-distributed-version-control-illustrated/) (DVCS), like Mercurial. If you are not familiar with this, it means "all repositories are created equal", and you have to read up a bit. The foremost authority is ["PRO Git Book".](https://git-scm.com/book/en).
 

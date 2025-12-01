@@ -1,6 +1,6 @@
 # Project Ideas
 
-Please note that this list is not exclusive. If you have other ideas and topics related to JPF, please let us know on the [JPF Google group](https://groups.google.com/forum/#!forum/java-pathfinder).
+Please note that this list is not exclusive. If you have other ideas and topics related to JPF, please let us know on our [Discord server](https://discord.gg/sX4YZUVHK7).
 A possible proposal template can be found at the bottom of our GSoC page: [[JPF Google Summer of Code 2021]].
 
 ### JPF Infrastructure

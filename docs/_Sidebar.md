@@ -14,7 +14,6 @@
     - [Creating a site properties file](Creating-site-properties-file)
     - [Building, testing, and running](Build,-Test,-Run)
     - JPF plugins
-         - [Eclipse](Eclipse-Plugin) 
          - [NetBeans](NetBeans-Plugin)
 ---
 * [How to use JPF](How-to-use-JPF)
@@ -41,8 +40,7 @@
         - [Reporting system](Reporting-system)
     * [Running JPF from within your application](Running-JPF-from-application)
     * [Writing JPF tests](Writing-JPF-tests)
-    * [Coding conventions](Coding-Convention)
-    * [Hosting an Eclipse plugin update site](Host-Eclipse-plugin-update-site) 
+    * [Coding conventions](Coding-Convention) 
 ---
 * [JPF core project](JPF-core)
 ---

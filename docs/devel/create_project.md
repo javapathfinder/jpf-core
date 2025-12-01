@@ -45,38 +45,14 @@ Within the root directory of each JPF module a project properties file is needed
 You can add other JPF properties, but be aware of that this is always processed during JPF startup if you add your module to the `extensions` list in your [site.properties](Creating-site-properties-file), and might conflict with other JPF modules. For this reason you should only add your module to `extensions` if you know it will always be used.
 
 
-### 4. create your build.xml ###
-Our build process is [Ant](http://ant.apache.org/) based, hence we need a `build.xml` file. The standard targets are
+### 4. create your build.gradle ###
+Our build process is [Gradle](https://gradle.org/) based, hence we need a `build.gradle` file. The standard tasks are
 
  * `clean`
- * `compile`
- * `build` (the default, creates the jars and hence depends on compile)
+ * `build` (compiles and creates the jars)
  * `test` (run JUnit regression tests, depends on build)
- * `dist` (creates a binary-only distribution) 
 
-If you stick to the general layout, you can use a template like the one attached to this page (of course you need to replace `<your-project-name>`).
-
-Please note how `site.properties` and `jpf.properties` can be used from within the `build.xml` (Ant understands a subset of the JPF property syntax), which means you don't have to explicitly add the jars of other JPF components you depend on (at least jpf-core). You can reference them symbolically like this:
-
-~~~~~~~~ {.xml}
-  <property file="${user.home}/.jpf/site.properties"/>
-  <property file="${jpf-core}/jpf.properties"/>
-  ..
-  <!-- generic classpath settings -->
-  <path id="lib.path">
-
-    <!-- our own classes and libs come first -->
-    <pathelement location="build/main"/>
-    ...
-    <fileset dir=".">
-  	    <include name="lib/*.jar"/>
-    </fileset>
-
-    <!-- add in what we need from the core -->
-    <pathelement path="${jpf-core.native_classpath}"/>
-  </path>
-  ...
-~~~~~~~~
+If you stick to the general layout, you can use jpf-core's build.gradle as a template. Gradle automatically handles dependencies and classpath configuration for JPF components you depend on (at least jpf-core).
 
 ### 5. add your module to your site.properties ###
 This is optional, you only need to do this if you want to be able to run your JPF module outside its own directory. If so, add an entry to your [site properties file](Creating-site-properties-file) that looks like this:
@@ -88,4 +64,4 @@ This is optional, you only need to do this if you want to be able to run your JP
 ~~~~~~~~
 
 ### 6. publish your repository ###
-You can publish this wherever you want ([sourceforge](http://sourceforge.net), [bitbucket](http://bitbucket.org), [google code](http://code.google.com), or [github](http://github.com) are suitable free site supporting Mercurial), or ask us to host it on the JPF server. If you decide to use a 3rd party hosting service, please let us/the JPF community know about it (e.g. by posting to the mailing list at [java-pathfinder@googlegroups.com](https://groups.google.com/forum/#!forum/java-pathfinder).
+You can publish this wherever you want ([github](http://github.com), [bitbucket](http://bitbucket.org), or [gitlab](https://gitlab.com) are suitable free hosting services), or ask us to host it on the JPF server. If you decide to use a 3rd party hosting service, please let us/the JPF community know about it (e.g. by posting on our [Discord server](https://discord.gg/sX4YZUVHK7)).

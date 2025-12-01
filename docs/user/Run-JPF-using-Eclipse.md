@@ -1,6 +1,8 @@
-## Running JPF within eclipse ##
+## Running JPF within Eclipse ##
 
-To run JPF in eclipse after building 
+> **Note:** This documentation is outdated. JPF now uses Gradle as its build system, and IDE-specific plugins are no longer actively maintained. You can run JPF from any IDE by using Gradle tasks or by running JPF from the command line as described in [Running JPF](Running-JPF).
+
+To run JPF in Eclipse after building 
 
 * JPF click "Run"-->"Run" or click "Play"-->"Run As Dialog".
 

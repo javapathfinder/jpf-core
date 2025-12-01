@@ -110,30 +110,9 @@ d = 42
 
 ## Running JPF tests under JUnit ##
 
-This is the preferred way to execute JPF regression tests, which is usually done from an Ant build.xml script containing a standard target such as
+This is the preferred way to execute JPF regression tests.
 
-~~~~~~~~ {.xml}
-  ...
-  <target name="test" depends="build" description="run core regression tests" if="have_tests">
-     ...
-     <junit printsummary="on" showoutput="off" haltonfailure="yes"
-            fork="yes" forkmode="perTest" maxmemory="1024m" outputtoformatters="true">
-       <classpath>
-         <path refid="lib.path"/>
-         <pathelement location="build/tests"/>
-         ...
-       </classpath>
-       <batchtest todir="build/tests">
-          <fileset dir="build/tests">
-            <exclude name="**/JPF_*.class"/>
-            <include name="**/*Test.class"/>
-          </fileset>
-      </batchtest>
-    </junit>
-  </target>
-~~~~~~~~
-
-Most JPF projects have build.xml files you can use as examples.
+Most JPF projects have build.gradle files you can use as examples.
 
 Please note this means that you should not have any inner classes, interfaces, annotation types etc. with a name ending with `"Test"` since JUnit would interpret these as test cases and most likely complain about missing constructors and `main()` methods.
 
@@ -142,6 +121,4 @@ Please note this means that you should not have any inner classes, interfaces, a
 Typically, JPF tests are only executed from within an IDE if they fail and need to be debugged. 
 
 Under NetBeans, this can be done by selecting the test class, and then executing the *Debug File* command from the context menu. This will pop up a dialog that lets you enter a specific test method to debug. This method requires a properly set up ide-file-target.xml, which comes with most JPF projects.
-
-Under Eclipse, you can select the test class and then execute **Debug As..** -> **Java Application**.
 

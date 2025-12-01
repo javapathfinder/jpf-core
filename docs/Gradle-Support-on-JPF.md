@@ -1,4 +1,4 @@
-The JPF project has been using [Ant](https://ant.apache.org/) to automate the build process since it was published. Although Ant is a popular build tool for Java project it has some drawbacks such as the lack of automatic dependency resolution and the large and verbose XML-based script file. Given the necessity to move to a more flexible alternative, we migrated to [Gradle](https://gradle.org/) as the standard builder for JPF. In the following, we summarize what has been achieved and what is remaining.
+The JPF project has migrated from Ant to [Gradle](https://gradle.org/) as the standard build tool. Gradle provides automatic dependency resolution, a more flexible build configuration, and better integration with modern development tools. This page documents the migration process and current status.
 
 ## Gradle Support to JPF-core
 
@@ -65,16 +65,9 @@ The `gradle` branch is in synchronization with the `java-10` branch, and the ide
 * [Bring Gradle to Java 10](https://github.com/javapathfinder/jpf-core/issues/138)
 * [Add support to compile tasks on Gradle with Java 10](https://github.com/javapathfinder/jpf-core/issues/139)
 
-## Gradle Support to JPF-nhandler
+## Gradle Support to JPF Extensions
 
-We have been working to update JPF-nhandler in a forked repository (see below).
-First, we fixed some bugs and cleaned the Ant build script to remove unnecessary warnings and make the tests pass.
-Once the Ant build has been fixed, it remains to migrate it to Gradle.
-The work is in progress and because the build of this JPF extension is simple, must be finished in the following days.
-Another concern is running tests in a Continuous Integration (CI) environment. Every JPF extension depends on the presence of JPF-core. It remains to elaborate a way to run JPF extensions in a CI environment. Although it may be a bit out of scope, having a CI running tests is important to the maintenance of the project.
-
-- https://github.com/jeandersonbc/jpf-nhandler
-- [Issue 1 - Investigate the cause of failing tests (Closed)](https://github.com/jeandersonbc/jpf-nhandler/issues/1)
+JPF extensions should follow the same Gradle-based build process as jpf-core. Each extension should include a build.gradle file and Gradle wrapper for consistent builds across different environments.
 
 ## Lessons Learned
 

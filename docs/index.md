@@ -11,8 +11,7 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 * [Projects](Projects) - link to currently active and legacy extensions of JPF
 * [Workshops](workshops/) - link to annual workshops on JPF
 * [Google Summer of Code](gsoc/) - link to JPF's participation in the Google Summer of Code program, current ideas page [here](gsoc/GSoC-2025-Project-Ideas).
-* [Mailing list](https://groups.google.com/forum/#!forum/java-pathfinder) - discussion about JPF takes place in Google Groups [JPF Google Group](https://groups.google.com/forum/#!forum/java-pathfinder)
-* [Discord](https://discord.gg/sX4YZUVHK7) - join our [Discord server](https://discord.gg/sX4YZUVHK7) for more discussions
+* [Discord](https://discord.gg/sX4YZUVHK7) - join our [Discord server](https://discord.gg/sX4YZUVHK7) for discussions and support
 <!--* [Related research and publications](Related-publications)-->
 
 ---
@@ -78,7 +77,7 @@ This is the main page for Java™ Pathfinder (JPF). JPF is an extensible softwar
 
 <li>02/12/2010 Call for Google Summer of Code 2010 project proposals out - visit <a href="gsoc/JPF-and-Google-Summer-of-Code-2010">our SoC page</a>.</li>
 
-<li>01/30/2010 <a href="http://groups.google.com/group/java-pathfinder">JPF Google group</a> replaces old mailing lists.</li>
+
 
 <li>01/12/2010 <a href="http://www.fujitsu.com/global/news/pr/archives/month/2010/20100112-02">Fujitsu press announcement</a> released about using and extending <a href="https://babelfish.arc.nasa.gov/trac/jpf/wiki/projects/jpf-symbc">Symbolic PathFinder</a> for comprehensive testing of Java web applications.</li>
 

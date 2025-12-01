@@ -1,10 +1,8 @@
 # Project Ideas
 
-Please note that this list is not exclusive. If you have other ideas and topics related to JPF, please let us know on \<jpf.gsoc [at] gmail.com\> or the [JPF Google group](https://groups.google.com/forum/#!forum/java-pathfinder).
+Please note that this list is not exclusive. If you have other ideas and topics related to JPF, please let us know on our [Discord server](https://discord.gg/sX4YZUVHK7).
 
 ### JPF Infrastructure
-
-* [Upgrading the Build System from Ant to sbt](#upgrading-the-build-system-from-ant-to-sbt)
 
 * [Support Java 9 for jpf-core](#support-java-9-for-jpf-core) <quocsangphan>
 
@@ -90,10 +88,6 @@ Please note that this list is not exclusive. If you have other ideas and topics 
 
 
 ### Projects Descriptions
-
-
-#### Upgrading the Build System from Ant to sbt
-The goal of this project is to improve the JPF build system. Currently, JPF uses Ant, and this project includes changing the JPF build system to [sbt](http://www.scala-sbt.org/). This also includes bringing the configuration mechanism of JPF under sbt. Currently, the configuration mechanism is part of the core of JPF, [jpf-core](https://github.com/javapathfinder/jpf-core). The goal is to make this functionally as part of the build system.
 
 #### Support Java 9 for jpf-core
 jpf-core is essentially a JVM that currently supports only Java 8. The goal of this project is to make it up-to-date with new features of Java 9. First, the JPF source itself has to be compatible with Java 9. Second, JPF should support new features of Java 9 bytecode and archives. Among new features of Java 9 are multi-version archives (JAR files) and the ability to link JAR files before they are used by the JVM.

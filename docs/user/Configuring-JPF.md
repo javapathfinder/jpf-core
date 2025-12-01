@@ -78,7 +78,7 @@ jpf.properties are executed in order of definition within site.properties, with 
 
 Both site.properties and jpf.properties can define or override any key/value pairs they want, but keep in mind that you might end up with different system behavior depending on where you start JPF - avoid configuration force fights by keeping jpf.properties settings disjunct wherever you can.
 
-Please note that site and project properties have to be consistent, i.e. the module names (e.g. jpf-awt) in site.properties and jpf.properties need to be the same. This is also true for the build.xml Ant project names.
+Please note that site and project properties have to be consistent, i.e. the module names (e.g. jpf-awt) in site.properties and jpf.properties need to be the same.
 
 It is perfectly fine to have a jpf.properties in a SUT that only uses JPF for verification. You need at least to set up the `classpath` so that JPF knows where to find the SUT classes.
 
@@ -110,9 +110,9 @@ Last not least, you can override or extend any of the previous settings by provi
 
 
 ## Special Property Syntax ##
-JPF supports a number of special notations that are valid Java properties syntax, but are only processed by JPF (and - to a certain extend - by Ant):
+JPF supports a number of special notations that are valid Java properties syntax, but are only processed by JPF:
 
- * **`key=...${x}..`** - replaces `"${x}"` with whatever is currently stored under the key "`x`". This also works recursively, as in "`classpath = mypath;${classpath}`". Note that while Apache Ant does also support value expansion, but not recursively. In addition, JPF also supports expansion in the key part (i.e. left of the "`=`")
+ * **`key=...${x}..`** - replaces `"${x}"` with whatever is currently stored under the key "`x`". This also works recursively, as in "`classpath = mypath;${classpath}`". JPF also supports expansion in the key part (i.e. left of the "`=`")
 
  * **`key+=val`** - appends val to whatever is currently stored under "`key`". Note that there can be no blank between key and "`+=`", which would not be parsed by Java. This expansion only works in JPF 
 
