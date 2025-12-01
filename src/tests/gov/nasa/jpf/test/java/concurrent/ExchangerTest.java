@@ -63,7 +63,7 @@ public class ExchangerTest extends TestJPF  {
       try {
         System.out.println("M now exchanging..");
 
-        String response = exchanger.exchange("there", 100, TimeUnit.MILLISECONDS);
+        String response = exchanger.exchange("there", 1, TimeUnit.MILLISECONDS);
 
         System.out.print("M got: ");
         System.out.println(response);

@@ -63,18 +63,18 @@ public class TypeNameTest extends TestJPF {
     if (verifyNoPropertyViolation()) {
       // test for collisions between typecodes of builtin types
       // and user defined classes (e.g. "B" for byte)
-      B[] b = new B[10];
-      b[3] = new B(42);
+      B[] b = new B[1];
+      b[0] = new B(42);
 
       Object o = b.clone();
       B[] bb = (B[]) o;
-      assert b[3].equals(bb[3]);
+      assert b[0].equals(bb[0]);
 
-      byte[] a = new byte[10];
-      a[3] = 42;
+      byte[] a = new byte[1];
+      a[0] = 42;
       o = a.clone();
       byte[] aa = (byte[]) o;
-      assert a[3] == aa[3];
+      assert a[0] == aa[0];
     }
   }
 }

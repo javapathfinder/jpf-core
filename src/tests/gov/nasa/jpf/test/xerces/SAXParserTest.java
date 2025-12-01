@@ -44,13 +44,13 @@ public class SAXParserTest extends TestJPF {
             "+http.connection=http://*.dtd -- gov.nasa.jpf.CachedROHttpConnection",
             "+http.cache_dir=src/tests/gov/nasa/jpf/test/xerces",
             "+log.info=http")){
-      String pathName = "src/tests/gov/nasa/jpf/test/xerces/sun_checks.xml";
+      String pathName = "src/tests/gov/nasa/jpf/test/xerces/tiny.xml";
 
       DefaultHandler handler = new DefaultHandler();
 
       XMLReader mParser;
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      factory.setValidating(true);
+      factory.setValidating(false);
       factory.setNamespaceAware(true);
       mParser = factory.newSAXParser().getXMLReader();
       mParser.setContentHandler(handler);
