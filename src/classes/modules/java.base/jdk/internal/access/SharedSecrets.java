@@ -18,7 +18,11 @@
 package jdk.internal.access;
 import jdk.internal.misc.Unsafe;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.ObjectInputFilter;
+import java.io.ObjectInputStream;
+import java.io.PrintStream;
 import java.util.concurrent.ForkJoinPool;
 import java.util.jar.JarFile;
 
@@ -231,7 +235,7 @@ public class SharedSecrets {
 
   public static JavaIOPrintStreamAccess getJavaIOPrintStreamAccess() {
       if (javaIOPrintStreamAccess == null) {
-          unsafe.ensureClassInitialized(java.io.PrintStream.class);
+          unsafe.ensureClassInitialized(PrintStream.class);
       }
       return javaIOPrintStreamAccess;
   }
