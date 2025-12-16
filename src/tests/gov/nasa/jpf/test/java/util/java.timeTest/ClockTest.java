@@ -56,8 +56,8 @@ public class ClockTest extends TestJPF {
     Clock eastCoastStandardTime = Clock.system(withZoneId.apply("EST"));
     Clock eastCoastDaylightSavingsTime = Clock.offset(eastCoastStandardTime, Duration.of(1,ChronoUnit.HOURS));
 
-    LocalTime est = LocalTime.now(eastCoastStandardTime);
-    LocalTime edt = LocalTime.now(eastCoastDaylightSavingsTime);
+    ZonedDateTime est = ZonedDateTime.now(eastCoastStandardTime);
+    ZonedDateTime edt = ZonedDateTime.now(eastCoastDaylightSavingsTime);
 
     long timeDifference = edt.until(est,ChronoUnit.HOURS);
     assertThat(timeDifference,is(-1L));
