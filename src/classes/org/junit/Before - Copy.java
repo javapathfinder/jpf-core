@@ -16,21 +16,19 @@
  * limitations under the License.
  */
 
-package java.util.logging;
+package org.junit;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * simple stub to avoid execptions when using basic logging
+ * same as org.junit.Test - we don't want to pull the whole of JUnit
+ * into our JPF classpath just because we run TestJPF derived classes
  */
-public class FileHandler extends StreamHandler {
-  public FileHandler() throws IOException {
-    this("log.log");
-  }
-
-  public FileHandler(String pattern) throws IOException {
-    super();
-    setOutputStream(new FileOutputStream(pattern));
-  }
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Before {
+  // nothing in here
 }
