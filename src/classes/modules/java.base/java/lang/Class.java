@@ -6,13 +6,12 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ * * http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package java.lang;
@@ -56,16 +55,16 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   /** don't use serialVersionUID from JDK 1.1 for interoperability */
   private static final long serialVersionUID = 3206093459760846163L + 1;
 
-   // we init this on demand (from MJIEnv) since it's not used too often
+  // we init this on demand (from MJIEnv) since it's not used too often
   private static Annotation[] emptyAnnotations; // = new Annotation[0];
-  
+
   private String name;
 
   // set by VM
   private transient Module module;
 
   private ClassLoader classLoader;
-  
+
   /**
    * search global id of the corresponding ClassInfo, which factors in the classloader
    */
@@ -96,22 +95,22 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public native Class<?> getComponentType ();
 
   public native Field[] getFields() throws SecurityException;
-  
+
   public native Field getDeclaredField (String fieldName) throws NoSuchFieldException,
-                                                          SecurityException;
+          SecurityException;
 
   public native Field[] getDeclaredFields () throws SecurityException;
 
   public native Method getDeclaredMethod (String mthName, Class<?>... paramTypes)
-                            throws NoSuchMethodException, SecurityException;
+          throws NoSuchMethodException, SecurityException;
 
   public native Method getMethod (String mthName, Class<?>... paramTypes)
-                    throws NoSuchMethodException, SecurityException;
+          throws NoSuchMethodException, SecurityException;
 
   public native Method[] getDeclaredMethods () throws SecurityException;
 
   public native Method[] getMethods () throws SecurityException;
-    
+
   public native Constructor<?>[] getDeclaredConstructors() throws SecurityException;
 
   public native Constructor<?>[] getConstructors() throws SecurityException;
@@ -145,7 +144,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
     return getClassLoader().getResource(resolvedName);
   }
-  
+
   /*
   public Package getPackage() {
     // very very crude version for now, only supports the package name
@@ -175,7 +174,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
     }
     ClassLoader cl = getClassLoader0();
     return cl != null ? cl.definePackage(this)
-      : BootLoader.definePackage(this);
+            : BootLoader.definePackage(this);
   }
 
   ClassLoader getClassLoader0() { return classLoader; }
@@ -197,7 +196,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   T[] getEnumConstantsShared() {
     return getEnumConstants();
   }
-  
+
   // lazy initialized map for field name -> Enum constants
   // <2do> we should move this to the native side, since Enum constants don't change
   private transient Map<String, T> enumConstantDirectory = null;
@@ -219,10 +218,10 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
 
   public native Constructor<T> getDeclaredConstructor (Class<?>... paramTypes)
-              throws NoSuchMethodException, SecurityException;
+          throws NoSuchMethodException, SecurityException;
 
   public native Field getField (String fieldName) throws NoSuchFieldException,
-                                                  SecurityException;
+          SecurityException;
 
   public native boolean isInstance (Object o);
 
@@ -244,21 +243,21 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public String getSimpleName () {
     int idx; // <2do> not really - inner classes?
     Class<?> enclosingClass = getEnclosingClass();
-    
+
     if(enclosingClass!=null){
       idx = enclosingClass.getName().length();
     } else{
       idx = name.lastIndexOf('.');
     }
-    
+
     return name.substring(idx+1);
   }
 
   static native Class<?> getPrimitiveClass (String clsName);
 
-   /**
-    * this one is in JPF reflection land, it's 'native' for us
-    */
+  /**
+   * this one is in JPF reflection land, it's 'native' for us
+   */
   public static native Class<?> forName (String clsName) throws ClassNotFoundException;
 
   public static Class<?> forName (String clsName, boolean initialize, ClassLoader loader) throws ClassNotFoundException {
@@ -268,7 +267,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
     } else {
       cls = loader.loadClass(clsName);
     }
-    
+
     if (initialize) {
       cls.initialize0();
     }
@@ -279,7 +278,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
    * forces clinit without explicit field or method access
    */
   private native void initialize0 ();
-  
+
   public boolean isPrimitive () {
     return isPrimitive;
   }
@@ -288,7 +287,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   @Deprecated(since = "9")
   public native T newInstance () throws InstantiationException,
-                                      IllegalAccessException;
+          IllegalAccessException;
 
   @Override
   public String toString () {
@@ -300,7 +299,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
     if (o != null && !isInstance(o)) throw new ClassCastException();
     return (T) o;
   }
-  
+
   @SuppressWarnings("unchecked")
   public <U> Class<? extends U> asSubclass(Class<U> clazz) {
     if (clazz.isAssignableFrom(this)) {
@@ -321,16 +320,16 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   native void setAnnotationType (AnnotationType at);
 
   native AnnotationType getAnnotationType();
-  
+
   @Override
   public TypeVariable<Class<T>>[] getTypeParameters() {
     throw new UnsupportedOperationException();
   }
-  
+
   public Type getGenericSuperclass() {
     throw new UnsupportedOperationException();
   }
-  
+
   public Type[] getGenericInterfaces() {
     throw new UnsupportedOperationException();
   }
@@ -340,10 +339,10 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   }
 
   void setSigners(Object[] signers) {
-    signers = null;  // Get rid of IDE warning 
+    signers = null;  // Get rid of IDE warning
     throw new UnsupportedOperationException();
   }
-  
+
   public Method getEnclosingMethod() {
     throw new UnsupportedOperationException();
   }
@@ -357,7 +356,7 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   }
 
   public native Class<?> getEnclosingClass();
-  
+
   public String getCanonicalName() {
     throw new UnsupportedOperationException();
   }
@@ -377,24 +376,24 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public Class<?>[] getClasses() {
     throw new UnsupportedOperationException();
   }
-  
+
   public Class<?>[] getDeclaredClasses() throws SecurityException {
     throw new UnsupportedOperationException();
   }
-  
+
   public java.security.ProtectionDomain getProtectionDomain() {
     throw new UnsupportedOperationException();
   }
 
   void setProtectionDomain0(java.security.ProtectionDomain pd) {
-    pd = null;  // Get rid of IDE warning 
+    pd = null;  // Get rid of IDE warning
     throw new UnsupportedOperationException();
   }
 
   public boolean isEnum() {
     throw new UnsupportedOperationException();
   }
-  
+
   @Override
   public Annotation[] getDeclaredAnnotations() {
     throw new UnsupportedOperationException();
@@ -408,4 +407,20 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public Module getModule() {
     return module;
   }
+
+  public Class<?> getNestHost() {
+    Class<?> host = this;
+    while (host.getEnclosingClass() != null) {
+      host = host.getEnclosingClass();
+    }
+    return host;
+  }
+
+  public boolean isNestmateOf(Class<?> c) {
+    if (c == null) {
+      return false;
+    }
+    return this.getNestHost() == c.getNestHost();
+  }
+
 }
