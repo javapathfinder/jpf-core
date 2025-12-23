@@ -410,8 +410,6 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
 
   public Class<?> getNestHost() {
     Class<?> host = this;
-    // The simple implementation for JPF models: if we have an enclosing class, that's our host.
-    // This simulates nest behavior for inner classes.
     while (host.getEnclosingClass() != null) {
       host = host.getEnclosingClass();
     }
