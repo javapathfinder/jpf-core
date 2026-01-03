@@ -17,7 +17,7 @@
  */
 
 /**
- * example to catch numeric value rnge violations with the NumericValueChecker listener
+ * example to catch numeric value range violations with the NumericValueChecker listener
  */
 public class NumericValueCheck {
   

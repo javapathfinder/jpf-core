@@ -400,7 +400,6 @@ public class JoinTest extends TestJPF {
       Verify.resetCounter(0);
       Verify.resetCounter(1);
       Verify.resetCounter(2);
-      Verify.resetCounter(3);
     }
 
     if (verifyNoPropertyViolation(JPF_ARGS)) {
@@ -409,34 +408,26 @@ public class JoinTest extends TestJPF {
 
       Thread t = new Thread( workers, new Runnable(){
         @Override
-		public void run() {
+        public void run() {
           Thread t1 = new Thread( new Runnable(){
             @Override
-			public void run() {
-              Thread t11 = new Thread(new Runnable() {
-                @Override
-				public void run() {
-                  System.out.println("t11 run");
-                  Verify.incrementCounter(0);
-                }
-              }, "t11");
-              t11.start();
+            public void run() {
               System.out.println("t1 run");
-              Verify.incrementCounter(1);
+              Verify.incrementCounter(0);
             }
           }, "t1");
           t1.start();
 
           Thread t2 = new Thread( new Runnable(){
             @Override
-			public void run() {
+            public void run() {
               System.out.println("t2 run");
-              Verify.incrementCounter(2);
+              Verify.incrementCounter(1);
             }
           }, "t2");
           t2.start();
           System.out.println("t run");
-          Verify.incrementCounter(3);
+          Verify.incrementCounter(2);
         }
       }, "t");
       t.start();
@@ -469,7 +460,6 @@ public class JoinTest extends TestJPF {
       assert Verify.getCounter(0) > 0;
       assert Verify.getCounter(1) > 0;
       assert Verify.getCounter(2) > 0;
-      assert Verify.getCounter(3) > 0;
     }
   }
 

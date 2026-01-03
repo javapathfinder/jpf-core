@@ -1,0 +1,128 @@
+<!-- File: docs/_layouts/default.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }} | Java PathFinder Documentation</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-container">
+        <div class="header-brand">
+            <a href="{{ '/' | relative_url }}" class="brand-link">
+                <i class="fas fa-code-branch"></i>
+                <span>{{ site.title }}</span>
+            </a>
+        </div>
+        <nav class="main-nav">
+            {% include navigation.html %}
+        </nav>
+        <div class="header-actions">
+            <a href="https://github.com/javapathfinder/jpf-core" class="github-link">
+                <i class="fab fa-github"></i>
+                <span>GitHub</span>
+            </a>
+        </div>
+    </div>
+</header>
+
+<button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme" title="Toggle light/dark theme">
+    <i class="fas fa-moon icon dark-icon"></i>
+    <i class="fas fa-sun icon light-icon"></i>
+</button>
+
+<!-- Main Content -->
+<main id="main-content" class="main-content">
+  {% unless page.layout == 'home' %}
+  <header class="page-header">
+    <h1 class="page-title">{{ page.title }}</h1>
+    {% if page.description %}
+    <p class="page-description">{{ page.description }}</p>
+    {% endif %}
+  </header>
+  {% endunless %}
+
+  <div class="content">
+    {{ content }}
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-content">
+      <div class="footer-section">
+        <p>&copy; {{ "now" | date: "%Y" }} Java PathFinder. Open source under Apache 2.0 License.</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/javapathfinder/jpf-core">GitHub</a>
+        <a href="https://github.com/javapathfinder/jpf-core/issues">Issues</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+    (function() {
+        const THEME_STORAGE_KEY = 'jpf-theme';
+        const THEMES = { LIGHT: 'light', DARK: 'dark' };
+        const themeToggleDesktop = document.getElementById('theme-toggle');
+        function getStoredTheme() {
+            try { return localStorage.getItem(THEME_STORAGE_KEY); } catch { return null; }
+        }
+        function setStoredTheme(theme) {
+            try { localStorage.setItem(THEME_STORAGE_KEY, theme); } catch {}
+        }
+        function getSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) return THEMES.LIGHT;
+            return THEMES.DARK;
+        }
+        function getCurrentTheme() {
+            const stored = getStoredTheme();
+            return stored || getSystemTheme();
+        }
+        function applyTheme(theme) {
+            if (theme === THEMES.LIGHT)
+                document.documentElement.setAttribute('data-theme', THEMES.LIGHT);
+            else
+                document.documentElement.removeAttribute('data-theme');
+            const label = theme === THEMES.LIGHT ? 'Switch to dark theme' : 'Switch to light theme';
+            if (themeToggleDesktop) {
+                themeToggleDesktop.setAttribute('aria-label', label);
+                themeToggleDesktop.setAttribute('title', label);
+            }
+        }
+        function toggleTheme() {
+            const current = getCurrentTheme();
+            const next = current === THEMES.LIGHT ? THEMES.DARK : THEMES.LIGHT;
+            setStoredTheme(next);
+            applyTheme(next);
+            document.body.classList.add('theme-transitioning');
+            setTimeout(() => document.body.classList.remove('theme-transitioning'), 300);
+        }
+        if (themeToggleDesktop) {
+            themeToggleDesktop.addEventListener('click', toggleTheme);
+        }
+        if (window.matchMedia) {
+            const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+            mediaQuery.addEventListener('change', (e) => {
+                if (!getStoredTheme()) applyTheme(e.matches ? THEMES.LIGHT : THEMES.DARK);
+            });
+        }
+        document.addEventListener('keydown', e => {
+            if (e.altKey && e.key === 't') {
+                e.preventDefault();
+                toggleTheme();
+            }
+        });
+        applyTheme(getCurrentTheme());
+    })();
+</script>
+
+</body>
+</html>
