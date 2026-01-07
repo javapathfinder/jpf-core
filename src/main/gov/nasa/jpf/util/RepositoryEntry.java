@@ -21,6 +21,7 @@ package gov.nasa.jpf.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -109,8 +110,7 @@ class SvnRepositoryEntryFactory implements RepositoryEntryFactory {
       Pattern pName = Pattern.compile(" *name=\"([a-zA-Z0-9.]+)\"");
       Pattern pRep = Pattern.compile(" *url=\"([a-zA-Z0-9.:/\\-]+)\"");
       Pattern pRev = Pattern.compile(" *committed-rev=\"([0-9]+)\"");
-      try {
-        BufferedReader r = new BufferedReader(new FileReader(fEntries));
+      try (BufferedReader r = new BufferedReader(new FileReader(fEntries))) {
         for (String line=r.readLine(); line != null; line = r.readLine()) {
           Matcher mRep = pRep.matcher(line);
           if (mRep.matches()) {
@@ -128,7 +128,9 @@ class SvnRepositoryEntryFactory implements RepositoryEntryFactory {
             }
           }
         }
-      } catch (Throwable t) {}
+      } catch (IOException e) {
+        // ignore
+      }
     }
     
     return null;
@@ -160,19 +162,21 @@ class HgRepositoryEntryFactory implements RepositoryEntryFactory {
         File hgrcFile = new File(currentDir, ".hg/hgrc");
         
         String repoURL = "";
-        BufferedReader r = new BufferedReader(new FileReader(hgrcFile));
-        for (String line=r.readLine(); line != null; line = r.readLine()) {
-          String keyVal[] = line.split("=");
-          if (keyVal[0].trim().equals("default")) {
-            repoURL = keyVal[1].trim();
-            break;
+        try (BufferedReader r = new BufferedReader(new FileReader(hgrcFile))) {
+          for (String line=r.readLine(); line != null; line = r.readLine()) {
+            String keyVal[] = line.split("=");
+            if (keyVal[0].trim().equals("default")) {
+              repoURL = keyVal[1].trim();
+              break;
+            }
           }
-
         }
 
         File branchHeads = new File(currentDir, ".hg/branchheads.cache");
-        r = new BufferedReader(new FileReader(branchHeads));
-        String revision = r.readLine().split(" ")[1];
+        String revision;
+        try (BufferedReader r = new BufferedReader(new FileReader(branchHeads))) {
+          revision = r.readLine().split(" ")[1];
+        }
 
         return new RepositoryEntry(fullFileName, "hg", repoURL, revision);
       }
@@ -197,11 +201,11 @@ class GitRepositoryEntryFactory implements RepositoryEntryFactory {
 
     File currentDir = file.getParentFile();
 
-    searchForHg:
+    searchForGit:
     while (currentDir != null) {
       for (String childName : currentDir.list()) {
         if (childName.equals(".git")) {
-          break searchForHg;
+          break searchForGit;
         }
       }
 
@@ -210,23 +214,25 @@ class GitRepositoryEntryFactory implements RepositoryEntryFactory {
 
     if (currentDir != null) {
       try {
-        File hgrcFile = new File(currentDir, ".git/config");
+        File gitConfigFile = new File(currentDir, ".git/config");
 
         String repoURL = "";
-        BufferedReader r = new BufferedReader(new FileReader(hgrcFile));
-        for (String line = r.readLine(); line != null; line = r.readLine()) {
-          String keyVal[] = line.split("=");
-          if (keyVal[0].trim().equals("url")) {
-            repoURL = keyVal[1].trim();
-            break;
+        try (BufferedReader r = new BufferedReader(new FileReader(gitConfigFile))) {
+          for (String line = r.readLine(); line != null; line = r.readLine()) {
+            String keyVal[] = line.split("=");
+            if (keyVal[0].trim().equals("url")) {
+              repoURL = keyVal[1].trim();
+              break;
+            }
           }
-
         }
 
         // git doesn't has revision numbers so we will read last revision's hash instead
         File gitHeadHash = new File(currentDir, ".git/refs/heads/master");
-        r = new BufferedReader(new FileReader(gitHeadHash));
-        String revision = r.readLine();
+        String revision;
+        try (BufferedReader r = new BufferedReader(new FileReader(gitHeadHash))) {
+          revision = r.readLine();
+        }
 
         return new RepositoryEntry(fullFileName, "git", repoURL, revision);
 

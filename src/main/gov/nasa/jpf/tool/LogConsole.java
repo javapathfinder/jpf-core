@@ -73,24 +73,20 @@ public class LogConsole {
           System.out.println("LogConsole listening on port: " + port);
 
           cs = ss.accept();
-          BufferedReader in = new BufferedReader( new InputStreamReader(cs.getInputStream()));
           String msg; 
           
           System.out.println("LogConsole connected");
           System.out.println("--------------------------------------------------------------------------------");
-          try {
-            
+          try (BufferedReader in = new BufferedReader(new InputStreamReader(cs.getInputStream()))) {
             while ((msg = in.readLine()) != null) {
               System.out.println(msg);
             }
-            
-            System.out.println("--------------------------------------------------------------------------------");            
-            System.out.println("LogConsole disconnected");
           } catch (IOException iox) {
             System.err.println(iox);
           }
 
-          in.close();
+          System.out.println("--------------------------------------------------------------------------------");            
+          System.out.println("LogConsole disconnected");
           cs.close();
         } while (!autoclose);
 
