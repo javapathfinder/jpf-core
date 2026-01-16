@@ -290,17 +290,14 @@ task generateBrokenSource {
         File sourceFile = file('src/tests/gov/nasa/jpf/jvm/D.java')
         File tempDir = file('build/tmp/modifiedD/gov/nasa/jpf/jvm')
         tempDir.mkdirs()
-
         if (!sourceFile.exists()) {
             throw new GradleException("D.java not found at " + sourceFile)
         }
-
         String content = sourceFile.text
         if (!content.contains("package gov.nasa.jpf.jvm;")) {
              content = "package gov.nasa.jpf.jvm;\n" + content
         }
         content = content.replace("public static void m()", "public void m()")
-        
         File destFile = new File(tempDir, "D.java")
         destFile.write(content)
     }
@@ -309,7 +306,6 @@ task generateBrokenSource {
 task compileBrokenSource(type: JavaCompile) {
     dependsOn generateBrokenSource
     dependsOn compileTestJava 
-    
     source = fileTree('build/tmp/modifiedD')
     destinationDir = file('build/tmp/brokenClasses')
     classpath = sourceSets.test.compileClasspath
@@ -317,17 +313,11 @@ task compileBrokenSource(type: JavaCompile) {
 
 task testIssue250(type: Test) {
     dependsOn compileBrokenSource
-    
-  
     filter {
         includeTestsMatching "gov.nasa.jpf.jvm.StaticCallToNonStaticTest"
     }
-
-  
     classpath = files('build/tmp/brokenClasses') + sourceSets.test.runtimeClasspath
     testClassesDirs = sourceSets.test.output.classesDirs
-
-  
     testLogging {
         events "passed", "failed", "standardOut", "standardError"
         showStandardStreams = true

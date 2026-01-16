@@ -88,7 +88,6 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
     if (callee == null) {
       return ti.createAndThrowException("java.lang.NoSuchMethodException", cname + '.' + mname);
     }
-    System.out.println("DEBUG: Checking " + callee.getFullName() + " | isStatic: " + callee.isStatic());
     if (!callee.isStatic()) {
       return ti.createAndThrowException("java.lang.IncompatibleClassChangeError",
               "Expected static method " + callee.getFullName());
