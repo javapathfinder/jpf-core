@@ -311,7 +311,7 @@ task compileBrokenSource(type: JavaCompile) {
     classpath = sourceSets.test.compileClasspath
 }
 
-task testIssue250(type: Test) {
+task testInvokeStaticMismatch(type: Test) {
     dependsOn compileBrokenSource
     filter {
         includeTestsMatching "gov.nasa.jpf.jvm.StaticCallToNonStaticTest"
