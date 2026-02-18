@@ -408,4 +408,18 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   public Module getModule() {
     return module;
   }
+  public Class<?> getNestHost() {
+    Class<?> host = this;
+    while (host.getEnclosingClass() != null) {
+      host = host.getEnclosingClass();
+    }
+    return host;
+  }
+
+  public boolean isNestmateOf(Class<?> c) {
+    if (c == null) {
+      return false;
+    }
+    return this.getNestHost() == c.getNestHost();
+  }
 }
