@@ -46,7 +46,7 @@ public class ClassFile extends BinaryClassSource {
   public static final int METHOD_HANDLE = 15;
   public static final int METHOD_TYPE = 16;
   public static final int INVOKE_DYNAMIC = 18;
-  private static final int MAX_SUPPORTED_VERSION = 55;
+  private static final int MAX_SUPPORTED_VERSION = 61;
 
   public static final int REF_GETFIELD = 1;
   public static final int REF_GETSTATIC = 2;
@@ -217,11 +217,13 @@ public class ClassFile extends BinaryClassSource {
   public static final String  INNER_CLASSES_ATTR = "InnerClasses";
   public static final String  ENCLOSING_METHOD_ATTR = "EnclosingMethod";
   public static final String  BOOTSTRAP_METHOD_ATTR = "BootstrapMethods";
+  public static final String RECORD_ATTR = "Record";
+  public static final String PERMITTED_SUBCLASSES_ATTR = "PermittedSubclasses";
   
   protected final static String[] stdClassAttrs = {
     SOURCE_FILE_ATTR, DEPRECATED_ATTR, INNER_CLASSES_ATTR, DEPRECATED_ATTR, SIGNATURE_ATTR,
     RUNTIME_INVISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_ANNOTATIONS_ATTR, RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR,
-    ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR };
+    ENCLOSING_METHOD_ATTR, BOOTSTRAP_METHOD_ATTR, RECORD_ATTR, PERMITTED_SUBCLASSES_ATTR };
 
 
   protected String internStdAttrName(int cpIdx, String name, String[] stdNames){

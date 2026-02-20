@@ -39,8 +39,8 @@ public class FileVersionTest extends TestJPF {
         classFile.parse(reader);
     }
 
-    @Test(expected = ClassParseException.class)
-    public void testUnsupportedVersionJava17() throws IOException, ClassParseException {
+    @Test
+    public void testSupportedVersionJava17() throws IOException, ClassParseException {
         byte[] classData = loadClassFile(JAVA17_CLASS);
         ClassFile classFile = new ClassFile(classData);
         ClassFileReader reader = new ClassFileReaderAdapter();
