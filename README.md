@@ -52,3 +52,4 @@ docker-compose run --rm jpf-dev
 ```bash
 ./gradlew clean build
 ```
+ok i reallly understand this problem statement what should i do now?
