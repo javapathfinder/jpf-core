@@ -702,6 +702,20 @@ public class ClassFilePrinter extends StructuredPrinter implements ClassFileRead
           pw.print( cf.stringAt(i));
           pw.println("\")}");
           break;
+        case ClassFile.CONSTANT_MODULE:
+          pw.print("constant_module {name=#");
+          pw.print(cf.u2(j+1));
+          pw.print("(\"");
+          pw.print(cf.utf8At(cf.u2(j+1)));
+          pw.println("\")}");
+          break;
+        case ClassFile.CONSTANT_PACKAGE:
+          pw.print("constant_package {name=#");
+          pw.print(cf.u2(j+1));
+          pw.print("(\"");
+          pw.print(cf.utf8At(cf.u2(j+1)));
+          pw.println("\")}");
+          break;
         case ClassFile.FIELD_REF:
           printRef(pw, cf, i, j, "fieldref");
           break;
