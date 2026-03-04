@@ -159,8 +159,7 @@ public class Matcher {
 
   }
 
-
-  // TODO public native MatchResult toMatchResult();-Done;
-  // TODO public native StringBuffer appendTail(StringBuffer sb);
-  // TODO public native Matcher appendReplacement(StringBuffer sb, String replacement);
+  public native StringBuffer appendTail(StringBuffer sb);
+  
+  public native Matcher appendReplacement(StringBuffer sb, String replacement);
 }

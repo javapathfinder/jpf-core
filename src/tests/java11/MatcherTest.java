@@ -31,4 +31,106 @@ public class MatcherTest extends TestJPF {
             assertEquals("Second capturing group should match", matcher.group(2), matchResult.group(2));
         }
     }
+
+    @Test
+    public void testAppendReplacement() {
+        if (verifyNoPropertyViolation()) {
+            String input = "Today is Monday and tomorrow is Tuesday";
+            String regex = "Monday";
+            String replacement = "Friday";
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+
+            StringBuffer result = new StringBuffer();
+            
+            if (matcher.find()) {
+                matcher.appendReplacement(result, replacement);
+            }
+
+            assertTrue("Result should contain replacement", result.toString().contains("Friday"));
+            assertEquals("Partial replacement should match", "Today is Friday", result.toString());
+        }
+    }
+
+    @Test
+    public void testAppendTail() {
+        if (verifyNoPropertyViolation()) {
+            String input = "Price is 100 dollars and tax is 10 dollars";
+            String regex = "100";
+            String replacement = "200";
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+
+            StringBuffer result = new StringBuffer();
+            
+            if (matcher.find()) {
+                matcher.appendReplacement(result, replacement);
+            }
+            
+            matcher.appendTail(result);
+
+            assertEquals("Complete replacement should match", "Price is 200 dollars and tax is 10 dollars", result.toString());
+        }
+    }
+
+    @Test
+    public void testAppendReplacementWithGroups() {
+        if (verifyNoPropertyViolation()) {
+            String input = "Order ABC123 shipped on Tuesday";
+            String regex = "([A-Z]+)(\\d+)";
+            String replacement = "$2-$1";
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+
+            StringBuffer result = new StringBuffer();
+            
+            if (matcher.find()) {
+                matcher.appendReplacement(result, replacement);
+            }
+            matcher.appendTail(result);
+
+            assertEquals("Group replacement should work", "Order 123-ABC shipped on Tuesday", result.toString());
+        }
+    }
+
+    @Test
+    public void testAppendReplacementMultiple() {
+        if (verifyNoPropertyViolation()) {
+            String input = "Apple costs 5 and Orange costs 5 and Banana costs 5";
+            String regex = "costs 5";
+            String replacement = "costs 10";
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+
+            StringBuffer result = new StringBuffer();
+            
+            while (matcher.find()) {
+                matcher.appendReplacement(result, replacement);
+            }
+            matcher.appendTail(result);
+
+            assertEquals("All replacements should work", "Apple costs 10 and Orange costs 10 and Banana costs 10", result.toString());
+        }
+    }
+
+    @Test
+    public void testAppendTailNoMatches() {
+        if (verifyNoPropertyViolation()) {
+            String input = "Breakfast at 8am";
+            String regex = "lunch";
+
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+
+            StringBuffer result = new StringBuffer();
+            
+            matcher.appendTail(result);
+
+            assertEquals("Tail should be entire input when no matches", "Breakfast at 8am", result.toString());
+        }
+    }
 }
