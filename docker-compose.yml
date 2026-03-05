@@ -1,0 +1,10 @@
+services:
+  jpf-dev:
+    image: jpf-core
+    build:
+      context: .
+    working_dir: /home/jpf-core
+    volumes:
+      - .:/home/jpf-core
+      - ~/.gradle:/root/.gradle
+    entrypoint: bash
