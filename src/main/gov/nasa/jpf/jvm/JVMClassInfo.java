@@ -43,8 +43,6 @@ public class JVMClassInfo extends ClassInfo {
   // To store partially resolved classes in setBootstrapMethod
   protected static HashMap resolvedClasses = new HashMap<String, JVMClassInfo>();
   protected ClassFile classFile;
-  protected String[] permittedSubclassNames;
-  protected boolean isSealed;
 
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
