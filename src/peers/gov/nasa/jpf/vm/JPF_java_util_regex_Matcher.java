@@ -148,7 +148,11 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
     
     matcher = matcher.reset(input);
     putInstance(env, objref, matcher);
-    
+
+    // reset() resets append position to zero per Java spec
+    int id = env.getIntField(objref, "id");
+    lastAppendPosition.put(id, 0);
+
     return objref;
   }
   
@@ -258,36 +262,37 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
 
   @MJI
   public int appendTail__Ljava_lang_StringBuffer_2__Ljava_lang_StringBuffer_2 (MJIEnv env, int objref, int sbRef) {
-    Matcher matcher = getInstance(env, objref);
     int id = env.getIntField(objref, "id");
-    
+
     int inputRef = env.getReferenceField(objref, "input");
     String input = env.getStringObject(inputRef);
-    
+
     Integer lastPos = lastAppendPosition.get(id);
     if (lastPos == null) {
       lastPos = 0;
     }
-    
+
     String tailContent = input.substring(lastPos);
-    
+
     ThreadInfo ti = env.getThreadInfo();
     DirectCallStackFrame frame = ti.getReturnedDirectCall();
-    
+
     if (frame == null) {
       ClassInfo sbClass = env.getClassInfo(sbRef);
       MethodInfo appendMi = sbClass.getMethod("append(Ljava/lang/String;)Ljava/lang/StringBuffer;", false);
-      
+
       if (appendMi != null) {
         int tailRef = env.newString(tailContent);
         frame = appendMi.createDirectCallStackFrame(ti, 1);
         int argOffset = frame.setReferenceArgument(0, sbRef, null);
         frame.setReferenceArgument(argOffset, tailRef, null);
         ti.pushFrame(frame);
+        // advance append position to end of input so a second call appends nothing
+        lastAppendPosition.put(id, input.length());
         env.repeatInvocation();
       }
     }
-    
+
     return sbRef;
   }
 
@@ -317,17 +322,17 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
         String processedReplacement = processReplacement(replacement, matcher);
         String content = beforeMatch + processedReplacement;
         
-        lastAppendPosition.put(id, matchEnd);
-        
         ClassInfo sbClass = env.getClassInfo(sbRef);
         MethodInfo appendMi = sbClass.getMethod("append(Ljava/lang/String;)Ljava/lang/StringBuffer;", false);
-        
+
         if (appendMi != null) {
           int contentRef = env.newString(content);
           frame = appendMi.createDirectCallStackFrame(ti, 1);
           int argOffset = frame.setReferenceArgument(0, sbRef, null);
           frame.setReferenceArgument(argOffset, contentRef, null);
           ti.pushFrame(frame);
+          // update position only after we know the append will actually happen
+          lastAppendPosition.put(id, matchEnd);
           env.repeatInvocation();
         }
       } catch (IllegalStateException e) {
@@ -349,11 +354,20 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
         char next = replacement.charAt(i + 1);
         if (next >= '0' && next <= '9') {
           int groupNum = next - '0';
+          i += 2;
+          // greedily consume more digits as long as the group index stays valid
+          while (i < replacement.length()) {
+            char digit = replacement.charAt(i);
+            if (digit < '0' || digit > '9') break;
+            int newGroupNum = (groupNum * 10) + (digit - '0');
+            if (newGroupNum > matcher.groupCount()) break;
+            groupNum = newGroupNum;
+            i++;
+          }
           String groupValue = matcher.group(groupNum);
           if (groupValue != null) {
             result.append(groupValue);
           }
-          i += 2;
           continue;
         } else if (next == '$') {
           result.append('$');
@@ -376,5 +390,12 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
       i++;
     }
     return result.toString();
+  }
+
+  @MJI
+  public void cleanup____V(MJIEnv env, int objref) {
+    int id = env.getIntField(objref, "id");
+    matchers.remove(id);
+    lastAppendPosition.remove(id);
   }
 }

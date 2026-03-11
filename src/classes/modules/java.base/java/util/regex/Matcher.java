@@ -162,4 +162,17 @@ public class Matcher {
   public native StringBuffer appendTail(StringBuffer sb);
   
   public native Matcher appendReplacement(StringBuffer sb, String replacement);
+
+  // cleanup host-side peer state (matchers map + lastAppendPosition map)
+  native void cleanup();
+
+  @SuppressWarnings("deprecation")
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      cleanup();
+    } finally {
+      super.finalize();
+    }
+  }
 }
