@@ -556,5 +556,30 @@ implements java.io.Serializable, Comparable<String>, CharSequence {
 		System.arraycopy(multiple, 0, multiple, copied, newLength - copied);
 		return new String(multiple, coder);
 	}
+
+	public java.util.stream.Stream<String> lines() {
+	int len = length();
+	java.util.ArrayList<String> result = new java.util.ArrayList<>();
+
+	int start = 0;
+
+	for (int i = 0; i < len; i++) {
+		char c = charAt(i);
+		if (c == '\n' || c == '\r') {
+		result.add(substring(start, i));
+		  if (c == '\r' && i + 1 < len && charAt(i + 1) == '\n') {
+				i++;
+		  }
+
+		  start = i + 1;
+		}
+	}
+
+	if (start < len) {
+		result.add(substring(start, len));
+	}
+
+	return result.stream();
+	}
 }
 

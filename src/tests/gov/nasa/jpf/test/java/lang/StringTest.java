@@ -360,4 +360,45 @@ public class StringTest extends TestJPF {
 			assertEquals("  ", " ".repeat(2));
 		}
 	}
+
+	@Test
+	public void testLines() {
+		if (verifyNoPropertyViolation()) {
+			String s = "a\nb\nc";
+
+			java.util.List<String> lines =
+				s.lines().collect(java.util.stream.Collectors.toList());
+
+			assertEquals(3, lines.size());
+			assertEquals("a", lines.get(0));
+			assertEquals("b", lines.get(1));
+			assertEquals("c", lines.get(2));
+		}
+	}
+
+	@Test
+	public void testLinesTrailingNewline() {
+		if (verifyNoPropertyViolation()) {
+			String s = "a\nb\n";
+
+			java.util.List<String> lines =
+				s.lines().collect(java.util.stream.Collectors.toList());
+
+			assertEquals(2, lines.size());
+			assertEquals("a", lines.get(0));
+			assertEquals("b", lines.get(1));
+		}
+	}
+
+	@Test
+	public void testLinesEmpty() {
+		if (verifyNoPropertyViolation()) {
+			String s = "";
+
+			java.util.List<String> lines =
+				s.lines().collect(java.util.stream.Collectors.toList());
+
+			assertEquals(0, lines.size());
+		}
+	}
 }
