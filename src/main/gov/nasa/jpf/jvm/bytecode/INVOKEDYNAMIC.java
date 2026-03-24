@@ -35,6 +35,8 @@ import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 /**
@@ -286,9 +288,173 @@ public class INVOKEDYNAMIC extends Instruction {
     return ti.getHeap().newString(sb.toString(), ti).getObjectRef();
   }
 
+  private static String normalizeClassName(String className) {
+    return className.replace('/', '.');
+  }
+
+  private static ClassLoader getHostClassLoader() {
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    if (cl == null) {
+      cl = INVOKEDYNAMIC.class.getClassLoader();
+    }
+    return cl;
+  }
+
+  private static Class<?>[] getParameterTypes(MethodType type) {
+    Class<?>[] parameterTypes = new Class<?>[type.parameterCount()];
+    for (int i = 0; i < parameterTypes.length; i++) {
+      parameterTypes[i] = type.parameterType(i);
+    }
+    return parameterTypes;
+  }
+
+  private static Method findBootstrapMethod(Class<?> bootstrapClass, BootstrapMethodInfo bmi)
+      throws NoSuchMethodException {
+    MethodType bootstrapType = MethodType.fromMethodDescriptorString(bmi.getDynamicParameters(), getHostClassLoader());
+    Method method = bootstrapClass.getDeclaredMethod(bmi.getDynamicMethodName(), getParameterTypes(bootstrapType));
+
+    if (!Modifier.isStatic(method.getModifiers())) {
+      throw new NoSuchMethodException("bootstrap method is not static: " + method);
+    }
+
+    method.setAccessible(true);
+    return method;
+  }
+
+  private Object[] getBootstrapArguments(BootstrapMethodInfo bmi, MethodType callSiteType) {
+    Object[] resolvedArgs = bmi.getResolvedArgs();
+    Object[] args = new Object[3 + resolvedArgs.length];
+
+    args[0] = MethodHandles.lookup();
+    args[1] = samMethodName;
+    args[2] = callSiteType;
+    System.arraycopy(resolvedArgs, 0, args, 3, resolvedArgs.length);
+
+    return args;
+  }
+
+  private Object convertToHostValue(Object value, Class<?> targetType) {
+    if (value == null) {
+      return null;
+    }
+
+    if (!(value instanceof ElementInfo)) {
+      return value;
+    }
+
+    ElementInfo ei = (ElementInfo) value;
+    String className = ei.getClassInfo().getName();
+
+    if (targetType == String.class) {
+      return ei.asString();
+    }
+    if (targetType == Byte.class || "java.lang.Byte".equals(className)) {
+      return ei.getByteField("value");
+    }
+    if (targetType == Short.class || "java.lang.Short".equals(className)) {
+      return ei.getShortField("value");
+    }
+    if (targetType == Integer.class || "java.lang.Integer".equals(className)) {
+      return ei.getIntField("value");
+    }
+    if (targetType == Long.class || "java.lang.Long".equals(className)) {
+      return ei.getLongField("value");
+    }
+    if (targetType == Float.class || "java.lang.Float".equals(className)) {
+      return ei.getFloatField("value");
+    }
+    if (targetType == Double.class || "java.lang.Double".equals(className)) {
+      return ei.getDoubleField("value");
+    }
+    if (targetType == Character.class || "java.lang.Character".equals(className)) {
+      return ei.getCharField("value");
+    }
+    if (targetType == Boolean.class || "java.lang.Boolean".equals(className)) {
+      return ei.getBooleanField("value");
+    }
+
+    return value;
+  }
+
+  private Object[] getDynamicArguments(ThreadInfo ti, StackFrame frame, MethodType callSiteType) {
+    Object[] values = frame.getArgumentsValues(ti, freeVariableTypes);
+    Object[] args = new Object[values.length];
+
+    for (int i = 0; i < values.length; i++) {
+      args[i] = convertToHostValue(values[i], callSiteType.parameterType(i));
+    }
+
+    return args;
+  }
+
+  private void pushDynamicResult(ThreadInfo ti, StackFrame frame, MethodType callSiteType, Object result) {
+    Class<?> returnType = callSiteType.returnType();
+
+    if (returnType == void.class) {
+      return;
+    }
+    if (returnType == boolean.class) {
+      frame.push(Boolean.TRUE.equals(result) ? 1 : 0);
+      return;
+    }
+    if (returnType == byte.class) {
+      frame.push(((Number) result).byteValue());
+      return;
+    }
+    if (returnType == short.class) {
+      frame.push(((Number) result).shortValue());
+      return;
+    }
+    if (returnType == char.class) {
+      frame.push((Character) result);
+      return;
+    }
+    if (returnType == int.class) {
+      frame.push(((Number) result).intValue());
+      return;
+    }
+    if (returnType == long.class) {
+      frame.pushLong(((Number) result).longValue());
+      return;
+    }
+    if (returnType == float.class) {
+      frame.push(Types.floatToInt(((Number) result).floatValue()));
+      return;
+    }
+    if (returnType == double.class) {
+      frame.pushLong(Types.doubleToLong(((Number) result).doubleValue()));
+      return;
+    }
+    if (result == null) {
+      frame.pushRef(MJIEnv.NULL);
+      return;
+    }
+    if (returnType == String.class) {
+      frame.pushRef(ti.getHeap().newString((String) result, ti).getObjectRef());
+      return;
+    }
+
+    throw new UnsupportedOperationException("Unsupported invokedynamic return type: " + returnType.getName());
+  }
+
   private Instruction executeDynamicBootstrap(ThreadInfo ti, StackFrame frame, BootstrapMethodInfo bmi) {
-   // TODO : work to be done here later
-    return null;
+    MethodType callSiteType = MethodType.fromMethodDescriptorString(bmi.getDynamicDescriptor(), getHostClassLoader());
+    Object[] dynamicArgs = getDynamicArguments(ti, frame, callSiteType);
+
+    try {
+      Class<?> bootstrapClass = Class.forName(normalizeClassName(bmi.getDynamicClassName()), true, getHostClassLoader());
+      Method bootstrapMethod = findBootstrapMethod(bootstrapClass, bmi);
+      CallSite callSite = (CallSite) bootstrapMethod.invoke(null, getBootstrapArguments(bmi, callSiteType));
+      MethodHandle target = callSite.getTarget();
+      Object result = target.invokeWithArguments(dynamicArgs);
+
+      frame.pop(freeVariableSize);
+      pushDynamicResult(ti, frame, callSiteType, result);
+      return getNext(ti);
+
+    } catch (Throwable t) {
+      throw new RuntimeException("failed to execute dynamic bootstrap for " + bmi.getDynamicMethodName(), t);
+    }
   }
   @Override
   public Instruction execute (ThreadInfo ti) {
