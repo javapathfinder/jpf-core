@@ -159,8 +159,20 @@ public class Matcher {
 
   }
 
+  public native StringBuffer appendTail(StringBuffer sb);
+  
+  public native Matcher appendReplacement(StringBuffer sb, String replacement);
 
-  // TODO public native MatchResult toMatchResult();-Done;
-  // TODO public native StringBuffer appendTail(StringBuffer sb);
-  // TODO public native Matcher appendReplacement(StringBuffer sb, String replacement);
+  // cleanup host-side peer state (matchers map + lastAppendPosition map)
+  native void cleanup();
+
+  @SuppressWarnings("deprecation")
+  @Override
+  protected void finalize() throws Throwable {
+    try {
+      cleanup();
+    } finally {
+      super.finalize();
+    }
+  }
 }
