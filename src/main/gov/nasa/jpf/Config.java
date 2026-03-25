@@ -409,7 +409,6 @@ public class Config extends Properties {
 
   protected boolean loadProperties (String fileName) {
     if (fileName != null && fileName.length() > 0) {
-      FileInputStream is = null;
       try {
         File f = new File(fileName);
         if (f.isFile()) {
@@ -417,8 +416,9 @@ public class Config extends Properties {
 
           setConfigPathProperties(f.getAbsolutePath());
           sources.add(f);
-          is = new FileInputStream(f);
-          load(is);
+          try (FileInputStream is = new FileInputStream(f)) {
+            load(is);
+          }
           return true;
         } else {
           throw exception("property file does not exist: " + f.getAbsolutePath());
@@ -428,14 +428,6 @@ public class Config extends Properties {
         log("missing required key: " + rkx.getMessage() + ", skipping: " + fileName);
       } catch (IOException iex) {
         throw exception("error reading properties: " + fileName);
-      } finally {
-        if (is != null){
-          try {
-            is.close();
-          } catch (IOException iox1){
-            log("error closing input stream for file: " + fileName);
-          }
-        }
       }
     }
 

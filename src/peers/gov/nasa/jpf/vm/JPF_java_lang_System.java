@@ -120,9 +120,9 @@ public class JPF_java_lang_System extends NativePeer {
     if (cf != null){
       try {
         Properties p = new Properties();
-        FileInputStream fis = new FileInputStream(cf);
-        p.load(fis);
-        
+        try (FileInputStream fis = new FileInputStream(cf)) {
+          p.load(fis);
+        }
         return getProperties(env, p);
         
       } catch (IOException iox){

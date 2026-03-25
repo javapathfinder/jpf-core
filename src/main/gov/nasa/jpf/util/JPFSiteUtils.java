@@ -64,10 +64,7 @@ public class JPFSiteUtils {
     }
     map.put("config_path", dir);
 
-    try {
-      FileReader fr = new FileReader(propFile);
-      BufferedReader br = new BufferedReader(fr);
-
+    try (BufferedReader br = new BufferedReader(new FileReader(propFile))) {
       for (String line = br.readLine(); line != null; line = br.readLine()) {
         Matcher m = keyValPattern.matcher(line);
         if (m.matches()) {
@@ -116,7 +113,6 @@ public class JPFSiteUtils {
           }
         }
       }
-      br.close();
 
     } catch (FileNotFoundException fnfx) {
       return null;
@@ -255,17 +251,13 @@ public class JPFSiteUtils {
       File propFile = getCurrentProjectProperties();
 
       if (propFile != null) {
-        try {
-          FileReader fr = new FileReader(propFile);
-          BufferedReader br = new BufferedReader(fr);
-
+        try (BufferedReader br = new BufferedReader(new FileReader(propFile))) {
           for (String line = br.readLine(); line != null; line = br.readLine()) {
             Matcher m = idPattern.matcher(line);
             if (m.matches()) {
               projectId = m.group(1);
             }
           }
-          br.close();
 
         } catch (FileNotFoundException fnfx) {
           return null;
@@ -353,18 +345,11 @@ public class JPFSiteUtils {
   }
   
   public static List<Pair<String,String>> getRawEntries (File siteProps){
-    FileReader fr = null;
     if (siteProps.isFile()) {
-      try {
-        fr = new FileReader(siteProps);
-        List<Pair<String,String>> entries = getRawEntries(fr);
-        fr.close();
-        
-        return entries;
-
+      try (FileReader fr = new FileReader(siteProps)) {
+        return getRawEntries(fr);
       } catch (IOException iox) {
-      } finally {
-        try { fr.close(); } catch (IOException _ignore){}
+        // fall through to return empty list
       }
     }    
     
