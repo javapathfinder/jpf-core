@@ -27,12 +27,14 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * a ClassFileContainer that loads classes from jar files
  */
 public class JarClassFileContainer extends JVMClassFileContainer {
   protected JarFile jar;
+  protected Manifest manifest;
   protected String pathPrefix; // optional
 
   static String getContainerUrl (File file){
@@ -46,13 +48,26 @@ public class JarClassFileContainer extends JVMClassFileContainer {
   public JarClassFileContainer (File file) throws IOException {
     super(file.getPath(), getContainerUrl(file));
     jar = new JarFile(file);
+    loadManifest();
   }
 
   public JarClassFileContainer (File file, String pathPrefix) throws IOException {
     super(getPath(file, pathPrefix), getContainerUrl(file));
-
     jar = new JarFile(file);
     this.pathPrefix = getNormalizedPathPrefix(pathPrefix);
+    loadManifest();
+  }
+
+  protected void loadManifest() {
+    try {
+      manifest = jar.getManifest();
+    } catch (IOException e) {
+      manifest = null;
+    }
+  }
+
+  public Manifest getManifest() {
+    return manifest;
   }
   
   /**
