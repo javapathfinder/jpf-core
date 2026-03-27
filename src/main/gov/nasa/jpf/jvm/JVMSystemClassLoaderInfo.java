@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf.jvm;
@@ -119,14 +119,42 @@ public class JVMSystemClassLoaderInfo extends SystemClassLoaderInfo {
   }
 
   /**
-   * this is the main method to create the ClassPath, which is called from the ctor
+   * This is the main method to create the ClassPath, which is called from the ctor.
+   *
+   * Search order (first match wins):
+   * 1. Extension boot classpaths (any *.boot_classpath property except vm.boot_classpath)
+   *    - This allows extensions to override jpf-core model classes
+   * 2. Explicit classpath entries (from 'classpath' property)
+   * 3. jpf-core's vm.boot_classpath
+   * 4. JRE runtime classes (handled by JRTClassFileContainer in getMatch)
    */
   @Override
   protected void initializeSystemClassPath (VM vm, int appId) {
     Config conf = vm.getConfig();
     File[] pathElements;
 
-    // explicit "classpath[.id]" settings have precedence
+    // First, load ALL extension boot classpaths (any property ending in .boot_classpath)
+    // This allows extensions to override jpf-core model classes
+    for (Object keyObj : conf.keySet()) {
+      String key = keyObj.toString();
+      if (key.endsWith(".boot_classpath") && !key.equals("vm.boot_classpath")) {
+        String[] bootPaths = conf.getStringArray(key);
+        if (bootPaths != null) {
+          for (String bp : bootPaths) {
+            bp = bp.trim();
+            if (bp.length() > 0 && !bp.equals("<system>") && !bp.equals("<s>")) {
+              File f = new File(bp);
+              if (f.exists()) {
+                addClassPathElement(f.getAbsolutePath());
+                log.info("added extension boot classpath (", key, "): ", f.getAbsolutePath());
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // explicit "classpath[.id]" settings
     pathElements = getPathElements(conf, "classpath", appId);
     if (pathElements != null) {
       for (File f : pathElements) {
@@ -134,14 +162,14 @@ public class JVMSystemClassLoaderInfo extends SystemClassLoaderInfo {
       }
     }
 
-    // we optionally append boot_classpath
+    // we optionally append vm.boot_classpath (jpf-core's boot classpath)
     pathElements = getPathElements(conf, "vm.boot_classpath", appId);
     if (pathElements != null) {
       for (File f : pathElements) {
-        if (f.getName().equals("<system>")) {
+        if (f.getName().equals("<system>") || f.getName().equals("<s>")) {
           addSystemBootClassPath();
         } else {
-          addClassPathElement( f.getAbsolutePath());
+          addClassPathElement(f.getAbsolutePath());
         }
       }
     }
@@ -165,14 +193,14 @@ public class JVMSystemClassLoaderInfo extends SystemClassLoaderInfo {
     defaultCodeBuilder.reset(cf, mi);
     return defaultCodeBuilder;
   }
-  
+
   @Override
   protected ClassInfo createClassInfo (String clsName, String url, byte[] data, ClassLoaderInfo definingLoader) throws ClassParseException {
     ClassFile cf = new ClassFile(data);
     JVMCodeBuilder cb = getCodeBuilder(clsName);
     ClassInfo ci = new JVMClassInfo(clsName, definingLoader, cf, url, cb);
     setAttributes(ci);
-    
+
     return ci;
   }
 }
