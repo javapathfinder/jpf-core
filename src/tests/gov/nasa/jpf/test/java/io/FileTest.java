@@ -109,12 +109,7 @@ public class FileTest extends TestJPF {
   public void testToURI(){
     if(verifyNoPropertyViolation()){
       File file = new File("testfile.txt");
-      URI expectedURI = null;
-      try {
-        expectedURI = new URI("file:" + file.getAbsolutePath());
-      } catch (URISyntaxException e) {
-        fail("URISyntaxException thrown while constructing expected URI");
-      }
+      URI expectedURI = file.getAbsoluteFile().toURI();
 
       URI actualURI = file.toURI();
       System.out.println(actualURI);
