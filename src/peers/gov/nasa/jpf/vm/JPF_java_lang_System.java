@@ -181,6 +181,7 @@ public class JPF_java_lang_System extends NativePeer {
         "user.home",
         "user.timezone",
         "user.country",
+        "os.name",
         "java.home",
         "java.version",
         "java.io.tmpdir",
