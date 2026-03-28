@@ -43,6 +43,9 @@ public class ClassFile extends BinaryClassSource {
   public static final int METHOD_REF = 10;
   public static final int INTERFACE_METHOD_REF = 11;
   public static final int NAME_AND_TYPE = 12;
+  // Java 9 tags introduced for module and package info
+  public static final int CONSTANT_MODULE = 19;   // module_info entry
+  public static final int CONSTANT_PACKAGE = 20;  // package_info entry
   public static final int METHOD_HANDLE = 15;
   public static final int METHOD_TYPE = 16;
   public static final int INVOKE_DYNAMIC = 18;
@@ -83,7 +86,9 @@ public class ClassFile extends BinaryClassSource {
     MethodHandle,             // 15
     MethodType,               // 16
     Unused_17,
-    InvokeDynamic             // 18
+    InvokeDynamic,            // 18
+    ConstantModule,           // 19
+    ConstantPackage           // 20
   }
 
   // <2do> this is going away
@@ -1153,6 +1158,18 @@ public class ClassFile extends BinaryClassSource {
           values[i] = CpInfo.InvokeDynamic;
           j += 5;
           break;
+
+        case CONSTANT_MODULE: // Module_info { u1 tag; u2 name_index<utf8>; }
+          dataIdx[i] = j;
+          values[i] = CpInfo.ConstantModule;
+          j += 3;
+          break;
+
+        case CONSTANT_PACKAGE: // Package_info { u1 tag; u2 name_index<utf8>; }
+          dataIdx[i] = j;
+          values[i] = CpInfo.ConstantPackage;
+          j += 3;
+          break;
           
         default:
           error("illegal constpool tag: " + data[j]);
@@ -1165,8 +1182,9 @@ public class ClassFile extends BinaryClassSource {
     for (int i=1; i<cpCount; i++){
       Object v = cpValue[i];
 
-      // we store string and class constants as their utf8 string values
-      if (v == CpInfo.ConstantClass || v == CpInfo.ConstantString){
+      // we store string and other indirect constants as their utf8 string values
+      if (v == CpInfo.ConstantClass || v == CpInfo.ConstantString
+          || v == CpInfo.ConstantModule || v == CpInfo.ConstantPackage){
          cpValue[i] = cpValue[u2(cpPos[i]+1)];
       }
     }
