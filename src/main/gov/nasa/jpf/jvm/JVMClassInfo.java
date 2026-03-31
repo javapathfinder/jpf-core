@@ -65,7 +65,7 @@ public class JVMClassInfo extends ClassInfo {
 
     @Override
     public void setPermittedSubclass(ClassFile cf, Object tag, int index, String subclassName) {
-      permittedSubclassNames[index] = subclassName;
+      permittedSubclassNames[index] = Types.getClassNameFromTypeName(subclassName);
     }
 
     @Override
