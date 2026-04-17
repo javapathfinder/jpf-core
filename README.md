@@ -31,8 +31,9 @@ community.
 Happy Verification
 *-- the Java PathFinder team*
 
+## Community
 
----
+For discussions and support, you can also join the official JPF Discord (if available).
 
 ## Running with Docker
 
