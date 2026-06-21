@@ -72,7 +72,7 @@ public class FunctionObjectFactory {
   }
 
   /**
-   * "Dereference" the the JPF ElementInfo object in the MJIEnv environment as return the wrapped object to JVM
+   * "Dereference" the JPF ElementInfo object in the MJIEnv environment as return the wrapped object to JVM
    *
    * @param env MJIEnv environment
    * @param ei  referenced ElementInfo object
@@ -152,7 +152,7 @@ public class FunctionObjectFactory {
   /**
    * This function receives invokedynamic's args and 'recipe' arg of BSM
    * in case of string concat and convert them to proper data format.
-   * Them use these converted data as args and create a new stack frame
+   * Then use these converted data as args and create a new stack frame
    * to call the helper function java.lang.String.generateStringByConcatenatingArgs
    * which concats these args to string.
    *

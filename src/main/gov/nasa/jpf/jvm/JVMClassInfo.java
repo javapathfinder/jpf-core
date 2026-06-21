@@ -44,7 +44,6 @@ public class JVMClassInfo extends ClassInfo {
   protected static HashMap resolvedClasses = new HashMap<String, JVMClassInfo>();
   protected ClassFile classFile;
 
-
   class Initializer extends ClassFileReaderAdapter {
     protected ClassFile cf;
     protected JVMCodeBuilder cb;
