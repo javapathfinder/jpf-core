@@ -225,10 +225,24 @@ public class JVMClassInfo extends ClassInfo {
 
       assert (enclosingLambdaCls!=null);
 
-      String bmArg = cf.getBmArgString(cpArgs[0]);
+      // Plain StringConcatFactory.makeConcat (e.g. compiled with
+      // -XDstringConcat=indy) has zero static bootstrap args -- no recipe,
+      // no constants. cpArgs[0] would throw ArrayIndexOutOfBoundsException.
+      // See issue #619, bug 3.
+      String bmArg = cpArgs.length > 0 ? cf.getBmArgString(cpArgs[0]) : "";
 
       setBootstrapMethodInfo(enclosingLambdaCls, mth, parameters, idx, refKind, descriptor, bmArg,
               BootstrapMethodInfo.BMType.STRING_CONCATENATION);
+
+      // Resolve all bootstrap static args (recipe + constants) so that
+      // extractConstants() can later return the constants referenced by
+      // \u0002 (TAG_CONST) markers in the recipe. Without this, constants
+      // are silently dropped -- see issue #619.
+      Object[] resolvedArgs = new Object[cpArgs.length];
+      for (int i = 0; i < cpArgs.length; i++) {
+        resolvedArgs[i] = cf.getConstantValue(cpArgs[i]);
+      }
+      bootstrapMethods[idx].setResolvedArgs(resolvedArgs);
     }
     
     // helper method for setBootstrapMethod()

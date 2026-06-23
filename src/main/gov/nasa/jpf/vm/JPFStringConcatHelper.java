@@ -42,6 +42,7 @@ public class JPFStringConcatHelper {
 
         StringBuilder sb = new StringBuilder();
         int argIndex = 0;
+        int constIndex = 0;
 
         for (int i = 0; i < recipe.length(); i++) {
             char c = recipe.charAt(i);
@@ -51,12 +52,11 @@ public class JPFStringConcatHelper {
                     appendValue(sb, args[argIndex], argTypes[argIndex]);
                     argIndex++;
                 }
-            } else if (c == CONST_PLACEHOLDER && i + 1 < recipe.length()) {
-                i++; // Move to next character
-                int constIndex = recipe.charAt(i) - 1;
-                if (constIndex >= 0 && constIndex < constants.length) {
+            } else if (c == CONST_PLACEHOLDER) {
+                if (constIndex < constants.length) {
                     Object constant = constants[constIndex];
                     sb.append(constant != null ? constant : "null");
+                    constIndex++;
                 }
             } else {
                 sb.append(c);
