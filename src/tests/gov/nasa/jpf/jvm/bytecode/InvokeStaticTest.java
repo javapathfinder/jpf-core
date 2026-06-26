@@ -11,6 +11,10 @@ import javax.tools.ToolProvider;
 
 public class InvokeStaticTest extends TestJPF {
 
+  public static void main(String[] testMethods){
+    runTestsOfThisClass(testMethods);
+  }
+
   @Test
   public void testIncompatibleClassChangeError() throws Exception {
     File tempDir = Files.createTempDirectory("jpf_invoke_static_test").toFile();
