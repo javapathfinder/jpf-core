@@ -89,6 +89,11 @@ public class INVOKESTATIC extends JVMInvokeInstruction {
       return ti.createAndThrowException("java.lang.NoSuchMethodException", cname + '.' + mname);
     }
 
+    if (!callee.isStatic()) {
+      return ti.createAndThrowException("java.lang.IncompatibleClassChangeError",
+                                        "Expected static method " + callee.getFullName());
+    }
+
     // this can be actually different than (can be a base)
     ClassInfo ciCallee = callee.getClassInfo();
     
