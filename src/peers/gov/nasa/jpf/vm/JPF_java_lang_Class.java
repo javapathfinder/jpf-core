@@ -83,7 +83,13 @@ public class JPF_java_lang_Class extends NativePeer {
     ClassInfo ci = env.getReferredClassInfo( robj);
     return ci.isInterface();
   }
-  
+
+  @MJI
+  public boolean isRecord____Z (MJIEnv env, int robj){
+    ClassInfo ci = env.getReferredClassInfo(robj);
+    return ci.isRecord();
+  }
+
   @MJI
   public boolean isAssignableFrom__Ljava_lang_Class_2__Z (MJIEnv env, int rcls,
                                                               int r1) {
