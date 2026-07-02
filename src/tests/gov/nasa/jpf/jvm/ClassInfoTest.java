@@ -23,6 +23,7 @@ import gov.nasa.jpf.vm.ClassInfo;
 import gov.nasa.jpf.vm.ClassParseException;
 import gov.nasa.jpf.vm.FieldInfo;
 import gov.nasa.jpf.vm.MethodInfo;
+import gov.nasa.jpf.vm.RecordComponentInfo;
 
 
 import java.io.File;
@@ -143,4 +144,38 @@ public class ClassInfoTest extends TestJPF {
     }
   }
 
+  @Test
+  public void testRecordComponentMetadataParsing() {
+    File file = new File("build/tests/gov/nasa/jpf/jvm/BoxRecord.class");
+
+    try {
+      ClassInfo ci = new NonResolvedClassInfo("gov.nasa.jpf.jvm.BoxRecord", file);
+
+      assert ci.isRecord() : "BoxRecord should be recognized as a record";
+
+      RecordComponentInfo[] comps = ci.getRecordComponents();
+      assert comps != null : "getRecordComponents() should not return null";
+      assert comps.length == 2 : "BoxRecord should have 2 components, got: " + comps.length;
+
+      // component 0: value (generic type T)
+      RecordComponentInfo value = comps[0];
+      assert "value".equals(value.getName()) : "first component should be 'value'";
+      assert value.getSignature() != null : "value should have generic signature, got null";
+      assert value.getSignature().contains("T") : "value signature should contain T, got: " + value.getSignature();
+
+      // component 1: items (List<String>)
+      RecordComponentInfo items = comps[1];
+      assert "items".equals(items.getName()) : "second component should be 'items'";
+      assert items.getSignature() != null : "items should have generic signature, got null";
+      assert items.getSignature().contains("String") : "items signature should contain String, got: " + items.getSignature();
+
+      System.out.println("-- record components");
+      for (RecordComponentInfo rci : comps) {
+        System.out.println(rci.getName() + " descriptor=" + rci.getDescriptor() + " signature=" + rci.getSignature());
+      }
+
+    } catch (ClassParseException cfx) {
+      fail("ClassParseException: " + cfx);
+    }
+  }
 }
