@@ -407,4 +407,5 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   }
 
   public native boolean isRecord();
+  public native java.lang.reflect.RecordComponent[] getRecordComponents();
 }
