@@ -3,6 +3,7 @@ package java17.records;
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
 import java.lang.reflect.RecordComponent;
+import java.lang.annotation.*;
 
 public class RecordComponentReflectionTest extends TestJPF {
 
@@ -57,4 +58,36 @@ public class RecordComponentReflectionTest extends TestJPF {
       assertEquals(int.class, components[1].getType());
     }
   }
+
+  @Test
+  public void testGetRecordComponents_getAccessor() {
+    if (verifyNoPropertyViolation()) {
+      RecordComponent[] components = Point.class.getRecordComponents();
+      assertNotNull(components);
+      java.lang.reflect.Method accessor = components[0].getAccessor();
+      assertNotNull(accessor);
+      assertEquals("x", accessor.getName());
+    }
+  }
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.RECORD_COMPONENT)
+  @interface ComponentLabel {
+    String value();
+  }
+
+  record AnnotatedPoint(@ComponentLabel("x-coord") int x, @ComponentLabel("y-coord") int y) {}
+
+  @Test
+  public void testGetRecordComponents_annotations() {
+    if (verifyNoPropertyViolation()) {
+      RecordComponent[] components = AnnotatedPoint.class.getRecordComponents();
+      assertNotNull(components);
+      assertEquals(2, components.length);
+      java.lang.annotation.Annotation[] annotations = components[0].getAnnotations();
+      assertNotNull(annotations);
+      assertTrue(annotations.length > 0);
+    }
+  }
+
 }

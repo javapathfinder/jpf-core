@@ -18,6 +18,9 @@ import gov.nasa.jpf.vm.MJIEnv;
 import gov.nasa.jpf.vm.NativePeer;
 import gov.nasa.jpf.vm.RecordComponentInfo;
 import gov.nasa.jpf.vm.ThreadInfo;
+import gov.nasa.jpf.vm.AnnotationInfo;
+import gov.nasa.jpf.vm.MethodInfo;
+import gov.nasa.jpf.vm.JPF_java_lang_reflect_Method;
 import gov.nasa.jpf.vm.Types;
 
 /**
@@ -73,6 +76,28 @@ public class JPF_java_lang_reflect_RecordComponent extends NativePeer {
   }
 
   @MJI
+  public int getAccessor____Ljava_lang_reflect_Method_2(MJIEnv env, int objRef) {
+    RecordComponentInfo rci = getRecordComponentInfo(env, objRef);
+    if (rci == null) return MJIEnv.NULL;
+
+    // get the record class
+    int classRef = env.getReferenceField(objRef, "clazz");
+    if (classRef == MJIEnv.NULL) return MJIEnv.NULL;
+    ClassInfo recordCI = env.getReferredClassInfo(classRef);
+
+    // accessor method has same name as component, no args, returns component type
+    String accessorSignature = rci.getName() + "()" + rci.getDescriptor();
+    MethodInfo mi = recordCI.getMethod(accessorSignature, false);
+    if (mi == null) return MJIEnv.NULL;
+
+    // get ClassInfo for java.lang.reflect.Method (needed by createMethodObject)
+    ClassInfo methodCI = ClassLoaderInfo.getSystemResolvedClassInfo("java.lang.reflect.Method");
+    if (methodCI == null) return MJIEnv.NULL;
+
+    return JPF_java_lang_reflect_Method.createMethodObject(env, methodCI, mi);
+  }
+
+  @MJI
   public int getGenericSignature____Ljava_lang_String_2(MJIEnv env, int objRef) {
     RecordComponentInfo rci = getRecordComponentInfo(env, objRef);
     if (rci == null) return MJIEnv.NULL;
@@ -82,12 +107,19 @@ public class JPF_java_lang_reflect_RecordComponent extends NativePeer {
 
   @MJI
   public int getAnnotations_____3Ljava_lang_annotation_Annotation_2(MJIEnv env, int objRef) {
-    // Return empty array for now - annotation support can be added later
-    return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
+    RecordComponentInfo rci = getRecordComponentInfo(env, objRef);
+    if (rci == null) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
+    AnnotationInfo[] ai = rci.getAnnotations();
+    if (ai == null || ai.length == 0) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
+    return env.newAnnotationProxies(ai);
   }
 
   @MJI
   public int getDeclaredAnnotations_____3Ljava_lang_annotation_Annotation_2(MJIEnv env, int objRef) {
-    return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
+    RecordComponentInfo rci = getRecordComponentInfo(env, objRef);
+    if (rci == null) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
+    AnnotationInfo[] ai = rci.getDeclaredAnnotations();
+    if (ai == null || ai.length == 0) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
+    return env.newAnnotationProxies(ai);
   }
 }
