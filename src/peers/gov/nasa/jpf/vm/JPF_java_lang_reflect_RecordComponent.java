@@ -90,8 +90,6 @@ public class JPF_java_lang_reflect_RecordComponent extends NativePeer {
     MethodInfo mi = recordCI.getMethod(accessorSignature, false);
     if (mi == null) return MJIEnv.NULL;
 
-    // get ClassInfo for java.lang.reflect.Method - must be initialized, not just resolved
-    // same pattern as getEnclosingConstructor in JPF_java_lang_Class
     ClassInfo methodCI = JPF_java_lang_Class.getInitializedClassInfo(env, "java.lang.reflect.Method");
     if (methodCI == null) {
       env.repeatInvocation();
