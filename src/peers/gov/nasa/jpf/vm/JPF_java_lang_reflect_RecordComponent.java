@@ -90,9 +90,13 @@ public class JPF_java_lang_reflect_RecordComponent extends NativePeer {
     MethodInfo mi = recordCI.getMethod(accessorSignature, false);
     if (mi == null) return MJIEnv.NULL;
 
-    // get ClassInfo for java.lang.reflect.Method (needed by createMethodObject)
-    ClassInfo methodCI = ClassLoaderInfo.getSystemResolvedClassInfo("java.lang.reflect.Method");
-    if (methodCI == null) return MJIEnv.NULL;
+    // get ClassInfo for java.lang.reflect.Method - must be initialized, not just resolved
+    // same pattern as getEnclosingConstructor in JPF_java_lang_Class
+    ClassInfo methodCI = JPF_java_lang_Class.getInitializedClassInfo(env, "java.lang.reflect.Method");
+    if (methodCI == null) {
+      env.repeatInvocation();
+      return MJIEnv.NULL;
+    }
 
     return JPF_java_lang_reflect_Method.createMethodObject(env, methodCI, mi);
   }
@@ -111,7 +115,12 @@ public class JPF_java_lang_reflect_RecordComponent extends NativePeer {
     if (rci == null) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
     AnnotationInfo[] ai = rci.getAnnotations();
     if (ai == null || ai.length == 0) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
-    return env.newAnnotationProxies(ai);
+    try {
+      return env.newAnnotationProxies(ai);
+    } catch (gov.nasa.jpf.vm.ClinitRequired x) {
+      env.handleClinitRequest(x.getRequiredClassInfo());
+      return MJIEnv.NULL;
+    }
   }
 
   @MJI
@@ -120,6 +129,11 @@ public class JPF_java_lang_reflect_RecordComponent extends NativePeer {
     if (rci == null) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
     AnnotationInfo[] ai = rci.getDeclaredAnnotations();
     if (ai == null || ai.length == 0) return env.newObjectArray("Ljava/lang/annotation/Annotation;", 0);
-    return env.newAnnotationProxies(ai);
+    try {
+      return env.newAnnotationProxies(ai);
+    } catch (gov.nasa.jpf.vm.ClinitRequired x) {
+      env.handleClinitRequest(x.getRequiredClassInfo());
+      return MJIEnv.NULL;
+    }
   }
 }

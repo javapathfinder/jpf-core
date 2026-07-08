@@ -251,12 +251,10 @@ public class JVMClassInfo extends ClassInfo {
       if (attrName.equals(ClassFile.SIGNATURE_ATTR)) {
         cf.parseSignatureAttr(this, rci);
       }
-      else if (attrName.equals(ClassFile.RUNTIME_VISIBLE_ANNOTATIONS_ATTR)
-              || attrName.equals(ClassFile.RUNTIME_INVISIBLE_ANNOTATIONS_ATTR)) {
+      else if (attrName.equals(ClassFile.RUNTIME_VISIBLE_ANNOTATIONS_ATTR)) {
         cf.parseAnnotationsAttr(this, rci);
       }
-      else if (attrName.equals(ClassFile.RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR)
-              || attrName.equals(ClassFile.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS_ATTR)) {
+      else if (attrName.equals(ClassFile.RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR)) {
         cf.parseTypeAnnotationsAttr(this, rci);
       }
     }

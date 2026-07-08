@@ -87,6 +87,8 @@ public class RecordComponentReflectionTest extends TestJPF {
       java.lang.annotation.Annotation[] annotations = components[0].getAnnotations();
       assertNotNull(annotations);
       assertTrue(annotations.length > 0);
+      assertEquals(ComponentLabel.class, annotations[0].annotationType());
+      assertEquals("x-coord", ((ComponentLabel) annotations[0]).value());
     }
   }
 
