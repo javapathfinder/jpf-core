@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2014, United States Government, as represented by the
- * Administrator of the National Aeronautics and Space Administration.
+ * Copyright (C) 2026, Darshan R
  * All rights reserved.
  *
  * The Java Pathfinder core (jpf-core) platform is licensed under the
