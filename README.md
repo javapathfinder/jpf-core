@@ -52,3 +52,9 @@ docker-compose run --rm jpf-dev
 ```bash
 ./gradlew clean build
 ```
+
+### Troubleshooting
+
+- Ensure Docker and Docker Compose are installed and available in your PATH.
+- If the build fails, try running docker-compose build --no-cache.
+- Make sure the Docker daemon is running before executing the commands.
