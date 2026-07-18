@@ -60,3 +60,6 @@ compileModulesJava.options.compilerArgs += [
 compileTestJava.options.compilerArgs += [
         '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED'
 ]
+compileExamplesJava.options.compilerArgs += [
+    '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED'
+]
