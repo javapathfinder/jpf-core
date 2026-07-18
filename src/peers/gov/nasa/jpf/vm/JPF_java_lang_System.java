@@ -184,6 +184,7 @@ public class JPF_java_lang_System extends NativePeer {
         "java.home",
         "java.version",
         "java.io.tmpdir",
+	"os.name",
         JAVA_CLASS_PATH
         //... and probably some more
         // <2do> what about -Dkey=value commandline options
