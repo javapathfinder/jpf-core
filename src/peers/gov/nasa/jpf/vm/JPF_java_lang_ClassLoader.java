@@ -19,6 +19,8 @@ package gov.nasa.jpf.vm;
 
 import gov.nasa.jpf.annotation.MJI;
 import java.util.Map;
+import java.util.jar.Manifest;
+import java.util.jar.Attributes;
 
 /**
  * @author Nastaran Shafiei <nastaran.shafiei@gmail.com>
@@ -295,12 +297,34 @@ public class JPF_java_lang_ClassLoader extends NativePeer {
     int VersionInfoRef = env.newObject(VersionInfoClass);
     ei = env.getModifiableElementInfo(VersionInfoRef);
 
-    // the rest of the fields set to some dummy value
-    ei.setReferenceField("specTitle", env.newString("spectitle"));
-    ei.setReferenceField("specVersion", env.newString("specversion"));
-    ei.setReferenceField("specVendor", env.newString("specvendor"));
-    ei.setReferenceField("implTitle", env.newString("impltitle"));
-    ei.setReferenceField("implVersion", env.newString("implversion"));
+    Manifest manifest = null;
+    if (cl != null) {
+      for (ClassInfo ci : cl) {
+        if (pkgName.equals(ci.getPackageName())) {
+          manifest = ci.getManifest();
+          break;
+        }
+      }
+    }
+
+    Attributes attrs = (manifest != null) ? manifest.getMainAttributes() : null;
+
+    String specTitle = (attrs != null && attrs.getValue(Attributes.Name.SPECIFICATION_TITLE) != null)
+      ? attrs.getValue(Attributes.Name.SPECIFICATION_TITLE) : "spectitle";
+    String specVersion = (attrs != null && attrs.getValue(Attributes.Name.SPECIFICATION_VERSION) != null)
+      ? attrs.getValue(Attributes.Name.SPECIFICATION_VERSION) : "specversion";
+    String specVendor = (attrs != null && attrs.getValue(Attributes.Name.SPECIFICATION_VENDOR) != null)
+      ? attrs.getValue(Attributes.Name.SPECIFICATION_VENDOR) : "specvendor";
+    String implTitle = (attrs != null && attrs.getValue(Attributes.Name.IMPLEMENTATION_TITLE) != null)
+      ? attrs.getValue(Attributes.Name.IMPLEMENTATION_TITLE) : "impltitle";
+    String implVersion = (attrs != null && attrs.getValue(Attributes.Name.IMPLEMENTATION_VERSION) != null)
+      ? attrs.getValue(Attributes.Name.IMPLEMENTATION_VERSION) : "implversion";
+
+    ei.setReferenceField("specTitle", env.newString(specTitle));
+    ei.setReferenceField("specVersion", env.newString(specVersion));
+    ei.setReferenceField("specVendor", env.newString(specVendor));
+    ei.setReferenceField("implTitle", env.newString(implTitle));
+    ei.setReferenceField("implVersion", env.newString(implVersion));
     ei.setReferenceField("sealBase", MJIEnv.NULL);
 
     return pkgRef;

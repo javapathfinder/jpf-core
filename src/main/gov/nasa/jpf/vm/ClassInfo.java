@@ -28,6 +28,7 @@ import gov.nasa.jpf.util.MethodSpec;
 import gov.nasa.jpf.util.Misc;
 import gov.nasa.jpf.util.OATHash;
 import gov.nasa.jpf.util.Source;
+import gov.nasa.jpf.jvm.JarClassFileContainer;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.jar.Manifest;
 
 
 /**
@@ -302,6 +304,13 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
 
     int i = name.lastIndexOf('.');
     packageName = (i > 0) ? name.substring(0, i) : "";
+
+    // If the container is a JarClassFileContainer, get its manifest
+    if (container instanceof JarClassFileContainer) {
+      manifest = ((JarClassFileContainer) container).getManifest();
+    } else {
+      manifest = null;
+    }
 
     modifiers = flags;
     
@@ -2662,6 +2671,16 @@ public class ClassInfo extends InfoObject implements Iterable<MethodInfo>, Gener
   
   public DirectCallStackFrame createRunStartStackFrame (ThreadInfo ti, MethodInfo miRun){
     return null;
+  }
+
+
+  // Manifest from the JAR file
+  protected Manifest manifest;
+
+
+  // Returns the Manifest associated with this class, if loaded from a JAR, or null otherwise.
+  public Manifest getManifest() {
+    return manifest;
   }
 }
 
