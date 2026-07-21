@@ -120,13 +120,41 @@ public class JVMSystemClassLoaderInfo extends SystemClassLoaderInfo {
 
   /**
    * this is the main method to create the ClassPath, which is called from the ctor
+   *
+   * Search order (first match wins):
+   * 1. Extension boot classpaths (any *.boot_classpath property except vm.boot_classpath)
+   *    - this allows extensions to override jpf-core model classes
+   * 2. Explicit classpath entries (from 'classpath' property)
+   * 3. jpf-core's vm.boot_classpath
+   * 4. JRE runtime classes (handled by JRTClassFileContainer in getMatch)
    */
   @Override
   protected void initializeSystemClassPath (VM vm, int appId) {
     Config conf = vm.getConfig();
     File[] pathElements;
 
-    // explicit "classpath[.id]" settings have precedence
+    // first, load all extension boot classpaths (any property ending in .boot_classpath
+    // other than vm.boot_classpath) so extensions can override jpf-core model classes
+    for (Object keyObj : conf.keySet()) {
+      String key = keyObj.toString();
+      if (key.endsWith(".boot_classpath") && !key.equals("vm.boot_classpath")) {
+        String[] bootPaths = conf.getStringArray(key);
+        if (bootPaths != null) {
+          for (String bp : bootPaths) {
+            bp = bp.trim();
+            if (bp.length() > 0 && !bp.equals("<system>")) {
+              File f = new File(bp);
+              if (f.exists()) {
+                addClassPathElement(f.getAbsolutePath());
+                log.info("added extension boot classpath (", key, "): ", f.getAbsolutePath());
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // explicit "classpath[.id]" settings
     pathElements = getPathElements(conf, "classpath", appId);
     if (pathElements != null) {
       for (File f : pathElements) {
@@ -134,7 +162,7 @@ public class JVMSystemClassLoaderInfo extends SystemClassLoaderInfo {
       }
     }
 
-    // we optionally append boot_classpath
+    // we optionally append vm.boot_classpath (jpf-core's boot classpath)
     pathElements = getPathElements(conf, "vm.boot_classpath", appId);
     if (pathElements != null) {
       for (File f : pathElements) {
