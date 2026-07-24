@@ -246,39 +246,17 @@ public class JVMClassInfo extends ClassInfo {
     public void setRecordComponentAttribute(ClassFile cf, Object tag, int componentIndex, int attrIndex, String attrName, int attrLength) {
       RecordComponentInfo rci = JVMClassInfo.this.recordComponents[componentIndex];
 
-      String name = rci.getName();
-      String descriptor = rci.getDescriptor();
-      String signature = rci.getSignature();
-      AnnotationInfo[] annotations = rci.getAnnotations();
-      TypeAnnotationInfo[] typeAnnotations = rci.getTypeAnnotations();
-
+      // RecordComponentInfo now extends InfoObject and implements GenericSignatureHolder,
+      // so the parse callbacks populate rci directly instead of silently no-op'ing.
       if (attrName.equals(ClassFile.SIGNATURE_ATTR)) {
-        // Use the signature consumer pattern
         cf.parseSignatureAttr(this, rci);
-        signature = rci.getSignature();
       }
       else if (attrName.equals(ClassFile.RUNTIME_VISIBLE_ANNOTATIONS_ATTR)) {
-        annotations = new AnnotationInfo[0]; // Initialize or preserve existing
         cf.parseAnnotationsAttr(this, rci);
-        annotations = rci.getAnnotations();
-      }
-      else if (attrName.equals(ClassFile.RUNTIME_INVISIBLE_ANNOTATIONS_ATTR)) {
-        cf.parseAnnotationsAttr(this, rci);
-        // we might need to merge with existing annotations
       }
       else if (attrName.equals(ClassFile.RUNTIME_VISIBLE_TYPE_ANNOTATIONS_ATTR)) {
-        // Set up for type annotation parsing
-        typeAnnotations = new TypeAnnotationInfo[0];
-        cf.parseTypeAnnotationsAttr(this, rci);
-        typeAnnotations = rci.getTypeAnnotations();
-      }
-      else if (attrName.equals(ClassFile.RUNTIME_INVISIBLE_TYPE_ANNOTATIONS_ATTR)) {
         cf.parseTypeAnnotationsAttr(this, rci);
       }
-
-      // a new RecordComponentInfo with all updated attributes
-      JVMClassInfo.this.recordComponents[componentIndex] =
-              new RecordComponentInfo(name, descriptor, signature, annotations, typeAnnotations);
     }
 
     @Override

@@ -83,7 +83,40 @@ public class JPF_java_lang_Class extends NativePeer {
     ClassInfo ci = env.getReferredClassInfo( robj);
     return ci.isInterface();
   }
-  
+
+  @MJI
+  public boolean isRecord____Z (MJIEnv env, int robj){
+    ClassInfo ci = env.getReferredClassInfo(robj);
+    return ci.isRecord();
+  }
+
+  @MJI
+  public int getRecordComponents_____3Ljava_lang_reflect_RecordComponent_2 (MJIEnv env, int objRef) {
+    ClassInfo rci = getInitializedClassInfo(env, "java.lang.reflect.RecordComponent");
+    if (rci == null) {
+      env.repeatInvocation();
+      return MJIEnv.NULL;
+    }
+    ClassInfo ci = env.getReferredClassInfo(objRef);
+    if (!ci.isRecord()) {
+      return MJIEnv.NULL;
+    }
+    RecordComponentInfo[] components = ci.getRecordComponents();
+    if (components == null) {
+      return MJIEnv.NULL;
+    }
+    int aref = env.newObjectArray("Ljava/lang/reflect/RecordComponent;", components.length);
+    for (int i = 0; i < components.length; i++) {
+      RecordComponentInfo rcInfo = components[i];
+      int rcRef = env.newObject(rci);
+      ElementInfo ei = env.getModifiableElementInfo(rcRef);
+      ei.setIntField("regIdx", i);
+      ei.setReferenceField("clazz", objRef);
+      env.setReferenceArrayElement(aref, i, rcRef);
+    }
+    return aref;
+  }
+
   @MJI
   public boolean isAssignableFrom__Ljava_lang_Class_2__Z (MJIEnv env, int rcls,
                                                               int r1) {

@@ -1,23 +1,29 @@
 package gov.nasa.jpf.vm;
 
 /**
- * Class representing a Record component in a Java 17+ record class
+ * Class representing a Record component in a Java 17+ record class.
+ *
+ * Extends InfoObject and implements GenericSignatureHolder so that classfile
+ * parse callbacks (setSignature / setAnnotation / setAnnotationsDone) populate
+ * this object directly, the same way they do for FieldInfo and MethodInfo.
+ * Without this, generic signatures and annotations are silently dropped.
  */
-
-public class RecordComponentInfo {
+public class RecordComponentInfo extends InfoObject implements GenericSignatureHolder {
     private final String name;
     private final String descriptor;
-    private final String signature;
-    private final AnnotationInfo[] annotations;
-    private final TypeAnnotationInfo[] typeAnnotations;
+    private String signature;
 
     public RecordComponentInfo(String name, String descriptor, String signature,
-                           AnnotationInfo[] annotations, TypeAnnotationInfo[] typeAnnotations) {
+                               AnnotationInfo[] annotations, TypeAnnotationInfo[] typeAnnotations) {
         this.name = name;
         this.descriptor = descriptor;
         this.signature = signature;
-        this.annotations = annotations;
-        this.typeAnnotations = typeAnnotations;
+        if (annotations != null) {
+            this.annotations = annotations;
+        }
+        if (typeAnnotations != null) {
+            this.typeAnnotations = typeAnnotations;
+        }
     }
 
     public String getName() {
@@ -28,15 +34,17 @@ public class RecordComponentInfo {
         return descriptor;
     }
 
-    public String getSignature() {
+    @Override
+    public String getGenericSignature() {
         return signature;
     }
 
-    public AnnotationInfo[] getAnnotations() {
-        return annotations;
+    @Override
+    public void setGenericSignature(String signature) {
+        this.signature = signature;
     }
 
-    public TypeAnnotationInfo[] getTypeAnnotations() {
-        return typeAnnotations;
+    public String getSignature() {
+        return signature;
     }
 }
