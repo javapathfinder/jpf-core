@@ -297,8 +297,8 @@ public class INVOKEDYNAMIC extends Instruction {
       case "java.lang.Short":   return ei.getShortField("value");
       case "java.lang.Integer": return ei.getIntField("value");
       case "java.lang.Long":    return ei.getLongField("value");
-      case "java.lang.Float":   return Float.intBitsToFloat(ei.getIntField("value"));
-      case "java.lang.Double":  return Double.longBitsToDouble(ei.getLongField("value"));
+      case "java.lang.Float":   return ei.getFloatField("value");
+      case "java.lang.Double":  return ei.getDoubleField("value");
       case "java.lang.Boolean": return ei.getBooleanField("value");
       case "java.lang.String":  return ei.asString();
       default: return ei;

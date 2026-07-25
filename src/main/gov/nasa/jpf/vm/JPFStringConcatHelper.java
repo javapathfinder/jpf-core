@@ -122,9 +122,9 @@ public class JPFStringConcatHelper {
             case "java.lang.Integer": sb.append(ei.getIntField("value")); break;
             case "java.lang.Boolean": sb.append(ei.getBooleanField("value")); break;
             case "java.lang.Float":
-                sb.append(Float.intBitsToFloat(ei.getIntField("value"))); break;
+                sb.append(ei.getFloatField("value")); break;
             case "java.lang.Double":
-                sb.append(Double.longBitsToDouble(ei.getLongField("value"))); break;
+                sb.append(ei.getDoubleField("value")); break;
             case "java.lang.Long":    sb.append(ei.getLongField("value")); break;
             default: sb.append(ei.toString()); break;
         }
