@@ -1046,13 +1046,26 @@ public class JVMClassInfo extends ClassInfo {
       break;
     }
     
-    String returnType = Types.getReturnTypeSignature(samSignature);
-    int  len = returnType.length();
-    char c = returnType.charAt(0);
+    String samReturnType = Types.getReturnTypeSignature(samSignature);
+    String calleeReturnType = Types.getReturnTypeSignature(calleeSig);
+    int  samRetLen = samReturnType.length();
+    char samRetChar = samReturnType.charAt(0);
 
+    // If the referenced method returns a primitive but the SAM expects a
+    // reference (e.g. String::length returns int, Function.apply returns Object),
+    // we need to box the primitive via Wrapper.valueOf() before areturn.
+    if (samRetLen > 1 && calleeReturnType.length() == 1 && calleeReturnType.charAt(0) != 'V') {
+      // callee returns a primitive, SAM expects a reference — insert boxing
+      byte calleeType = Types.getBuiltinTypeFromSignature(calleeReturnType);
+      String wrapperSimpleName = Types.getBoxedType(calleeType);
+      String wrapperClassName = "java.lang." + wrapperSimpleName;
+      String valueOfDescriptor = "(" + calleeReturnType + ")L" + wrapperClassName.replace('.', '/') + ";";
+      cb.invokestatic(wrapperClassName, "valueOf", valueOfDescriptor);
+      cb.areturn();
+    }
     // adding a return statement for function object method
-    if (len == 1) {
-      switch (c) {
+    else if (samRetLen == 1) {
+      switch (samRetChar) {
       case 'B':
       case 'I':
       case 'C':
