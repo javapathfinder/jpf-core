@@ -15,6 +15,7 @@ public class RecordReferenceComponentTest extends TestJPF {
   record BoxedRecord(Integer val) {}
   record NullableRecord(String s, Integer i) {}
   record NestedRecord(StringRecord inner, int x) {}
+  record LongArrayRecord(long[][] data) {}
 
   static class IdentityClass {
     int value;
@@ -155,6 +156,38 @@ public class RecordReferenceComponentTest extends TestJPF {
       ArrayRecord r1 = new ArrayRecord(arr);
       ArrayRecord r2 = new ArrayRecord(arr);
       assertEquals(r1.hashCode(), r2.hashCode());
+    }
+  }
+
+  @Test
+  public void testHashCodeDifferentLengthArrays() {
+    if (verifyNoPropertyViolation()) {
+      int[] arr2a = {1, 2};
+      int[] arr2b = {1, 2};
+      int[] arr3 = {1, 2, 3};
+
+      ArrayRecord r2a = new ArrayRecord(arr2a);
+      ArrayRecord r2b = new ArrayRecord(arr2b);
+      ArrayRecord r3 = new ArrayRecord(arr3);
+
+      assertEquals(r2a.hashCode(), r2b.hashCode());
+      assertTrue(r2a.hashCode() != r3.hashCode());
+    }
+  }
+
+  @Test
+  public void testHashCodeHigherDimensionalArray() {
+    if (verifyNoPropertyViolation()) {
+      long[][] arr1 = {{1L, 2L}, {3L, 4L}};
+      long[][] arr2 = {{1L, 2L}, {3L, 4L}};
+
+      LongArrayRecord r1 = new LongArrayRecord(arr1);
+      LongArrayRecord r2 = new LongArrayRecord(arr2);
+
+      assertEquals(r1.hashCode(), r2.hashCode());
+
+      LongArrayRecord r3 = new LongArrayRecord(arr1);
+      assertEquals(r1.hashCode(), r3.hashCode());
     }
   }
 }

@@ -426,32 +426,76 @@ public class INVOKEDYNAMIC extends Instruction {
 
   private int componentHashCode(ThreadInfo ti, Object value, String sig) {
     if (value == null) return 0;
+
     char typeChar = sig.charAt(0);
     if (isPrimitiveType(typeChar)) return value.hashCode();
+
     if (typeChar == '[') {
       ElementInfo arrayEi = (value instanceof ElementInfo) ? (ElementInfo) value
                           : ti.getHeap().get((Integer) value);
-      return arrayEi != null ? arrayEi.getObjectRef() : 0;
+      return arrayHashCode(ti, arrayEi);
     }
+
     if (value instanceof ElementInfo) {
       ElementInfo valEi = (ElementInfo) value;
       ClassInfo valCi = valEi.getClassInfo();
-      if ("java.lang.String".equals(valCi.getName())) return valEi.asString().hashCode();
+
+      if ("java.lang.String".equals(valCi.getName())) {
+        return valEi.asString().hashCode();
+      }
+
       if (valCi.isRecord()) {
         StackFrame f = ti.getModifiableTopFrame();
         int orig = f.getThis();
-        f.setThis(valEi.getObjectRef());
-        int h = computeRecordHashCode(ti, valCi);
-        f.setThis(orig);
-        return h;
+        try {
+          f.setThis(valEi.getObjectRef());
+          return computeRecordHashCode(ti, valCi);
+        } finally {
+          f.setThis(orig);
+        }
       }
+
       if (BOXED_TYPES.contains(valCi.getName())) {
         Object fv = valEi.getFieldValueObject("value");
         return fv != null ? fv.hashCode() : 0;
       }
+
       return valEi.getObjectRef();
     }
+
     return value.hashCode();
+  }
+
+  private int arrayHashCode(ThreadInfo ti, ElementInfo arrayEi) {
+    if (arrayEi == null) return 0;
+
+    String arraySig = arrayEi.getClassInfo().getSignature();
+    String componentSig = arraySig.substring(1);
+    char componentType = componentSig.charAt(0);
+
+    int hash = 1;
+
+    for (int i = 0; i < arrayEi.arrayLength(); i++) {
+      Object element = getArrayElement(arrayEi, i, componentType);
+
+      int elementHash;
+      if (element == null) {
+        elementHash = 0;
+      } else if (componentType == '[') {
+        ElementInfo nestedArray = (element instanceof ElementInfo)
+            ? (ElementInfo) element
+            : ti.getHeap().get((Integer) element);
+        elementHash = arrayHashCode(ti, nestedArray);
+      } else if (isPrimitiveType(componentType)) {
+        elementHash = element.hashCode();
+      } else {
+        elementHash = componentHashCode(ti, element, componentSig);
+      }
+
+      hash = 31 * hash + elementHash;
+    }
+
+    return hash;
   }
 
   private int computeRecordToString(ThreadInfo ti, ClassInfo ci) {
