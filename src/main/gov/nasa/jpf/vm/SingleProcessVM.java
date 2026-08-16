@@ -212,11 +212,19 @@ public class SingleProcessVM extends VM {
   public boolean isEndState () {
     // note this uses 'alive', not 'runnable', hence isEndStateProperty won't
     // catch deadlocks - but that would be NoDeadlockProperty anyway
-    
-    boolean hasNonTerminatedDaemon = getThreadList().hasAnyMatching(getUserLiveNonDaemonPredicate());
-    boolean hasRunnable = getThreadList().hasAnyMatching(getUserTimedoutRunnablePredicate());
-    boolean isEndState = !(hasNonTerminatedDaemon && hasRunnable);
-    
+
+    boolean isEndState;
+
+    if (requireAllTerminated) {
+      // a run is only finished once all threads (incl. daemons) are terminated
+      isEndState = !getThreadList().hasAnyMatching(getAlivePredicate());
+
+    } else {
+      boolean hasNonTerminatedDaemon = getThreadList().hasAnyMatching(getUserLiveNonDaemonPredicate());
+      boolean hasRunnable = getThreadList().hasAnyMatching(getUserTimedoutRunnablePredicate());
+      isEndState = !(hasNonTerminatedDaemon && hasRunnable);
+    }
+
     if(processFinalizers) {
       if(isEndState) {
         if(getFinalizerThread().isRunnable()) {
