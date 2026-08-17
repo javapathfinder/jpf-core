@@ -139,6 +139,10 @@ public abstract class VM {
   protected boolean pathOutput;
   protected boolean indentOutput;
   protected boolean processFinalizers;
+
+  // how to determine end states, configurable via the properties file
+  protected boolean endOnFirstProcessTermination; // multi-process: terminate when the first process ends
+  protected boolean requireAllTerminated; // single-process: require all threads, incl. daemons, to be terminated
   
   // <2do> there are probably many places where this should be used
   protected boolean isBigEndian;
@@ -176,6 +180,9 @@ public abstract class VM {
     indentOutput = config.getBoolean("vm.indent_output",false);
 
     processFinalizers = config.getBoolean("vm.process_finalizers", false);
+
+    endOnFirstProcessTermination = config.getBoolean("vm.end_state.first_process", false);
+    requireAllTerminated = config.getBoolean("vm.end_state.require_all_terminated", false);
     
     isBigEndian = getPlatformEndianness(config);
     initialized = false;
@@ -1848,8 +1855,8 @@ public abstract class VM {
   /**
    * We made this to be overriden by Single/MultiprcessesVM implementations,
    * since for MultiprcessesVM one can decide when to terminate (after the
-   * the termination of all processes or only one process).
-   * todo - that needs to be specified through the properties file
+   * the termination of all processes or only one process, see the
+   * vm.end_state.first_process property).
    */
   public abstract boolean isEndState ();
 

@@ -52,6 +52,8 @@ public class MultiProcessVM extends VM {
   MultiProcessPredicate runnablePredicate;
   MultiProcessPredicate appTimedoutRunnablePredicate;
   MultiProcessPredicate appDaemonRunnablePredicate;
+  MultiProcessPredicate appUserLiveNonDaemonPredicate;
+  MultiProcessPredicate appUserTimedoutRunnablePredicate;
   MultiProcessPredicate appPredicate;
   protected Predicate<ThreadInfo> systemInUsePredicate;
   
@@ -82,6 +84,22 @@ public class MultiProcessVM extends VM {
       @Override
 	public boolean isTrue (ThreadInfo t){
         return (this.appCtx == t.appCtx && t.isRunnable() && t.isDaemon());
+      }
+    };
+    
+    // these mirror the single-process getUserLiveNonDaemonPredicate /
+    // getUserTimedoutRunnablePredicate, but are scoped to a single process
+    appUserLiveNonDaemonPredicate = new MultiProcessPredicate() {
+      @Override
+	public boolean isTrue (ThreadInfo t){
+        return (this.appCtx == t.appCtx && !t.isDaemon() && !t.isTerminated() && !t.isSystemThread());
+      }
+    };
+    
+    appUserTimedoutRunnablePredicate = new MultiProcessPredicate() {
+      @Override
+	public boolean isTrue (ThreadInfo t){
+        return (this.appCtx == t.appCtx && t.isTimeoutRunnable() && !t.isSystemThread());
       }
     };
     
@@ -305,10 +323,28 @@ public class MultiProcessVM extends VM {
 
   @Override
   public boolean isEndState () {
-    boolean hasNonTerminatedDaemon = getThreadList().hasAnyMatching(getUserLiveNonDaemonPredicate());
-    boolean hasRunnable = getThreadList().hasAnyMatching(getUserTimedoutRunnablePredicate());
-    boolean isEndState = !(hasNonTerminatedDaemon && hasRunnable);
-    
+    boolean isEndState;
+
+    if (endOnFirstProcessTermination) {
+      // terminate when the first process reaches an end state
+      isEndState = false;
+      for (int i = 0; i < appCtxs.length; i++) {
+        appUserLiveNonDaemonPredicate.setAppCtx(appCtxs[i]);
+        appUserTimedoutRunnablePredicate.setAppCtx(appCtxs[i]);
+        boolean hasNonTerminatedDaemon = getThreadList().hasAnyMatching(appUserLiveNonDaemonPredicate);
+        boolean hasRunnable = getThreadList().hasAnyMatching(appUserTimedoutRunnablePredicate);
+        if (!(hasNonTerminatedDaemon && hasRunnable)) {
+          isEndState = true;
+          break;
+        }
+      }
+
+    } else {
+      boolean hasNonTerminatedDaemon = getThreadList().hasAnyMatching(getUserLiveNonDaemonPredicate());
+      boolean hasRunnable = getThreadList().hasAnyMatching(getUserTimedoutRunnablePredicate());
+      isEndState = !(hasNonTerminatedDaemon && hasRunnable);
+    }
+
     if(processFinalizers) {
       if(isEndState) {
         int n = getThreadList().getMatchingCount(systemInUsePredicate);
