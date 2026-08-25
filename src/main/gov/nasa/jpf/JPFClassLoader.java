@@ -81,4 +81,12 @@ public class JPFClassLoader extends URLClassLoader {
   public void setNativeLibs (String[] libs){
     nativeLibs = libs;
   }
+  
+  public URL[] getURLs() {
+    return super.getURLs();
+  }
+  
+  public String[] getNativeLibs() {
+    return nativeLibs;
+  }
 }

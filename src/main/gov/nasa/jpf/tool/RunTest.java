@@ -159,11 +159,12 @@ public class RunTest extends Run {
       warning("incompatible " + TESTJPF_CLS + " version, quiet mode will not work");
     }
     
-    // <2do> refactor - each test class should be (optionally) loaded through a new ClassLoader instance
-    // to make sure tests don't have static field carry-over
+    // Check if per-test ClassLoader isolation is enabled
+    boolean isolateClassLoaders = config.getBoolean("jpf.test.isolated_classloader", false);
     
-    List<Class<?>> testClasses = getTestClasses(cl, testJpfCls, testPathElements, testClsName);
-    if (testClasses.isEmpty()){
+    // Get test class names (not loaded classes) to support per-test classloader isolation
+    List<String> testClassNames = getTestClassNames(cl, testJpfCls, testPathElements, testClsName);
+    if (testClassNames.isEmpty()){
       System.out.println("no test classes found");
       return;
     }
@@ -171,8 +172,17 @@ public class RunTest extends Run {
     int nTested = 0;
     int nPass = 0;
     
-    for (Class<?> testCls : testClasses){
+    for (String className : testClassNames){
       nTested++;
+      
+      // Create isolated ClassLoader per test class if enabled
+      JPFClassLoader testCl = isolateClassLoaders ? createIsolatedTestClassLoader(cl, testPathElements) : cl;
+      
+      Class<?> testCls = loadTestClass(testCl, testJpfCls, className);
+      if (testCls == null) {
+        error("class did not resolve or no TestJPF derived class: " + className);
+        continue;
+      }
       
       try {
         try {
@@ -233,6 +243,43 @@ public class RunTest extends Run {
   
   static boolean hasWildcard (String pattern){
     return (pattern.indexOf('*') >= 0);
+  }
+  
+  // Get test class names (not loaded classes) - used for per-test classloader isolation
+  static List<String> getTestClassNames (JPFClassLoader cl, Class<?> testJpfCls, String[] testPathElements, String testClsPattern ){
+    List<String> testClassNames = new ArrayList<String>();
+    
+    if (testClsPattern.startsWith(".")){
+      testClsPattern = "gov.nasa.jpf" + testClsPattern;
+    }
+    
+    if (!hasWildcard(testClsPattern)){ // explicit class name
+      Class<?> testCls = loadTestClass( cl, testJpfCls, testClsPattern);
+      if (testCls == null){ // error if this was an explicit classname
+        error ("specified class name not found or no TestJPF derived class: " + testClsPattern);  
+      } else {
+        testClassNames.add(testClsPattern);
+      }
+      
+    } else { // wildcard pattern - find all matching class files
+      List<String> classFileList = getClassFileList( testPathElements, testClsPattern);
+      
+      for (String candidate : classFileList){        
+        Class<?> testCls = loadTestClass( cl, testJpfCls, candidate);
+        if (testCls != null){
+          testClassNames.add(candidate);
+        }
+      }
+    }
+    
+    return testClassNames;
+  }
+  
+  // Create an isolated child ClassLoader for a single test class
+  static JPFClassLoader createIsolatedTestClassLoader(JPFClassLoader parent, String[] testPathElements){
+    JPFClassLoader isolated = new JPFClassLoader(parent.getURLs(), parent.getNativeLibs(), parent);
+    addTestClassPath(isolated, testPathElements);
+    return isolated;
   }
   
   static List<Class<?>> getTestClasses (JPFClassLoader cl, Class<?> testJpfCls, String[] testPathElements, String testClsPattern ){
