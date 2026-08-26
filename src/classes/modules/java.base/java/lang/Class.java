@@ -113,6 +113,10 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   private native byte[] getByteArrayFromResourceStream(String name);
 
   public InputStream getResourceAsStream (String name) {
+    if (name == null) {
+      throw new NullPointerException("name");
+    }
+
     String resolvedName = getResolvedName(name);
     String moduleName = getModuleName();
 
