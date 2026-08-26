@@ -39,11 +39,17 @@ import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.Verify;
 import gov.nasa.jpf.test.test_classes.class_test.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -685,7 +691,60 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       assertEquals(c.getResource("Class.class"),c.getResource("/java/lang/Class.class"));
       assertNull(c.getResource("not_existing_resources"));
     }
-  }  
+  }
+
+  @Test
+  public void getResourceAsStreamTest() {
+    if (!isJPFRun()){
+      // create the fixture next to the compiled test class so that it is on
+      // the SUT classpath when JPF verifies this very test class
+      try {
+        File clsFile = new File(ClassTest.class.getResource("ClassTest.class").toURI());
+        File fixture = new File(clsFile.getParentFile(), "ClassTestFixture.txt");
+        Files.write(fixture.toPath(),
+                    "Hello from SUT classpath!".getBytes(StandardCharsets.UTF_8));
+        fixture.deleteOnExit();
+      } catch (IOException x){
+        throw new RuntimeException("failed to create ClassTestFixture.txt", x);
+      } catch (java.net.URISyntaxException x){
+        throw new RuntimeException("failed to locate compiled ClassTest.class", x);
+      }
+    }
+
+    if (verifyNoPropertyViolation()){
+      Class<?> c = ClassTest.class;
+
+      // relative lookup - resolves against the package of the requesting class
+      InputStream is = c.getResourceAsStream("ClassTestFixture.txt");
+      assertNotNull("relative getResourceAsStream() failed", is);
+      String content = readContent(is);
+      assertTrue("wrong content: " + content,
+                 content.contains("Hello from SUT classpath!"));
+
+      // absolute lookup
+      InputStream is2 = c.getResourceAsStream(
+          "/gov/nasa/jpf/test/java/lang/ClassTestFixture.txt");
+      assertNotNull("absolute getResourceAsStream() failed", is2);
+      assertEquals(content, readContent(is2));
+
+      // non-existing resource
+      assertNull(c.getResourceAsStream("/gov/nasa/jpf/test/java/lang/no_such_resource.xyz"));
+    }
+  }
+
+  private static String readContent (InputStream is) {
+    try {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      byte[] buf = new byte[256];
+      for (int n; (n = is.read(buf)) > 0; ){
+        bos.write(buf, 0, n);
+      }
+      is.close();
+      return new String(bos.toByteArray(), StandardCharsets.UTF_8);
+    } catch (IOException x){
+      throw new RuntimeException(x);
+    }
+  }
 }
 
 class TestNewInstance {
