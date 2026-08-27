@@ -43,6 +43,7 @@ public class BootstrapMethodInfo {
     LAMBDA_EXPRESSION,
     SERIALIZABLE_LAMBDA_EXPRESSION,
     RECORDS,
+    SWITCH,
     DYNAMIC
   }
 
@@ -67,6 +68,10 @@ public class BootstrapMethodInfo {
   private String dynamicMethodName;
   private String dynamicParameters;
   private String dynamicDescriptor;
+
+  // Switch-specific fields
+  private String[] switchLabels;
+  private boolean isEnumSwitch;
 
   // Record-specific fields
   private String[] recordComponents;
@@ -112,6 +117,26 @@ public class BootstrapMethodInfo {
     this.lambdaBody = null;
     this.samDescriptor = null;
     this.dynamicDescriptor = null;
+  }
+
+  /**
+   * Constructor for switch bootstrap methods (typeSwitch/enumSwitch).
+   *
+   * The labels are the class names (for type switches) or enum constant names
+   * (for enum switches) of the switch cases, in bytecode order.
+   */
+  public BootstrapMethodInfo(ClassInfo enclosingClass, int[] cpArgs, boolean isEnumSwitch,
+                             String[] switchLabels) {
+    this.enclosingClass = enclosingClass;
+    this.bmType = BMType.SWITCH;
+    this.cpArgs = cpArgs != null ? Arrays.copyOf(cpArgs, cpArgs.length) : null;
+    this.isEnumSwitch = isEnumSwitch;
+    this.switchLabels = switchLabels;
+    this.lambdaRefKind = 0;
+    this.lambdaBody = null;
+    this.samDescriptor = null;
+    this.dynamicDescriptor = null;
+    this.bmArg = "";
   }
 
   // ==================== CONFIGURATION METHODS ====================
@@ -165,6 +190,7 @@ public class BootstrapMethodInfo {
         if (samDescriptor != null) parseSamArgumentTypes();
         break;
       case RECORDS:
+      case SWITCH:
       case DYNAMIC:
         if (dynamicDescriptor != null) parseArgumentTypes();
         break;
@@ -355,6 +381,9 @@ public class BootstrapMethodInfo {
   public String getDynamicParameters() { return dynamicParameters; }
   public String getDynamicDescriptor() { return dynamicDescriptor; }
   public Class<?>[] getArgumentTypes() { return argumentTypes != null ? argumentTypes : new Class<?>[0]; }
+
+  public String[] getSwitchLabels() { return switchLabels; }
+  public boolean isEnumSwitch() { return isEnumSwitch; }
 
   @Override
   public String toString() {

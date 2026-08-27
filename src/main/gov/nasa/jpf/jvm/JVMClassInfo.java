@@ -24,9 +24,11 @@ import gov.nasa.jpf.util.StringSetMatcher;
 import gov.nasa.jpf.vm.*;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -142,6 +144,8 @@ public class JVMClassInfo extends ClassInfo {
         objectMethodsBootstrap(cf,tag,idx,refKind,cls,mth,parameters,descriptor,cpArgs);
       } else if (cls.equals("java/lang/invoke/StringConcatFactory") && (mth.equals("makeConcat") || mth.equals("makeConcatWithConstants"))) {
           stringConcatenation(cf, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
+      } else if (cls.equals("java/lang/runtime/SwitchBootstraps") && (mth.equals("typeSwitch") || mth.equals("enumSwitch"))) {
+          switchBootstraps(cf, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
       }else {
           // this will handle any other bootstrap method dynamically
           handleDynamicBootstrapMethod(cf, tag, idx, refKind, cls, mth, parameters, descriptor, cpArgs);
@@ -245,6 +249,41 @@ public class JVMClassInfo extends ClassInfo {
       bootstrapMethods[idx].setResolvedArgs(resolvedArgs);
     }
     
+    /**
+     * handles java.lang.runtime.SwitchBootstraps.typeSwitch/enumSwitch bootstrap
+     * methods, which back Java 17+ pattern matching switches (JEP 441).
+     *
+     * The static bootstrap arguments are the switch case labels - class names for
+     * type switches, enum constant names for enum switches. Class constants are
+     * stored as their utf8 values by the ClassFile parser, hence we normalize them
+     * to the dot notation used by ClassInfo.
+     */
+    private void switchBootstraps(ClassFile cf, Object tag, int idx, int refKind, String cls, String mth,
+                                  String parameters, String descriptor, int[] cpArgs) {
+      boolean isEnumSwitch = mth.equals("enumSwitch");
+
+      Object[] resolvedArgs = new Object[cpArgs.length];
+      for (int i = 0; i < cpArgs.length; i++) {
+        resolvedArgs[i] = cf.getConstantValue(cpArgs[i]);
+      }
+
+      List<String> labelList = new ArrayList<String>();
+      for (int i = 0; i < resolvedArgs.length; i++) {
+        Object arg = resolvedArgs[i];
+        if (arg instanceof String) {
+          labelList.add(((String) arg).replace('/', '.'));
+        }
+      }
+
+      String[] labels = labelList.toArray(new String[labelList.size()]);
+
+      BootstrapMethodInfo bmi = new BootstrapMethodInfo(JVMClassInfo.this, cpArgs, isEnumSwitch, labels);
+      bmi.setDynamicMetadata(refKind, cls, mth, parameters, descriptor);
+      bmi.setResolvedArgs(resolvedArgs);
+
+      bootstrapMethods[idx] = bmi;
+    }
+
     // helper method for setBootstrapMethod()
     public void setBootstrapMethodInfo(ClassInfo enclosingCls, String mthName, String parameters, int idx, int refKind,
                                        String descriptor, String bmArg, BootstrapMethodInfo.BMType bmType) {
