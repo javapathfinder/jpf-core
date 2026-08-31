@@ -113,7 +113,21 @@ public final class Class<T> implements Serializable, GenericDeclaration, Type, A
   private native byte[] getByteArrayFromResourceStream(String name);
 
   public InputStream getResourceAsStream (String name) {
-    byte[] byteArray = getByteArrayFromResourceStream(name);
+    if (name == null) {
+      throw new NullPointerException("name");
+    }
+
+    String resolvedName = getResolvedName(name);
+    String moduleName = getModuleName();
+
+    if (moduleName != null) {
+      if(isJPFClass())
+        resolvedName = "modules/" + moduleName + "/" + resolvedName;
+      else
+        resolvedName = moduleName + "/" + resolvedName;
+    }
+
+    byte[] byteArray = getByteArrayFromResourceStream(resolvedName);
     if (byteArray == null) return null;
     return new ByteArrayInputStream(byteArray);
   }
