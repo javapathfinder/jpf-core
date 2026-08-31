@@ -50,6 +50,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class INVOKEDYNAMIC extends Instruction {
 
+  private static final java.util.Set<String> BOXED_TYPES = new java.util.HashSet<>(
+      java.util.Arrays.asList(
+          "java.lang.Integer", "java.lang.Long", "java.lang.Short",
+          "java.lang.Byte", "java.lang.Character", "java.lang.Boolean",
+          "java.lang.Float", "java.lang.Double"
+      )
+  );
+
   // ==================== FIELDS ====================
 
   int bootstrapMethodIndex;
@@ -411,9 +419,84 @@ public class INVOKEDYNAMIC extends Instruction {
     String[] components = bmi.getBmArg().split(";");
 
     for (String compName : components) {
+      FieldInfo fi = ci.getDeclaredInstanceField(compName);
       Object value = ei.getFieldValueObject(compName);
-      hash = 31 * hash + (value != null ? value.hashCode() : 0);
+      hash = 31 * hash + componentHashCode(ti, value, fi != null ? fi.getSignature() : "Ljava/lang/Object;");
     }
+    return hash;
+  }
+
+  private int componentHashCode(ThreadInfo ti, Object value, String sig) {
+    if (value == null) return 0;
+
+    char typeChar = sig.charAt(0);
+    if (isPrimitiveType(typeChar)) return value.hashCode();
+
+    if (typeChar == '[') {
+      ElementInfo arrayEi = (value instanceof ElementInfo) ? (ElementInfo) value
+                          : ti.getHeap().get((Integer) value);
+      return arrayHashCode(ti, arrayEi);
+    }
+
+    if (value instanceof ElementInfo) {
+      ElementInfo valEi = (ElementInfo) value;
+      ClassInfo valCi = valEi.getClassInfo();
+
+      if ("java.lang.String".equals(valCi.getName())) {
+        return valEi.asString().hashCode();
+      }
+
+      if (valCi.isRecord()) {
+        StackFrame f = ti.getModifiableTopFrame();
+        int orig = f.getThis();
+        try {
+          f.setThis(valEi.getObjectRef());
+          return computeRecordHashCode(ti, valCi);
+        } finally {
+          f.setThis(orig);
+        }
+      }
+
+      if (BOXED_TYPES.contains(valCi.getName())) {
+        Object fv = valEi.getFieldValueObject("value");
+        return fv != null ? fv.hashCode() : 0;
+      }
+
+      return valEi.getObjectRef();
+    }
+
+    return value.hashCode();
+  }
+
+  private int arrayHashCode(ThreadInfo ti, ElementInfo arrayEi) {
+    if (arrayEi == null) return 0;
+
+    String arraySig = arrayEi.getClassInfo().getSignature();
+    String componentSig = arraySig.substring(1);
+    char componentType = componentSig.charAt(0);
+
+    int hash = 1;
+
+    for (int i = 0; i < arrayEi.arrayLength(); i++) {
+      Object element = getArrayElement(arrayEi, i, componentType);
+
+      int elementHash;
+      if (element == null) {
+        elementHash = 0;
+      } else if (componentType == '[') {
+        ElementInfo nestedArray = (element instanceof ElementInfo)
+            ? (ElementInfo) element
+            : ti.getHeap().get((Integer) element);
+        elementHash = arrayHashCode(ti, nestedArray);
+      } else if (isPrimitiveType(componentType)) {
+        elementHash = element.hashCode();
+      } else {
+        elementHash = componentHashCode(ti, element, componentSig);
+      }
+
+      hash = 31 * hash + elementHash;
+    }
+
     return hash;
   }
 
@@ -455,6 +538,38 @@ public class INVOKEDYNAMIC extends Instruction {
       currentFrame.setThis(originalThis);
       return result;
     }
+    if (value instanceof ElementInfo) {
+      ElementInfo valueEi = (ElementInfo) value;
+      ClassInfo valueCi = valueEi.getClassInfo();
+      // String: extract actual content
+      if ("java.lang.String".equals(valueCi.getName())) {
+        return valueEi.asString();
+      }
+      // Nested record: recurse
+      if (valueCi.isRecord()) {
+        StackFrame currentFrame = ti.getModifiableTopFrame();
+        int originalThis = currentFrame.getThis();
+        currentFrame.setThis(valueEi.getObjectRef());
+        int stringRef = computeRecordToString(ti, valueCi);
+        String result = ti.getHeap().get(stringRef).asString();
+        currentFrame.setThis(originalThis);
+        return result;
+      }
+      // Arrays: Object.toString() format — "[I@hexHash" — NOT deep printing.
+      // Java record toString() calls component.toString(), and arrays inherit
+      // Object.toString() which gives the type descriptor + identity hash.
+      if (valueEi.isArray()) {
+        String typeSig = valueCi.getSignature();
+        return typeSig + "@" + Integer.toHexString(valueEi.getObjectRef());
+      }
+      // Known JDK boxed types: show the wrapped value
+      if (BOXED_TYPES.contains(valueCi.getName())) {
+        Object fieldVal = valueEi.getFieldValueObject("value");
+        return String.valueOf(fieldVal);
+      }
+      // All other reference types: Object.toString() = "ClassName@hexHash"
+      return valueCi.getName() + "@" + Integer.toHexString(valueEi.getObjectRef());
+    }
     return String.valueOf(value);
   }
 
@@ -474,21 +589,13 @@ public class INVOKEDYNAMIC extends Instruction {
   }
 
   private boolean compareArrays(ThreadInfo ti, Object val1, Object val2, String sig) {
-    ElementInfo ei1 = ti.getHeap().get((Integer) val1);
-    ElementInfo ei2 = ti.getHeap().get((Integer) val2);
-
-    if (ei1 == null || ei2 == null || !ei1.isArray() || !ei2.isArray()) return false;
-    if (ei1.arrayLength() != ei2.arrayLength()) return false;
-
-    String componentSig = sig.substring(1);
-    char compType = componentSig.charAt(0);
-
-    for (int i = 0; i < ei1.arrayLength(); i++) {
-      Object elem1 = getArrayElement(ei1, i, compType);
-      Object elem2 = getArrayElement(ei2, i, compType);
-      if (!deepEquals(ti, elem1, elem2, componentSig)) return false;
-    }
-    return true;
+    // Per JEP 395: record equals() uses Objects.equals() per component.
+    // For arrays, Objects.equals(a, b) calls a.equals(b) = Object.equals() = reference identity.
+    ElementInfo ei1 = (val1 instanceof ElementInfo) ? (ElementInfo) val1
+                    : ti.getHeap().get((Integer) val1);
+    ElementInfo ei2 = (val2 instanceof ElementInfo) ? (ElementInfo) val2
+                    : ti.getHeap().get((Integer) val2);
+    return ei1 == ei2;
   }
 
   private boolean comparePrimitives(Object val1, Object val2, char typeChar) {
@@ -518,6 +625,17 @@ public class INVOKEDYNAMIC extends Instruction {
       return compareRecords(ti, ei1, ei2, ci);
     }
 
+    // For boxed types (Integer, Long, etc.) and other types with a "value" field,
+    // compare by value rather than by identity
+    // Use value-field comparison ONLY for known JDK boxed types (whitelist).
+    // User classes with a "value" field but identity equals() must NOT be affected.
+    if (BOXED_TYPES.contains(ci.getName())) {
+      Object v1 = ei1.getFieldValueObject("value");
+      Object v2 = ei2.getFieldValueObject("value");
+      if (v1 == v2) return true;
+      if (v1 == null || v2 == null) return false;
+      return v1.equals(v2);
+    }
     return ei1 == ei2;
   }
 
