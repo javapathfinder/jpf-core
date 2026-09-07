@@ -67,6 +67,7 @@ public class SharedSecrets {
   private static JavaNetSocketAccess javaNetSocketAccess;
   private static JavaNetInetAddressAccess javaNetInetAddressAccess;
   private static JavaSecurityAccess javaSecurityAccess;
+  private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
     return javaLangAccess;
@@ -264,5 +265,13 @@ public class SharedSecrets {
 
   public static JavaNetUriAccess getJavaNetUriAccess() {
     return javaNetUriAccess;
+  }
+
+  public static void setJavaSecurityPropertiesAccess(JavaSecurityPropertiesAccess access) {
+    javaSecurityPropertiesAccess = access;
+  }
+
+  public static JavaSecurityPropertiesAccess getJavaSecurityPropertiesAccess() {
+    return javaSecurityPropertiesAccess;
   }
 }

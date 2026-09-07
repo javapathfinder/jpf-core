@@ -45,6 +45,8 @@ compileClassesJava.options.compilerArgs += [
         '--patch-module', 'java.logging=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.logging',
         '--patch-module', 'java.xml=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.xml',
         '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+        '--add-exports', 'java.base/jdk.internal.access=ALL-UNNAMED',
+        '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED',
         '--add-reads', 'java.base=ALL-UNNAMED'
 ]
 
@@ -53,6 +55,8 @@ compileModulesJava.options.compilerArgs += [
         '--patch-module', 'java.logging=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.logging',
         '--patch-module', 'java.xml=' + files(sourceSets.modules.java.srcDirs).asPath + '/java.xml',
         '--add-exports', 'java.base/sun.net.www.protocol.http=ALL-UNNAMED',
+        '--add-exports', 'java.base/jdk.internal.access=ALL-UNNAMED',
+        '--add-exports', 'java.base/jdk.internal.misc=ALL-UNNAMED',
         '--add-reads', 'java.base=ALL-UNNAMED',
         '--module-source-path', files(sourceSets.modules.java.srcDirs).asPath
 ]
