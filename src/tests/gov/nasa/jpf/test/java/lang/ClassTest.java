@@ -39,11 +39,17 @@ import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.Verify;
 import gov.nasa.jpf.test.test_classes.class_test.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.junit.Test;
@@ -685,7 +691,190 @@ public class ClassTest extends TestJPF implements Cloneable, Serializable {
       assertEquals(c.getResource("Class.class"),c.getResource("/java/lang/Class.class"));
       assertNull(c.getResource("not_existing_resources"));
     }
-  }  
+  }
+
+  //--- getResourceAsStream() regression tests ---
+  // resources have to be loaded from the SUT classpath, i.e. the location
+  // of the class they are requested on, not from the native peer location
+
+  static final String RESOURCE_FIXTURE_NAME = "ClassTestFixture.txt";
+  static final String RESOURCE_FIXTURE_DIR = "gov/nasa/jpf/test/java/lang";
+  // NOTE - deliberately pure ASCII: comparing non-ASCII content would require
+  // charset decoding under JPF, which is a separate known limitation
+  // (orphan java.lang.StringCoding native peers)
+  static final String RESOURCE_FIXTURE_CONTENT =
+          "Hello from SUT classpath!\nSecond line\n";
+
+  /**
+   * create the resource fixtures next to the compiled test class so that
+   * they are on the SUT classpath when JPF verifies this test class
+   */
+  private static void ensureResourceFixtures () {
+    try {
+      File clsFile = new File(ClassTest.class.getResource("ClassTest.class").toURI());
+      File dir = clsFile.getParentFile();
+
+      File fixture = new File(dir, RESOURCE_FIXTURE_NAME);
+      Files.write(fixture.toPath(),
+                  RESOURCE_FIXTURE_CONTENT.getBytes(StandardCharsets.UTF_8));
+      fixture.deleteOnExit();
+
+      File subDir = new File(dir, "resource_subdir");
+      Files.createDirectories(subDir.toPath());
+      File subFixture = new File(subDir, RESOURCE_FIXTURE_NAME);
+      Files.write(subFixture.toPath(), "nested fixture".getBytes(StandardCharsets.UTF_8));
+      subFixture.deleteOnExit();
+    } catch (IOException x){
+      throw new RuntimeException("failed to create resource fixtures", x);
+    } catch (java.net.URISyntaxException x){
+      throw new RuntimeException("failed to locate compiled ClassTest.class", x);
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamRelativeTest() {
+    if (!isJPFRun()){
+      ensureResourceFixtures();
+    }
+
+    if (verifyNoPropertyViolation()){
+      // relative lookup resolves against the package of the requesting class
+      InputStream is = ClassTest.class.getResourceAsStream(RESOURCE_FIXTURE_NAME);
+      assertNotNull("relative lookup should find the fixture", is);
+      assertStreamContent(is, RESOURCE_FIXTURE_CONTENT);
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamAbsoluteTest() {
+    if (!isJPFRun()){
+      ensureResourceFixtures();
+    }
+
+    if (verifyNoPropertyViolation()){
+      InputStream is = ClassTest.class.getResourceAsStream(
+              "/" + RESOURCE_FIXTURE_DIR + "/" + RESOURCE_FIXTURE_NAME);
+      assertNotNull("absolute lookup should find the fixture", is);
+      assertStreamContent(is, RESOURCE_FIXTURE_CONTENT);
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamNestedRelativeTest() {
+    if (!isJPFRun()){
+      ensureResourceFixtures();
+    }
+
+    if (verifyNoPropertyViolation()){
+      InputStream is = ClassTest.class.getResourceAsStream(
+              "resource_subdir/" + RESOURCE_FIXTURE_NAME);
+      assertNotNull("nested relative lookup should find the fixture", is);
+      assertStreamContent(is, "nested fixture");
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamNotFoundTest() {
+    if (!isJPFRun()){
+      ensureResourceFixtures();
+    }
+
+    if (verifyNoPropertyViolation()){
+      Class<?> c = ClassTest.class;
+
+      // non-existing absolute and relative names
+      assertNull(c.getResourceAsStream(
+              "/" + RESOURCE_FIXTURE_DIR + "/no_such_resource.xyz"));
+      assertNull(c.getResourceAsStream("no_such_resource.xyz"));
+
+      // scoping - requesting from another class resolves against ITS package
+      assertNull(System.class.getResourceAsStream(RESOURCE_FIXTURE_NAME));
+
+      // a fully qualified path without leading '/' is still package-relative,
+      // i.e. must not find the fixture in its real location
+      assertNull(c.getResourceAsStream(RESOURCE_FIXTURE_DIR + "/" + RESOURCE_FIXTURE_NAME));
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamFromJarTest() {
+    if (verifyNoPropertyViolation()){
+      // asm-9.5.jar is part of jpf-core.test_classpath, hence on the SUT
+      // classpath; this exercises lookup inside a jar classpath entry.
+      // Every Java classfile starts with the magic bytes 0xCAFEBABE.
+      InputStream is = ClassTest.class.getResourceAsStream(
+              "/org/objectweb/asm/AnnotationVisitor.class");
+      assertNotNull("jar entry lookup should find AnnotationVisitor.class", is);
+
+      try {
+        int b0 = is.read();
+        int b1 = is.read();
+        int b2 = is.read();
+        int b3 = is.read();
+        is.close();
+
+        assertEquals(0xCA, b0);
+        assertEquals(0xFE, b1);
+        assertEquals(0xBA, b2);
+        assertEquals(0xBE, b3);
+      } catch (IOException x){
+        throw new RuntimeException(x);
+      }
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamConsistencyTest() {
+    if (!isJPFRun()){
+      ensureResourceFixtures();
+    }
+
+    if (verifyNoPropertyViolation()){
+      Class<?> c = ClassTest.class;
+      String absName = "/" + RESOURCE_FIXTURE_DIR + "/" + RESOURCE_FIXTURE_NAME;
+      String missingName = "/" + RESOURCE_FIXTURE_DIR + "/no_such_resource.xyz";
+
+      // getResource() and getResourceAsStream() have to agree on existence
+      assertNotNull(c.getResource(absName));
+      assertNotNull(c.getResourceAsStream(absName));
+
+      assertNull(c.getResource(missingName));
+      assertNull(c.getResourceAsStream(missingName));
+    }
+  }
+
+  @Test
+  public void getResourceAsStreamNullNameTest() {
+    if (verifyUnhandledException("java.lang.NullPointerException")){
+      // same behavior as on a standard JVM
+      ClassTest.class.getResourceAsStream(null);
+    }
+  }
+
+  /**
+   * reads the stream content and compares it byte-wise against the expected
+   * (pure ASCII) content, avoiding any charset decoding under JPF
+   */
+  private static void assertStreamContent (InputStream is, String expected) {
+    try {
+      ByteArrayOutputStream bos = new ByteArrayOutputStream();
+      byte[] buf = new byte[256];
+      for (int n; (n = is.read(buf)) > 0; ){
+        bos.write(buf, 0, n);
+      }
+      is.close();
+
+      byte[] actual = bos.toByteArray();
+      assertEquals("content length mismatch", expected.length(), actual.length);
+      for (int i = 0; i < actual.length; i++){
+        if ((byte) expected.charAt(i) != actual[i]){
+          fail("content mismatch at byte index " + i);
+        }
+      }
+    } catch (IOException x){
+      throw new RuntimeException(x);
+    }
+  }
 }
 
 class TestNewInstance {

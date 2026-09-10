@@ -715,32 +715,44 @@ public class JPF_java_lang_Class extends NativePeer {
 
 
   /**
-   * <2do> needs to load from the classfile location, NOT the MJIEnv (native) class
+   * Loads a resource from the classpath of the class this native method is
+   * invoked on (i.e. the system under test), NOT from the location of this
+   * peer class on the host VM.
+   *
+   * The name is expected to be already resolved into its absolute,
+   * slash-separated form by java.lang.Class.getResourceAsStream() (via
+   * getResolvedName()), i.e. it does not have a leading '/' and relative
+   * names are prefixed with the package of the requesting class.
+   *
+   * Returns the resource content as a byte array, or null if the resource
+   * cannot be found in the classpath of the requesting class.
    *
    * @author Sebastian Gfeller (sebastian.gfeller@gmail.com)
    * @author Tihomir Gvero (tihomir.gvero@gmail.com)
    */
   @MJI
   public int getByteArrayFromResourceStream__Ljava_lang_String_2___3B(MJIEnv env, int clsRef, int nameRef) {
+    ClassInfo ci = env.getReferredClassInfo(clsRef);
     String name = env.getStringObject(nameRef);
 
-    // <2do> this is not loading from the classfile location! fix it
-    InputStream is = env.getClass().getResourceAsStream(name);
-    if (is == null){
+    String url = ci.getClassLoaderInfo().findResource(name);
+    if (url == null){
       return MJIEnv.NULL;
     }
-    // We assume that the entire input stream can be read at the moment,
-    // although this could break.
-    byte[] content = null;
+
     try {
-      content = new byte[is.available()];
-      is.read(content);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+      InputStream is = new java.net.URL(url).openStream();
+      byte[] content;
+      try {
+        content = is.readAllBytes();
+      } finally {
+        is.close();
+      }
+      return env.newByteArray(content);
+
+    } catch (IOException x) {
+      return MJIEnv.NULL;
     }
-    // Now if everything worked, the content should be in the byte buffer.
-    // We put this buffer into the JPF VM.
-    return env.newByteArray(content);
   }
 
   @MJI
