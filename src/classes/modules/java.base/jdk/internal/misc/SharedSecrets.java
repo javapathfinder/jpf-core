@@ -68,6 +68,7 @@ public class SharedSecrets {
   private static JavaNetInetAddressAccess javaNetInetAddressAccess;
   private static JavaSecurityAccess javaSecurityAccess;
   private static JavaSecurityPropertiesAccess javaSecurityPropertiesAccess;
+  private static JavaUtilZipFileAccess javaUtilZipFileAccess;
   // (required for EnumSet ops)
   public static JavaLangAccess getJavaLangAccess() {
     return javaLangAccess;
@@ -273,5 +274,23 @@ public class SharedSecrets {
 
   public static JavaSecurityPropertiesAccess getJavaSecurityPropertiesAccess() {
     return javaSecurityPropertiesAccess;
+  }
+
+  public static void setJavaUtilZipFileAccess(JavaUtilZipFileAccess access) {
+    javaUtilZipFileAccess = access;
+  }
+
+  public static JavaUtilZipFileAccess getJavaUtilZipFileAccess() {
+    if (javaUtilZipFileAccess == null) {
+      try {
+        Class<?> c = Class.forName("java.util.zip.ZipFile");
+        unsafe.ensureClassInitialized(c);
+      } catch (ClassNotFoundException ignored) {}
+    }
+    return javaUtilZipFileAccess;
+  }
+
+  public static JavaUtilZipFileAccess javaUtilZipFileAccess() {
+    return getJavaUtilZipFileAccess();
   }
 }
