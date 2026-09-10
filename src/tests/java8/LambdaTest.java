@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -431,6 +433,67 @@ public class LambdaTest extends TestJPF{
       assertEquals(arr[1][1], 2);
       assertEquals(arr[2][0], 2);
       assertEquals(arr[2][1], 3);
+    }
+  }
+
+  // --- Regression tests for primitive method reference return value boxing ---
+
+  @Test
+  public void testMethodRefPrimitiveBoxingIntViaFunction() {
+    if (verifyNoPropertyViolation()) {
+      Function<String, Integer> f = String::length;
+      int result = f.apply("hello");
+      assertEquals(result, 5);
+    }
+  }
+
+  @Test
+  public void testMethodRefPrimitiveBoxingToIntFunction() {
+    if (verifyNoPropertyViolation()) {
+      ToIntFunction<String> f = String::length;
+      assertEquals(f.applyAsInt("hello"), 5);
+    }
+  }
+
+  @Test
+  public void testMethodRefReturningReference() {
+    if (verifyNoPropertyViolation()) {
+      Function<String, String> f = String::trim;
+      assertEquals(f.apply(" hi "), "hi");
+    }
+  }
+
+  @Test
+  public void testStaticMethodRefPrimitiveBoxing() {
+    if (verifyNoPropertyViolation()) {
+      Function<String, Integer> f = Integer::parseInt;
+      int result = f.apply("123");
+      assertEquals(result, 123);
+    }
+  }
+
+  public static class BoxHolder {
+    private final int value;
+    public BoxHolder(int value) { this.value = value; }
+    public int getValue() { return value; }
+  }
+
+  @Test
+  public void testBoundMethodRefPrimitiveBoxing() {
+    if (verifyNoPropertyViolation()) {
+      BoxHolder box = new BoxHolder(42);
+      Supplier<Integer> f = box::getValue;
+      int result = f.get();
+      assertEquals(result, 42);
+    }
+  }
+
+  @Test
+  public void testMethodRefBooleanBoxing() {
+    if (verifyNoPropertyViolation()) {
+      Function<String, Boolean> f = String::isEmpty;
+      assertTrue(f.apply(""));
+      assertFalse(f.apply("x"));
     }
   }
 }
