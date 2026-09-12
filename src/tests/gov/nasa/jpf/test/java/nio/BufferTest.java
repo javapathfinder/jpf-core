@@ -20,7 +20,9 @@ package gov.nasa.jpf.test.java.nio;
 import gov.nasa.jpf.util.test.TestJPF;
 import org.junit.Test;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.Scanner;
@@ -53,6 +55,88 @@ public class BufferTest extends TestJPF {
       byte[] bytes = new byte[8];
       random.nextBytes(bytes);
       new Scanner(new String(bytes));
+    }
+  }
+
+  /** Tests that reducing the limit also reduces a position beyond it. */
+  @Test
+  public void testLowerLimitClampsPosition() {
+    if (verifyNoPropertyViolation()) {
+      for (Buffer buffer : new Buffer[]{ByteBuffer.allocate(8), CharBuffer.allocate(8)}) {
+        buffer.position(6);
+        assertSame(buffer, buffer.limit(2));
+        assertEquals(2, buffer.limit());
+        assertEquals(2, buffer.position());
+        assertEquals(0, buffer.remaining());
+        assertFalse(buffer.hasRemaining());
+
+        buffer.limit(0);
+        assertEquals(0, buffer.position());
+        assertEquals(0, buffer.remaining());
+        assertEquals(8, buffer.capacity());
+
+        buffer.limit(8);
+        assertEquals(0, buffer.position());
+        assertEquals(8, buffer.remaining());
+      }
+    }
+  }
+
+  /** Tests that changing the limit keeps a position that is still valid. */
+  @Test
+  public void testLimitPreservesPositionWithinBounds() {
+    if (verifyNoPropertyViolation()) {
+      for (Buffer buffer : new Buffer[]{ByteBuffer.allocate(8), CharBuffer.allocate(8)}) {
+        buffer.position(2);
+        buffer.limit(6);
+        assertEquals(2, buffer.position());
+        assertEquals(4, buffer.remaining());
+        assertTrue(buffer.hasRemaining());
+
+        buffer.limit(2);
+        assertEquals(2, buffer.position());
+        assertEquals(0, buffer.remaining());
+
+        buffer.limit(8);
+        assertEquals(2, buffer.position());
+        assertEquals(6, buffer.remaining());
+      }
+    }
+  }
+
+  /** Tests that an invalid limit leaves the buffer state unchanged. */
+  @Test
+  public void testInvalidLimitPreservesState() {
+    if (verifyNoPropertyViolation()) {
+      for (Buffer buffer : new Buffer[]{ByteBuffer.allocate(8), CharBuffer.allocate(8)}) {
+        buffer.position(4);
+        buffer.limit(6);
+        for (int invalidLimit : new int[]{-1, 9}) {
+          try {
+            buffer.limit(invalidLimit);
+            fail("invalid limit should throw IllegalArgumentException");
+          } catch (IllegalArgumentException expected) {
+            assertEquals(6, buffer.limit());
+            assertEquals(4, buffer.position());
+            assertEquals(2, buffer.remaining());
+          }
+        }
+      }
+    }
+  }
+
+  /** Tests that a buffer exhausted by lowering its limit can still be sliced. */
+  @Test
+  public void testSliceAfterLoweringLimitBelowPosition() {
+    if (verifyNoPropertyViolation()) {
+      ByteBuffer buffer = ByteBuffer.allocate(8);
+      buffer.position(6);
+      ((Buffer) buffer).limit(2);
+
+      ByteBuffer slice = buffer.slice();
+      assertEquals(0, slice.capacity());
+      assertEquals(0, slice.position());
+      assertEquals(0, slice.limit());
     }
   }
 
