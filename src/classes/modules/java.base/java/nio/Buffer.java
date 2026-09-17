@@ -65,6 +65,9 @@ public abstract class Buffer {
       throw new IllegalArgumentException("Illegal buffer limit exception: "+newLimit);
     }
     this.limit = newLimit;
+    if (position > newLimit) {
+      position = newLimit;
+    }
     return this;
   }
 
