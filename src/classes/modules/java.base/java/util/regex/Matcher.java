@@ -160,7 +160,22 @@ public class Matcher {
   }
 
 
-  // TODO public native MatchResult toMatchResult();-Done;
-  // TODO public native StringBuffer appendTail(StringBuffer sb);
-  // TODO public native Matcher appendReplacement(StringBuffer sb, String replacement);
+  /**
+   * Appends the input subsequence after the last match to the given StringBuffer.
+   *
+   * @param sb The target string buffer
+   * @return The target string buffer
+   */
+  public native StringBuffer appendTail(StringBuffer sb);
+
+  /**
+   * Implements a non-terminal append-and-replace step.
+   * Reads characters from the input sequence, appends them to the given
+   * string buffer, and then appends the replacement string.
+   *
+   * @param sb The target string buffer
+   * @param replacement The replacement string
+   * @return This matcher
+   */
+  public native Matcher appendReplacement(StringBuffer sb, String replacement);
 }

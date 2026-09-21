@@ -244,4 +244,76 @@ public class JPF_java_util_regex_Matcher extends NativePeer {
     Matcher matcher = getInstance( env, objref);
     return matcher.requireEnd();
   }
+
+  @MJI
+  public int appendTail__Ljava_lang_StringBuffer_2__Ljava_lang_StringBuffer_2(MJIEnv env, int objref, int sbRef) {
+    Matcher matcher = getInstance(env, objref);
+
+    // Use a host-side StringBuffer to capture the tail content
+    StringBuffer hostSb = new StringBuffer();
+    matcher.appendTail(hostSb);
+    String tail = hostSb.toString();
+
+    if (tail.length() > 0) {
+      // Append the tail to the JPF StringBuffer via direct call
+      ThreadInfo ti = env.getThreadInfo();
+      DirectCallStackFrame frame = ti.getReturnedDirectCall();
+
+      if (frame == null) {
+        ClassInfo sbClass = env.getClassInfo(sbRef);
+        MethodInfo appendMi = sbClass.getMethod("append(Ljava/lang/String;)Ljava/lang/StringBuffer;", false);
+
+        if (appendMi != null) {
+          int tailRef = env.newString(tail);
+          frame = appendMi.createDirectCallStackFrame(ti, 1);
+          int argOffset = frame.setReferenceArgument(0, sbRef, null);
+          frame.setReferenceArgument(argOffset, tailRef, null);
+          ti.pushFrame(frame);
+          env.repeatInvocation();
+          return MJIEnv.NULL;
+        }
+      }
+    }
+
+    return sbRef;
+  }
+
+  @MJI
+  public int appendReplacement__Ljava_lang_StringBuffer_2Ljava_lang_String_2__Ljava_util_regex_Matcher_2(MJIEnv env, int objref, int sbRef, int replacementRef) {
+    Matcher matcher = getInstance(env, objref);
+
+    ThreadInfo ti = env.getThreadInfo();
+    DirectCallStackFrame frame = ti.getReturnedDirectCall();
+
+    if (frame == null) {
+      try {
+        String replacement = env.getStringObject(replacementRef);
+
+        // Use a host-side StringBuffer to capture the appendReplacement result
+        StringBuffer hostSb = new StringBuffer();
+        matcher.appendReplacement(hostSb, replacement);
+        String content = hostSb.toString();
+
+        if (content.length() > 0) {
+          ClassInfo sbClass = env.getClassInfo(sbRef);
+          MethodInfo appendMi = sbClass.getMethod("append(Ljava/lang/String;)Ljava/lang/StringBuffer;", false);
+
+          if (appendMi != null) {
+            int contentRef = env.newString(content);
+            frame = appendMi.createDirectCallStackFrame(ti, 1);
+            int argOffset = frame.setReferenceArgument(0, sbRef, null);
+            frame.setReferenceArgument(argOffset, contentRef, null);
+            ti.pushFrame(frame);
+            env.repeatInvocation();
+            return MJIEnv.NULL;
+          }
+        }
+      } catch (IllegalStateException e) {
+        env.throwException("java.lang.IllegalStateException", "No match available");
+        return MJIEnv.NULL;
+      }
+    }
+
+    return objref;
+  }
 }
