@@ -28,6 +28,7 @@ import jdk.internal.misc.SharedSecrets;
 import jdk.internal.reflect.ConstantPool;
 import sun.nio.ch.Interruptible;
 import sun.reflect.annotation.AnnotationType;
+import jdk.internal.misc.VM;
 
 
 public class System {
@@ -66,7 +67,7 @@ public class System {
     // would have prefered not to learn about. It's a mess WRT Java 1.5 / 6 compatibility
     // <2do> - most if this isn't supported yet
     SharedSecrets.setJavaLangAccess( createJavaLangAccess());
-
+    
     // <2do> this is an approximation that isn't particularly safe since we don't
     // initialize sun.misc.VM
     //sun.misc.VM.booted();
