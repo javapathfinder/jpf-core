@@ -165,4 +165,56 @@ public class IntVectorTest extends TestJPF {
 
   }
 
+  @Test
+  public void testEmptyVector () {
+    IntVector v = new IntVector();
+
+    assert v.size() == 0;
+    assert v.toArray().length == 0;
+  }
+
+  @Test
+  public void testBasicOperations () {
+    IntVector v = new IntVector();
+
+    v.set(0, 10);
+    v.set(1, 20);
+    v.set(2, 10);
+
+    assert v.size() == 3;
+    assert v.get(0) == 10;
+    assert v.get(1) == 20;
+    assert v.get(2) == 10;
+    assert v.get(3) == 0;
+
+    assert v.contains(20);
+    assert !v.contains(99);
+    assert v.getFirstIndexOfValue(10) == 0;
+    assert v.getFirstIndexOfValue(99) == -1;
+
+    assert v.removeFirst(10);
+    assert v.size() == 2;
+    assert v.get(0) == 20;
+    assert v.get(1) == 10;
+
+    assert !v.removeFirst(99);
+    assert v.size() == 2;
+  }
+
+  @Test
+  public void testEnsureSize () {
+    IntVector v = new IntVector();
+
+    v.ensureSize(5);
+
+    assert v.size() == 5;
+    assert v.get(0) == 0;
+    assert v.get(4) == 0;
+
+    v.set(4, 42);
+
+    assert v.size() == 5;
+    assert v.get(4) == 42;
+  }
+
 }
