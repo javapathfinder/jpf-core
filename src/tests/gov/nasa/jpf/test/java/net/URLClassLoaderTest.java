@@ -69,9 +69,6 @@ public class URLClassLoaderTest extends LoadUtility {
     }
   }
 
-  public String checkUrl( String url){
-    return url.replace("\\","/");
-  }
   @Test
   public void testConstructor_NullPointerException() {
     if (verifyUnhandledException("java.lang.NullPointerException")) {
@@ -217,13 +214,11 @@ public class URLClassLoaderTest extends LoadUtility {
       String resClass1 = pkg + "/Class1.class";
       URL url = cl.findResource(resClass1);
       String expectedUrl = dirUrl + "/" + resClass1;
-      expectedUrl = checkUrl(expectedUrl);
       assertEquals(url.toString(), expectedUrl);
 
       String resInterface1 = pkg + "/Interface1.class";
       url = cl.findResource(resInterface1);
       expectedUrl = dirUrl + "/" + resInterface1;
-      expectedUrl = checkUrl(expectedUrl);
       assertEquals(url.toString(), expectedUrl);
 
       url = cl.findResource("non_existence_resource");
@@ -233,7 +228,6 @@ public class URLClassLoaderTest extends LoadUtility {
       assertNull(url);
 
       // create a url from jar
-      jarUrl = checkUrl(jarUrl);
       urls[0] = new URL(jarUrl);
       cl =  new URLClassLoader(urls);
       url = cl.findResource(resClass1);
