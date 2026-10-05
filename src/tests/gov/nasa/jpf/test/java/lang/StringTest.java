@@ -53,6 +53,46 @@ public class StringTest extends TestJPF {
 		}
 	}
 
+	interface Call {
+		void run() throws Exception;
+	}
+
+	static void assertThrows(Class<? extends Exception> expected, Call call) {
+		try {
+			call.run();
+		} catch (Exception x) {
+			assert expected.isInstance(x) : x.toString();
+			return;
+		}
+		assert false : "no " + expected.getName();
+	}
+
+	@Test
+	public void testOutOfRangeIndexIsThrownInProgram() {
+		if (verifyNoPropertyViolation()) {
+			assertThrows(StringIndexOutOfBoundsException.class, () -> "abc".substring(4));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> "abc".substring(2, 1));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> "abc".charAt(5));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> "abc".codePointAt(5));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> "abc".codePointBefore(0));
+			assertThrows(IndexOutOfBoundsException.class, () -> "abc".codePointCount(2, 1));
+			assertThrows(IndexOutOfBoundsException.class, () -> "abc".offsetByCodePoints(0, 9));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> "abc".getChars(0, 5, new char[5], 0));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> new String(new char[] { 'a' }, 0, 5));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> new String(new int[] { 97 }, 0, 5));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> new String(new byte[] { 97 }, 0, 5));
+			assertThrows(StringIndexOutOfBoundsException.class, () -> new String(new byte[] { 97 }, 0, 5, "UTF-8"));
+			assertThrows(UnsupportedEncodingException.class, () -> new String(new byte[] { 97 }, 0, 1, "no-such-charset"));
+		}
+	}
+
+	@Test
+	public void testUncaughtOutOfRangeIndexIsReported() {
+		if (verifyUnhandledException("java.lang.StringIndexOutOfBoundsException")) {
+			"abc".substring(2, 1);
+		}
+	}
+
 	@Test
 	public void testToCharArray() {
 		if (verifyNoPropertyViolation()) {

@@ -33,80 +33,136 @@ import java.util.Locale;
  */
 public class JPF_java_lang_String extends NativePeer {
 
+  /**
+   * An out-of-range index or an unknown charset is an error of the program, so it is
+   * thrown in the program as the JDK does, instead of escaping as a JPFNativePeerException.
+   */
+  private static void throwInSUT (MJIEnv env, Exception x) {
+    env.throwException(x.getClass().getName(), x.getMessage());
+  }
+
   
   @MJI
   public int init___3CII__Ljava_lang_String_2 (MJIEnv env, int objRef, int valueRef, int offset, int count) {
     char[] value = env.getCharArrayObject(valueRef);
-    String result = new String(value, offset, count);
-    return env.newString(result);
+    try {
+      return env.newString(new String(value, offset, count));
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
   }
 
   @MJI
   public int init___3III__Ljava_lang_String_2 (MJIEnv env, int objRef, int codePointsRef, int offset, int count) {
     int[] codePoints = env.getIntArrayObject(codePointsRef);
-    String result = new String(codePoints, offset, count);
-    return env.newString(result);
+    try {
+      return env.newString(new String(codePoints, offset, count));
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
   }
 
   @SuppressWarnings("deprecation")
   @MJI
   public int init___3BIII__Ljava_lang_String_2 (MJIEnv env, int objRef, int asciiRef, int hibyte, int offset, int count) {
     byte[] ascii = env.getByteArrayObject(asciiRef);
-    String result = new String(ascii, hibyte, offset, count);
-    return env.newString(result);
+    try {
+      return env.newString(new String(ascii, hibyte, offset, count));
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
   }
 
   @MJI
-  public int init___3BIILjava_lang_String_2__Ljava_lang_String_2 (MJIEnv env, int objRef, int bytesRef, int offset, int length, int charsetNameRef) throws UnsupportedEncodingException {
+  public int init___3BIILjava_lang_String_2__Ljava_lang_String_2 (MJIEnv env, int objRef, int bytesRef, int offset, int length, int charsetNameRef) {
     byte[] bytes = env.getByteArrayObject(bytesRef);
     String charsetName = env.getStringObject(charsetNameRef);
-    String result = new String(bytes, offset, length, charsetName);
-    return env.newString(result);
+    try {
+      return env.newString(new String(bytes, offset, length, charsetName));
+    } catch (IndexOutOfBoundsException | UnsupportedEncodingException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
   }
 
   @MJI
   public int init___3BII__Ljava_lang_String_2 (MJIEnv env, int objRef, int bytesRef, int offset, int length) {
     byte[] bytes = env.getByteArrayObject(bytesRef);
-    String result = new String(bytes, offset, length);
-    return env.newString(result);
+    try {
+      return env.newString(new String(bytes, offset, length));
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
   }
 
   @MJI
   public int codePointAt__I__I (MJIEnv env, int objRef, int index) {
     String obj = env.getStringObject(objRef);
-    return obj.codePointAt(index);
+    try {
+      return obj.codePointAt(index);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return 0;
+    }
   }
 
   @MJI
   public int codePointBefore__I__I (MJIEnv env, int objRef, int index) {
     String obj = env.getStringObject(objRef);
-    return obj.codePointBefore(index);
+    try {
+      return obj.codePointBefore(index);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return 0;
+    }
   }
 
   @MJI
   public int codePointCount__II__I (MJIEnv env, int objRef, int beginIndex, int endIndex) {
     String obj = env.getStringObject(objRef);
-    return obj.codePointCount(beginIndex, endIndex);
+    try {
+      return obj.codePointCount(beginIndex, endIndex);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return 0;
+    }
   }
 
   @MJI
   public int offsetByCodePoints__II__I (MJIEnv env, int objRef, int index, int codePointOffset) {
     String obj = env.getStringObject(objRef);
-    return obj.offsetByCodePoints(index, codePointOffset);
+    try {
+      return obj.offsetByCodePoints(index, codePointOffset);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return 0;
+    }
   }
 
   @MJI
   public void getChars__II_3CI__V (MJIEnv env, int objRef, int srcBegin, int srcEnd, int dstRef, int dstBegin) {
     String obj = env.getStringObject(objRef);
     char[] dst = env.getCharArrayObject(dstRef);
-    obj.getChars(srcBegin, srcEnd, dst, dstBegin);
+    try {
+      obj.getChars(srcBegin, srcEnd, dst, dstBegin);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+    }
   }
 
   @MJI
   public void getChars___3CI__V(MJIEnv env, int objRef, int dstRef, int dstBegin) {
     String obj = env.getStringObject(objRef);
     char[] dst = env.getCharArrayObject(dstRef);
-    obj.getChars(0, obj.length(), dst, dstBegin);
+    try {
+      obj.getChars(0, obj.length(), dst, dstBegin);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+    }
   }
   
   @SuppressWarnings("deprecation")
@@ -114,7 +170,11 @@ public class JPF_java_lang_String extends NativePeer {
   public void getBytes__II_3BI__V (MJIEnv env, int objRef, int srcBegin, int srcEnd, int dstRef, int dstBegin) {
     String obj = env.getStringObject(objRef);
     byte[] dst = env.getByteArrayObject(dstRef);
-    obj.getBytes(srcBegin, srcEnd, dst, dstBegin);
+    try {
+      obj.getBytes(srcBegin, srcEnd, dst, dstBegin);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+    }
   }
 
   @MJI
@@ -142,7 +202,12 @@ public class JPF_java_lang_String extends NativePeer {
   @MJI
   public char charAt__I__C (MJIEnv env, int objRef, int index){
     String str = env.getStringObject(objRef);
-    return str.charAt(index);
+    try {
+      return str.charAt(index);
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return 0;
+    }
   }
 
   
@@ -323,16 +388,24 @@ public class JPF_java_lang_String extends NativePeer {
   @MJI
   public int substring__I__Ljava_lang_String_2 (MJIEnv env, int objRef, int beginIndex) {
     String obj = env.getStringObject(objRef);
-    String result = obj.substring(beginIndex);
-    return env.newString(result);
+    try {
+      return env.newString(obj.substring(beginIndex));
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
 
   }
 
   @MJI
   public int substring__II__Ljava_lang_String_2 (MJIEnv env, int objRef, int beginIndex, int endIndex) {
     String obj = env.getStringObject(objRef);
-    String result = obj.substring(beginIndex, endIndex);
-    return env.newString(result);
+    try {
+      return env.newString(obj.substring(beginIndex, endIndex));
+    } catch (IndexOutOfBoundsException x) {
+      throwInSUT(env, x);
+      return MJIEnv.NULL;
+    }
 
   }
 
@@ -499,7 +572,8 @@ public class JPF_java_lang_String extends NativePeer {
 
   @MJI
   public static void checkBoundsOffCount__III__V(MJIEnv env, int objref, int offset, int count, int length) {
-    if (offset < 0 || count < 0 || offset > length - count)
-        throw new StringIndexOutOfBoundsException("offset " + offset + ", count " + count + ", length " + length);
+    if (offset < 0 || count < 0 || offset > length - count) {
+      env.throwException("java.lang.StringIndexOutOfBoundsException", "offset " + offset + ", count " + count + ", length " + length);
+    }
   }
 }
