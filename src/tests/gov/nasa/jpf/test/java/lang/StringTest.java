@@ -54,6 +54,20 @@ public class StringTest extends TestJPF {
 	}
 
 	@Test
+	public void testNonLatin1Literals() {
+		if (verifyNoPropertyViolation()) {
+			String s = "\u4e2d\u6587";
+			assert s.length() == 2;
+			assert s.charAt(0) == '\u4e2d';
+			assert s.equals(new String(new char[] { '\u4e2d', '\u6587' }));
+			assert s.hashCode() == 646394;
+			assert "\u00e9".length() == 1;
+			assert "x\ud83d\ude00".indexOf(0x1F600) == 1;
+			assert String.CASE_INSENSITIVE_ORDER.compare("\u0130", "i") == 0;
+		}
+	}
+
+	@Test
 	public void testToCharArray() {
 		if (verifyNoPropertyViolation()) {
 			String s = "42";

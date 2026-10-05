@@ -337,12 +337,14 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
   
   
   protected ElementInfo initializeStringObject( String str, int index, int vref) {
+    byte coder = CompactString.coder(str);
     ElementInfo ei = getModifiable(index);
     ei.setReferenceField("value", vref);
+    ei.setByteField("coder", coder);
 
     ElementInfo eVal = getModifiable(vref);
     ByteArrayFields cf = (ByteArrayFields) eVal.getFields();
-    cf.setByteValues(str.getBytes());
+    cf.setByteValues(CompactString.encode(str, coder));
 
     return ei;
   }
@@ -356,7 +358,7 @@ public abstract class GenericHeap implements Heap, Iterable<ElementInfo> {
     //--- its byte[] array
     ctx = ctx.extend(ciBytes, sRef);
     int vRef = getNewElementInfoIndex( ctx);
-    createArray( "B", str.getBytes().length, ciBytes, ti, vRef);
+    createArray( "B", str.length() << CompactString.coder(str), ciBytes, ti, vRef);
     
     ElementInfo ei = initializeStringObject(str, sRef, vRef);      
     return ei;

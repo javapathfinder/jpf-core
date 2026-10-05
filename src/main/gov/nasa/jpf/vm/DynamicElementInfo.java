@@ -98,7 +98,7 @@ public class DynamicElementInfo extends ElementInfo {
   public String asString() {
     byte[] data = getStringBytes();
     if (data != null){
-      return new String(data);
+      return CompactString.decode(data, getDeclaredByteField("coder", "java.lang.String"));
       
     } else {
       return "";
@@ -157,7 +157,7 @@ public class DynamicElementInfo extends ElementInfo {
     ByteArrayFields cf = (ByteArrayFields) e.getFields();
     byte[] v = cf.asByteArray();
     
-    return new String(v).equals(s);
+    return CompactString.decode(v, getDeclaredByteField("coder", "java.lang.String")).equals(s);
   }
 
   @Override
