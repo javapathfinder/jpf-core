@@ -33,7 +33,7 @@ public class JPF_java_lang_Long extends NativePeer {
     try {
       return Long.parseLong(env.getStringObject(strRef), radix);
     } catch (NumberFormatException e) {
-      env.throwException("java.lang.NumberFormatException");
+      env.throwException("java.lang.NumberFormatException", e.getMessage());
 
       return 0;
     }
@@ -45,7 +45,7 @@ public class JPF_java_lang_Long extends NativePeer {
     try {
       return Long.parseLong(env.getStringObject(strRef));
     } catch (NumberFormatException e) {
-      env.throwException("java.lang.NumberFormatException");
+      env.throwException("java.lang.NumberFormatException", e.getMessage());
 
       return 0;
     }
