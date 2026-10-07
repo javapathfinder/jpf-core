@@ -1,5 +1,20 @@
 jpf-core currently builds and runs on Java 8. In this work, we introduced partial support for Java 10, leveraging the new features like modularity, strong encapsulation, while also handling the deprecates and removes. 
 
+> ⚠️ **Java Version Compatibility Warning**
+> JPF officially supports **Java 8**. Partial support for Java 10 was 
+> introduced in this release (see details below), but Java 11+ is **not 
+> supported** and will cause errors such as:
+> - `NoClassDefFoundError: sun/misc/SharedSecrets` — this internal API 
+>   was removed in Java 9+. JPF now uses the StackWalker API instead 
+>   (see [Miscellaneous](#miscellaneous)), but older configurations may 
+>   still reference it.
+> - Eclipse plugin users: the `eclipse-jpf` plugin is **no longer 
+>   supported**. Remove it from your CLASSPATH and use the 
+>   command-line interface instead.
+>
+> **Recommended:** Use `java -version` to confirm you are on JDK 8 or 
+> JDK 10 before running JPF.
+
 JEPs that introduce internal changes to JPF include, but not limited to:
 
 * [Project Jigsaw](#compiling-mji-model-classes)
@@ -241,3 +256,21 @@ Issue: VMClassInfo$Initializer.setBootstrapMethod ArrayIndexOutOfBoundsException
 
 [1ccefdf]: https://github.com/javapathfinder/jpf-core/commit/1ccefdfd9eeecb9a093ed21b600534ca0f95679a
 [880b4ca]: https://github.com/javapathfinder/jpf-core/commit/880b4cad0809b51036e77c49115823ac73432640#diff-2cccd7bf48b7a9cc113ff564acd802a8
+
+Fixes #280, related to #279
+
+## What this PR does
+- Adds a Java version compatibility warning at the top of 
+  JPF-Version-6-released.md
+- References the existing Miscellaneous section (PR #24) which 
+  already replaced sun/misc/SharedSecrets with StackWalker API,
+  helping users understand the root cause of the error in #280
+- Warns Eclipse plugin users that eclipse-jpf is no longer supported
+
+## Why
+Users hitting issue #280 are confused because:
+1. There is no visible warning about Java 11+ incompatibility
+2. The SharedSecrets fix already exists in the codebase but 
+   isn't surfaced in the docs
+3. The Eclipse plugin deprecation is mentioned in issue comments 
+   but not in any documentation
