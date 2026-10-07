@@ -18,14 +18,12 @@ Note that we have transitioned to OpenJDK with the new version of JPF (for Java 
 We have documented on the wiki a lot of common problems during the install and
 build processes reported by users.  If you are facing any issue, please, make
 sure that we have not addressed it in documentation. Otherwise, feel free to
-contact us at java-pathfinder@googlegroups.com or open an issue on the Issue
-Tracker.
+please open an issue on the Issue Tracker.
 
 ## Documentation
 
 There is a constant effort to update and add JPF documentation on the wiki.
-If you would like to contribute in that, please, contact us at
-java-pathfinder@googlegroups.com.
+If you would like to contribute, please open an issue on GitHub.
 
 Contributions are welcomed and we encourage you to get involved with the
 community.
@@ -33,8 +31,9 @@ community.
 Happy Verification
 *-- the Java PathFinder team*
 
+## Community
 
----
+For discussions and support, you can also join the official JPF Discord (if available).
 
 ## Running with Docker
 
