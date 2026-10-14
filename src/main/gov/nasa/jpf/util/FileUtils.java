@@ -406,6 +406,9 @@ public class FileUtils {
 
   public static String getContentsAsString( File file) throws IOException {
     byte[] data = getContents(file);
+    if (data == null) {
+      throw new IOException("cannot read file: " + file);
+    }
     return new String(data);
   }
   
