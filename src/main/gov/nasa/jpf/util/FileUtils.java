@@ -357,11 +357,13 @@ public class FileUtils {
     if (file.exists()) {
       File[] childs = file.listFiles();
 
-      for (File child : childs) {
-        if (child.isDirectory()){
-          removeRecursively(child);
-        } else {
-          child.delete();
+      if (childs != null) {
+        for (File child : childs) {
+          if (child.isDirectory()){
+            removeRecursively(child);
+          } else {
+            child.delete();
+          }
         }
       }
 
