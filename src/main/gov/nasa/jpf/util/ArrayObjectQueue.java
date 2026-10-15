@@ -96,16 +96,18 @@ public class ArrayObjectQueue<E> implements ObjectQueue<E> {
   }
   
   protected void grow(){
-    Object[] newBuffer = new Object[buffer.length * 3 / 2];
+    Object[] newBuffer = new Object[Math.max(buffer.length + 1, buffer.length * 3 / 2)];
     
-    if (first < last){
-      System.arraycopy(buffer, first, newBuffer, 0, last - first +1);
-    } else if (first > last){
-      int nRight = buffer.length - first;
-      System.arraycopy(buffer, first, newBuffer, 0, nRight);
-      System.arraycopy(buffer, 0, newBuffer, nRight, last+1);      
-    } else { // just 1 element
-      newBuffer[0] = buffer[first];
+    if (size > 0){
+      if (first < last){
+        System.arraycopy(buffer, first, newBuffer, 0, last - first +1);
+      } else if (first > last){
+        int nRight = buffer.length - first;
+        System.arraycopy(buffer, first, newBuffer, 0, nRight);
+        System.arraycopy(buffer, 0, newBuffer, nRight, last+1);
+      } else { // just 1 element
+        newBuffer[0] = buffer[first];
+      }
     }
     
     first = 0;
@@ -135,6 +137,9 @@ public class ArrayObjectQueue<E> implements ObjectQueue<E> {
   @Override
   public boolean add (E e){
     if (size == 0){  // first element
+      if (buffer.length == 0){
+        grow();
+      }
       first = last = 0;
       buffer[0] = e;
       size = 1;
