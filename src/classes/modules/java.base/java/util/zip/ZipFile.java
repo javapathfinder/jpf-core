@@ -88,6 +88,7 @@ public class ZipFile {
     private native boolean initZEFields(String entryName, ZipEntry ze);
 
     public Enumeration<? extends ZipEntry> entries() {
+        ensureOpen();
         return new EntryIterator();
     }
 
@@ -105,11 +106,19 @@ public class ZipFile {
     }
 
     public String getComment() {
+        ensureOpen();
         return comment;
     }
 
     public int size() throws IllegalStateException {
+        ensureOpen();
         return entryNames.length;
+    }
+
+    private void ensureOpen() {
+        if(state != OPENED) {
+            throw new IllegalStateException("ZipFile closed");
+        }
     }
 
     public ZipEntry getEntry(String entryName) {

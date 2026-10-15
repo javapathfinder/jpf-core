@@ -51,11 +51,49 @@ public class ZipFileTest extends TestJPF {
         }
     }
 
-    @Test(expected = IllegalStateException.class) // TODO: check how to test for specific exceptions in jpf
+    @Test
     public void testClose() throws IOException {
+        if (verifyUnhandledException(IllegalStateException.class.getName())) {
             ZipFile closedZip = new ZipFile(fullPath);
             closedZip.close();
             closedZip.getEntry("empty.txt");
+        }
+    }
+
+    @Test
+    public void testSizeAfterClose() throws IOException {
+        if (verifyUnhandledException(IllegalStateException.class.getName())) {
+            ZipFile closedZip = new ZipFile(fullPath);
+            closedZip.close();
+            closedZip.size();
+        }
+    }
+
+    @Test
+    public void testGetCommentAfterClose() throws IOException {
+        if (verifyUnhandledException(IllegalStateException.class.getName())) {
+            ZipFile closedZip = new ZipFile(fullPath);
+            closedZip.close();
+            closedZip.getComment();
+        }
+    }
+
+    @Test
+    public void testEntriesAfterClose() throws IOException {
+        if (verifyUnhandledException(IllegalStateException.class.getName())) {
+            ZipFile closedZip = new ZipFile(fullPath);
+            closedZip.close();
+            closedZip.entries();
+        }
+    }
+
+    @Test
+    public void testStreamAfterClose() throws IOException {
+        if (verifyUnhandledException(IllegalStateException.class.getName())) {
+            ZipFile closedZip = new ZipFile(fullPath);
+            closedZip.close();
+            closedZip.stream();
+        }
     }
 
     @Test
