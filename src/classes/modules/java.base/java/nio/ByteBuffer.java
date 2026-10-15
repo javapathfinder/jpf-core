@@ -175,8 +175,8 @@ public class ByteBuffer extends Buffer {
    * Caution: 8 or 32 bit character encodings are not supported.
    */
   public char getChar(int pos) {
-    if (limit - pos < 2) {
-      throw new BufferUnderflowException();
+    if ((pos < 0) || (pos > limit - 2)) {
+      throw new IndexOutOfBoundsException();
     }
     int x1 = (array[pos]   & 0xff) << 8;
     int x0 = (array[pos+1] & 0xff);

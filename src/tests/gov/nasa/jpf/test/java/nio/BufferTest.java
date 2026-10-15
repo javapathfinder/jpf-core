@@ -140,4 +140,31 @@ public class BufferTest extends TestJPF {
     }
   }
 
+  /** Checks that an absolute char read rejects a negative index. */
+  @Test
+  public void testGetCharRejectsNegativeIndex() {
+    if (verifyUnhandledException(IndexOutOfBoundsException.class.getName())) {
+      ByteBuffer.allocate(2).getChar(-1);
+    }
+  }
+
+  /** Checks that an absolute char read rejects an index that exceeds the limit. */
+  @Test
+  public void testGetCharRejectsIndexPastLimit() {
+    if (verifyUnhandledException(IndexOutOfBoundsException.class.getName())) {
+      ByteBuffer.allocate(2).getChar(1);
+    }
+  }
+
+  /** Checks that a valid absolute char read leaves the position unchanged. */
+  @Test
+  public void testGetCharAtLastValidIndexDoesNotChangePosition() {
+    if (verifyNoPropertyViolation()) {
+      ByteBuffer buffer = ByteBuffer.allocate(4);
+
+      assertEquals('\0', buffer.getChar(2));
+      assertEquals(0, buffer.position());
+    }
+  }
+
 }
