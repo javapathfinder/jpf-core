@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf.util;
@@ -24,7 +24,7 @@ import java.util.Arrays;
 /**
  * This has approximately the interface of IntVector but uses a hash table
  * instead of an array.  Also, does not require allocation with each add.
- * Configurable default value. 
+ * Configurable default value.
  */
 public class SparseIntVector implements Cloneable {
   private static final boolean DEBUG = false;
@@ -240,7 +240,21 @@ public class SparseIntVector implements Cloneable {
     return count;
   }
   
+  /**
+   * Sets the value associated with the specified index.
+   *
+   * @param idx the index to set; {@link Integer#MIN_VALUE} is not supported
+   *            because it is used internally to mark an unoccupied slot
+   * @param val the value to associate with the index
+   * @throws IllegalArgumentException if {@code idx} is
+   *         {@link Integer#MIN_VALUE}
+   */
   public void set(int idx, int val) {
+    if (idx == MIN_VALUE) {
+      throw new IllegalArgumentException(
+          "Integer.MIN_VALUE is not a supported index");
+    }
+
     int code = mix(idx);
     int pos = code & mask;
     int delta = (code >> (pow - 1)) | 1; // must be odd!

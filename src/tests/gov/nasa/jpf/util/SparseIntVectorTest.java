@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -23,7 +23,7 @@ import org.junit.Test;
 import gov.nasa.jpf.util.test.TestJPF;
 
 public class SparseIntVectorTest extends TestJPF {
-  
+
   void assertEquals( SparseIntVector v1, SparseIntVector v2) {
     assertTrue( v1.size() == v2.size());
 
@@ -34,7 +34,7 @@ public class SparseIntVectorTest extends TestJPF {
       assertTrue(a == b);
     }
   }
-  
+
   @Test
   public void testSetGet () {
     SparseIntVector v = new SparseIntVector();
@@ -42,17 +42,17 @@ public class SparseIntVectorTest extends TestJPF {
     v.set(0, 10);
     v.set(42, 11);
     v.set(111111111, 12);
-    
+
     assertTrue( v.get(0) == 10);
     assertTrue( v.get(42) == 11);
     assertTrue( v.get(111111111) == 12);
-    
+
     assertTrue( v.get(10) == 0);
-    
+
     v.clear(42);
     assertTrue( v.get(42) == 0);
   }
-  
+
   @Test
   public void testSnapshot () {
     SparseIntVector v = new SparseIntVector();
@@ -76,34 +76,66 @@ public class SparseIntVectorTest extends TestJPF {
     for (int i=0; i<100; i++) {
       assertTrue( i == v.get(i));
     }
-    
+
     //--- punch holes into it
     v.setRange(11,  20, 0);
     v.set( 25,0);
     v.set( 26, 0);
     v.set( 42, 0);
     v.setRange(70, 85, 0);
-    SparseIntVector.Snapshot snap1 = v.getSnapshot();    
+    SparseIntVector.Snapshot snap1 = v.getSnapshot();
     SparseIntVector v1 = v.clone();
     v.clear();
     v.restore(snap1);
     //v.printOn( System.out);
     assertEquals( v1, v);
-    
+
     //--- chop off the ends
     v.restore(snap0);
     v.setRange(81, 99, 0);
     v.setRange(0, 19, 0);
-    SparseIntVector.Snapshot snap2 = v.getSnapshot();    
+    SparseIntVector.Snapshot snap2 = v.getSnapshot();
     SparseIntVector v2 = v.clone();
     v.clear();
     v.restore(snap2);
-    assertEquals( v2, v); 
+    assertEquals( v2, v);
   }
-  
+
+  @Test
+  public void testMinValueIndexRejected() {
+    SparseIntVector v = new SparseIntVector();
+
+    v.set(0, 10);
+    v.set(1, 11);
+    v.set(2, 12);
+
+    int originalSize = v.size();
+
+    try {
+      v.set(Integer.MIN_VALUE, 42);
+      fail("Expected IllegalArgumentException for Integer.MIN_VALUE");
+    } catch (IllegalArgumentException expected) {
+      // A rejected write must not modify existing entries or size.
+      assertTrue(v.size() == originalSize);
+      assertTrue(v.get(0) == 10);
+      assertTrue(v.get(1) == 11);
+      assertTrue(v.get(2) == 12);
+    }
+
+    // MIN_VALUE + 1 must be accepted as an index.
+    int validIndex = Integer.MIN_VALUE + 1;
+    v.set(validIndex, 99);
+    assertTrue(v.get(validIndex) == 99);
+
+    // Existing values must remain intact after the valid write.
+    assertTrue(v.get(0) == 10);
+    assertTrue(v.get(1) == 11);
+    assertTrue(v.get(2) == 12);
+  }
+
   static final int MAX_SIZE = 10000;
   static final int MAX_ROUNDS = 1000;
-  
+
   public void benchmark() {
     long t1, t2;
 
