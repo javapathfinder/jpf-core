@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2014, United States Government, as represented by the
  * Administrator of the National Aeronautics and Space Administration.
@@ -32,17 +33,24 @@ public class IdentityArrayObjectSet<E> implements IdentityObjectSet<E> {
   
   private class StoreOrderIterator implements Iterator<E> {
     int next = 0;
+    boolean canRemove = false;
 
     @Override
     public void remove() {
-      int idx = next-1;
-      if (idx >=0){
-        if (idx < size-1){
-          System.arraycopy(elements, next, elements, idx, size-idx);
-        }
-        size--;
-        next = idx;
+      if (!canRemove) {
+        throw new IllegalStateException();
       }
+
+      int idx = next - 1;
+      int numMoved = size - next;
+
+      if (numMoved > 0) {
+        System.arraycopy(elements, next, elements, idx, numMoved);
+      }
+
+      elements[--size] = null;
+      next = idx;
+      canRemove = false;
     }
 
     @Override
@@ -52,7 +60,8 @@ public class IdentityArrayObjectSet<E> implements IdentityObjectSet<E> {
 
     @Override
     public E next() {
-      if (next < size){
+      if (next < size) {
+        canRemove = true;
         return (E) elements[next++];
       } else {
         throw new NoSuchElementException();
