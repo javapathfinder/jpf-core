@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2014, United States Government, as represented by the
  * Administrator of the National Aeronautics and Space Administration.
@@ -6,13 +7,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package gov.nasa.jpf.util;
@@ -189,6 +190,7 @@ public class PathnameExpander {
       }
     }
   }
+
   private void collectSubdirs(ArrayList<File> newList, File dir) {
     for (File f : dir.listFiles()){
       if (f.isDirectory()){
@@ -214,26 +216,34 @@ public class PathnameExpander {
     return result;
   }
 
-  protected Pattern getPattern(String s){
-    Pattern p;
+  /**
+   * Converts pathname wildcard patterns into regular expressions.
+   * The '*' character is treated as a wildcard, while all other
+   * characters are interpreted literally.
+   */
+  protected Pattern getPattern(String s) {
+    StringBuilder regex = new StringBuilder();
+    StringBuilder literal = new StringBuilder();
 
-    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < s.length(); i++) {
+      char c = s.charAt(i);
 
-    int len = s.length();
-    for (int j=0; j<len; j++){
-      char c = s.charAt(j);
-      switch (c){
-      case '.' : sb.append("\\."); break;
-      case '$' : sb.append("\\$"); break;
-      case '[' : sb.append("\\["); break;
-      case ']' : sb.append("\\]"); break;
-      case '*' : sb.append(".*"); break;
-      // <2do> and probably more..
-      default:   sb.append(c);
+      if (c == '*') {
+        if (literal.length() > 0) {
+          regex.append(Pattern.quote(literal.toString()));
+          literal.setLength(0);
+        }
+
+        regex.append(".*");
+      } else {
+        literal.append(c);
       }
     }
 
-    p = Pattern.compile(sb.toString());
-    return p;
+    if (literal.length() > 0) {
+      regex.append(Pattern.quote(literal.toString()));
+    }
+
+    return Pattern.compile(regex.toString());
   }
 }
