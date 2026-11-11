@@ -18,20 +18,109 @@
 package java.util.concurrent.atomic;
 
 /**
- * MJI model class for sun.misc.AtomicLong library abstraction
+ * MJI model class for java.util.concurrent.atomic.AtomicLong
+ *
+ * The atomic operations (compareAndSet, getAndIncrement, addAndGet, ...) are implemented by the
+ * native peer JPF_java_util_concurrent_atomic_AtomicLong, which accesses the field "value". They
+ * have to be declared here so that the peer methods are bound, otherwise calling them fails with
+ * NoSuchMethodError. The Java bodies of these methods are not executed while the peer is present.
  */
-public class AtomicLong {
+public class AtomicLong extends Number implements java.io.Serializable {
+  private static final long serialVersionUID = 1927816293512124184L;
+
   long value;
 
   public AtomicLong () {
   }
 
-  private AtomicLong (long val) {
-    value = val;
+  public AtomicLong (long initialValue) {
+    value = initialValue;
   }
 
   public static AtomicLong newAtomicLong (long val) {
     return new AtomicLong(val);
+  }
+
+  public final long get () {
+    return value;
+  }
+
+  public final void set (long newValue) {
+    value = newValue;
+  }
+
+  public final void lazySet (long newValue) {
+    value = newValue;
+  }
+
+  public final long getAndSet (long newValue) {
+    long old = value;
+    value = newValue;
+    return old;
+  }
+
+  public final boolean compareAndSet (long expect, long update) {
+    if (value == expect) {
+      value = update;
+      return true;
+    }
+    return false;
+  }
+
+  public final boolean weakCompareAndSet (long expect, long update) {
+    return compareAndSet(expect, update);
+  }
+
+  public final long getAndIncrement () {
+    return value++;
+  }
+
+  public final long getAndDecrement () {
+    return value--;
+  }
+
+  public final long getAndAdd (long delta) {
+    long old = value;
+    value += delta;
+    return old;
+  }
+
+  public final long incrementAndGet () {
+    return ++value;
+  }
+
+  public final long decrementAndGet () {
+    return --value;
+  }
+
+  public final long addAndGet (long delta) {
+    value += delta;
+    return value;
+  }
+
+  @Override
+  public int intValue () {
+    return (int) get();
+  }
+
+  @Override
+  public long longValue () {
+    return get();
+  }
+
+  @Override
+  public float floatValue () {
+    return (float) get();
+  }
+
+  @Override
+  public double doubleValue () {
+    return (double) get();
+  }
+
+  @Override
+  public String toString () {
+    return Long.toString(get());
   }
 
   public boolean attemptAdd (long l) {
@@ -56,10 +145,6 @@ public class AtomicLong {
     value = newval;
 
     return true;
-  }
-
-  public long get () {
-    return value;
   }
 
   @SuppressWarnings("unused")
