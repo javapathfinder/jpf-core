@@ -54,6 +54,62 @@ public class LambdaTest extends TestJPF{
     }
   }
 
+  /**
+   * javac names the anonymous class below LambdaTest$AnonymousNextToLambdas$1. The function object
+   * type of a lambda must not get that name, or the second lambda (bootstrap index 1) runs the
+   * anonymous class's run().
+   */
+  static class AnonymousNextToLambdas {
+    final int[] ran = new int[3];
+
+    void runAll() {
+      Runnable anonymous = new Runnable() {
+        @Override
+        public void run() {
+          ran[0]++;
+        }
+      };
+      Runnable first = () -> ran[1]++;
+      Runnable second = () -> ran[2]++;
+      first.run();
+      second.run();
+    }
+  }
+
+  @Test
+  public void testLambdaNextToAnonymousClass() {
+    if (verifyNoPropertyViolation()) {
+      AnonymousNextToLambdas t = new AnonymousNextToLambdas();
+      t.runAll();
+      assertEquals(0, t.ran[0]);
+      assertEquals(1, t.ran[1]);
+      assertEquals(1, t.ran[2]);
+    }
+  }
+
+  /**
+   * Same name clash with an anonymous class that is not a Runnable: starting a thread with the
+   * second lambda failed in the Thread.start peer.
+   */
+  static class AnonymousObjectNextToLambdaThreads {
+    void startAll() throws InterruptedException {
+      Object anonymous = new Object() { };
+      Thread t1 = new Thread(() -> { });
+      Thread t2 = new Thread(() -> { });
+      t1.start();
+      t2.start();
+      t1.join();
+      t2.join();
+    }
+  }
+
+  @Test
+  public void testLambdaThreadNextToAnonymousClass() throws InterruptedException {
+    if (verifyNoPropertyViolation()) {
+      new AnonymousObjectNextToLambdaThreads().startAll();
+    }
+  }
+
   @Test
   public void testNewSpecialMethodHandle() {
     if(verifyNoPropertyViolation()) {

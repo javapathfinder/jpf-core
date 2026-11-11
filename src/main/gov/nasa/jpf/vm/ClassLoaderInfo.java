@@ -456,7 +456,9 @@ public class ClassLoaderInfo
    * and contains a method that captures the behavior of the lambda expression.
    */
   public ClassInfo getResolvedFuncObjType (int bsIdx, ClassInfo fiClassInfo, String samUniqueName, BootstrapMethodInfo bmi, String[] freeVariableTypeNames) {
-    String typeName = bmi.enclosingClass.getName() + "$" + bsIdx;
+    // not Outer$<index>: javac names anonymous classes Outer$1, Outer$2, ..., and a lambda would
+    // resolve to an already loaded anonymous class of the same name
+    String typeName = bmi.enclosingClass.getName() + "$$Lambda$" + bsIdx;
     
     ClassInfo funcObjType = resolvedClasses.get( typeName);
 
