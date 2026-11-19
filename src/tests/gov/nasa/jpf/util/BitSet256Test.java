@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -87,7 +87,33 @@ public class BitSet256Test extends TestJPF {
     b.set(4);
     b.set(4,false);
     assert !b.get(4);
+  }
 
+  @Test
+  public void testLength() {
+    BitSet256 b = new BitSet256();
+
+    // Empty bit set
+    assert b.length() == 0;
+
+    // Lowest bit in the first word
+    b.set(0);
+    assert b.length() == 1;
+
+    // A bit inside the first word
+    b.clear();
+    b.set(5);
+    assert b.length() == 6;
+
+    // Highest bit in the first word
+    b.clear();
+    b.set(63);
+    assert b.length() == 64;
+
+    // Lowest bit in the second word
+    b.clear();
+    b.set(64);
+    assert b.length() == 65;
   }
 
   @Test
