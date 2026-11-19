@@ -175,7 +175,7 @@ public class BitSet256 extends AbstractFixedBitSet {
       return 192 - Long.numberOfLeadingZeros(l2);
     } else if (l1 != 0){
       return 128 - Long.numberOfLeadingZeros(l1);
-    } else if (l1 != 0){
+    } else if (l0 != 0){
       return 64 - Long.numberOfLeadingZeros(l0);
     } else {
       return 0;
