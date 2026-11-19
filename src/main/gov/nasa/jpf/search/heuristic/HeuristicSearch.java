@@ -55,12 +55,18 @@ public abstract class HeuristicSearch extends Search {
    */
   protected boolean isBeamSearch;
 
+  /*
+   * allocate childStates on needed (useChildStates == true)
+   */
+  protected boolean useChildStates;
+
   
   public HeuristicSearch (Config config, VM vm) {
     super(config, vm);
     
     useAstar = config.getBoolean("search.heuristic.astar");
     isBeamSearch = config.getBoolean("search.heuristic.beam_search");
+    useChildStates = config.getBoolean("search.heuristic.child_states");
   }
 
   
@@ -104,8 +110,9 @@ public abstract class HeuristicSearch extends Search {
    * explicit termination request
    */
   protected boolean generateChildren () {
-
-    childStates = new ArrayList<HeuristicState>();
+    if (useChildStates) {
+      childStates = new ArrayList<HeuristicState>();
+    }
     
     while (!done) {
       
@@ -146,7 +153,9 @@ public abstract class HeuristicSearch extends Search {
           
             HeuristicState newHState = queueCurrentState();            
             if (newHState != null) { 
-              childStates.add(newHState);
+              if (useChildStates) {
+                childStates.add(newHState);
+              }
               notifyStateStored();
             }
           }
