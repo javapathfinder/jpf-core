@@ -24,4 +24,12 @@ public interface ThreadChoiceGenerator extends ChoiceGenerator<ThreadInfo> {
   void printOn (PrintWriter pw);
   
   boolean contains (ThreadInfo ti);
+
+  /**
+   * Called for the selected thread after the kernel state has been saved and
+   * before scheduling notifications, timeout handling, and instruction execution.
+   * Unlike advance(), this hook may change the program state. It is called even
+   * when the selected thread is already the executing thread.
+   */
+  default void prepareForExecution (ThreadInfo ti) {}
 }
