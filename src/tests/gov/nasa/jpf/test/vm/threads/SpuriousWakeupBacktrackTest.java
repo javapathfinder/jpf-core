@@ -4,6 +4,7 @@ import gov.nasa.jpf.ListenerAdapter;
 import gov.nasa.jpf.search.Search;
 import gov.nasa.jpf.util.test.TestJPF;
 import gov.nasa.jpf.vm.ChoiceGenerator;
+import gov.nasa.jpf.vm.Instruction;
 import gov.nasa.jpf.vm.ThreadInfo;
 import gov.nasa.jpf.vm.VM;
 
@@ -35,6 +36,7 @@ public class SpuriousWakeupBacktrackTest extends TestJPF {
     private final Map<ChoiceGenerator<?>, Integer> selectedWakeups = new IdentityHashMap<>();
     static int checkedRestores;
     static int checkedWakeupRestores;
+    static int checkedSelfWakeupRestores;
 
     @Override
     public void choiceGeneratorSet(VM vm, ChoiceGenerator<?> cg) {
@@ -53,13 +55,21 @@ public class SpuriousWakeupBacktrackTest extends TestJPF {
     @Override
     public void choiceGeneratorAdvanced(VM vm, ChoiceGenerator<?> cg) {
       Map<Integer, ThreadInfo.State> expected = predecessors.get(cg);
-      Object choice = cg.getNextChoice();
-      if (expected != null && choice instanceof ThreadInfo) {
-        ThreadInfo ti = (ThreadInfo) choice;
-        // advance() changes a selected untimed waiter to TIMEOUT_WAITING.
-        if (expected.containsKey(ti.getId()) && ti.getState() == ThreadInfo.State.TIMEOUT_WAITING) {
-          selectedWakeups.put(cg, ti.getId());
+      if (expected != null) {
+        for (Integer id : expected.keySet()) {
+          assertEquals("choice advancement must not change waiter state before the snapshot",
+              ThreadInfo.State.WAITING, vm.getThreadList().getThreadInfoForId(id).getState());
         }
+      }
+    }
+
+    @Override
+    public void executeInstruction(VM vm, ThreadInfo ti, Instruction insn) {
+      ChoiceGenerator<?> cg = vm.getSystemState().getCurrentSchedulingPoint();
+      Map<Integer, ThreadInfo.State> expected = predecessors.get(cg);
+      // The selected waiter is timed out only after the kernel snapshot.
+      if (expected != null && expected.containsKey(ti.getId()) && ti.isTimedOut()) {
+        selectedWakeups.put(cg, ti.getId());
       }
     }
 
@@ -76,8 +86,12 @@ public class SpuriousWakeupBacktrackTest extends TestJPF {
               + ", got " + ti.getState(), entry.getValue(), ti.getState());
         }
         checkedRestores++;
-        if (selectedWakeups.remove(vm.getChoiceGenerator()) != null) {
+        Integer wokenId = selectedWakeups.remove(vm.getChoiceGenerator());
+        if (wokenId != null) {
           checkedWakeupRestores++;
+          if (wokenId == vm.getChoiceGenerator().getThreadInfo().getId()) {
+            checkedSelfWakeupRestores++;
+          }
         }
       }
     }
@@ -132,6 +146,7 @@ public class SpuriousWakeupBacktrackTest extends TestJPF {
     if (!isJPFRun()) {
       RestoreListener.checkedRestores = 0;
       RestoreListener.checkedWakeupRestores = 0;
+      RestoreListener.checkedSelfWakeupRestores = 0;
     }
     if (verifyNoPropertyViolation(
         "+vm.scheduler.sync.class=gov.nasa.jpf.vm.SpuriousWakeupSyncPolicy",
@@ -143,6 +158,8 @@ public class SpuriousWakeupBacktrackTest extends TestJPF {
       assertTrue("must backtrack to a state with two waiters", RestoreListener.checkedRestores > 0);
       assertTrue("must restore both waiters after selecting a spurious wakeup",
           RestoreListener.checkedWakeupRestores > 0);
+      assertTrue("must restore both waiters after the waiting thread selects itself",
+          RestoreListener.checkedSelfWakeupRestores > 0);
     }
   }
 }

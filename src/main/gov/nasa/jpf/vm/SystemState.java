@@ -806,6 +806,7 @@ public class SystemState {
     ThreadChoiceGenerator tcg = getCurrentSchedulingPoint();
     if (tcg != null){
       ThreadInfo tiNext = tcg.getNextChoice();
+      tcg.prepareForExecution(tiNext);
       if (tiNext != execThread) {
         vm.notifyThreadScheduled(tiNext);
         execThread = tiNext;

@@ -99,18 +99,13 @@ public class SpuriousWakeupSyncPolicy extends AllRunnablesSyncPolicy {
     }
 
     /**
-     * Advances to JPF's next scheduling choice and makes a chosen untimed
-     * waiter eligible for a simulated timeout. JPF changes it to
-     * {@code TIMEDOUT} only if it is subsequently selected to run, which
-     * keeps other waiters in a valid non-runnable state.
+     * Makes the selected untimed waiter eligible for a simulated timeout after
+     * the kernel snapshot. JPF then changes it to {@code TIMEDOUT}, and ordinary
+     * backtracking restores its original {@code WAITING} state.
      */
     @Override
-    public void advance() {
-      super.advance();
-      final ThreadInfo ti = getNextChoice();
-      if (ti != null && isWakeable(ti)) {
-        // advance() runs before the kernel snapshot, so undo this change explicitly.
-        ti.getVM().getSystemState().putRestorer(ti, () -> ti.setState(ThreadInfo.State.WAITING));
+    public void prepareForExecution(final ThreadInfo ti) {
+      if (isWakeable(ti)) {
         ti.setState(ThreadInfo.State.TIMEOUT_WAITING);
       }
     }
