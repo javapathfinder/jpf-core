@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -142,20 +142,46 @@ public class BitSet64Test extends TestJPF {
   @Test
   public void testIntSetInterface(){
     IntSet s = new BitSet64();
-    
+
     s.add(42);
     s.add(0);
     s.add(63);
-    
+
     assertTrue(s.size() == 64);
     assertTrue( s.contains(42));
-    
+
     for (IntIterator it = s.intIterator(); it.hasNext();){
       int i = it.next();
       System.out.println(i);
     }
   }
-  
+
+  /**
+   * Regression test: removing an element during iteration must not
+   * prevent the iterator from returning the remaining elements.
+   */
+  @Test
+  public void testIteratorRemoveContinuesIteration() {
+    BitSet64 b = new BitSet64();
+
+    b.set(2);
+    b.set(5);
+    b.set(8);
+
+    IntIterator it = b.intIterator();
+
+    assertTrue(it.next() == 2);
+    it.remove();
+
+    assertTrue(it.hasNext());
+    assertTrue(it.next() == 5);
+
+    assertTrue(it.hasNext());
+    assertTrue(it.next() == 8);
+
+    assertTrue(!it.hasNext());
+  }
+
   //--- performance section
 
   static final int NROUNDS = 2000000;
