@@ -6,13 +6,13 @@
  * The Java Pathfinder core (jpf-core) platform is licensed under the
  * Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
- *        http://www.apache.org/licenses/LICENSE-2.0. 
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0.
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and 
+ * See the License for the specific language governing permissions and
  * limitations under the License.
  */
 
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 
 /**
  * BitSet like interface for fixed size bit sets
- * 
+ *
  * We keep this as an interface so that we can have java.util.BitSet
  * subclasses as implementations
  */
@@ -33,21 +33,21 @@ public interface FixedBitSet extends Cloneable, IntSet {
   void set (int i, boolean val);
   boolean get (int i);
   void clear (int i);
-  
+
   int nextClearBit (int fromIndex);
   int nextSetBit (int fromIndex);
 
   boolean isEmpty();
   int size();
-  
+
   int cardinality();
   int length();
   int capacity();
-  
+
   void clear();
-  
+
   void hash (HashData hd);
-  
+
   FixedBitSet clone();
 }
 
@@ -55,15 +55,16 @@ public interface FixedBitSet extends Cloneable, IntSet {
  * this is the base class for our non java.util.BitSet based FixedBitSet implementations
  */
 abstract class AbstractFixedBitSet implements FixedBitSet {
-  
+
   class SetBitIterator implements IntIterator {
     int cur = 0;
     int nBits;
-    
+
     @Override
     public void remove() {
-      if (cur >0){
-        clear(cur-1);
+      if (cur > 0 && get(cur - 1)) {
+        clear(cur - 1);
+        nBits--;
       }
     }
 
@@ -81,25 +82,25 @@ abstract class AbstractFixedBitSet implements FixedBitSet {
           cur = idx+1;
         }
         return idx;
-        
+
       } else {
         throw new NoSuchElementException();
       }
     }
   }
 
-  
+
   protected int cardinality;
-  
+
   @Override
   public AbstractFixedBitSet clone(){
     try {
       return (AbstractFixedBitSet) super.clone();
     } catch (CloneNotSupportedException ex) {
       throw new JPFException("BitSet64 clone failed");
-    }  
+    }
   }
-  
+
   @Override
   public void set (int i, boolean val){
     if (val) {
@@ -140,8 +141,8 @@ abstract class AbstractFixedBitSet implements FixedBitSet {
   }
 
   //--- IntSet interface
-  
-    
+
+
   @Override
   public boolean add(int i) {
     if (get(i)) {
